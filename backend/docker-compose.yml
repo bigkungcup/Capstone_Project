@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  backend:
+    build: ./
+    image: backend
+    container_name: backend ##ชื่อ Container จะเอาไปเชื่อมกับ Nginx.conf ที่ส่วน Server:8080
+    networks:
+      - capstone-network
+    restart: always
+
+networks:
+  capstone-network:
+    external:
+     name: capstone-network

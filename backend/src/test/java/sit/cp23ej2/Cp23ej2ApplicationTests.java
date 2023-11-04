@@ -1,10 +1,10 @@
-package sit.CP23EJ2.bannarug;
+package sit.cp23ej2;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BannarugApplicationTests {
+class Cp23ej2ApplicationTests {
 
 	@Test
 	void contextLoads() {

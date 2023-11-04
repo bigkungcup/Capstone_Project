@@ -1,13 +1,13 @@
-package sit.CP23EJ2.bannarug;
+package sit.cp23ej2;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BannarugApplication {
+public class Cp23ej2Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BannarugApplication.class, args);
+		SpringApplication.run(Cp23ej2Application.class, args);
 	}
 
 }
