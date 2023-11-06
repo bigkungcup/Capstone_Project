@@ -1,10 +1,9 @@
 <script setup></script>
 
 <template>
-    <v-app>
-        <NuxtLayout />
-        <NuxtPage />
-    </v-app>
+    <div>
+      <h1 class="">Home</h1>
+    </div>
 </template>
 
 <style scoped></style>
