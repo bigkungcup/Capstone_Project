@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap');
+
+.lily {
+    font-family: 'Lily Script One', sans-serif;
+}
+
+.app-name-color{
+    color: #3157BB;
+}
+
+.nav-text-before-click{
+    color: #082266;
+}
+
+.nav-text-after-click{
+    color: #3157BB;
+}
+
+.nav-icon-color{
+    color: #082266;
+}
+
+.create-book-button-color{
+    color: #082266;
+}
+
+.text-fade-color{
+    color: #B8B4B4;
+}
