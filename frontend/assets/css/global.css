@@ -27,3 +27,33 @@
 .text-fade-color{
     color: #B8B4B4;
 }
+
+.web-text-detail{
+    color: #082266;
+    font-weight: 400;
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.75rem; /* 28px */
+}
+
+.web-text-sub{
+    color: #082266;
+    font-weight: 300;
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.75rem; /* 28px */
+}
+
+.web-text-title{
+    color: #082266;
+    font-weight: 700;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
+
+.tag-color{
+    background-color: #1D419F;
+    padding: 10px;
+    color: white;
+    border-radius: 1rem;
+    font-weight: 500;
+    filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.2)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+}
