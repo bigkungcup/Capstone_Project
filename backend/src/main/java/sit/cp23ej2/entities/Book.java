@@ -2,6 +2,7 @@ package sit.cp23ej2.entities;
 
 import java.time.Instant;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "book")
+@Table(name = "book", schema = "bannarug")
 public class Book {
     
     @Id
@@ -33,7 +34,7 @@ public class Book {
     private Long bookRating;
 
     private String bookGenre;
-   
+    
     private Instant bookCreateDateTime;
 
     private Instant bookUpdateDateTime;
