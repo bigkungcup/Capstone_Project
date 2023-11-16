@@ -8,8 +8,8 @@ defineProps({
 </script>
  
 <template>
-    <div class="h-100 tw-px-24">
-        <v-card v-for="book in bookList" color="#D9D9D9" class="tw-mb-4 tw-h-2/5" :to="`/book/${book.bookId}`">
+    <div class="tw-px-24">
+        <v-card v-for="book in bookList" color="#D9D9D9" class="tw-mb-4 tw-h-[19rem]" :to="`/book/${book.bookId}`">
             <v-row no-gutters>
                 <v-col cols="2" class="tw-my-4" align="center">
                     <v-img src="/image/cover_not_available.jpg" width="80%" />
@@ -22,14 +22,19 @@ defineProps({
                     <div class="tw-h-2/6 tw-py-2 tw-overflow-hidden">
                         <p class="tw-text-ellipsis tw-indent-8">{{ book.bookDetail }}</p>
                     </div>
-                    <div class="">{{ book.bookTotalReview }} reviews</div>
+                    <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-1/6">
+                        <v-img  src="/image/star_icon.png"/>
+                        <p class="web-text-rate">{{book.bookRating}}</p>
+                        <p v-show="book.bookTotalReview == null">(0 review)</p>
+                        <p v-show="book.bookTotalReview != null">({{ book.bookTotalReview }} reviews)</p>
+                    </div>
                 </v-col>
                 <v-col class="tw-grid tw-grid-cols-8 tw-gap-2">
                     <div class="vertical-line tw-my-8"></div>
                     <div class="web-text-detail tw-col-span-7 tw-py-12">
                         <div class="tw-flex tw-gap-x-2 tw-py-2 tw-items-center">
                             <p class="tw-font-bold">Book Type : </p>
-                            <span class="tag-color">{{ book.bookType }}</span>
+                            <span class="tag-color" v-show="book.bookType == ''">{{ book.bookType }}</span>
                         </div>
                         <div class="tw-flex tw-gap-x-4 tw-py-2 tw-items-center">
                             <p class="tw-font-bold">Genre : </p>
