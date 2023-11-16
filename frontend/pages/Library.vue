@@ -1,6 +1,6 @@
 <script setup>
 // import { useBooks } from '~/stores/book'
-import { ref,onBeforeMount } from 'vue';
+// import { ref,onBeforeMount } from 'vue';
 
 // const library = useBooks();
 
@@ -82,9 +82,9 @@ const { data:bookList } = await useAsyncData(
 // };
 // const library = [];
 
-onBeforeMount(async () => {
-  console.log(bookList.value);
-});
+// onBeforeMount(async () => {
+//   console.log(bookList.value);
+// });
 
 </script>
 

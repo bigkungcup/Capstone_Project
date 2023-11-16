@@ -82,7 +82,7 @@ const reviews = {
                         Bookmarked by: {{ book.data.bookTotalBookmarked }} people
                     </p>
                     <p class="text-h6 tw-text-[#1D419F]">
-                        Booktype: <v-btn color="#1D419F">{{ book.data.bookType }}</v-btn>
+                        Booktype: <v-btn color="#1D419F" v-show="book.bookType != null">{{ book.data.bookType }}</v-btn>
                     </p>
                     <p class="text-h6 tw-text-[#1D419F]">
                         Genre: <v-btn color="#1D419F">{{ book.data.bookGenre }}</v-btn>
