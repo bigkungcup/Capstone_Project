@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import sit.cp23ej2.controllers.CommonController;
@@ -21,11 +24,12 @@ public class ReviewService extends CommonController {
     @Autowired
     private ReviewRepository repository;
 
-    public DataResponse getReviewByBookId(int page, int limit, int bookId) throws HandleExceptionNotFound {
+    public DataResponse getReviewByBookId(int page, int size, int bookId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
-        List<Review> reviews = repository.getReviewByBookId(bookId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> reviews = repository.getReviewByBookId(bookId, pageable);
         if (reviews != null) {
-            Paginate pagination = this.paginate(page, limit, reviews);
+            Paginate pagination = this.paginate(page, size, reviews);
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("All Reviews");
@@ -40,15 +44,7 @@ public class ReviewService extends CommonController {
     
     public DataResponse createReviewByBookId(CreateReviewDTO review){
         DataResponse response = new DataResponse();
-        repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(), review.getBookId());
-    
-            
-            // Integer generatedReviewId = review.getReviewId();
-            // // Now you have the generated ID
-            // System.out.println("Generated Review ID: " + generatedReviewId);
-            // Review  dataReview = repository.getReviewById(review.getReviewId());
-            // response.setData(dataReview);
-        
+        repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(), review.getBookId());        
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Review Created");

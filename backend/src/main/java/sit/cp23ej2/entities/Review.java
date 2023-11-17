@@ -1,6 +1,7 @@
 package sit.cp23ej2.entities;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,11 +40,11 @@ public class Review {
 
     private Integer reviewTotalLike;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Instant reviewCreateDateTime;
+    // @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime reviewCreateDateTime;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Instant reviewUpdateDateTime;
+    // @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime reviewUpdateDateTime;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

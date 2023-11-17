@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Cp23ej2Application {
 
 	public static void main(String[] args) {
-		TimeZone.setDefault(TimeZone.getTimeZone("GMT+7:00"));
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		SpringApplication.run(Cp23ej2Application.class, args);
 	}
 
