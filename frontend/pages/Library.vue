@@ -1,8 +1,8 @@
 <script setup>
-// import { useBooks } from '~/stores/book'
+import { useBooks } from '~/stores/book'
 // import { ref,onBeforeMount } from 'vue';
 
-// const library = useBooks();
+const library = useBooks();
 
 const { data:bookList } = await useAsyncData(
   'bookList',
@@ -117,7 +117,7 @@ const { data:bookList } = await useAsyncData(
     </v-container>
     <BookNotFound v-show="bookList.data.length == 0" />
     <div v-show="bookList.data.length !== 0">
-      <BookCard :bookList="bookList.data" />
+      <BookCard :bookList="bookList.data" @star="library.getStarRating"/>
       <v-pagination v-model="page" class="my-4" :length="bookList.paginate.totalPages" :total-visible="7"
         rounded="20"></v-pagination>
     </div>

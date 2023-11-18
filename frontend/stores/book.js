@@ -28,7 +28,12 @@ async function getLibrary() {
     // console.log(bookList.value);
 }
 
-  return { bookList, getLibrary };
+
+function getStarRating(number){
+  console.log(number);
+  return number = 0.5 * Math.floor(2 * number);
+}
+  return { bookList, getLibrary, getStarRating };
 
 });
 
