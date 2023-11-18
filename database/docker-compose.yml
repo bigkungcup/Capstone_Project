@@ -4,8 +4,8 @@ services:
     container_name: database
     image: mysql
     ports:
-      - 3307:3306
-    #  - 3306:3306
+      # - 3307:3306
+     - 3306:3306
     networks:
       - capstone-network
     volumes:

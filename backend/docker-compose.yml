@@ -8,7 +8,7 @@ services:
     image: backend
     networks:
       - capstone-network
-    # restart: always
+    restart: always
 
 networks:
   capstone-network:
