@@ -1,5 +1,11 @@
+<script setup></script>
+
 <template>
-  <div>
-    <NuxtWelcome />
-  </div>
+    <v-app>
+        <NuxtLayout/>
+        <NuxtPage/>
+    </v-app>
 </template>
+
+<style scoped></style>
+  
