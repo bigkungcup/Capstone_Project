@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap');
+
+.lily {
+    font-family: 'Lily Script One', sans-serif;
+}
+
+.app-name-color{
+    color: #3157BB;
+}
+
+.nav-text-before-click{
+    color: #082266;
+}
+
+.nav-text-after-click{
+    color: #3157BB;
+}
+
+.nav-icon-color{
+    color: #082266;
+}
+
+.create-book-button-color{
+    color: #082266;
+}
+
+.text-fade-color{
+    color: #B8B4B4;
+}
+
+.web-text-detail{
+    color: #082266;
+    font-weight: 400;
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.75rem; /* 28px */
+}
+
+.web-text-sub{
+    color: #082266;
+    font-weight: 300;
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.75rem; /* 28px */
+}
+
+.web-text-title{
+    color: #082266;
+    font-weight: 700;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
+
+.web-text-rate{
+    color: #FFBB11
+}
+
+.tag-color{
+    background-color: #1D419F;
+    padding: 10px;
+    color: white;
+    border-radius: 1rem;
+    font-weight: 500;
+    filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.2)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+}
+
+.book-card{
+    background-color: #D9D9D9;
+}
