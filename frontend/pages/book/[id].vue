@@ -3,7 +3,7 @@ const route = useRoute()
 
 const { data:book } = await useAsyncData(
   'bookList',
-  () => $fetch( `http://localhost:8080/api/book/${route.params.id}`, {
+  () => $fetch( `${import.meta.env.VITE_BASE_URL}/book/${route.params.id}`, {
     method: 'GET',
 } )
 );

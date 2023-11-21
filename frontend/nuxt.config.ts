@@ -32,4 +32,14 @@ export default defineNuxtConfig({
       },
     },
   },
+  nitro: {
+    devProxy: {
+        '/api/': {
+           target: "https://capstone23.sit.kmutt.ac.th/ej2",
+          //  target: `http://localhost:8080`,
+           changeOrigin: true,
+           secure: false,
+        }
+    }
+}
 })

@@ -6,7 +6,7 @@
 
 const { data:bookList } = await useAsyncData(
   'bookList',
-  () => $fetch( `http://localhost:8080/api/book`, {
+  () => $fetch( `${import.meta.env.VITE_BASE_URL}/api/book`, {
     method: 'GET',
 } )
 );
