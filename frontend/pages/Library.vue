@@ -1,8 +1,9 @@
 <script setup>
 // import { useBooks } from '~/stores/book'
-// import { ref,onBeforeMount } from 'vue';
+import { ref,onBeforeMount } from 'vue';
 
 // const library = useBooks();
+// const bookList = ref();
 
 const { data:bookList } = await useAsyncData(
   'bookList',
@@ -14,7 +15,7 @@ const { data:bookList } = await useAsyncData(
 // Get Library
 
 // async function getLibrary() {
-  // const { data:bookList } = await useFetch(
+  // const { data } = await useFetch(
   //   `http://localhost:8080/api/book`,
   //   {
   //     onRequest({ request, options }) {
@@ -22,7 +23,19 @@ const { data:bookList } = await useAsyncData(
   //       options.headers = {
   //         "Content-Type": "application/json",
   //       };
-  //     }
+  //     },
+  //     onResponse({ request, response, options }) {
+  //       // Process the response data
+  //       // localStorage.setItem('token', response._data.token)
+  //       if(response._data != null){
+  //         console.log(response._data);
+  //         bookList.value = response._data;
+  //       }else{
+  //         console.log("error");
+  //         bookList.value = [];
+  //       }
+        
+  //     },
   //   }
   // );
   // bookList.value = data;
@@ -115,12 +128,12 @@ const { data:bookList } = await useAsyncData(
 
       </v-row>
     </v-container>
-    <BookNotFound v-show="bookList.data.length == 0" />
+    <!-- <BookNotFound v-show="bookList.data.length == 0" />
     <div v-show="bookList.data.length !== 0">
       <BookCard :bookList="bookList.data" />
       <v-pagination v-model="page" class="my-4" :length="bookList.paginate.totalPages" :total-visible="7"
         rounded="20"></v-pagination>
-    </div>
+    </div> -->
   </div>
 </template>
 
