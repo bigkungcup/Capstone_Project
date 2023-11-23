@@ -1,15 +1,10 @@
 <script setup>
 import { useBooks } from '~/stores/book'
-import { ref,onBeforeMount } from 'vue';
+
 
 const library = useBooks();
 
-const { data:bookList } = await useAsyncData(
-  'bookList',
-  () => $fetch( `http://localhost:8080/api/book`, {
-    method: 'GET',
-} )
-);
+await library.getLibrary();
 
 </script>
 
@@ -40,13 +35,14 @@ const { data:bookList } = await useAsyncData(
 
       </v-row>
     </v-container>
-    <BookNotFound v-show="bookList.data.length == 0" />
-    <div v-show="bookList.data.length !== 0" class="tw-min-h-[70%]">
-      <BookCard :bookList="bookList.data"/>
+    <BookNotFound v-show="library.bookList.data.length == 0" />
+    <div v-show="library.bookList.data.length !== 0" class="tw-min-h-[70%]">
+      <BookCard :bookList="library.bookList.data"/>
     </div>
-    <v-pagination v-model="page" class="my-4" :length="bookList.paginate.totalPages" :total-visible="7"
+    <div v-show="library.bookList.data.length !== 0">
+    <v-pagination v-model="page" class="my-4" :length="library.bookList.paginate.totalPages" :total-visible="7"
         rounded="20">
-    </v-pagination>
+    </v-pagination></div>
     </div>
 </template>
 

@@ -39,7 +39,7 @@
             <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
                 <v-row>
                     <v-col cols="2">
-                        <v-avatar class="ma-3" size="150" rounded="0">
+                        <v-avatar class="ma-3" size="180" rounded="0">
                             <v-img src="/image/bookcover.png"></v-img>
                         </v-avatar>
                     </v-col>
@@ -52,7 +52,7 @@
                 </v-row>
                 <div class="tw-mx-8 tw-space-y-4">
                 <v-text-field label="Review Header" variant="solo" height="100px"  hide-details></v-text-field>
-                <v-textarea label="Review Detail" variant="solo" rows="3" hide-details></v-textarea>
+                <v-textarea label="Review Detail" variant="solo" rows="5" hide-details></v-textarea>
                  <v-checkbox label="Hide entire review because of spoilers" hide-details></v-checkbox>
 
             </div>

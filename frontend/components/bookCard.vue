@@ -36,11 +36,11 @@ defineProps({
                     <div class="web-text-detail tw-col-span-7 tw-py-14">
                         <div class="tw-flex tw-gap-x-2 tw-py-2 tw-items-center">
                             <p class="tw-font-bold">Book Type : </p>
-                            <span class="tag-color" v-show="book.bookType != null">{{ book.bookType }}</span>
+                            <v-btn color="#1D419F" v-show="book.bookType != null">{{ book.bookType }}</v-btn>
                         </div>
                         <div class="tw-flex tw-gap-x-4 tw-py-2 tw-items-center">
                             <p class="tw-font-bold">Genre : </p>
-                            <span class="tag-color">{{ book.bookGenre }}</span>
+                            <v-btn color="#1D419F" v-show="book.bookGenre != null">{{ book.bookGenre }}</v-btn>
                     </div>
                 </div>
                 </v-col>
