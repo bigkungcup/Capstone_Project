@@ -1,6 +1,4 @@
 <script setup>
-defineEmits(["star"]);
-
 defineProps({
     bookList: {
         type: Array,
@@ -11,13 +9,13 @@ defineProps({
 </script>
  
 <template>
-    <div class="tw-px-24 tw-space-y-4">
+    <div class="tw-px-36 tw-space-y-4">
         <v-card v-for="book in bookList" color="rgb(217, 217, 217, 0.6)" class="tw-h-[19rem]" :to="`/book/${book.bookId}`">
             <v-row no-gutters>
-                <v-col cols="2" class="tw-my-4" align="center">
-                    <v-img src="/image/cover_not_available.jpg" width="80%" />
+                <v-col cols="3" class="tw-my-2" align="center">
+                    <v-img src="/image/cover_not_available.jpg" width="60%" />
                 </v-col>
-                <v-col cols="7" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
+                <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
                     <div>
                         <p class="web-text-title">{{ book.bookName }}</p>
                         <p class="tw-opacity-60">Update about {{ }}</p>
@@ -26,7 +24,7 @@ defineProps({
                         <p class="tw-indent-8 tw-max-h-[9.5rem]">{{ book.bookDetail }}</p>
                     </div>
                     <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6">
-                        <v-rating :model-value="$emit('star',book.bookRating)" color="#FFB703"
+                        <v-rating :model-value="0.5 * Math.floor(2 * book.bookRating)" color="#FFB703"
                             density="compact" size="meduim" half-increments readonly></v-rating>
                         <p class="web-text-rate">{{book.bookRating}}</p>
                         <p v-show="book.bookTotalReview == null">(0 review)</p>

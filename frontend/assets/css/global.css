@@ -49,6 +49,14 @@
     line-height: 2rem; /* 32px */
 }
 
+.web-text-header{
+    color: #082266;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem; /* 36px */
+}
+
+
 .web-text-rate{
     color: #FFBB11
 }
@@ -60,6 +68,10 @@
     border-radius: 1rem;
     font-weight: 500;
     filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.2)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+}
+
+.web-grey-color{
+    background-color: rgba(217, 217, 217, 0.6)
 }
 
 .book-card{

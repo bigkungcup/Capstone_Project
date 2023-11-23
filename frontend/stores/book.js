@@ -3,28 +3,29 @@ import { ref } from "vue";
 
 export const useBooks = defineStore("Books", () => {
   const bookList = ref();
+  const bookPage = ref(1);
 
 //Get Library
 async function getLibrary() {
   const { data } = await useFetch(
     `http://localhost:8080/api/book`,
     {
-      // onRequest({ request, options }) {
-      //   options.method = "GET";
-      //   options.headers = {
-      //     "Content-Type": "application/json",
-      //   };
-      // },
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+      },
       // onResponse({ request, response, options }) {
       //   // bookList.value = response._data
       //   // console.log(bookList.value);
       //   // console.log(response._data);
       //   // console.log("RESPONSE", response._data);
       // }
-    }
+    },
   );
     // console.log(bookList.value);
-    bookList.value = data.value
+    bookList.value = data
     // console.log(bookList.value);
 }
 
@@ -33,7 +34,7 @@ function getStarRating(number){
   console.log(number);
   return number = 0.5 * Math.floor(2 * number);
 }
-  return { bookList, getLibrary, getStarRating };
+  return { bookList, bookPage, getLibrary, getStarRating };
 
 });
 

@@ -1,6 +1,6 @@
 <script setup>
 import { useBooks } from '~/stores/book'
-// import { ref,onBeforeMount } from 'vue';
+import { ref,onBeforeMount } from 'vue';
 
 const library = useBooks();
 
@@ -11,85 +11,10 @@ const { data:bookList } = await useAsyncData(
 } )
 );
 
-// Get Library
-
-// async function getLibrary() {
-  // const { data:bookList } = await useFetch(
-  //   `http://localhost:8080/api/book`,
-  //   {
-  //     onRequest({ request, options }) {
-  //       options.method = "GET";
-  //       options.headers = {
-  //         "Content-Type": "application/json",
-  //       };
-  //     }
-  //   }
-  // );
-  // bookList.value = data;
-// }
-
-
-// const getLibrary = async () => {
-//   try {
-//     const response = await $fetch(`http://localhost:8080/api/book`, {
-//       method: 'get',
-//     })
-//       bookList.value = await response.value
-//       console.log(response.value);
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
-
-// console.log(bookList.value)
-
-// const bookList = {
-//   data: [
-//     {
-//       bookId: '01',
-//       bookName: 'I Know Why the Caged Bird Sings',
-//       bookDetail: 'Maya Angelou’s debut memoir is a modern American classic beloved worldwide. Her life story is told in the documentary film And Still I Rise, as seen on PBS’s American Masters.Here is a book as joyous and painful, as mysterious and memorable, as childhood itself. I Know Why the Caged Bird Sings captures the longing of lonely children, the brute insult of bigotry, and the wonder of words that can make the world right. Maya Angelou’s debut memoir is a modern American classic beloved worldwide. Sent by their mother to live with their devout, self-sufficient grandmother in a small Southern town, Maya and her brother, Bailey, endure the ache of abandonment and the prejudice of the local “powhitetrash.” At eight years old and back at her mother’s side in St. Louis, Maya is attacked by a man many times her age—and has to live with the consequences for a lifetime.',
-//       author: 'Maya Angelou',
-//       bookType: 'Autobiography',
-//       bookGenre: 'Biography',
-//       bookTotalBookmarked: 124,
-//       bookTotalReview: 3,
-//       bookRating: 5.0,
-//       updateDate: '',
-//       bookCover: null
-//     },
-//     // {
-//     //   bookId: '02',
-//     //   bookName: 'I Know Why the Caged Bird Sings',
-//     //   bookDetail: 'Maya Angelou’s debut memoir is a modern American classic beloved worldwide. Her life story is told in the documentary film And Still I Rise, as seen on PBS’s American Masters.Here is a book as joyous and painful, as mysterious and memorable, as childhood itself. I Know Why the Caged Bird Sings captures the longing of lonely children, the brute insult of bigotry, and the wonder of words that can make the world right. Maya Angelou’s debut memoir is a modern American classic beloved worldwide. Sent by their mother to live with their devout, self-sufficient grandmother in a small Southern town, Maya and her brother, Bailey, endure the ache of abandonment and the prejudice of the local “powhitetrash.” At eight years old and back at her mother’s side in St. Louis, Maya is attacked by a man many times her age—and has to live with the consequences for a lifetime.',
-//     //   author: 'Maya Angelou',
-//     //   bookType: 'Autobiography',
-//     //   bookGenre: 'Biography',
-//     //   bookTotalBookmarked: 124,
-//     //   bookTotalReview: 3,
-//     //   bookRating: 5.0,
-//     //   updateDate: '',
-//     //   bookCover: null
-//     // }
-//   ],
-//   paginate: {
-//     pageNo: 1,
-//     pageSize: 10,
-//     totalElements: 1,
-//     totalPages: 1,
-//     last: true
-//   }
-// };
-// const library = [];
-
-// onBeforeMount(async () => {
-//   console.log(bookList.value);
-// });
-
 </script>
 
 <template>
-  <div>
+  <div class="">
     <!-- <v-container class="ma-0 ml-10"> -->
     <v-container>
       <v-row no-gutters>
@@ -116,12 +41,13 @@ const { data:bookList } = await useAsyncData(
       </v-row>
     </v-container>
     <BookNotFound v-show="bookList.data.length == 0" />
-    <div v-show="bookList.data.length !== 0">
-      <BookCard :bookList="bookList.data" @star="library.getStarRating"/>
-      <v-pagination v-model="page" class="my-4" :length="bookList.paginate.totalPages" :total-visible="7"
-        rounded="20"></v-pagination>
+    <div v-show="bookList.data.length !== 0" class="tw-min-h-[70%]">
+      <BookCard :bookList="bookList.data"/>
     </div>
-  </div>
+    <v-pagination v-model="page" class="my-4" :length="bookList.paginate.totalPages" :total-visible="7"
+        rounded="20">
+    </v-pagination>
+    </div>
 </template>
 
 <style scoped></style>
