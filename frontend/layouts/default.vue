@@ -10,7 +10,7 @@
             <NuxtLink to="/">Home</NuxtLink>
             <NuxtLink to="">Ranking</NuxtLink>
             <NuxtLink to="/library">Library</NuxtLink>
-            <NuxtLink to="">History</NuxtLink>
+            <NuxtLink to="/createReview">History</NuxtLink>
         </div>
         <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
             <v-icon icon="mdi-magnify" style="font-size: 50px"></v-icon>
