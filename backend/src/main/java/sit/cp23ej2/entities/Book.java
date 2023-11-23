@@ -1,7 +1,6 @@
 package sit.cp23ej2.entities;
 
-import java.time.Instant;
-
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,7 +34,7 @@ public class Book {
 
     private String bookGenre;
     
-    private Instant bookCreateDateTime;
+    private LocalDateTime bookCreateDateTime;
 
-    private Instant bookUpdateDateTime;
+    private LocalDateTime bookUpdateDateTime;
 }

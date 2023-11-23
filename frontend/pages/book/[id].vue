@@ -8,12 +8,6 @@ const route = useRoute()
 
 await library.getBookDetail(route.params.id);
 await reviews.getReview(route.params.id);
-// const { data: review } = await useAsyncData(
-//     'reviewList',
-//     () => $fetch(`http://localhost:8080/api/review?page=${reviews.reviewPage}&size=10&bookId=${route.params.id}`, {
-//         method: 'GET',
-//     })
-// );
 </script>
  
 <template>

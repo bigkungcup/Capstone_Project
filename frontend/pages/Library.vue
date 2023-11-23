@@ -1,11 +1,9 @@
 <script setup>
 import { useBooks } from '~/stores/book'
 
-
 const library = useBooks();
 
 await library.getLibrary();
-
 </script>
 
 <template>

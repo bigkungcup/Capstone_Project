@@ -8,8 +8,8 @@ export const useBooks = defineStore("Books", () => {
 
 //Get Library
 async function getLibrary() {
-  const { data , pending, error, refresh } = await useFetch(
-    `http://localhost:8080/api/book`,
+  const { data } = await useFetch(
+    `${import.meta.env.VITE_BASE_URL}/api/book`,
     {
       onRequest({ request, options }) {
         options.method = "GET";

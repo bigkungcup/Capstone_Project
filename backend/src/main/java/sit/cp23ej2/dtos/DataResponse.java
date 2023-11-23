@@ -14,5 +14,5 @@ public class DataResponse {
     private String response_message;
     private Instant response_datetime;
     private Object data;
-    private Paginate paginate;
+    // private Paginate paginate;
 }
