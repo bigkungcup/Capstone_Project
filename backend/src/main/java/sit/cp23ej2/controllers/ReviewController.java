@@ -43,9 +43,9 @@ public class ReviewController {
     private ReviewService reviewService;
 
     @RequestMapping("")
-    public DataResponse getAllBook(@NotNull @RequestParam(required = false) Integer page,
-            @NotNull @RequestParam(required = false) Integer size,
-            @NotNull @RequestParam(required = false) Integer bookId) throws HandleExceptionNotFound{
+    public DataResponse getAllBook(@NotNull @RequestParam(required = false) Integer bookId,
+            @NotNull @RequestParam(defaultValue = "0", required = false) Integer page,
+            @RequestParam(defaultValue = "10" , required = false) Integer size) throws HandleExceptionNotFound{
                DataResponse response = new DataResponse();
                
             if(bookId == 0 || bookId == null){

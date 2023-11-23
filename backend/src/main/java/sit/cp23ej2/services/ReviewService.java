@@ -1,18 +1,19 @@
 package sit.cp23ej2.services;
 
 import java.time.Instant;
-import java.util.List;
+// import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
-import sit.cp23ej2.dtos.Paginate;
+// import sit.cp23ej2.dtos.Paginate;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
+import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
@@ -24,21 +25,24 @@ public class ReviewService extends CommonController {
     @Autowired
     private ReviewRepository repository;
 
-    public DataResponse getReviewByBookId(int page, int size, int bookId) throws HandleExceptionNotFound {
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public DataResponse getReviewByBookId(int bookId, int page, int size) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
-        Page<Review> reviews = repository.getReviewByBookId(bookId, pageable);
-        if (reviews != null) {
-            Paginate pagination = this.paginate(page, size, reviews);
+        PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(bookId, pageable), PageReviewDTO.class);
+
+        if (reviews.getContent().size() > 0) {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("All Reviews");
             response.setResponse_datetime(Instant.now());
             response.setData(reviews);
-            response.setPaginate(pagination);
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
+
         return response;
     }
     

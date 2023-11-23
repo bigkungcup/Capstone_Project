@@ -37,4 +37,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
         @Query(value = "DELETE FROM review WHERE reviewId = :reviewId", nativeQuery = true)
         void deleteReview(@Param("reviewId") Integer reviewId);
+
+        List<Review> findAll();
 }
