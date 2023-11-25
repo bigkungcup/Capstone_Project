@@ -1,4 +1,9 @@
 <script setup>
+
+definePageMeta({
+  layout: 'default',
+})
+
 // import { useBooks } from '~/stores/book'
 import { ref,onBeforeMount } from 'vue';
 

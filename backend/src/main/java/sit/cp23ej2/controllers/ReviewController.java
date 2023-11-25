@@ -34,8 +34,8 @@ import sit.cp23ej2.services.ReviewService;
         RequestMethod.DELETE,
         RequestMethod.POST
 }, allowedHeaders = "*")
-@RestController
 @Validated
+@RestController
 @RequestMapping("/api/review")
 public class ReviewController {
     

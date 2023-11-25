@@ -1,9 +1,8 @@
-<script setup></script>
 
 <template>
-    <div class="tw-grid tw-grid-cols-3 tw-py-4 tw-border-b-gray-300 tw-border-2 tw-font-bold">
+    <div class="tw-grid tw-grid-cols-3 tw-py-4 tw-border-b-gray-300 tw-border-2 tw-font-bold ">
         <div class="tw-flex tw-space-x-2 tw-pl-16">
-            <img src="/image/logo.png" style="height: 40px;"/>
+            <img src="../assets/image/logo.png" style="height: 40px;"/>
             <p class="lily app-name-color tw-text-3xl tw-self-center">Bannarug</p>
         </div>
         <div class="nav-text-before-click tw-flex tw-space-x-6 tw-place-self-center tw-text-xl ">
@@ -17,4 +16,7 @@
             <v-icon icon="mdi-account-circle-outline" style="font-size: 50px"></v-icon>
         </div>
     </div>
+    
+    <slot />
 </template>
+<script setup></script>
