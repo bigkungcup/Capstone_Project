@@ -2,8 +2,11 @@
 import { useBooks } from '~/stores/book'
 
 const library = useBooks();
+const page = ref(1)
 
 await library.getLibrary();
+// library.countUpdateTime(library.bookList.data.content[0].countDateTime);
+
 </script>
 
 <template>
@@ -33,13 +36,13 @@ await library.getLibrary();
 
       </v-row>
     </v-container>
-    <BookNotFound v-show="library.bookList.data.length == 0" />
-    <div v-show="library.bookList.data.length !== 0" class="tw-min-h-[70%]">
-      <BookCard :bookList="library.bookList.data"/>
+    <BookNotFound v-show="library.bookList.data.content.length == 0" />
+    <div v-show="library.bookList.data.content.length !== 0" class="tw-min-h-[70%]">
+      <BookCard :bookList="library.bookList.data.content"/>
     </div>
-    <div v-show="library.bookList.data.length !== 0">
-    <v-pagination v-model="page" class="my-4" :length="library.bookList.paginate.totalPages" :total-visible="7"
-        rounded="20">
+    <div v-show="library.bookList.data.content.length !== 0">
+    <v-pagination v-model="page" class="my-4" :length="library.bookList.data.pageable.totalPages" :total-visible="7"
+        rounded="20" @update:model-value="library.changeLibraryPage(page)">
     </v-pagination></div>
     </div>
 </template>

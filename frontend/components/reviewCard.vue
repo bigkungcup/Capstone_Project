@@ -25,10 +25,13 @@ defineProps({
                     <v-rating :model-value="review.reviewRating" color="#FFB703" density="compact" size="meduim"
                         half-increments readonly></v-rating>
                     <p class="tw-font-bold">{{ review.reviewTitle }}</p>
-                    <div class="tw-h-[4rem] tw-overflow-hidden" v-show="review.spoileFlag == 0">
+                    <!-- <div class="tw-h-[4rem] tw-overflow-hidden" v-show="review.spoileFlag == 0">
                         <p class="tw-text-ellipsis">
                             {{ review.reviewDetail }}
                         </p>
+                    </div> -->
+                    <div class="tw-min-h-[4rem]" v-show="review.spoileFlag == 0">
+                        <p>{{ review.reviewDetail }}</p>
                     </div>
                     <v-expansion-panels variant="inset" v-show="review.spoileFlag == 1">
                         <v-expansion-panel>

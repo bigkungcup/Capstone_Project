@@ -5,16 +5,23 @@ import { useReviews } from "~/stores/review";
 const library = useBooks();
 const reviews = useReviews();
 const route = useRoute()
+const page = ref(1)
+
+// function next() {
+//     reviews.reviewPage = page.value-1;
+//     reviews.getReview(route.params.id);
+// }
 
 await library.getBookDetail(route.params.id);
-await reviews.getReview(route.params.id);
+await reviews.getReview(route.params.id,0);
 </script>
  
 <template>
     <div class="web-grey-color">
         <div class="tw-bg-white tw-space-y-1 tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
             <div class="tw-mx-36 tw-mt-5">
-                <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="$router.go(-1)" width="8%" class=""> Back
+                <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="$router.go(-1)" width="8%" color="#082250"> 
+                    <p class="tw-font-bold">Back</p>
                 </v-btn>
             </div>
             <div class="tw-flex tw-justify-center tw-h-3/5 tw-max-h-[30rem] tw-min-h-[30rem]">
@@ -27,8 +34,8 @@ await reviews.getReview(route.params.id);
                         <v-col cols="4" class="tw-my-10 web-text-detail" align="center">
                             <v-img src="/image/cover_not_available.jpg" height="55%" width="100%"></v-img>
                             <div class="tw-space-x-1 tw-inline-flex tw-items-center">
-                                <v-rating :model-value="library.getStarRating(library.bookDetail.data.bookRating)" color="#FFB703"
-                                    density="compact" size="large" half-increments readonly></v-rating>
+                                <v-rating :model-value="library.getStarRating(library.bookDetail.data.bookRating)"
+                                    color="#FFB703" density="compact" size="large" half-increments readonly></v-rating>
                                 <p class="web-text-rate">{{ library.bookDetail.data.bookRating }}</p>
                             </div>
                         </v-col>
@@ -38,7 +45,8 @@ await reviews.getReview(route.params.id);
                                 <p><span>Author:</span> {{ library.bookDetail.data.author }}</p>
                                 <p>Bookmarked by:
                                     <span v-show="library.bookDetail.data.bookTotalBookmarked == null">0</span>
-                                    <span v-show="library.bookDetail.data.bookTotalBookmarked != null">{{ library.bookDetail.data.bookTotalBookmarked
+                                    <span v-show="library.bookDetail.data.bookTotalBookmarked != null">{{
+                                        library.bookDetail.data.bookTotalBookmarked
                                     }}</span> people
                                 </p>
                                 <p>Booktype: <v-btn color="#1D419F" v-show="library.bookDetail.bookType != null">{{
@@ -50,8 +58,8 @@ await reviews.getReview(route.params.id);
                             <div class="tw-flex tw-justify-center tw-gap-x-12">
                                 <v-btn class="text-none" color="#1D419F"><v-icon start
                                         icon="mdi mdi-bookmark"></v-icon>Bookmark</v-btn>
-                                <v-btn class="text-none" color="#1D419F"><v-icon start
-                                        icon="mdi mdi-pencil-plus"></v-icon>Review</v-btn>
+                                <NuxtLink :to="`../review/create_${library.bookDetail.data.bookId}`" ><v-btn class="text-none" color="#1D419F" ><v-icon start
+                                        icon="mdi mdi-pencil-plus" ></v-icon>Review</v-btn></NuxtLink>
                             </div>
                         </v-col>
                         <v-col cols="2" class="tw-flex tw-justify-center my-2"><v-btn>Report</v-btn></v-col>
@@ -60,7 +68,7 @@ await reviews.getReview(route.params.id);
             </div>
 
             <div class="tw-flex tw-justify-center my-4">
-                <v-card class="bg-opct" color="rgb(217, 217, 217, 0.6)" width="80%">
+                <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
                     <div class="web-text-detail tw-indent-8 tw-m-4 tw-p-10 tw-bg-white tw-rounded-md tw-min-h-[30rem]">
                         {{ library.bookDetail.data.bookDetail }}
                     </div>
@@ -90,21 +98,22 @@ await reviews.getReview(route.params.id);
                                     Filter
                                 </v-btn></v-col>
                         </v-row>
-                        <v-row no-gutters v-show="reviews.reviewList.data.length == 0">
+                        <v-row no-gutters v-show="reviews.reviewList.data.content.length == 0">
                             <v-col cols="12" align="center">
                                 <v-img src="/image/rvnotfound.png" width="40%" class="tw-opacity-50"></v-img>
                             </v-col>
                         </v-row>
-                        <v-row v-show="reviews.reviewList.data.length !== 0">
+                        <v-row v-show="reviews.reviewList.data.content.length !== 0">
                             <v-virtual-scroll :items="['']" max-height="35rem">
-                                <ReviewCard :reviewList="reviews.reviewList.data" />
+                                <ReviewCard :reviewList="reviews.reviewList.data.content" />
                             </v-virtual-scroll>
                         </v-row>
                     </v-container>
-                    <div v-show="reviews.reviewList.data.length !== 0">
-                    <v-pagination v-model="page" class="my-4" :length="reviews.reviewList.paginate.totalPages" :total-visible="7"
-                        rounded="20">
-                    </v-pagination></div>
+                    <div v-show="reviews.reviewList.data.content.length !== 0">
+                        <v-pagination v-model="page" class="my-4" :length="reviews.reviewList.data.totalPages"
+                            :total-visible="7" rounded="20" @update:model-value="reviews.changeReviewPage(route.params.id,page)">
+                        </v-pagination>
+                    </div>
                 </div>
             </div>
         </div>

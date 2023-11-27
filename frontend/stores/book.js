@@ -9,7 +9,7 @@ export const useBooks = defineStore("Books", () => {
 //Get Library
 async function getLibrary() {
   const { data } = await useFetch(
-    `${import.meta.env.VITE_BASE_URL}/api/book`,
+    `${import.meta.env.VITE_BASE_URL}/book`,
     {
       onRequest({ request, options }) {
         options.method = "GET";
@@ -29,7 +29,7 @@ async function getLibrary() {
 //Get Book Detail
 async function getBookDetail(bookId) {
   const { data , pending, error, refresh } = await useFetch(
-    `http://localhost:8080/api/book/${bookId}`,
+    `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
     {
       onRequest({ request, options }) {
         options.method = "GET";
@@ -43,11 +43,36 @@ async function getBookDetail(bookId) {
     console.log(bookDetail.value);
 }
 
+// function countUpdateTime(dateTime,dateValue,dateUnit){
+  function countUpdateTime(countDateTime,dateTime){
+    let newCountDateTime = '';
+    let dateTimeArray = countDateTime.split(' ');
+    let dateValue = dateTimeArray[0];
+    let dateUnit = dateTimeArray[1];
+    if(dateValue > 365 && dateUnit == 'days'){
+      newCountDateTime = dateTime;
+    }else if(dateValue > 365 && dateUnit == 'days'){
+
+    }
+  console.log(dateValue);
+  console.log(dateUnit);
+  // String[] parts = string.split("-");
+  // String part1 = parts[0]; // 004
+  // String part2 = parts[1]; // 034556
+  // if(){
+
+  // }
+}
+
+function changeLibraryPage(page) {
+  reviewPage.value = page-1;
+  getLibrary();
+}
+
 function getStarRating(number){
-  console.log(number);
   return number = 0.5 * Math.floor(2 * number);
 }
-  return { bookList,bookDetail, bookPage, getLibrary, getBookDetail, getStarRating };
+  return { bookList,bookDetail, bookPage, getLibrary, getBookDetail, changeLibraryPage, getStarRating, countUpdateTime };
 
 });
 

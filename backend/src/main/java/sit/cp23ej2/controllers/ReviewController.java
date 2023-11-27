@@ -55,7 +55,7 @@ public class ReviewController {
                response.setResponse_datetime(Instant.now());
                return response;
             }
-       return reviewService.getReviewByBookId(page, size, bookId);
+       return reviewService.getReviewByBookId(bookId, page, size);
     }
 
     @PostMapping("")
