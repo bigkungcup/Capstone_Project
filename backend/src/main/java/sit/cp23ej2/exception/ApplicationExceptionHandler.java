@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -105,7 +106,38 @@ public class ApplicationExceptionHandler extends RuntimeException{
         return response;
     }
     
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    public ExceptionResponse handleInvalidArgument(MethodArgumentNotValidException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(
+                errors -> {
+                    error.put(errors.getField(), errors.getDefaultMessage());
+                }
+        );
 
+         response.setResponse_code(HttpStatus.BAD_REQUEST.value());
+        response.setResponse_status(HttpStatus.BAD_REQUEST.name());
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
+
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {jakarta.validation.UnexpectedTypeException.class})
+    public ExceptionResponse handleUnexpectedTypeException(jakarta.validation.UnexpectedTypeException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        // response.setResponse_message(ex.getMessage());
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
     // @ResponseStatus(HttpStatus.CREATED)
     // @ExceptionHandler(HandleExceptionNotFound.class)
     // public ExceptionResponse handleNullPointerException(HandleExceptionNotFound exception, ServletWebRequest request) {
