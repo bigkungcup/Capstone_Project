@@ -2,13 +2,20 @@ import { defineStore, acceptHMRUpdate } from "pinia";
 import { ref } from "vue";
 
 export const useBooks = defineStore("Books", () => {
-  const bookList = ref();
+  const bookList = ref({
+    data: {
+      content: [],
+      pageable: {
+        totalPages: 1
+      }
+    }
+});
   const bookDetail = ref();
   const bookPage = ref(0);
 
 //Get Library
 async function getLibrary() {
-  const { data } = await useFetch(
+  const { data, status } = await useFetch(
     `${import.meta.env.VITE_BASE_URL}/book`,
     {
       onRequest({ request, options }) {
@@ -22,8 +29,13 @@ async function getLibrary() {
       },
     },
   );
+  console.log(status.value);
+  if(data.value.response_code == 200){
     bookList.value = data.value
-    console.log(bookList.value);
+    console.log('get library completed');
+  }else if(data.value.response_code == 404){
+    console.log('get library uncompleted');
+  }
 }
 
 //Get Book Detail
@@ -44,25 +56,45 @@ async function getBookDetail(bookId) {
 }
 
 // function countUpdateTime(dateTime,dateValue,dateUnit){
-  function countUpdateTime(countDateTime,dateTime){
-    let newCountDateTime = '';
-    let dateTimeArray = countDateTime.split(' ');
-    let dateValue = dateTimeArray[0];
-    let dateUnit = dateTimeArray[1];
-    if(dateValue > 365 && dateUnit == 'days'){
-      newCountDateTime = dateTime;
-    }else if(dateValue > 365 && dateUnit == 'days'){
-
+  function countUpdateTime(seconds){
+    let interval = Math.floor(seconds / 31536000);
+    if (interval > 1) {
+      return interval + ' years ago';
     }
-  console.log(dateValue);
-  console.log(dateUnit);
+  
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+      return interval + ' months ago';
+    }
+  
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+      return interval + ' days ago';
+    }
+  
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+      return interval + ' hours ago';
+    }
+  
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+      return interval + ' minutes ago';
+    }
+  
+    if(seconds < 10) return 'just now';
+  
+    return Math.floor(seconds) + ' seconds ago';
+  }
+  // console.log(dateValue);
+  // console.log(dateUnit);
   // String[] parts = string.split("-");
   // String part1 = parts[0]; // 004
   // String part2 = parts[1]; // 034556
   // if(){
 
   // }
-}
+// }
 
 function changeLibraryPage(page) {
   reviewPage.value = page-1;

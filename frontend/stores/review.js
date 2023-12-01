@@ -2,7 +2,16 @@ import { defineStore, acceptHMRUpdate } from "pinia";
 import { ref } from "vue";
 
 export const useReviews = defineStore("Reviews", () => {
-  const reviewList = ref();
+  const reviewList = ref(
+    {
+      data: {
+        content: [],
+        pageable: {
+          totalPages: 1
+        }
+      }
+  }
+  );
   const reviewPage = ref(0);
   const newReview = ref({
     rating: 0,
@@ -37,9 +46,9 @@ export const useReviews = defineStore("Reviews", () => {
     datail: 'Are you sure to delete this review?'
   }
 
-//Get Library
+//Get reviews
 async function getReview(bookId) {
-  const { data } = await useFetch(
+  const { data, error, status } = await useFetch(
     `${import.meta.env.VITE_BASE_URL}/review`,
     {
       onRequest({ request, options }) {
@@ -53,12 +62,27 @@ async function getReview(bookId) {
           size: 1
         }
       },
+      onRequestError({ request, options, error }) {
+        console.log("ERROR", error);
+      },
+      onResponseError({ request, response, options }) {
+        console.log("RESPONE ERROR", response);
+      },
     },
   );
+    if(!data.value){
+      // throw createError({
+      //   statusCode: 404,
+      //   statusMessage: 'Page Not Found',
+      // }),
+      console.log('get review list uncompleted')
+    }else if(data.value.response_code == 200){
     reviewList.value = data.value
-    console.log(reviewList.value);
+    console.log('get review list completed');
+  }
 }
 
+//Create review
 async function createReview() {
   await $fetch(
     `${import.meta.env.VITE_BASE_URL}/review`,
@@ -75,6 +99,35 @@ async function createReview() {
   );
 }
 
+//Edit review
+
+
+//Delete review
+async function deleteReview(reviewId,bookId) {
+  const { data } = await useFetch(
+    `${import.meta.env.VITE_BASE_URL}/book/${reviewId}`,
+    {
+      onRequest({ request, options }) {
+        options.method = "Delete";
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+      },
+    },
+  );
+  if(!data.value){
+    // throw createError({
+    //   statusCode: 404,
+    //   statusMessage: 'Page Not Found',
+    // }),
+    console.log('delete review uncompleted')
+  }else if(data.value.response_code == 200){
+  getReview(bookId)
+  console.log('delete review completed');
+}
+}
+
+//Clear new review
 function clearNewReview() {
   newReview.value = {
     rating: '',
@@ -83,12 +136,13 @@ function clearNewReview() {
   }
 }
 
+//Change review page
 function changeReviewPage(bookId,page) {
   reviewPage.value = page-1;
   getReview(bookId);
 }
 
-  return { reviewList, newReview, reviewPage, createConfirmPopup, getReview, createReview, changeReviewPage, clearNewReview };
+  return { reviewList, newReview, reviewPage, createConfirmPopup, getReview, createReview,deleteReview, changeReviewPage, clearNewReview };
 
 });
 

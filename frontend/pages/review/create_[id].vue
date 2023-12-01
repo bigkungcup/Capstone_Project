@@ -54,7 +54,7 @@ reviews.newReview.bookId = route.params.id;
                             <p class="">by {{ book.bookDetail.data.author }}</p>
                             <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-font-bold">My rating:
                                 <v-rating hover :length="5" :size="32" :model-value="0" color="orange-lighten-1"
-                                    active-color="#FFBB11" half-increments v-model="reviews.newReview.rating"/>
+                                    active-color="#FFBB11" v-model="reviews.newReview.rating"/>
                             </div>
                         </div>
                     </v-col>

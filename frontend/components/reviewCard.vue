@@ -1,10 +1,18 @@
 <script setup>
+defineEmits(["delete"]);
+
 defineProps({
     reviewList: {
         type: Array,
         require: true,
+    },
+    bookId: {
+        type: String,
+        require: true
     }
 })
+
+import { mergeProps } from 'vue'
 </script>
  
 <template>
@@ -35,7 +43,8 @@ defineProps({
                     </div>
                     <v-expansion-panels variant="inset" v-show="review.spoileFlag == 1">
                         <v-expansion-panel>
-                            <v-expansion-panel-title color="#082266" class="tw-font-bold" expand-icon="mdi-plus" collapse-icon="mdi-minus">
+                            <v-expansion-panel-title color="#082266" class="tw-font-bold" expand-icon="mdi-plus"
+                                collapse-icon="mdi-minus">
                                 Spoil
                             </v-expansion-panel-title>
                             <v-expansion-panel-text class="tw-indent-8 web-text-detail">
@@ -45,10 +54,30 @@ defineProps({
                     </v-expansion-panels>
                     <div class="web-text-sub"><span> {{ review.reviewTotalLike }} likes </span> <span> 10 dislikes</span>
                     </div>
-                    <div class=" tw-space-x-3">
+                    <div class="tw-space-x-3">
                         <v-icon icon="mdi mdi-thumb-up-outline"></v-icon><span>Likes</span>
                         <v-icon icon="mdi mdi-thumb-down-outline"></v-icon><span>Dislikes</span>
-                        <v-icon icon="mdi mdi-dots-horizontal"></v-icon>
+                        <!-- <v-icon icon="mdi mdi-dots-horizontal"></v-icon> -->
+                        <span class="text-center">
+                            <v-menu>
+                                <template v-slot:activator="{ props: menu }">
+                                    <v-tooltip location="top">
+                                        <template v-slot:activator="{ props: tooltip }">
+                                            <v-icon icon="mdi mdi-dots-horizontal" v-bind="mergeProps(menu, tooltip)"></v-icon>
+                                        </template>
+                                        <span>More</span>
+                                    </v-tooltip>
+                                </template>
+                                <v-list>
+                                    <v-list-item>
+                                        <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-pencil-outline"></v-icon><span>Edit this review</span></v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item>
+                                        <v-list-item-title class="web-text-detail tw-space-x-2" ><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </span>
                     </div>
                 </v-col>
             </v-row>

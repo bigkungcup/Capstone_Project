@@ -7,11 +7,6 @@ const reviews = useReviews();
 const route = useRoute()
 const page = ref(1)
 
-// function next() {
-//     reviews.reviewPage = page.value-1;
-//     reviews.getReview(route.params.id);
-// }
-
 await library.getBookDetail(route.params.id);
 await reviews.getReview(route.params.id,0);
 </script>
@@ -105,7 +100,7 @@ await reviews.getReview(route.params.id,0);
                         </v-row>
                         <v-row v-show="reviews.reviewList.data.content.length !== 0">
                             <v-virtual-scroll :items="['']" max-height="35rem">
-                                <ReviewCard :reviewList="reviews.reviewList.data.content" />
+                                <ReviewCard :reviewList="reviews.reviewList.data.content" @delete="reviews.deleteReview()" :bookId="route.params.id"/>
                             </v-virtual-scroll>
                         </v-row>
                     </v-container>
