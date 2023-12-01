@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
@@ -66,12 +67,12 @@ public class ReviewController {
 
    @PostMapping("")
    @ResponseStatus(HttpStatus.CREATED)
-   public DataResponse createReview(@RequestBody CreateReviewDTO review) {
+   public DataResponse createReview(@RequestBody @Valid CreateReviewDTO review) {
       return reviewService.createReviewByBookId(review);
    }
 
    @PutMapping("/{reviewId}")
-   public DataResponse updateReview(@RequestBody UpdateReviewDTO review, @PathVariable Integer reviewId) {
+   public DataResponse updateReview(@RequestBody @Valid UpdateReviewDTO review, @PathVariable Integer reviewId) {
       return reviewService.updateReviewByBookId(review, reviewId);
    }
 

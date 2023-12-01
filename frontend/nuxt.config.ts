@@ -41,5 +41,8 @@ export default defineNuxtConfig({
            secure: false,
         }
     }
+},
+app:{
+  baseURL: '/ej2/'
 }
 })
