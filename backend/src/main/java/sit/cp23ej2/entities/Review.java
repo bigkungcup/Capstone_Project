@@ -42,6 +42,8 @@ public class Review {
 
     private Integer reviewTotalLike;
 
+    private Integer reviewTotalDisLike;
+
     // @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime reviewCreateDateTime;
 

@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UpdateReviewDTO {
-    private Integer reviewId;
+    // private Integer reviewId;
     private Long rating;
     private String detail;
     private String title;
-    private Integer userId;
-    private Integer bookId;
     private Integer spoileFlag;
+    // private Integer totalLike;
+    // private Integer totalDisLike;
 }

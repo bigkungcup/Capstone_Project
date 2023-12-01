@@ -14,4 +14,5 @@ public class CreateReviewDTO {
     private String title;
     private Integer userId;
     private Integer bookId;
+    private Integer spoileFlag;
 }
