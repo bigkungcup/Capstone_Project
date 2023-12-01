@@ -62,6 +62,48 @@ public class ApplicationExceptionHandler extends RuntimeException{
         response.setPath(request.getRequest().getRequestURI());
         return response;
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {java.sql.SQLSyntaxErrorException.class})
+    public ExceptionResponse handleSQLSyntaxErrorException(java.sql.SQLSyntaxErrorException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        // response.setResponse_message(ex.getMessage());
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {java.sql.SQLException.class})
+    public ExceptionResponse handleSQLErrorException(java.sql.SQLException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        // response.setResponse_message(ex.getMessage());
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {org.hibernate.query.UnknownParameterException.class})
+    public ExceptionResponse handleUnknownParameterException(org.hibernate.query.UnknownParameterException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        // response.setResponse_message(ex.getMessage());
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
     
 
     // @ResponseStatus(HttpStatus.CREATED)

@@ -45,10 +45,26 @@ public class ReviewService extends CommonController {
 
         return response;
     }
-    
-    public DataResponse createReviewByBookId(CreateReviewDTO review){
+
+    public DataResponse getReviewById(int reviewId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
-        repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(), review.getBookId());        
+        Review review = repository.getReviewById(reviewId);
+        if (review != null) {
+            response.setResponse_code(200);
+            response.setResponse_status("OK");
+            response.setResponse_message("Review");
+            response.setResponse_datetime(Instant.now());
+            response.setData(review);
+        } else {
+            throw new HandleExceptionNotFound("Review Not Found", "Review");
+        }
+        return response;
+    }
+
+    public DataResponse createReviewByBookId(CreateReviewDTO review) {
+        DataResponse response = new DataResponse();
+        repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(),
+                review.getBookId(), review.getSpoileFlag());
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Review Created");
@@ -56,10 +72,11 @@ public class ReviewService extends CommonController {
         return response;
     }
 
-    public DataResponse updateReviewByBookId(UpdateReviewDTO review, Integer reviewId){
+    public DataResponse updateReviewByBookId(UpdateReviewDTO review, Integer reviewId) {
         DataResponse response = new DataResponse();
-        repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(), reviewId);
-        Review  dataReview = repository.getReviewById(review.getReviewId());
+        repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
+                reviewId);
+        Review dataReview = repository.getReviewById(reviewId);
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Review Updated");
@@ -68,7 +85,19 @@ public class ReviewService extends CommonController {
         return response;
     }
 
-    public DataResponse deleteReviewByBookId(int reviewId){
+    // public DataResponse updateReviewTotalLikeAndTotalDisLike(UpdateReviewDTO review, Integer reviewId) {
+    //     DataResponse response = new DataResponse();
+    //     repository.updateTotalLikeAndTotalDisLike(review.getTotalLike(), review.getTotalDisLike(), reviewId);
+    //     Review dataReview = repository.getReviewById(reviewId);
+    //     response.setResponse_code(200);
+    //     response.setResponse_status("OK");
+    //     response.setResponse_message("Review TotalLike and TotalDislike Updated");
+    //     response.setResponse_datetime(Instant.now());
+    //     response.setData(dataReview);
+    //     return response;
+    // }
+
+    public DataResponse deleteReviewByBookId(int reviewId) {
         DataResponse response = new DataResponse();
         repository.deleteReview(reviewId);
         response.setResponse_code(200);

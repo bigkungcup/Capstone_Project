@@ -21,20 +21,31 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
         
         @Modifying
         @Transactional
-        @Query(value = "INSERT INTO review (reviewRating, reviewDetail, reviewTitle, reviewTotalLike, rvu_userId, rvb_bookId, spoileFlag)" +
-                        "VALUES (:rating, :detail, :title, 0, :userId, :bookId, 0 );", nativeQuery = true)
+        @Query(value = "INSERT INTO review (reviewRating, reviewDetail, reviewTitle, reviewTotalLike, reviewTotalDisLike, rvu_userId, rvb_bookId, spoileFlag)" +
+                        "VALUES (:rating, :detail, :title, 0, 0, :userId, :bookId, :spoileFlag );", nativeQuery = true)
         void insertReview(@Param("rating") Long reviewRating, @Param("detail") String reviewDetail,
                         @Param("title") String reviewTitle,
                         @Param("userId") Integer rvu_userId,
-                        @Param("bookId") Integer rvb_bookId);
+                        @Param("bookId") Integer rvb_bookId,
+                        @Param("spoileFlag") Integer spoileFlag);
         @Modifying
         @Transactional
-        @Query(value = "UPDATE review SET reviewTitle = :title, reviewDetail= :detail, reviewRating = :rating, spoileFlag = :spoileFlag" +
-                        " WHERE reviewId = :reviewId;", nativeQuery = true)
+        @Query(value = "UPDATE review SET reviewRating = :rating, reviewDetail= :detail, reviewTitle = :title, spoileFlag = :spoileFlag" +
+                        " WHERE reviewId = :reviewId", nativeQuery = true)
         void updateReview(@Param("rating") Long reviewRating, @Param("detail") String reviewDetail,
-                        @Param("title") String reviewTitle, @Param("spoileFlag") Integer spoileFlag,
+                        @Param("title") String reviewTitle,
+                        @Param("spoileFlag") Integer spoileFlag,
                         @Param("reviewId") Integer reviewId);
 
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE review SET reviewTotalLike = :reviewTotalLike, reviewTotalDisLike= :reviewTotalDisLike" +
+                        " WHERE reviewId = :reviewId", nativeQuery = true)
+        void updateTotalLikeAndTotalDisLike(@Param("reviewTotalLike") Integer reviewTotalLike, @Param("reviewTotalDisLike") Integer reviewTotalDisLike,
+                                         @Param("reviewId") Integer reviewId);
+
+        @Modifying
+        @Transactional
         @Query(value = "DELETE FROM review WHERE reviewId = :reviewId", nativeQuery = true)
         void deleteReview(@Param("reviewId") Integer reviewId);
 

@@ -22,5 +22,5 @@ public class BookDTO {
     private String bookGenre;
     private Instant bookCreateDateTime;
     private LocalDateTime bookUpdateDateTime;
-    private String countDateTime;
+    private Long countDateTime;
 }

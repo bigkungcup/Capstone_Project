@@ -187,7 +187,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `bannarug`.`Recomment` ;
 
 CREATE TABLE IF NOT EXISTS `bannarug`.`Recomment` (
-  `recommentId` INT NOT NULL,
+  `recommentId` INT NOT NULL AUTO_INCREMENT,
   `rb_booktypeId` INT NOT NULL,
   `ru_userId` INT NOT NULL,
   `viewCount` INT NULL,
@@ -221,6 +221,7 @@ CREATE TABLE IF NOT EXISTS `bannarug`.`Review` (
   `reviewRating` FLOAT NOT NULL,
   `spoileFlag` INT NOT NULL,
   `reviewTotalLike` INT NOT NULL,
+  `reviewTotalDisLike` INT NOT NULL,
   `reviewCreateDateTime` DATETIME NULL default current_timestamp,
   `reviewUpdateDateTime` DATETIME NULL default current_timestamp on update current_timestamp,
   PRIMARY KEY (`reviewId`, `rvu_userId`),
