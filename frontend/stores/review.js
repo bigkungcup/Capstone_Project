@@ -19,7 +19,8 @@ export const useReviews = defineStore("Reviews", () => {
     title:  '',
     // userId: '',
     userId: '2',
-    bookId: ''
+    bookId: '',
+    spoileFlag: 0
   })
   const createConfirmPopup = {
     operation: 'action',
@@ -48,7 +49,8 @@ export const useReviews = defineStore("Reviews", () => {
 
 //Get reviews
 async function getReview(bookId) {
-  const { data, error, status } = await useFetch(
+  let status = 0;
+  const { data } = await useFetch(
     `${import.meta.env.VITE_BASE_URL}/review`,
     {
       onRequest({ request, options }) {
@@ -61,29 +63,22 @@ async function getReview(bookId) {
           page: reviewPage.value,
           size: 1
         }
-      },
-      onRequestError({ request, options, error }) {
-        console.log("ERROR", error);
-      },
-      onResponseError({ request, response, options }) {
-        console.log("RESPONE ERROR", response);
-      },
+      },onResponse({ request, response, options }) {
+        status = response._data.response_code
+      }
     },
   );
-    if(!data.value){
-      // throw createError({
-      //   statusCode: 404,
-      //   statusMessage: 'Page Not Found',
-      // }),
-      console.log('get review list uncompleted')
-    }else if(data.value.response_code == 200){
+  if(status == 200){
     reviewList.value = data.value
     console.log('get review list completed');
+  }else if(status == 404){
+    console.log('get review list uncompleted')
   }
 }
 
 //Create review
 async function createReview() {
+  let status = 0;
   await $fetch(
     `${import.meta.env.VITE_BASE_URL}/review`,
     {
@@ -92,10 +87,15 @@ async function createReview() {
             rating: newReview.value.rating,
             detail: newReview.value.detail,
             title:  newReview.value.title,
-            userId: '2',
-            bookId: newReview.value.bookId
+            userId: '1',
+            bookId: newReview.value.bookId,
+            spoileFlag: newReview.value.spoileFlag
           }
-      },
+          ,onResponse({ request, response, options }) {
+            status = response._data.response_code
+            console.log(status);
+          }
+      }
   );
 }
 
@@ -113,13 +113,16 @@ async function deleteReview(reviewId,bookId) {
           "Content-Type": "application/json",
         };
       },
+      onRequestError({ request, options, error }) {
+        console.log("ERROR", error);
+      },
+      onResponseError({ request, response, options }) {
+        console.log("RESPONE ERROR", response);
+      },
     },
   );
+  console.log(data);
   if(!data.value){
-    // throw createError({
-    //   statusCode: 404,
-    //   statusMessage: 'Page Not Found',
-    // }),
     console.log('delete review uncompleted')
   }else if(data.value.response_code == 200){
   getReview(bookId)

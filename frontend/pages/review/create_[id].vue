@@ -65,7 +65,7 @@ reviews.newReview.bookId = route.params.id;
                     <v-textarea v-model="reviews.newReview.detail" label="Review Detail" variant="solo" rows="5" hide-details></v-textarea>
                 </div>
                 <div class="tw-mx-8 tw-pb-4">
-                    <v-checkbox label="Hide entire review because of spoilers" hide-details></v-checkbox>
+                    <v-checkbox label="Hide entire review because of spoilers" hide-details v-model="reviews.newReview.spoileFlag" value='1'></v-checkbox>
                 </div>
             </v-card>
         </div>
@@ -73,7 +73,7 @@ reviews.newReview.bookId = route.params.id;
         <div class="tw-flex tw-justify-end  tw-mx-[9rem] tw-mt-5 tw-space-x-4">
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview()">clear</v-btn>
             <!-- <confirmPopup :popupDetail="reviews.createConfirmPopup"/> -->
-            <v-btn color="#1D419F" variant="flat" @click.stop="reviews.createReview()">submit</v-btn>
+            <v-btn color="#1D419F" variant="flat" @click="reviews.createReview()">submit</v-btn>
         </div>
         <!-- <v-dialog v-model="dialog" persistent width="auto">
             <template v-slot:activator="{ props }">

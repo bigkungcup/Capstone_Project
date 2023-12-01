@@ -29,12 +29,11 @@ async function getLibrary() {
       },
     },
   );
-  console.log(status.value);
-  if(data.value.response_code == 200){
+  if(!data.value){
+    console.log('get library uncompleted')
+  }else if(data.value.response_code == 200){
     bookList.value = data.value
     console.log('get library completed');
-  }else if(data.value.response_code == 404){
-    console.log('get library uncompleted');
   }
 }
 

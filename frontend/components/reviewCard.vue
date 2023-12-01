@@ -7,7 +7,7 @@ defineProps({
         require: true,
     },
     bookId: {
-        type: String,
+        type: Number,
         require: true
     }
 })
@@ -73,7 +73,9 @@ import { mergeProps } from 'vue'
                                         <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-pencil-outline"></v-icon><span>Edit this review</span></v-list-item-title>
                                     </v-list-item>
                                     <v-list-item>
-                                        <v-list-item-title class="web-text-detail tw-space-x-2" ><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
+                                        <v-list-item-title class="web-text-detail">
+                                            <v-btn prepend-icon='mdi mdi-trash-can-outline' @click="$emit('delete',review.reviewId,bookId)">Delete this review</v-btn>
+                                        </v-list-item-title>
                                     </v-list-item>
                                 </v-list>
                             </v-menu>
