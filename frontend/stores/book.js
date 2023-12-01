@@ -15,7 +15,8 @@ export const useBooks = defineStore("Books", () => {
 
 //Get Library
 async function getLibrary() {
-  const { data, status } = await useFetch(
+  let status = 0;
+  const { data } = await useFetch(
     `${import.meta.env.VITE_BASE_URL}/book`,
     {
       onRequest({ request, options }) {
@@ -26,20 +27,23 @@ async function getLibrary() {
         options.params = {
           page: bookPage.value,
         }
-      },
+      },onResponse({ request, response, options }) {
+        status = response._data.response_code
+      }
     },
   );
-  if(!data.value){
-    console.log('get library uncompleted')
-  }else if(data.value.response_code == 200){
+  if(status == 200){
     bookList.value = data.value
     console.log('get library completed');
+  }else if(status == 404){
+    console.log('get library uncompleted')
   }
 }
 
 //Get Book Detail
+let status = 0;
 async function getBookDetail(bookId) {
-  const { data , pending, error, refresh } = await useFetch(
+  const { data } = await useFetch(
     `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
     {
       onRequest({ request, options }) {
@@ -47,11 +51,17 @@ async function getBookDetail(bookId) {
         options.headers = {
           "Content-Type": "application/json",
         };
-      },
+      },onResponse({ request, response, options }) {
+        status = response._data.response_code
+      }
     },
   );
+  if(status == 200){
     bookDetail.value = data.value
-    console.log(bookDetail.value);
+    console.log('get book detail  completed');
+  }else if(status == 404){
+    console.log('get book detail uncompleted')
+  }
 }
 
 // function countUpdateTime(dateTime,dateValue,dateUnit){
@@ -85,15 +95,6 @@ async function getBookDetail(bookId) {
   
     return Math.floor(seconds) + ' seconds ago';
   }
-  // console.log(dateValue);
-  // console.log(dateUnit);
-  // String[] parts = string.split("-");
-  // String part1 = parts[0]; // 004
-  // String part2 = parts[1]; // 034556
-  // if(){
-
-  // }
-// }
 
 function changeLibraryPage(page) {
   reviewPage.value = page-1;

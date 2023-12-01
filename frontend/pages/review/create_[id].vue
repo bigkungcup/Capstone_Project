@@ -10,27 +10,6 @@ const route = useRoute()
 await book.getBookDetail(route.params.id)
 reviews.newReview.bookId = route.params.id;
 
-// async function createReview() {
-//     console.log(reviews.newReview);
-//   await $fetch(
-//     `${import.meta.env.VITE_BASE_URL}/review`,
-//     {
-//         method: "POST",
-//         // options.headers = {
-//         //   "Content-Type": "application/json",
-//         //   },
-//         body: {
-//             rating: reviews.newReview.rating,
-//             detail: reviews.newReview.detail,
-//             title:  reviews.newReview.title,
-//             userId: '2',
-//             bookId: reviews.newReview.bookId
-//       },
-//     },
-//   );
-// }
-
-
 </script>
  
 <template>

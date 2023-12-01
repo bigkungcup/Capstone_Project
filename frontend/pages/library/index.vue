@@ -6,7 +6,11 @@ const page = ref(1)
 
 await library.getLibrary();
 // library.countUpdateTime(library.bookList.data.content[0].countDateTime);
-console.log(library.countUpdateTime(12960000));
+// console.log(library.countUpdateTime(12960000));
+
+function a(b) {
+  console.log(b);
+}
 
 </script>
 
@@ -39,7 +43,7 @@ console.log(library.countUpdateTime(12960000));
     </v-container>
     <BookNotFound v-show="library.bookList.data.content.length == 0" />
     <div v-show="library.bookList.data.content.length !== 0" class="tw-min-h-[70%]">
-      <BookCard :bookList="library.bookList.data.content"/>
+      <BookCard :bookList="library.bookList.data.content" @getDateTime="a()"/>
     </div>
     <div v-show="library.bookList.data.content.length !== 0">
     <v-pagination v-model="page" class="my-4" :length="library.bookList.data.pageable.totalPages" :total-visible="7"

@@ -1,11 +1,11 @@
 <script setup>
+// const emit = defineEmits(['getDateTime']);
 defineProps({
     bookList: {
         type: Array,
         require: true,
     }
 })
-
 </script>
  
 <template>
