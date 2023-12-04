@@ -12,12 +12,13 @@ export const useBooks = defineStore("Books", () => {
 });
   const bookDetail = ref();
   const bookPage = ref(0);
+  const runtimeConfig = useRuntimeConfig();
 
 //Get Library
 async function getLibrary() {
   let status = 0;
   const { data } = await useFetch(
-    `${import.meta.env.VITE_BASE_URL}/book`,
+    `${runtimeConfig.public.API_BASE_URL}/book`,
     {
       onRequest({ request, options }) {
         options.method = "GET";

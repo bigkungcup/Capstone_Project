@@ -35,7 +35,7 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: {
         '/api/': {
-           target: "https://capstone23.sit.kmutt.ac.th/ej2",
+           target: "https://capstone23.sit.kmutt.ac.th/ej2/",
           //  target: `http://localhost:8080`,
            changeOrigin: true,
            secure: false,
@@ -44,5 +44,10 @@ export default defineNuxtConfig({
 },
 app:{
   baseURL: '/ej2/'
-}
+},
+runtimeConfig: {
+  public: {
+    API_BASE_URL: process.env.API_BASE_URL
+  },
+},
 })

@@ -3,7 +3,9 @@ package sit.cp23ej2.entities;
 // import java.time.Instant;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +26,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "review", schema = "bannarug")
 public class Review {
     
@@ -50,7 +53,7 @@ public class Review {
     // @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime reviewUpdateDateTime;
 
-    @JsonIgnore
+    // @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rvb_bookId", nullable = true)
     private Book book;
