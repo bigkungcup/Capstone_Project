@@ -1,22 +1,14 @@
-version: '3.7'
-
-volumes:
-  node_modules: 
+version: '3'
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: ./
     image: frontend
     container_name: frontend
-    volumes:
-      - .:/usr/src/app
-      - node_modules:/usr/src/app/node_modules
-    # networks:
-    #   - capstone-network
+    networks:
+      - capstone-network
     restart: always
-    
+
 networks:
-  default:
-    name: capstone-network
-    external: true
+  capstone-network:
+    external:
+     name: capstone-network

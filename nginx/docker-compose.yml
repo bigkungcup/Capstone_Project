@@ -1,25 +1,19 @@
-version: '3.7'
+version: '3'
 services:
   proxy:
     container_name: reverse_proxy
-    image: nginx:stable
+    image: nginx
     ports:
       - 80:80
       - 443:443
-    # networks:
-    #   - capstone-network
+    networks:
+      - capstone-network
     volumes:
-      - ./cert/cp23ej2.crt:/etc/nginx/ssl/cp23ej2.crt:ro
-      - ./cert/cp23ej2.csr.txt:/etc/nginx/ssl/cp23ej2.csr.txt:ro
-      - ./cert/cp23ej2.key.txt:/etc/nginx/ssl/cp23ej2.key.txt:ro
-      - ./cert/cp23ej2.pem.txt:/etc/nginx/ssl/cp23ej2.pem.txt:ro
-      # - ./cert/:/etc/nginx/ssl/:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/logs/:/var/log/nginx:cached
+      - ./cert/:/etc/nginx/ssl:ro
     restart: always
-    
 
 networks:
-  default:
-    name: capstone-network
-    external: true
+  capstone-network:
+    external:
+     name: capstone-network

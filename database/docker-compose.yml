@@ -1,13 +1,12 @@
-version: '3.7'
+version: '3'
 services:
   database:
     container_name: database
     image: mysql
     ports:
-      - 3307:3306
-    #  - 3306:3306
-    # networks:
-    #   - capstone-network
+     - 3307:3306
+    networks:
+     - capstone-network
     volumes:
       - ./bannarug.sql:/docker-entrypoint-initdb.d/bannarug.sql
       - ./mysql-data:/var/lib/mysql
@@ -18,6 +17,6 @@ services:
     restart: always
 
 networks:
-  default:
+ capstone-network:
+   external:
     name: capstone-network
-    external: true

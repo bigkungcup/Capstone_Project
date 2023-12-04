@@ -1,18 +1,14 @@
-version: '3.7'
+version: '3'
 services:
   backend:
-    container_name: backend ##ชื่อ Container จะเอาไปเชื่อมกับ Nginx.conf ที่ส่วน Server:8080
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: ./
     image: backend
-    # ports:
-      # - 8080:8080
-    # networks:
-    #   - capstone-network
+    container_name: backend ##ชื่อ Container จะเอาไปเชื่อมกับ Nginx.conf ที่ส่วน Server:8080
+    networks:
+      - capstone-network
     restart: always
 
 networks:
-  default:
-    name: capstone-network
-    external: true
+  capstone-network:
+    external:
+     name: capstone-network
