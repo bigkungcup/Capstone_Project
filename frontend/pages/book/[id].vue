@@ -6,6 +6,11 @@ const library = useBooks();
 const reviews = useReviews();
 const route = useRoute()
 const page = ref(1)
+const confirmPopup = ref(false);
+
+function togglePopup() {
+    confirmPopup.value = !confirmPopup.value
+}
 
 await library.getBookDetail(route.params.id);
 await reviews.getReview(route.params.id,0);
@@ -78,7 +83,7 @@ await reviews.getReview(route.params.id,0);
         <div class="tw-flex tw-justify-center tw-bg-white tw-py-10">
             <div class="web-grey-color tw-w-10/12 tw-rounded-lg tw-drop-shadow-lg">
                 <div class="tw-px-6 tw-py-8">
-                    <p class="web-text-header tw-inline-block tw-align-middle"> Review (0): </p>
+                    <p class="web-text-header tw-inline-block tw-align-middle"> Review ({{reviews.reviewList.data.totalElements}}): </p>
                 </div>
                 <div class="tw-bg-white tw-mx-5 tw-mb-5 tw-p-4 tw-max-h-[50rem] tw-rounded-lg">
                     <v-container>
@@ -100,7 +105,7 @@ await reviews.getReview(route.params.id,0);
                         </v-row>
                         <v-row v-show="reviews.reviewList.data.content.length !== 0">
                             <v-virtual-scroll :items="['']" max-height="35rem">
-                                <ReviewCard :reviewList="reviews.reviewList.data.content" @delete="reviews.deleteReview()" :bookId="route.params.id"/>
+                                <ReviewCard :reviewList="reviews.reviewList.data.content" :bookId="route.params.id" @delete="reviews.deleteReview()" @toggle="togglePopup()"/>
                             </v-virtual-scroll>
                         </v-row>
                     </v-container>
@@ -111,6 +116,7 @@ await reviews.getReview(route.params.id,0);
                     </div>
                 </div>
             </div>
+            <ConfirmPopupCard :popupDetail="reviews.deleteConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()"/>
         </div>
         <footer class="tw-bg-white tw-py-5"></footer>
     </div>

@@ -61,6 +61,35 @@
     color: #FFBB11
 }
 
+.action-popUp-header{
+    color: #082266;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem; /* 36px */
+}
+
+.action-popUp-detail{
+    color: #082266;
+    font-weight: 500;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
+
+.delete-popUp-header{
+    color: #BB0000;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem; /* 36px */
+}
+
+.delete-popUp-detail{
+    color: #BB0000;
+    font-weight: 500;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
+
+
 .tag-color{
     background-color: #1D419F;
     padding: 10px;

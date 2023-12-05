@@ -1,5 +1,8 @@
 <script setup>
-defineEmits(["delete"]);
+import { mergeProps } from 'vue'
+import { useReviews } from "~/stores/review";
+const reviews = useReviews();
+defineEmits(["delete","toogle"]);
 
 defineProps({
     reviewList: {
@@ -12,7 +15,6 @@ defineProps({
     }
 })
 
-import { mergeProps } from 'vue'
 </script>
  
 <template>
@@ -52,7 +54,7 @@ import { mergeProps } from 'vue'
                             </v-expansion-panel-text>
                         </v-expansion-panel>
                     </v-expansion-panels>
-                    <div class="web-text-sub"><span> {{ review.reviewTotalLike }} likes </span> <span> 10 dislikes</span>
+                    <div class="web-text-sub"><span> {{ review.reviewTotalLike }} likes </span> <span> {{ review.reviewTotalDisLike }} dislikes</span>
                     </div>
                     <div class="tw-space-x-3">
                         <v-icon icon="mdi mdi-thumb-up-outline"></v-icon><span>Likes</span>
@@ -69,12 +71,14 @@ import { mergeProps } from 'vue'
                                     </v-tooltip>
                                 </template>
                                 <v-list>
-                                    <v-list-item>
+                                    <v-list-item :to="`../review/update_${review.reviewId}`">
                                         <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-pencil-outline"></v-icon><span>Edit this review</span></v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item>
+                                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
                                         <v-list-item-title class="web-text-detail">
-                                            <v-btn prepend-icon='mdi mdi-trash-can-outline' @click="$emit('delete',review.reviewId,bookId)">Delete this review</v-btn>
+                                            <!-- <v-btn prepend-icon='mdi mdi-trash-can-outline' @click="$emit('delete',review.reviewId,bookId)">Delete this review</v-btn> -->
+                                            <!-- <v-btn prepend-icon='mdi mdi-trash-can-outline' @click="dialog">Delete this review</v-btn> -->
+                                            <v-list-item-title class="web-text-detail tw-space-x-2" @click="$emit('toggle')"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
                                         </v-list-item-title>
                                     </v-list-item>
                                 </v-list>

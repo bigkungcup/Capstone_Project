@@ -11,15 +11,16 @@ const confirmPopup = ref(false);
 function togglePopup() {
     confirmPopup.value = !confirmPopup.value
 }
-// const dialog = ref(false);
-await book.getBookDetail(route.params.id)
-reviews.newReview.bookId = route.params.id;
 
+await reviews.getReviewDetail(route.params.id)
+// await book.getBookDetail(route.params.id)
+await book.getBookDetail(1)
+// reviews.newReview.bookId = route.params.id;
 
 </script>
  
 <template>
-    <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
+    <div class=" tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
         <div class="tw-mx-36 tw-mt-5">
             <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="$router.go(-1)" width="8%" color="#082250">
                 <p class="tw-font-bold">Back</p>
@@ -39,27 +40,27 @@ reviews.newReview.bookId = route.params.id;
                             <p class="">by {{ book.bookDetail.data.author }}</p>
                             <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-font-bold">My rating:
                                 <v-rating hover :length="5" :size="32" :model-value="0" color="orange-lighten-1"
-                                    active-color="#FFBB11" v-model="reviews.newReview.rating"/>
+                                    active-color="#FFBB11" v-model="reviews.newReview.data.reviewRating"/>
                             </div>
                         </div>
                     </v-col>
 
                 </v-row>
                 <div class="tw-mx-8 tw-space-y-4">
-                    <v-text-field v-model="reviews.newReview.title" label="Review Header" variant="solo" height="100px" hide-details></v-text-field>
-                    <v-textarea v-model="reviews.newReview.detail" label="Review Detail" variant="solo" rows="5" hide-details></v-textarea>
+                    <v-text-field v-model="reviews.newReview.data.reviewTitle" label="Review Header" variant="solo" height="100px" hide-details></v-text-field>
+                    <v-textarea v-model="reviews.newReview.data.reviewDetail" label="Review Detail" variant="solo" rows="5" hide-details></v-textarea>
                 </div>
                 <div class="tw-mx-8 tw-pb-4">
-                    <v-checkbox label="Hide entire review because of spoilers" hide-details v-model="reviews.newReview.spoileFlag" value='1'></v-checkbox>
+                    <v-checkbox label="Hide entire review because of spoilers" hide-details v-model="reviews.newReview.data.spoileFlag" value='1'></v-checkbox>
                 </div>
             </v-card>
         </div>
 
         <div class="d-flex justify-end tw-mx-[10rem] tw-mt-5 tw-space-x-4">
-            <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview()">clear</v-btn>
-            <v-btn color="#1D419F" variant="flat" @click="togglePopup()">upload</v-btn>
+            <v-btn color="#1D419F" variant="outlined" @click="reviews.clearEditReview()">clear</v-btn>
+            <v-btn color="#1D419F" variant="flat" @click="togglePopup()">submit</v-btn>
         </div>
-        <ConfirmPopupCard :popupDetail="reviews.createConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()"/>
+        <ConfirmPopupCard :popupDetail="reviews.updateConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()"/>
     </div>
 </template>
  
