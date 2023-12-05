@@ -18,7 +18,7 @@ export const useBooks = defineStore("Books", () => {
 async function getLibrary() {
   let status = 0;
   const { data } = await useFetch(
-    `${runtimeConfig.public.API_BASE_URL}/book`,
+    `${import.meta.env.VITE_BASE_URL}/book`,
     {
       onRequest({ request, options }) {
         options.method = "GET";
