@@ -13,7 +13,7 @@ defineProps({
         <v-card v-for="book in bookList" color="rgb(217, 217, 217, 0.6)" class="tw-h-[19rem]" :to="`/book/${book.bookId}`">
             <v-row no-gutters>
                 <v-col cols="3" class="tw-my-2" align="center">
-                    <!-- <v-img src="/image/cover_not_available.jpg" width="60%" /> -->
+                    <v-img src="../assets/images/cover_not_available.png" width="60%" />
                 </v-col>
                 <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
                     <div>

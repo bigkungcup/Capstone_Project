@@ -1,10 +1,11 @@
 <script setup>
+import { ref, onBeforeMount } from "vue";
 import { useBooks } from '../stores/book'
 import BookNotFound from '@/components/BookNotFound.vue'
 import BookCard from '@/components/BookCard.vue'
 
-// const library = useBooks();
-// const page = ref(1)
+const library = useBooks();
+const page = ref(1)
 
 // await library.getLibrary();
 // // library.countUpdateTime(library.bookList.data.content[0].countDateTime);
@@ -13,7 +14,9 @@ import BookCard from '@/components/BookCard.vue'
 // function a(b) {
 //   console.log(b);
 // }
-
+onBeforeMount(async () => {
+  await library.getLibrary();
+});
 </script>
 
 <template>
@@ -43,14 +46,14 @@ import BookCard from '@/components/BookCard.vue'
 
       </v-row>
     </v-container>
-    <!-- <BookNotFound v-show="library.bookList.data.content.length == 0" />
+    <BookNotFound v-show="library.bookList.data.content.length == 0" />
     <div v-show="library.bookList.data.content.length !== 0" class="tw-min-h-[70%]">
       <BookCard :bookList="library.bookList.data.content" @getDateTime="a()"/>
     </div>
     <div v-show="library.bookList.data.content.length !== 0">
     <v-pagination v-model="page" class="my-4" :length="library.bookList.data.pageable.totalPages" :total-visible="7"
         rounded="20" @update:model-value="library.changeLibraryPage(page)">
-    </v-pagination></div> -->
+    </v-pagination></div>
     </div>
 </template>
 
