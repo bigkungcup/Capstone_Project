@@ -138,6 +138,35 @@ public class ApplicationExceptionHandler extends RuntimeException{
         response.setPath(request.getRequest().getRequestURI());
         return response;
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {com.fasterxml.jackson.databind.exc.InvalidDefinitionException.class})
+    public ExceptionResponse handleInvalidDefinitionException(com.fasterxml.jackson.databind.exc.InvalidDefinitionException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        // response.setResponse_message(ex.getMessage());
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class})
+    public ExceptionResponse handleMethodArgumentTypeMismatchException(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        // response.setResponse_message(ex.getMessage());
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
+
     // @ResponseStatus(HttpStatus.CREATED)
     // @ExceptionHandler(HandleExceptionNotFound.class)
     // public ExceptionResponse handleNullPointerException(HandleExceptionNotFound exception, ServletWebRequest request) {
