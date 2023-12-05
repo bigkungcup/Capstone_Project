@@ -10,24 +10,6 @@ const page = ref(1)
 await library.getBookDetail(route.params.id);
 await reviews.getReview(route.params.id,0);
 
-
-// const { data } = await useFetch(
-//     `${runtimeConfig.public.API_BASE_URL}/book`,
-//     {
-//       onRequest({ request, options }) {
-//         options.method = "GET";
-//         options.headers = {
-//           "Content-Type": "application/json",
-//         };
-//         options.params = {
-//           page: bookPage.value,
-//         }
-//       },onResponse({ request, response, options }) {
-//         console.log(response._data.response_code);
-//       }
-//     },
-// );
-
 </script>
  
 <template>
