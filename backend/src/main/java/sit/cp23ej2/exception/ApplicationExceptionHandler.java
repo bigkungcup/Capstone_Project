@@ -19,13 +19,13 @@ public class ApplicationExceptionHandler extends RuntimeException{
     
     ExceptionResponse response = new ExceptionResponse();
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(value = {HandleExceptionNotFound.class})
     public ExceptionResponse handleException(Exception e, HandleExceptionNotFound ex, ServletWebRequest request) {
         Map<String, String> error = new HashMap<>();
         error.put(ex.getKey(), ex.getMessage());
-        response.setResponse_code(HttpStatus.NOT_FOUND.value());
-        response.setResponse_status(HttpStatus.NOT_FOUND.name());
+        response.setResponse_code(HttpStatus.OK.value());
+        response.setResponse_status(HttpStatus.OK.name());
         response.setResponse_message(e.getMessage());
         response.setResponse_datetime(Instant.now());
         response.setFiledErrors(error);
