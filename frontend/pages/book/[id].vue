@@ -9,6 +9,7 @@ const page = ref(1)
 
 await library.getBookDetail(route.params.id);
 await reviews.getReview(route.params.id,0);
+
 </script>
  
 <template>

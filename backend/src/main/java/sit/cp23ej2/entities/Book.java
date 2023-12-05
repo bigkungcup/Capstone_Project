@@ -2,6 +2,8 @@ package sit.cp23ej2.entities;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +16,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "book", schema = "bannarug")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Table(name = "Book", schema = "bannarug")
 public class Book {
     
     @Id
