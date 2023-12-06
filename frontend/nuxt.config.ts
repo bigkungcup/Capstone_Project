@@ -52,6 +52,9 @@ export default defineNuxtConfig({
   },
   app: {
     baseURL: "/ej2/",
+    head:{
+      title:'Bannarug'
+    },
   },
   runtimeConfig: {
     public: {
