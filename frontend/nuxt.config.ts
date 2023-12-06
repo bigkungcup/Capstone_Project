@@ -53,7 +53,8 @@ export default defineNuxtConfig({
   app: {
     baseURL: "/ej2/",
     head:{
-      title:'Bannarug'
+      title:'Bannarug',
+      link: [{ rel: 'icon', type: 'image/png', href: '/ej2/image/logo.png' }]
     },
   },
   runtimeConfig: {

@@ -1,22 +1,18 @@
-<script>
+<script setup>
 
-export default {
-
-  data() {
-    return {
-      colors: [
+const colors = [
         'green',
         'secondary',
         'yellow darken-4',
         'red lighten-2',
         'orange darken-1',
-      ],
-      slides: [
+      ]
+const  slides = [
         '/image/bookbanner1.jpg',
         '/image/bookbanner2.png',
         '/image/bookbanner3.png',
-      ],
-      bookcovers:[
+      ]
+const bookcovers = [
       '/image/foryou1.png',
       '/image/foryou2.jpg',
       '/image/foryou3.jpg',
@@ -28,11 +24,8 @@ export default {
       '/image/foryou9.jpg',
       '/image/foryou9.png',
 
-      ],
-      list: [0, 1, 2, 3, 4]
-    }
-  },
-}
+      ]
+const path = '/ej2'
 </script>
 
 <template>
@@ -41,7 +34,7 @@ export default {
       <v-carousel :continuous="false" :show-arrows="false" hide-delimiter-background delimiter-icon="mdi-square" cycle
         :interval="4000">
         <v-carousel-item v-for="(slide, index) in slides" :key="index">
-          <v-img :src="slide" height="100%" cover></v-img>
+          <v-img :src="`${path}${slide}`" height="100%" cover></v-img>
         </v-carousel-item>
       </v-carousel>
     </v-card>
@@ -57,7 +50,7 @@ export default {
           <div class="tw-flex tw-items-center tw-text-7xl" style="font-family: 'Rampart One';"> For You </div>
           <v-card color="white" class="mx-4 " height="100%" width="20rem" v-for="(cover, index) in bookcovers" :key="index" >
             <div class="d-flex fill-height align-center justify-center tw-p-8" >
-              <v-img :src="cover" height="100%" cover></v-img>
+              <v-img :src="`${path}${cover}`" height="100%" cover></v-img>
             </div>
           </v-card>
         </v-slide-group-item>
