@@ -1,12 +1,20 @@
 <script setup>
+import confirmPopupCard from "~/components/confirmPopupCard.vue";
+import ReviewCard from "~/components/reviewCard.vue";
 import { useBooks } from "~/stores/book";
 import { useReviews } from "~/stores/review";
+import { ref } from "vue";
 
 const library = useBooks();
 const reviews = useReviews();
 const route = useRoute()
 const page = ref(1)
+const deleteId = ref(0)
 const confirmPopup = ref(false);
+
+function setDeleteId(id) {
+    deleteId.value = id;
+}
 
 function togglePopup() {
     confirmPopup.value = !confirmPopup.value
@@ -83,7 +91,7 @@ await reviews.getReview(route.params.id,0);
         <div class="tw-flex tw-justify-center tw-bg-white tw-py-10">
             <div class="web-grey-color tw-w-10/12 tw-rounded-lg tw-drop-shadow-lg">
                 <div class="tw-px-6 tw-py-8">
-                    <p class="web-text-header tw-inline-block tw-align-middle"> Review ({{reviews.reviewList.data.totalElements}}): </p>
+                    <p class="web-text-header tw-inline-block tw-align-middle"> Review ({{reviews.reviewList.data.totalElements?reviews.reviewList.data.totalElements:0}}): </p>
                 </div>
                 <div class="tw-bg-white tw-mx-5 tw-mb-5 tw-p-4 tw-max-h-[50rem] tw-rounded-lg">
                     <v-container>
@@ -105,7 +113,7 @@ await reviews.getReview(route.params.id,0);
                         </v-row>
                         <v-row v-show="reviews.reviewList.data.content.length !== 0">
                             <v-virtual-scroll :items="['']" max-height="35rem">
-                                <ReviewCard :reviewList="reviews.reviewList.data.content" :bookId="route.params.id" @delete="reviews.deleteReview()" @toggle="togglePopup()"/>
+                                <ReviewCard :reviewList="reviews.reviewList.data.content" :bookId="library.bookDetail.data.bookId" @toggle="togglePopup()" @set="setDeleteId($event)"/>
                             </v-virtual-scroll>
                         </v-row>
                     </v-container>
@@ -116,10 +124,17 @@ await reviews.getReview(route.params.id,0);
                     </div>
                 </div>
             </div>
-            <ConfirmPopupCard :popupDetail="reviews.deleteConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()"/>
+            <confirmPopupCard class="delete-popup" :popupDetail="reviews.deleteConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()" @delete="reviews.deleteReview(deleteId,library.bookDetail.data.bookId)"/>
         </div>
         <footer class="tw-bg-white tw-py-5"></footer>
     </div>
 </template>
  
-<style scoped></style>
+<style scoped>
+.delete-popup{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+</style>

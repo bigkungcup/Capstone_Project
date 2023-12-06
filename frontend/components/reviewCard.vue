@@ -2,7 +2,7 @@
 import { mergeProps } from 'vue'
 import { useReviews } from "~/stores/review";
 const reviews = useReviews();
-defineEmits(["delete","toogle"]);
+defineEmits(["toggle","set"]);
 
 defineProps({
     reviewList: {
@@ -12,7 +12,7 @@ defineProps({
     bookId: {
         type: Number,
         require: true
-    }
+    },
 })
 
 </script>
@@ -78,7 +78,7 @@ defineProps({
                                         <v-list-item-title class="web-text-detail">
                                             <!-- <v-btn prepend-icon='mdi mdi-trash-can-outline' @click="$emit('delete',review.reviewId,bookId)">Delete this review</v-btn> -->
                                             <!-- <v-btn prepend-icon='mdi mdi-trash-can-outline' @click="dialog">Delete this review</v-btn> -->
-                                            <v-list-item-title class="web-text-detail tw-space-x-2" @click="$emit('toggle')"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
+                                            <v-list-item-title class="web-text-detail tw-space-x-2" @click="$emit('toggle'),$emit('set',review.reviewId)"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
                                         </v-list-item-title>
                                     </v-list-item>
                                 </v-list>

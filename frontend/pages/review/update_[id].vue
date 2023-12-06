@@ -13,9 +13,8 @@ function togglePopup() {
 }
 
 await reviews.getReviewDetail(route.params.id)
-// await book.getBookDetail(route.params.id)
-await book.getBookDetail(1)
-// reviews.newReview.bookId = route.params.id;
+await book.getBookDetail(reviews.newReview.data.book.bookId)
+
 
 </script>
  
@@ -60,7 +59,7 @@ await book.getBookDetail(1)
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearEditReview()">clear</v-btn>
             <v-btn color="#1D419F" variant="flat" @click="togglePopup()">submit</v-btn>
         </div>
-        <ConfirmPopupCard :popupDetail="reviews.updateConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()"/>
+        <ConfirmPopupCard :popupDetail="reviews.updateConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()" @update="reviews.updateReview(reviews.newReview.data.reviewId)"/>
     </div>
 </template>
  

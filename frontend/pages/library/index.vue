@@ -1,28 +1,23 @@
 <script setup>
+import { ref } from "vue";
+import BookCard from '~/components/bookCard.vue';
+import BookNotFound from "~/components/bookNotFound.vue";
 import { useBooks } from '~/stores/book'
 
 const library = useBooks();
 const page = ref(1)
 
 await library.getLibrary();
-// library.countUpdateTime(library.bookList.data.content[0].countDateTime);
-// console.log(library.countUpdateTime(12960000));
-
-function a(b) {
-  console.log(b);
-}
 
 </script>
 
 <template>
-  <div class="">
-    <!-- <v-container class="ma-0 ml-10"> -->
+  <div class="tw-min-h-[80%]">
     <v-container>
       <v-row no-gutters>
         <v-col cols="10">
           <v-text-field label="Search" variant="solo-filled"> </v-text-field>
         </v-col>
-        <!-- <v-text-field label="Search" variant="solo-filled">      </v-text-field> -->
         <v-col cols="1"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Search </v-btn></v-col>
         <v-col cols="1"><v-btn size="auto" class="ml-10 pa-5" color="#082266" rounded="lg"> <v-icon end
               icon="mdi mdi-filter-variant"></v-icon>
@@ -42,14 +37,15 @@ function a(b) {
       </v-row>
     </v-container>
     <BookNotFound v-show="library.bookList.data.content.length == 0" />
-    <div v-show="library.bookList.data.content.length !== 0" class="tw-min-h-[70%]">
-      <BookCard :bookList="library.bookList.data.content" @getDateTime="a()"/>
+    <div v-show="library.bookList.data.content.length !== 0" class="">
+      <BookCard :bookList="library.bookList.data.content" />
+    </div>
+
     </div>
     <div v-show="library.bookList.data.content.length !== 0">
-    <v-pagination v-model="page" class="my-4" :length="library.bookList.data.pageable.totalPages" :total-visible="7"
+    <v-pagination v-model="page" class="" :length="library.bookList.data.pageable.totalPages" :total-visible="7"
         rounded="20" @update:model-value="library.changeLibraryPage(page)">
     </v-pagination></div>
-    </div>
 </template>
 
 <style scoped></style>

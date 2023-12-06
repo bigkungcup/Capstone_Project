@@ -2,6 +2,12 @@
 import { useReviews } from "~/stores/review";
 import { useBooks } from "~/stores/book";
 import { ref } from 'vue';
+import { useRoute } from "vue-router";
+import ConfirmPopupCard from "~/components/confirmPopupCard.vue";
+
+// definePageMeta({
+//   layout: false,
+// })
 
 const book = useBooks();
 const reviews = useReviews();
@@ -11,10 +17,13 @@ const confirmPopup = ref(false);
 function togglePopup() {
     confirmPopup.value = !confirmPopup.value
 }
-// const dialog = ref(false);
+
+const rules = {
+    required: value => !!value || 'Field is required',
+}
+
 await book.getBookDetail(route.params.id)
 reviews.newReview.bookId = route.params.id;
-
 
 </script>
  
@@ -39,18 +48,21 @@ reviews.newReview.bookId = route.params.id;
                             <p class="">by {{ book.bookDetail.data.author }}</p>
                             <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-font-bold">My rating:
                                 <v-rating hover :length="5" :size="32" :model-value="0" color="orange-lighten-1"
-                                    active-color="#FFBB11" v-model="reviews.newReview.rating"/>
+                                    active-color="#FFBB11" v-model="reviews.newReview.rating"  />
                             </div>
                         </div>
                     </v-col>
 
                 </v-row>
                 <div class="tw-mx-8 tw-space-y-4">
-                    <v-text-field v-model="reviews.newReview.title" label="Review Header" variant="solo" height="100px" hide-details></v-text-field>
-                    <v-textarea v-model="reviews.newReview.detail" label="Review Detail" variant="solo" rows="5" hide-details></v-textarea>
+                    <v-text-field v-model="reviews.newReview.title" label="Review Title" variant="solo" height="100px"
+                        clearable :rules="[rules.required]"></v-text-field>
+                    <v-textarea v-model="reviews.newReview.detail" label="Review Detail" variant="solo" rows="5" clearable
+                        :rules="[rules.required]"></v-textarea>
                 </div>
                 <div class="tw-mx-8 tw-pb-4">
-                    <v-checkbox label="Hide entire review because of spoilers" hide-details v-model="reviews.newReview.spoileFlag" value='1'></v-checkbox>
+                    <v-checkbox label="Hide entire review because of spoilers" hide-details
+                        v-model="reviews.newReview.spoileFlag" value='1'></v-checkbox>
                 </div>
             </v-card>
         </div>
@@ -59,7 +71,8 @@ reviews.newReview.bookId = route.params.id;
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview()">clear</v-btn>
             <v-btn color="#1D419F" variant="flat" @click="togglePopup()">upload</v-btn>
         </div>
-        <ConfirmPopupCard :popupDetail="reviews.createConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()"/>
+        <ConfirmPopupCard :popupDetail="reviews.createConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()"
+            @upload="reviews.createReview(reviews.newReview)" />
     </div>
 </template>
  

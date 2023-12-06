@@ -14,22 +14,22 @@ export const useReviews = defineStore("Reviews", () => {
   );
   const reviewPage = ref(0);
   const newReview = ref({
-    rating: 0,
+    rating: 1,
     detail: '',
     title:  '',
     // userId: '',
-    userId: '2',
+    userId: '1',
     bookId: '',
     spoileFlag: 0
   })
   const createConfirmPopup = {
-    operation: 'action',
+    operation: 'create',
     buttonName: 'Upload',
     title: 'Confirm Create',
     detail: 'Are you sure to create this review?'
   }
   const updateConfirmPopup = {
-    operation: 'action',
+    operation: 'update',
     buttonName: 'Submit',
     title: 'Confirm Update',
     detail: 'Are you sure to update this review?'
@@ -61,7 +61,7 @@ async function getReview(bookId) {
         options.params = {
           bookId: bookId,
           page: reviewPage.value,
-          size: 1
+          size: 10
         }
       },onResponse({ request, response, options }) {
         status = response._data.response_code
@@ -122,6 +122,13 @@ async function createReview() {
           }
       }
   );
+  if(status == 201){
+    clearNewReview();
+    backPage();
+    console.log('upload review completed');
+  }else if(status == 404){
+    console.log('upload review uncompleted')
+  }
 }
 
 //Update review
@@ -143,10 +150,18 @@ await $fetch(
         }
     }
 );
+if(status == 200){
+  clearNewReview();
+  backPage();
+  console.log('upload review completed');
+}else if(status == 404){
+  console.log('upload review uncompleted')
+}
 }
 
 //Delete review
 async function deleteReview(reviewId,bookId) {
+  let status = 0;
   const { data } = await useFetch(
     `${import.meta.env.VITE_BASE_URL}/review/${reviewId}`,
     {
@@ -156,21 +171,19 @@ async function deleteReview(reviewId,bookId) {
           "Content-Type": "application/json",
         };
       },
-      onRequestError({ request, options, error }) {
-        console.log("ERROR", error);
-      },
-      onResponseError({ request, response, options }) {
-        console.log("RESPONE ERROR", response);
-      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code
+        console.log(status);
+      }
     },
   );
-  console.log(data);
-  if(!data.value){
+  if(status == 200){
+    reviewPage.value = 0;
+    getReview(bookId);
+    console.log('delete review completed');
+  }else if(status == 404){
     console.log('delete review uncompleted')
-  }else if(data.value.response_code == 200){
-  getReview(bookId)
-  console.log('delete review completed');
-}
+  }
 }
 
 //Clear new review
@@ -198,6 +211,11 @@ function clearEditReview() {
 function changeReviewPage(bookId,page) {
   reviewPage.value = page-1;
   getReview(bookId);
+}
+
+//Back Page
+function backPage() {
+  window.history.back()
 }
 
   return { reviewList, 
