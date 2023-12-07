@@ -5,15 +5,15 @@ import { ref } from 'vue';
 import { useRoute } from "vue-router";
 import ConfirmPopupCard from "~/components/confirmPopupCard.vue";
 
-// definePageMeta({
-//   layout: false,
-// })
-
 const book = useBooks();
 const reviews = useReviews();
 const route = useRoute()
 const confirmLeavePopup = ref(false);
 const confirmUploadPopup = ref(false);
+
+definePageMeta({
+    layout: false,
+})
 
 function toggleLeavePopup() {
     confirmLeavePopup.value = !confirmLeavePopup.value
@@ -37,9 +37,13 @@ reviews.newReview.bookId = route.params.id;
 </script>
  
 <template>
+    <div class="tw-bg-[#3157BB] tw-h-[4rem] d-flex justify-center align-center tw-drop-shadow-xl">
+        <p class="lily tw-text-3xl tw-text-white">Bannarug</p>
+    </div>
     <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
         <div class="tw-mx-36 tw-mt-5">
-            <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="toggleLeavePopup()" width="8%" color="#082250">
+            <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="toggleLeavePopup()" width="8%"
+                color="#082250">
                 <p class="tw-font-bold">Back</p>
             </v-btn>
         </div>
@@ -57,7 +61,7 @@ reviews.newReview.bookId = route.params.id;
                             <p class="">by {{ book.bookDetail.data.author }}</p>
                             <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-font-bold">My rating:
                                 <v-rating hover :length="5" :size="32" :model-value="0" color="orange-lighten-1"
-                                    active-color="#FFBB11" v-model="reviews.newReview.rating"  />
+                                    active-color="#FFBB11" v-model="reviews.newReview.rating" />
                             </div>
                         </div>
                     </v-col>
@@ -80,8 +84,8 @@ reviews.newReview.bookId = route.params.id;
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview()">clear</v-btn>
             <v-btn color="#1D419F" variant="flat" @click="toggleUploadPopup()">upload</v-btn>
         </div>
-        <ConfirmPopupCard :popupDetail="reviews.createConfirmPopup" :dialog="confirmUploadPopup" @toggle="toggleUploadPopup()"
-            @upload="reviews.createReview(reviews.newReview)" />
+        <ConfirmPopupCard :popupDetail="reviews.createConfirmPopup" :dialog="confirmUploadPopup"
+            @toggle="toggleUploadPopup()" @upload="reviews.createReview(reviews.newReview)" />
         <ConfirmPopupCard :popupDetail="reviews.leaveConfirmPopup" :dialog="confirmLeavePopup" @toggle="toggleLeavePopup()"
             @back="$router.go(-1)" />
         <ConfirmPopupCard :popupDetail="reviews.validatePopup" :dialog="reviews.validate" @toggle="toggleValidatePopup()" />

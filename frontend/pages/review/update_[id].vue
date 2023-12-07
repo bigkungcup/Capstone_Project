@@ -9,6 +9,10 @@ const route = useRoute()
 const confirmLeavePopup = ref(false);
 const confirmUpdatePopup = ref(false);
 
+definePageMeta({
+    layout: false,
+})
+
 function toggleLeavePopup() {
     confirmLeavePopup.value = !confirmLeavePopup.value
 }
@@ -32,9 +36,13 @@ console.log(route.params.id);
 </script>
  
 <template>
+    <div class="tw-bg-[#3157BB] tw-h-[4rem] d-flex justify-center align-center tw-drop-shadow-xl">
+        <p class="lily tw-text-3xl tw-text-white">Bannarug</p>
+    </div>
     <div class=" tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
         <div class="tw-mx-36 tw-mt-5">
-            <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="toggleLeavePopup()" width="8%" color="#082250">
+            <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="toggleLeavePopup()" width="8%"
+                color="#082250">
                 <p class="tw-font-bold">Back</p>
             </v-btn>
         </div>
@@ -52,18 +60,21 @@ console.log(route.params.id);
                             <p class="">by {{ book.bookDetail.data.author }}</p>
                             <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-font-bold">My rating:
                                 <v-rating hover :length="5" :size="32" :model-value="0" color="orange-lighten-1"
-                                    active-color="#FFBB11" v-model="reviews.newReview.rating"/>
+                                    active-color="#FFBB11" v-model="reviews.newReview.rating" />
                             </div>
                         </div>
                     </v-col>
 
                 </v-row>
                 <div class="tw-mx-8 tw-space-y-4">
-                    <v-text-field v-model="reviews.newReview.title" label="Review Header" variant="solo" height="100px"  :rules="[rules.required]"></v-text-field>
-                    <v-textarea v-model="reviews.newReview.detail" label="Review Detail" variant="solo" rows="5"  :rules="[rules.required]"></v-textarea>
+                    <v-text-field v-model="reviews.newReview.title" label="Review Header" variant="solo" height="100px"
+                        :rules="[rules.required]"></v-text-field>
+                    <v-textarea v-model="reviews.newReview.detail" label="Review Detail" variant="solo" rows="5"
+                        :rules="[rules.required]"></v-textarea>
                 </div>
                 <div class="tw-mx-8 tw-pb-4">
-                    <v-checkbox label="Hide entire review because of spoilers" hide-details v-model="reviews.newReview.spoileFlag" value='1'></v-checkbox>
+                    <v-checkbox label="Hide entire review because of spoilers" hide-details
+                        v-model="reviews.newReview.spoileFlag" value='1'></v-checkbox>
                 </div>
             </v-card>
         </div>
@@ -72,11 +83,11 @@ console.log(route.params.id);
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview()">clear</v-btn>
             <v-btn color="#1D419F" variant="flat" @click="toggleUpdatePopup()">submit</v-btn>
         </div>
-        <ConfirmPopupCard :popupDetail="reviews.updateConfirmPopup" :dialog="confirmUpdatePopup" @toggle="toggleUpdatePopup()" @update="reviews.updateReview(reviews.newReview.reviewId)"/>
+        <ConfirmPopupCard :popupDetail="reviews.updateConfirmPopup" :dialog="confirmUpdatePopup"
+            @toggle="toggleUpdatePopup()" @update="reviews.updateReview(reviews.newReview.reviewId)" />
         <ConfirmPopupCard :popupDetail="reviews.leaveConfirmPopup" :dialog="confirmLeavePopup" @toggle="toggleLeavePopup()"
             @back="$router.go(-1)" />
-            <ConfirmPopupCard :popupDetail="reviews.validatePopup" :dialog="reviews.validate" @toggle="toggleValidatePopup()" />
-    </div>
-</template>
+        <ConfirmPopupCard :popupDetail="reviews.validatePopup" :dialog="reviews.validate" @toggle="toggleValidatePopup()" />
+</div></template>
  
 <style></style>

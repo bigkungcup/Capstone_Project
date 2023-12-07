@@ -38,7 +38,7 @@ async function getLibrary() {
       bookList.value = data.value
     }
     console.log('get library completed');
-  }else if(status == 404){
+  }else if(status == 400){
     console.log('get library uncompleted')
   }
 }
@@ -62,7 +62,7 @@ async function getBookDetail(bookId) {
   if(status == 200){
     bookDetail.value = data.value
     console.log('get book detail  completed');
-  }else if(status == 404){
+  }else if(status == 400){
     console.log('get book detail uncompleted')
   }
 }
