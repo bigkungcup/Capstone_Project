@@ -30,6 +30,6 @@ COPY . .
 RUN npm run generate
 
 FROM nginx:stable-alpine as production-stage
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /frontend/.output/public /usr/share/nginx/html
 EXPOSE 3000

@@ -12,6 +12,7 @@ export const useBooks = defineStore("Books", () => {
 });
   const bookDetail = ref();
   const bookPage = ref(0);
+  const runtimeConfig = useRuntimeConfig();
 
 //Get Library
 async function getLibrary() {
