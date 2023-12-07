@@ -27,10 +27,10 @@ await library.getLibrary();
 
       <v-row no-gutters>
         <v-col cols="5">
-          <v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Result - 3200 </v-btn>
+          <v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Result - {{ library.bookList.data.totalElements }} </v-btn>
         </v-col>
         <v-col cols="4"></v-col>
-        <v-col cols="3"> <v-btn size="auto" class="pa-5 ml-12" color="#082266" rounded="lg"> Sort By: Result - 3200
+        <v-col cols="3"> <v-btn size="auto" class="pa-5 ml-12" color="#082266" rounded="lg"> Sort By: Result - {{ library.bookList.data.totalElements }}
             <v-icon end icon="mdi mdi-menu-down"></v-icon></v-btn>
         </v-col>
 

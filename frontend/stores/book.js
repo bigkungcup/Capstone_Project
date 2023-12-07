@@ -33,7 +33,9 @@ async function getLibrary() {
     },
   );
   if(status == 200){
-    bookList.value = data.value
+    if(data.value){
+      bookList.value = data.value
+    }
     console.log('get library completed');
   }else if(status == 404){
     console.log('get library uncompleted')

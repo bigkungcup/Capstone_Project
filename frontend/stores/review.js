@@ -17,7 +17,6 @@ export const useReviews = defineStore("Reviews", () => {
     rating: 1,
     detail: '',
     title:  '',
-    // userId: '',
     userId: '1',
     bookId: '',
     spoileFlag: 0
@@ -46,6 +45,12 @@ export const useReviews = defineStore("Reviews", () => {
     title: 'Confirm Delete',
     detail: 'Are you sure to delete this review?'
   }
+  const validatePopup = {
+    operation: 'validate',
+    title: 'Error',
+    detail: 'Please fill in required fields.'
+  }
+  const validate = ref(false);
 
 //Get reviews
 async function getReview(bookId) {
@@ -69,7 +74,9 @@ async function getReview(bookId) {
     },
   );
   if(status == 200){
-    reviewList.value = data.value
+    if(data.value){
+      reviewList.value = data.value
+    }
     console.log('get review list completed');
   }else if(status == 404){
     console.log('get review list uncompleted')
@@ -94,6 +101,7 @@ async function getReviewDetail(reviewId) {
   );
   if(status == 200){
     newReview.value = data.value
+    setNewReview();
     console.log('get review list completed');
   }else if(status == 404){
     console.log('get review list uncompleted')
@@ -118,16 +126,19 @@ async function createReview() {
           }
           ,onResponse({ request, response, options }) {
             status = response._data.response_code
-            console.log(status);
+            if(status == 400){
+              validate.value = true;
+              console.log(validate.value);
+              console.log('upload review uncompleted')
+            }
           }
       }
   );
   if(status == 201){
+    validate.value = false;
     clearNewReview();
     backPage();
     console.log('upload review completed');
-  }else if(status == 404){
-    console.log('upload review uncompleted')
   }
 }
 
@@ -139,23 +150,26 @@ await $fetch(
   {
       method: "PUT",
       body: {
-          rating: newReview.value.data.reviewRating,
-          detail: newReview.value.data.reviewDetail,
-          title:  newReview.value.data.reviewTitle,
-          spoileFlag: newReview.value.data.spoileFlag
+          rating: newReview.value.rating,
+          detail: newReview.value.detail,
+          title:  newReview.value.title,
+          bookId: newReview.value.bookId,
+          spoileFlag: newReview.value.spoileFlag
         }
         ,onResponse({ request, response, options }) {
           status = response._data.response_code
-          console.log(status);
+          if(status == 400){
+            validate.value = true;
+            console.log('update review uncompleted')
+          }
         }
     }
 );
 if(status == 200){
+  validate.value = false;
   clearNewReview();
   backPage();
-  console.log('upload review completed');
-}else if(status == 404){
-  console.log('upload review uncompleted')
+  console.log('update review completed');
 }
 }
 
@@ -186,26 +200,37 @@ async function deleteReview(reviewId,bookId) {
   }
 }
 
+function setNewReview() {
+  newReview.value = {
+    reviewId: newReview.value.data.reviewId,
+    rating: newReview.value.data.reviewRating,
+    detail: newReview.value.data.reviewDetail,
+    title:  newReview.value.data.reviewTitle,
+    spoileFlag: newReview.value.data.spoileFlag,
+    bookId: newReview.value.data.book.bookId
+  }
+}
+
 //Clear new review
 function clearNewReview() {
   newReview.value = {
-    rating: 0,
-    detail: '',
-    title:  '',
+    rating: 1,
+    detail: "",
+    title:  "",
     spoileFlag: 0
   }
 }
 
-function clearEditReview() {
-  newReview.value = {
-    data: {
-      reviewRating: 0,
-      reviewDetail: '',
-      reviewTitle:  '',
-      spoileFlag: 0
-    }
-  }
-}
+// function clearEditReview() {
+//   newReview.value = {
+//     data: {
+//       reviewRating: 1,
+//       reviewDetail: '',
+//       reviewTitle:  '',
+//       spoileFlag: 0
+//     }
+//   }
+// }
 
 //Change review page
 function changeReviewPage(bookId,page) {
@@ -225,14 +250,16 @@ function backPage() {
     updateConfirmPopup,
     leaveConfirmPopup,
     deleteConfirmPopup,
+    validatePopup,
+    validate,
     getReview, 
     getReviewDetail, 
     createReview, 
     updateReview, 
     deleteReview, 
-    changeReviewPage, 
-    clearNewReview, 
-    clearEditReview };
+    changeReviewPage,
+    setNewReview, 
+    clearNewReview };
 
 });
 

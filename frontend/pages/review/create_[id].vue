@@ -12,10 +12,19 @@ import ConfirmPopupCard from "~/components/confirmPopupCard.vue";
 const book = useBooks();
 const reviews = useReviews();
 const route = useRoute()
-const confirmPopup = ref(false);
+const confirmLeavePopup = ref(false);
+const confirmUploadPopup = ref(false);
 
-function togglePopup() {
-    confirmPopup.value = !confirmPopup.value
+function toggleLeavePopup() {
+    confirmLeavePopup.value = !confirmLeavePopup.value
+}
+
+function toggleUploadPopup() {
+    confirmUploadPopup.value = !confirmUploadPopup.value
+}
+
+function toggleValidatePopup() {
+    reviews.validate = !reviews.validate
 }
 
 const rules = {
@@ -30,7 +39,7 @@ reviews.newReview.bookId = route.params.id;
 <template>
     <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
         <div class="tw-mx-36 tw-mt-5">
-            <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="$router.go(-1)" width="8%" color="#082250">
+            <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="toggleLeavePopup()" width="8%" color="#082250">
                 <p class="tw-font-bold">Back</p>
             </v-btn>
         </div>
@@ -69,10 +78,13 @@ reviews.newReview.bookId = route.params.id;
 
         <div class="d-flex justify-end tw-mx-[10rem] tw-mt-5 tw-space-x-4">
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview()">clear</v-btn>
-            <v-btn color="#1D419F" variant="flat" @click="togglePopup()">upload</v-btn>
+            <v-btn color="#1D419F" variant="flat" @click="toggleUploadPopup()">upload</v-btn>
         </div>
-        <ConfirmPopupCard :popupDetail="reviews.createConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()"
+        <ConfirmPopupCard :popupDetail="reviews.createConfirmPopup" :dialog="confirmUploadPopup" @toggle="toggleUploadPopup()"
             @upload="reviews.createReview(reviews.newReview)" />
+        <ConfirmPopupCard :popupDetail="reviews.leaveConfirmPopup" :dialog="confirmLeavePopup" @toggle="toggleLeavePopup()"
+            @back="$router.go(-1)" />
+        <ConfirmPopupCard :popupDetail="reviews.validatePopup" :dialog="reviews.validate" @toggle="toggleValidatePopup()" />
     </div>
 </template>
  

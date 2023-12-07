@@ -23,23 +23,14 @@ defineProps({
             <v-row>
                 <v-col cols="3" class="web-text-detail tw-my-5 tw-space-x-5 tw-space-y-2" align="left">
                     <v-img src="/image/cat.jpg" width="40%" height="40%" class="tw-rounded-full tw-mx-5" cover />
-                    <!-- <p class="tw-font-bold">{{ review.reviewUsername }}</p>
-                    <h3>{{ review.reviewAmount }} reviews</h3>
-                    <h3>{{ review.followers }} followers</h3> -->
-                    <p class="tw-font-bold">Cat The Reviewer</p>
-                    <p class="web-text-sub">250 reviews</p>
-                    <p class="web-text-sub">1231 followers</p>
+                    <p class="tw-font-bold">Guest</p>
+                    <p class="web-text-sub">0 reviews</p>
+                    <p class="web-text-sub">0 followers</p>
                 </v-col>
-                <!-- <v-col cols="1"></v-col> -->
                 <v-col cols="9" class="web-text-detail tw-my-5 tw-space-y-3">
                     <v-rating :model-value="review.reviewRating" color="#FFB703" density="compact" size="meduim"
                         half-increments readonly></v-rating>
                     <p class="tw-font-bold">{{ review.reviewTitle }}</p>
-                    <!-- <div class="tw-h-[4rem] tw-overflow-hidden" v-show="review.spoileFlag == 0">
-                        <p class="tw-text-ellipsis">
-                            {{ review.reviewDetail }}
-                        </p>
-                    </div> -->
                     <div class="tw-min-h-[4rem]" v-show="review.spoileFlag == 0">
                         <p>{{ review.reviewDetail }}</p>
                     </div>
@@ -59,7 +50,6 @@ defineProps({
                     <div class="tw-space-x-3">
                         <v-icon icon="mdi mdi-thumb-up-outline"></v-icon><span>Likes</span>
                         <v-icon icon="mdi mdi-thumb-down-outline"></v-icon><span>Dislikes</span>
-                        <!-- <v-icon icon="mdi mdi-dots-horizontal"></v-icon> -->
                         <span class="text-center">
                             <v-menu>
                                 <template v-slot:activator="{ props: menu }">
@@ -76,8 +66,6 @@ defineProps({
                                     </v-list-item>
                                     <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
                                         <v-list-item-title class="web-text-detail">
-                                            <!-- <v-btn prepend-icon='mdi mdi-trash-can-outline' @click="$emit('delete',review.reviewId,bookId)">Delete this review</v-btn> -->
-                                            <!-- <v-btn prepend-icon='mdi mdi-trash-can-outline' @click="dialog">Delete this review</v-btn> -->
                                             <v-list-item-title class="web-text-detail tw-space-x-2" @click="$emit('toggle'),$emit('set',review.reviewId)"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
                                         </v-list-item-title>
                                     </v-list-item>
