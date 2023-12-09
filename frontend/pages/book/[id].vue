@@ -4,6 +4,8 @@ import ReviewCard from "~/components/reviewCard.vue";
 import { useBooks } from "~/stores/book";
 import { useReviews } from "~/stores/review";
 import { ref } from "vue";
+import similarBook from "~/components/similarBook.vue";
+
 
 const library = useBooks();
 const reviews = useReviews();
@@ -85,8 +87,9 @@ await reviews.getReview(route.params.id,0);
             </div>
         </div>
 
-        <div class="tw-mx-28 tw-mt-5 tw-min-h-[24rem]">
-            <p class="web-text-header tw-px-6 tw-py-2">Similar Book</p>
+        <div class="tw-mt-5 tw-min-h-[24rem]">
+            <p class="web-text-header tw-mx-16">Similar Book</p>
+            <similarBook />
         </div>
 
         <div class="tw-flex tw-justify-center tw-bg-white tw-py-10">
