@@ -107,3 +107,7 @@
 .book-card{
     background-color: #D9D9D9;
 }
+
+.popup-horizontal-line{
+    border-bottom: 2px solid #B8B4B4;
+}

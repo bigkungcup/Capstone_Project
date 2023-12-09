@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
-import BookCard from '~/components/bookCard.vue';
-import BookNotFound from "~/components/bookNotFound.vue";
+import BookCard from '~/components/books/bookCard.vue';
+import BookNotFound from "~/components/books/bookNotFound.vue";
 import { useBooks } from '~/stores/book'
 
 const library = useBooks();

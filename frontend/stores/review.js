@@ -19,37 +19,9 @@ export const useReviews = defineStore("Reviews", () => {
     title: '',
     userId: '1',
     bookId: '',
-    spoileFlag: 0
+    spoileFlag: false
   })
-  const createConfirmPopup = {
-    operation: 'create',
-    buttonName: 'Upload',
-    title: 'Confirm Create',
-    detail: 'Are you sure to create this review?'
-  }
-  const updateConfirmPopup = {
-    operation: 'update',
-    buttonName: 'Submit',
-    title: 'Confirm Update',
-    detail: 'Are you sure to update this review?'
-  }
-  const leaveConfirmPopup = {
-    operation: 'leave',
-    buttonName: 'Back',
-    title: 'Do you want to leave this site?',
-    detail: 'Changes you made may not be saved.'
-  }
-  const deleteConfirmPopup = {
-    operation: 'delete',
-    buttonName: 'Delete',
-    title: 'Confirm Delete',
-    detail: 'Are you sure to delete this review?'
-  }
-  const validatePopup = {
-    operation: 'validate',
-    title: 'Error',
-    detail: 'Please fill in required fields.'
-  }
+
   const validate = ref(false);
 
   //Get reviews
@@ -109,9 +81,9 @@ export const useReviews = defineStore("Reviews", () => {
     if (status == 200) {
       newReview.value = data.value
       setNewReview();
-      console.log('get review list completed');
+      console.log('get review detail completed');
     } else if (status == 400) {
-      console.log('get review list uncompleted')
+      console.log('get review detail uncompleted')
     }
   }
 
@@ -129,22 +101,22 @@ export const useReviews = defineStore("Reviews", () => {
           title: newReview.value.title,
           userId: '1',
           bookId: newReview.value.bookId,
-          spoileFlag: newReview.value.spoileFlag
+          spoileFlag: newReview.value.spoileFlag == false ?  0 : 1
         }
         , onResponse({ request, response, options }) {
           status = response._data.response_code
           if (status == 400) {
             validate.value = true;
-            console.log(validate.value);
             console.log('upload review uncompleted')
           }
         }
       }
     );
-    if (status == 201) {
-      validate.value = false;
-      clearNewReview();
-      backPage();
+    if (status == 201) { 
+      backPage().then(() => {
+        clearNewReview();
+        validate.value = false;
+      })
       console.log('upload review completed');
     }
   }
@@ -161,7 +133,7 @@ export const useReviews = defineStore("Reviews", () => {
           detail: newReview.value.detail,
           title: newReview.value.title,
           bookId: newReview.value.bookId,
-          spoileFlag: newReview.value.spoileFlag
+          spoileFlag: newReview.value.spoileFlag == false ?  0 : 1
         }
         , onResponse({ request, response, options }) {
           status = response._data.response_code
@@ -173,9 +145,10 @@ export const useReviews = defineStore("Reviews", () => {
       }
     );
     if (status == 200) {
-      validate.value = false;
-      clearNewReview();
-      backPage();
+      backPage().then(() => {
+        clearNewReview();
+        validate.value = false;
+      })
       console.log('update review completed');
     }
   }
@@ -193,8 +166,7 @@ export const useReviews = defineStore("Reviews", () => {
           };
         },
         onResponse({ request, response, options }) {
-          status = response._data.response_code
-          console.log(status);
+          status = response._data.response_code;
         }
       },
     );
@@ -213,7 +185,7 @@ export const useReviews = defineStore("Reviews", () => {
       rating: newReview.value.data.reviewRating,
       detail: newReview.value.data.reviewDetail,
       title: newReview.value.data.reviewTitle,
-      spoileFlag: 0,
+      spoileFlag: newReview.value.data.spoileFlag == 0 ? false : true,
       bookId: newReview.value.data.book.bookId
     }
   }
@@ -224,7 +196,7 @@ export const useReviews = defineStore("Reviews", () => {
       rating: 1,
       detail: "",
       title: "",
-      spoileFlag: 0
+      spoileFlag: false
     }
   }
 
@@ -243,11 +215,6 @@ export const useReviews = defineStore("Reviews", () => {
     reviewList,
     newReview,
     reviewPage,
-    createConfirmPopup,
-    updateConfirmPopup,
-    leaveConfirmPopup,
-    deleteConfirmPopup,
-    validatePopup,
     validate,
     getReview,
     getReviewDetail,
@@ -256,7 +223,7 @@ export const useReviews = defineStore("Reviews", () => {
     deleteReview,
     changeReviewPage,
     setNewReview,
-    clearNewReview
+    clearNewReview,
   };
 
 });

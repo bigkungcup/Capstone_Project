@@ -2,6 +2,9 @@
 import { useReviews } from "~/stores/review";
 import { useBooks } from "~/stores/book";
 import { ref } from 'vue';
+import updateConfirmPopup from "~/components/reviews/popups/updateConfirmPopup.vue";
+import leaveConfirmPopup from "~/components/reviews/popups/leaveConfirmPopup.vue";
+import validatePopup from "~/components/reviews/popups/validatePopup.vue";
 
 const book = useBooks();
 const reviews = useReviews();
@@ -31,7 +34,6 @@ const rules = {
 
 await reviews.getReviewDetail(route.params.id)
 await book.getBookDetail(reviews.newReview.bookId)
-console.log(route.params.id);
 
 </script>
  
@@ -39,19 +41,19 @@ console.log(route.params.id);
     <div class="tw-bg-[#3157BB] tw-h-[4rem] d-flex justify-center align-center tw-drop-shadow-xl">
         <p class="lily tw-text-3xl tw-text-white">Bannarug</p>
     </div>
-    <div class=" tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
+    <div class=" tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
         <div class="tw-mx-36 tw-mt-5">
             <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="toggleLeavePopup()" width="8%"
                 color="#082250">
                 <p class="tw-font-bold">Back</p>
             </v-btn>
         </div>
-        <div class="tw-flex tw-justify-center tw-min-h-[25rem]">
+        <div class="tw-flex tw-justify-center tw-min-h-[25rem] tw-pb-2">
             <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
                 <v-row>
                     <v-col cols="2">
                         <v-avatar class="mx-8 my-4" size="150" rounded="0">
-                            <v-img src="/image/bookcover.png"></v-img>
+                            <v-img src="/image/cover_not_available.jpg"></v-img>
                         </v-avatar>
                     </v-col>
                     <v-col cols="10">
@@ -74,7 +76,7 @@ console.log(route.params.id);
                 </div>
                 <div class="tw-mx-8 tw-pb-4">
                     <v-checkbox label="Hide entire review because of spoilers" hide-details
-                        v-model="reviews.newReview.spoileFlag" value='1'></v-checkbox>
+                        v-model="reviews.newReview.spoileFlag"></v-checkbox>
                 </div>
             </v-card>
         </div>
@@ -83,11 +85,10 @@ console.log(route.params.id);
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview()">clear</v-btn>
             <v-btn color="#1D419F" variant="flat" @click="toggleUpdatePopup()">submit</v-btn>
         </div>
-        <ConfirmPopupCard :popupDetail="reviews.updateConfirmPopup" :dialog="confirmUpdatePopup"
-            @toggle="toggleUpdatePopup()" @update="reviews.updateReview(reviews.newReview.reviewId)" />
-        <ConfirmPopupCard :popupDetail="reviews.leaveConfirmPopup" :dialog="confirmLeavePopup" @toggle="toggleLeavePopup()"
-            @back="$router.go(-1)" />
-        <ConfirmPopupCard :popupDetail="reviews.validatePopup" :dialog="reviews.validate" @toggle="toggleValidatePopup()" />
+        <updateConfirmPopup :dialog="confirmUpdatePopup"  @toggle="toggleUpdatePopup()" @update="reviews.updateReview(route.params.id)"/>
+        <leaveConfirmPopup :dialog="confirmLeavePopup" @toggle="toggleLeavePopup()"
+            @back="$router.go(-1)"/>
+        <validatePopup :dialog="reviews.validate" @toggle="toggleValidatePopup()"/>
 </div></template>
  
 <style></style>

@@ -1,6 +1,6 @@
 <script setup>
-import confirmPopupCard from "~/components/confirmPopupCard.vue";
-import ReviewCard from "~/components/reviewCard.vue";
+import deleteConfirmPopup from "~/components/reviews/popups/deleteConfirmPopup.vue";
+import reviewCard from "~/components/reviews/reviewCard.vue";
 import { useBooks } from "~/stores/book";
 import { useReviews } from "~/stores/review";
 import { ref } from "vue";
@@ -21,7 +21,7 @@ function togglePopup() {
 }
 
 await library.getBookDetail(route.params.id);
-await reviews.getReview(route.params.id,0);
+await reviews.getReview(route.params.id, 0);
 
 </script>
  
@@ -29,19 +29,20 @@ await reviews.getReview(route.params.id,0);
     <div class="web-grey-color">
         <div class="tw-bg-white tw-space-y-1 tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
             <div class="tw-mx-36 tw-mt-5">
-                <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="$router.go(-1)" width="8%" color="#082250"> 
+                <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="$router.go(-1)" width="8%"
+                    color="#082250">
                     <p class="tw-font-bold">Back</p>
                 </v-btn>
             </div>
             <div class="tw-flex tw-justify-center tw-h-3/5 tw-max-h-[30rem] tw-min-h-[30rem]">
                 <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
-                    <!-- <v-row no-gutters>
-                <v-col cols="10"></v-col>
-                <v-col cols="2" class="tw-flex tw-justify-center"><v-btn >Report</v-btn></v-col>
-            </v-row> -->
+                <!-- <v-row no-gutters>
+                    <v-col cols="10"></v-col>
+                    <v-col cols="2" class="tw-flex tw-justify-center"><v-btn >Report</v-btn></v-col>
+                </v-row> -->
                     <v-row no-gutters>
                         <v-col cols="4" class="tw-my-10 web-text-detail" align="center">
-                            <v-img src="/image/cover_not_available.jpg" height="55%" width="100%"></v-img>
+                            <v-img src="/image/cover_not_available.jpg" height="360"></v-img>
                             <div class="tw-space-x-1 tw-inline-flex tw-items-center">
                                 <v-rating :model-value="library.getStarRating(library.bookDetail.data.bookRating)"
                                     color="#FFB703" density="compact" size="large" half-increments readonly></v-rating>
@@ -67,8 +68,9 @@ await reviews.getReview(route.params.id,0);
                             <div class="tw-flex tw-justify-center tw-gap-x-12">
                                 <v-btn class="text-none" color="#1D419F"><v-icon start
                                         icon="mdi mdi-bookmark"></v-icon>Bookmark</v-btn>
-                                <NuxtLink :to="`../review/create_${library.bookDetail.data.bookId}`" ><v-btn class="text-none" color="#1D419F" ><v-icon start
-                                        icon="mdi mdi-pencil-plus" ></v-icon>Review</v-btn></NuxtLink>
+                                <NuxtLink :to="`../../review/create_${library.bookDetail.data.bookId}/`"><v-btn
+                                        class="text-none" color="#1D419F"><v-icon start
+                                            icon="mdi mdi-pencil-plus"></v-icon>Review</v-btn></NuxtLink>
                             </div>
                         </v-col>
                         <v-col cols="2" class="tw-flex tw-justify-center my-2"><v-btn>Report</v-btn></v-col>
@@ -92,7 +94,8 @@ await reviews.getReview(route.params.id,0);
         <div class="tw-flex tw-justify-center tw-bg-white tw-py-10">
             <div class="web-grey-color tw-w-10/12 tw-rounded-lg tw-drop-shadow-lg">
                 <div class="tw-px-6 tw-py-8">
-                    <p class="web-text-header tw-inline-block tw-align-middle"> Review ({{reviews.reviewList.data.totalElements?reviews.reviewList.data.totalElements:0}}): </p>
+                    <p class="web-text-header tw-inline-block tw-align-middle"> Review
+                        ({{ reviews.reviewList.data.totalElements ? reviews.reviewList.data.totalElements : 0 }}): </p>
                 </div>
                 <div class="tw-bg-white tw-mx-5 tw-mb-5 tw-p-4 tw-max-h-[50rem] tw-rounded-lg">
                     <v-container>
@@ -114,28 +117,30 @@ await reviews.getReview(route.params.id,0);
                         </v-row>
                         <v-row v-show="reviews.reviewList.data.content.length !== 0">
                             <v-virtual-scroll :items="['']" max-height="35rem">
-                                <ReviewCard :reviewList="reviews.reviewList.data.content" :bookId="library.bookDetail.data.bookId" @toggle="togglePopup()" @set="setDeleteId($event)"/>
+                                <reviewCard :reviewList="reviews.reviewList.data.content"
+                                    :bookId="library.bookDetail.data.bookId" @toggle="togglePopup()"
+                                    @set="setDeleteId($event)" />
                             </v-virtual-scroll>
                         </v-row>
                     </v-container>
                     <div v-show="reviews.reviewList.data.content.length !== 0">
                         <v-pagination v-model="page" class="my-4" :length="reviews.reviewList.data.totalPages"
-                            :total-visible="7" rounded="20" @update:model-value="reviews.changeReviewPage(route.params.id,page)">
+                            :total-visible="7" rounded="20"
+                            @update:model-value="reviews.changeReviewPage(route.params.id, page)">
                         </v-pagination>
                     </div>
                 </div>
             </div>
-            <confirmPopupCard class="delete-popup" :popupDetail="reviews.deleteConfirmPopup" :dialog="confirmPopup" @toggle="togglePopup()" @delete="reviews.deleteReview(deleteId,library.bookDetail.data.bookId)"/>
+            <deleteConfirmPopup class="delete-popup" :dialog="confirmPopup" 
+            @toggle="togglePopup()" @delete="reviews.deleteReview(deleteId, library.bookDetail.data.bookId)" />
         </div>
         <footer class="tw-bg-white tw-py-5"></footer>
     </div>
 </template>
  
-<style scoped>
-.delete-popup{
+<style scoped>.delete-popup {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
-</style>
+}</style>

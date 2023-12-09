@@ -1,7 +1,5 @@
 <script setup>
 import { mergeProps } from 'vue'
-import { useReviews } from "~/stores/review";
-const reviews = useReviews();
 defineEmits(["toggle","set"]);
 
 defineProps({
@@ -22,7 +20,7 @@ defineProps({
         <v-card v-for="review in reviewList" width="100%">
             <v-row>
                 <v-col cols="3" class="web-text-detail tw-my-5 tw-space-x-5 tw-space-y-2" align="left">
-                    <v-img src="/image/cat.jpg" width="40%" height="40%" class="tw-rounded-full tw-mx-5" cover />
+                    <v-img src="../../public/image/cat.jpg" width="40%" height="40%" class="tw-rounded-full tw-mx-5" cover />
                     <p class="tw-font-bold">Guest</p>
                     <p class="web-text-sub">0 reviews</p>
                     <p class="web-text-sub">0 followers</p>
@@ -30,10 +28,11 @@ defineProps({
                 <v-col cols="9" class="web-text-detail tw-my-5 tw-space-y-3">
                     <v-rating :model-value="review.reviewRating" color="#FFB703" density="compact" size="meduim"
                         half-increments readonly></v-rating>
-                    <p class="tw-font-bold">{{ review.reviewTitle }}</p>
-                    <div class="tw-min-h-[4rem]" v-show="review.spoileFlag == 0">
+                    <p class="tw-font-bold tw-mr-8">{{ review.reviewTitle }}</p>
+                    <div class="tw-min-h-[4rem] tw-mr-8" v-show="review.spoileFlag == 0">
                         <p>{{ review.reviewDetail }}</p>
                     </div>
+                    <div class="tw-mr-8">
                     <v-expansion-panels variant="inset" v-show="review.spoileFlag == 1">
                         <v-expansion-panel>
                             <v-expansion-panel-title color="#082266" class="tw-font-bold" expand-icon="mdi-plus"
@@ -44,7 +43,7 @@ defineProps({
                                 {{ review.reviewDetail }}
                             </v-expansion-panel-text>
                         </v-expansion-panel>
-                    </v-expansion-panels>
+                    </v-expansion-panels></div>
                     <div class="web-text-sub"><span> {{ review.reviewTotalLike }} likes </span> <span> {{ review.reviewTotalDisLike }} dislikes</span>
                     </div>
                     <div class="tw-space-x-3">
@@ -61,7 +60,7 @@ defineProps({
                                     </v-tooltip>
                                 </template>
                                 <v-list>
-                                    <v-list-item :to="`../review/update_${review.reviewId}`">
+                                    <v-list-item :to="`../../review/update_${review.reviewId}/`">
                                         <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-pencil-outline"></v-icon><span>Edit this review</span></v-list-item-title>
                                     </v-list-item>
                                     <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
