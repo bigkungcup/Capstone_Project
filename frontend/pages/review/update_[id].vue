@@ -4,7 +4,6 @@ import { useBooks } from "~/stores/book";
 import { ref } from 'vue';
 import updateConfirmPopup from "~/components/reviews/popups/updateConfirmPopup.vue";
 import leaveConfirmPopup from "~/components/reviews/popups/leaveConfirmPopup.vue";
-import validatePopup from "~/components/reviews/popups/validatePopup.vue";
 
 const book = useBooks();
 const reviews = useReviews();
@@ -30,6 +29,7 @@ function toggleValidatePopup() {
 
 const rules = {
     required: value => !!value || 'Field is required',
+    limited: value => value.length <= 255 || 'Max 255 characters'
 }
 
 await reviews.getReviewDetail(route.params.id)
@@ -70,7 +70,7 @@ await book.getBookDetail(reviews.newReview.bookId)
                 </v-row>
                 <div class="tw-mx-8 tw-space-y-4">
                     <v-text-field v-model="reviews.newReview.title" label="Review Header" variant="solo" height="100px"
-                        :rules="[rules.required]"></v-text-field>
+                        :rules="[rules.required,rules.limited]" counter></v-text-field>
                     <v-textarea v-model="reviews.newReview.detail" label="Review Detail" variant="solo" rows="5"
                         :rules="[rules.required]"></v-textarea>
                 </div>
@@ -83,7 +83,7 @@ await book.getBookDetail(reviews.newReview.bookId)
 
         <div class="d-flex justify-end tw-mx-[10rem] tw-mt-5 tw-space-x-4">
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview()">clear</v-btn>
-            <v-btn color="#1D419F" variant="flat" @click="toggleUpdatePopup()" :disabled="reviews.newReview.title == '' || reviews.newReview.detail == ''">submit</v-btn>
+            <v-btn color="#1D419F" variant="flat" @click="toggleUpdatePopup()" :disabled="reviews.newReview.title == '' || reviews.newReview.detail == ''|| reviews.newReview.title.length > 255">submit</v-btn>
         </div>
         <updateConfirmPopup :dialog="confirmUpdatePopup"  @toggle="toggleUpdatePopup()" @update="reviews.updateReview(route.params.id)"/>
         <leaveConfirmPopup :dialog="confirmLeavePopup" @toggle="toggleLeavePopup()"

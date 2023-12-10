@@ -5,7 +5,6 @@ import { ref } from 'vue';
 import { useRoute } from "vue-router";
 import createConfirmPopup from "~/components/reviews/popups/createConfirmPopup.vue";
 import leaveConfirmPopup from "~/components/reviews/popups/leaveConfirmPopup.vue";
-import validatePopup from "~/components/reviews/popups/validatePopup.vue";
 
 const book = useBooks();
 const reviews = useReviews();
@@ -31,6 +30,7 @@ function toggleValidatePopup() {
 
 const rules = {
     required: value => !!value || 'Field is required',
+    limited: value => value.length <= 255 || 'Max 255 characters'
 }
 
 function setBookId() {
@@ -76,7 +76,7 @@ setBookId()
                 </v-row>
                 <div class="tw-mx-8 tw-space-y-4">
                     <v-text-field v-model="reviews.newReview.title" label="Review Title" variant="solo" height="100px"
-                        clearable :rules="[rules.required]"></v-text-field>
+                        clearable :rules="[rules.required,rules.limited]" counter></v-text-field>
                     <v-textarea v-model="reviews.newReview.detail" label="Review Detail" variant="solo" rows="5" clearable
                         :rules="[rules.required]"></v-textarea>
                 </div>
@@ -89,7 +89,7 @@ setBookId()
 
         <div class="d-flex justify-end tw-mx-[10rem] tw-space-x-4">
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview(),setBookId()">clear</v-btn>
-            <v-btn color="#1D419F" variant="flat" @click="toggleUploadPopup()" :disabled="reviews.newReview.title == '' || reviews.newReview.detail == ''">upload</v-btn>
+            <v-btn color="#1D419F" variant="flat" @click="toggleUploadPopup()" :disabled="reviews.newReview.title == '' || reviews.newReview.detail == '' || reviews.newReview.title.length > 255">upload</v-btn>
         </div>
         <createConfirmPopup :dialog="confirmUploadPopup"  @toggle="toggleUploadPopup()" @upload="reviews.createReview(reviews.newReview)"/>
         <leaveConfirmPopup :dialog="confirmLeavePopup" @toggle="toggleLeavePopup()"
