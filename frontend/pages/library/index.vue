@@ -37,13 +37,13 @@ await library.getLibrary();
       </v-row>
     </v-container>
     <BookNotFound v-show="library.bookList.data.content.length == 0" />
-    <div v-show="library.bookList.data.content.length !== 0" class="">
+    <div v-show="library.bookList.data.content.length !== 0" >
       <BookCard :bookList="library.bookList.data.content" />
     </div>
 
     </div>
     <div v-show="library.bookList.data.content.length !== 0">
-    <v-pagination v-model="page" class="" :length="library.bookList.data.pageable.totalPages" :total-visible="7"
+    <v-pagination v-model="page" :length="library.bookList.data.totalPages" :total-visible="7"
         rounded="20" @update:model-value="library.changeLibraryPage(page)">
     </v-pagination></div>
 </template>

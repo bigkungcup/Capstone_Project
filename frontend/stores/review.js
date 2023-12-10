@@ -22,8 +22,6 @@ export const useReviews = defineStore("Reviews", () => {
     spoileFlag: false
   })
 
-  const validate = ref(false);
-
   //Get reviews
   async function getReview(bookId) {
     let status = 0;
@@ -106,7 +104,6 @@ export const useReviews = defineStore("Reviews", () => {
         , onResponse({ request, response, options }) {
           status = response._data.response_code
           if (status == 400) {
-            validate.value = true;
             console.log('upload review uncompleted')
           }
         }
@@ -115,7 +112,6 @@ export const useReviews = defineStore("Reviews", () => {
     if (status == 201) { 
       backPage().then(() => {
         clearNewReview();
-        validate.value = false;
       })
       console.log('upload review completed');
     }
@@ -138,7 +134,6 @@ export const useReviews = defineStore("Reviews", () => {
         , onResponse({ request, response, options }) {
           status = response._data.response_code
           if (status == 400) {
-            validate.value = true;
             console.log('update review uncompleted')
           }
         }
@@ -147,7 +142,6 @@ export const useReviews = defineStore("Reviews", () => {
     if (status == 200) {
       backPage().then(() => {
         clearNewReview();
-        validate.value = false;
       })
       console.log('update review completed');
     }
@@ -215,7 +209,6 @@ export const useReviews = defineStore("Reviews", () => {
     reviewList,
     newReview,
     reviewPage,
-    validate,
     getReview,
     getReviewDetail,
     createReview,

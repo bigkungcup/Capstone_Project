@@ -100,7 +100,7 @@ async function getBookDetail(bookId) {
   }
 
 function changeLibraryPage(page) {
-  reviewPage.value = page-1;
+  bookPage.value = page-1;
   getLibrary();
 }
 

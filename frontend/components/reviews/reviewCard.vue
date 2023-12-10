@@ -20,7 +20,7 @@ defineProps({
         <v-card v-for="review in reviewList" width="100%">
             <v-row>
                 <v-col cols="3" class="web-text-detail tw-my-5 tw-space-x-5 tw-space-y-2" align="left">
-                    <v-img src="../../public/image/cat.jpg" width="40%" height="40%" class="tw-rounded-full tw-mx-5" cover />
+                    <v-img src="/ej2/image/guest_icon.png" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover />
                     <p class="tw-font-bold">Guest</p>
                     <p class="web-text-sub">0 reviews</p>
                     <p class="web-text-sub">0 followers</p>

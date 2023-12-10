@@ -89,12 +89,11 @@ setBookId()
 
         <div class="d-flex justify-end tw-mx-[10rem] tw-space-x-4">
             <v-btn color="#1D419F" variant="outlined" @click="reviews.clearNewReview(),setBookId()">clear</v-btn>
-            <v-btn color="#1D419F" variant="flat" @click="toggleUploadPopup()">upload</v-btn>
+            <v-btn color="#1D419F" variant="flat" @click="toggleUploadPopup()" :disabled="reviews.newReview.title == '' || reviews.newReview.detail == ''">upload</v-btn>
         </div>
         <createConfirmPopup :dialog="confirmUploadPopup"  @toggle="toggleUploadPopup()" @upload="reviews.createReview(reviews.newReview)"/>
         <leaveConfirmPopup :dialog="confirmLeavePopup" @toggle="toggleLeavePopup()"
             @back="$router.go(-1)"/>
-        <validatePopup :dialog="reviews.validate" @toggle="toggleValidatePopup()"/>
     </div>
 </template>
  
