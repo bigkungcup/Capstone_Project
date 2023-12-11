@@ -1,8 +1,8 @@
 package sit.cp23ej2.dtos.Review;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +19,7 @@ public class UpdateReviewDTO {
     private String detail;
 
     @NotBlank(message = "Title shouldn't be blank or null")
-    @Max(value = 255, message = "Title shouldn't be more than 255 characters")
+    @Size(max = 255, message = "Title shouldn't be more than 255 characters")
     private String title;
 
     @NotNull(message = "SpoileFlag shouldn't be null")
