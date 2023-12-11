@@ -29,10 +29,10 @@ function countDateTime(time) {
                         <p class="web-text-title">{{ book.bookName }}</p>
                         <p class="tw-opacity-60" :onload="countDateTime(book.countDateTime)">Update about {{ dateTime }}</p>
                     </div>
-                    <div class="tw-min-h-[9rem] tw-py-2 tw-overflow-clip">
-                        <p class="tw-indent-8 tw-max-h-[9.5rem]">{{ book.bookDetail }}</p>
+                    <div class="tw-min-h-[9rem] tw-max-h-[9rem] tw-py-2 tw-overflow-clip">
+                        <p class="tw-indent-8">{{ book.bookDetail }}</p>
                     </div>
-                    <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6">
+                    <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6 tw-py-2">
                         <v-rating :model-value="0.5 * Math.floor(2 * book.bookRating)" color="#FFB703"
                             density="compact" size="meduim" half-increments readonly></v-rating>
                         <p class="web-text-rate">{{book.bookRating}}</p>
@@ -41,7 +41,7 @@ function countDateTime(time) {
                     </div>
                 </v-col>
                 <v-col class="tw-grid tw-grid-cols-8 tw-gap-2">
-                    <div class="vertical-line tw-my-8"></div>
+                    <div class="vertical-line tw-my-5"></div>
                     <div class="web-text-detail tw-col-span-7 tw-py-14">
                         <div class="tw-flex tw-gap-x-2 tw-py-2 tw-items-center">
                             <p class="tw-font-bold">Book Type : </p>
