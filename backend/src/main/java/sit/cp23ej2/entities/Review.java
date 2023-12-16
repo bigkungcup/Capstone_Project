@@ -1,9 +1,11 @@
 package sit.cp23ej2.entities;
 
-import java.time.Instant;
+// import java.time.Instant;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,15 +16,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+// import jakarta.persistence.Temporal;
+// import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @Entity
-@Table(name = "review", schema = "bannarug")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@Table(name = "Review", schema = "bannarug")
 public class Review {
     
     @Id
@@ -40,13 +45,15 @@ public class Review {
 
     private Integer reviewTotalLike;
 
+    private Integer reviewTotalDisLike;
+
     // @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime reviewCreateDateTime;
 
     // @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime reviewUpdateDateTime;
 
-    @JsonIgnore
+    // @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rvb_bookId", nullable = true)
     private Book book;

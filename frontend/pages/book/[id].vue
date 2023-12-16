@@ -1,165 +1,149 @@
 <script setup>
+import deleteConfirmPopup from "~/components/reviews/popups/deleteConfirmPopup.vue";
+import reviewCard from "~/components/reviews/reviewCard.vue";
+import { useBooks } from "~/stores/book";
+import { useReviews } from "~/stores/review";
+import { ref } from "vue";
+import similarBook from "~/components/similarBook.vue";
+
+
+const library = useBooks();
+const reviews = useReviews();
 const route = useRoute()
+const page = ref(1)
+const deleteId = ref(0)
+const confirmPopup = ref(false);
 
-const { data:book } = await useAsyncData(
-  'bookList',
-  () => $fetch( `http://localhost:8080/api/book/${route.params.id}`, {
-    method: 'GET',
-} )
-);
-
-// const library = {
-//     data: [
-//         {
-//             bookId: '01',
-//             bookName: 'I Know Why the Caged Bird Sings',
-//             bookDetail: 'Maya Angelou’s debut memoir is a modern American classic beloved worldwide. Her life story is told in the documentary film And Still I Rise, as seen on PBS’s American Masters.Here is a book as joyous and painful, as mysterious and memorable, as childhood itself. I Know Why the Caged Bird Sings captures the longing of lonely children, the brute insult of bigotry, and the wonder of words that can make the world right. Maya Angelou’s debut memoir is a modern American classic beloved worldwide. Sent by their mother to live with their devout, self-sufficient grandmother in a small Southern town, Maya and her brother, Bailey, endure the ache of abandonment and the prejudice of the local “powhitetrash.” At eight years old and back at her mother’s side in St. Louis, Maya is attacked by a man many times her age—and has to live with the consequences for a lifetime.',
-//             author: 'Maya Angelou',
-//             bookType: 'Autobiography',
-//             bookGenre: 'Biography',
-//             bookTotalBookmarked: 124,
-//             bookTotalReview: 3,
-//             bookRating: 5.0,
-//             updateDate: '',
-//             bookCover: null
-//         }
-//     ],
-// }
-
-const reviews = {
-    data: [
-        {
-            reviewId: 1,
-            reviewUsername: "Cat The Reviewer",
-            reviewAmount: 250,
-            followers: 1009,
-            reviewTitle: "Very Good",
-            reviewDetail: "Good detail Good character Good Ending Excellent!!! ",
-            reviewRating: 5,
-            reviewTotalLike: 120,
-
-        },
-        {
-            reviewId: 1,
-            reviewUsername: "Cat The Reviewer",
-            reviewAmount: 250,
-            followers: 1009,
-            reviewTitle: "Very Good",
-            // reviewDetail: "Good detail Good character Good Ending Excellent!!!",
-            reviewDetail: "Maya Angelou’s debut memoir is a modern American classic beloved worldwide. Her life story is told in the documentary film And Still I Rise, as seen on PBS’s American Masters.Here is a book as joyous and painful, as mysterious and memorable, as childhood itself. I Know Why the Caged Bird Sings captures the longing of lonely children, the brute insult of bigotry, and the wonder of words that can make the world right. Maya Angelou’s",
-            reviewRating: 5,
-            reviewTotalLike: 120,
-
-        },
-
-
-    ]
+function setDeleteId(id) {
+    deleteId.value = id;
 }
+
+function togglePopup() {
+    confirmPopup.value = !confirmPopup.value
+}
+
+await library.getBookDetail(route.params.id);
+await reviews.getReview(route.params.id, 0);
+
 </script>
  
 <template>
-    <div class="ma-2"><v-icon end icon="mdi mdi-chevron-left"></v-icon> Back </div>
-    <div class="tw-flex tw-justify-center tw-h-3/5 tw-max-h-[30rem] tw-min-h-[30rem]">
-        <v-card class="bg-opct" color="#D9D9D9" width="80%">
-            <!-- <v-row no-gutters>
-                <v-col cols="10"></v-col>
-                <v-col cols="2" class="tw-flex tw-justify-center"><v-btn >Report</v-btn></v-col>
-            </v-row> -->
-            <v-row no-gutters>
-                <v-col cols="4" class="tw-my-4" align="center">
-                    <v-img src="/image/bookcover.png" height="60%" width="100%"></v-img>
-                    <v-img src="/image/star.png" width="50%"></v-img>
-                </v-col>
-                <v-col cols="6" class="tw-my-4 tw-space-y-10">
-                    <p class="text-h4 tw-text-[#082266]">
-                        {{ book.data.bookName }}
-                    </p>
-
-                    <p class="text-h5 tw-text-[#1D419F]">
-                        Author: {{ book.data.author }}
-                    </p>
-                    <p class="text-h6 tw-text-[#1D419F]">
-                        Bookmarked by: {{ book.data.bookTotalBookmarked }} people
-                    </p>
-                    <p class="text-h6 tw-text-[#1D419F]">
-                        Booktype: <v-btn color="#1D419F" v-show="book.bookType != null">{{ book.data.bookType }}</v-btn>
-                    </p>
-                    <p class="text-h6 tw-text-[#1D419F]">
-                        Genre: <v-btn color="#1D419F">{{ book.data.bookGenre }}</v-btn>
-                    </p>
-                    <div class="tw-flex tw-justify-center tw-gap-x-12">
-                        <v-btn class="text-none" color="#1D419F"><v-icon start
-                                icon="mdi mdi-bookmark"></v-icon>Bookmark</v-btn>
-                        <v-btn class="text-none" color="#1D419F"><v-icon start
-                                icon="mdi mdi-pencil-plus"></v-icon>Review</v-btn>
-                    </div>
-                </v-col>
-                <v-col cols="2" class="tw-flex tw-justify-center my-2"><v-btn>Report</v-btn></v-col>
-            </v-row>
-
-        </v-card>
-
-    </div>
-
-    <div class="tw-flex tw-justify-center my-4">
-        <v-card class="bg-opct" color="#D9D9D9" width="80%">
-            <div class="tw-bg-white tw-flex tw-justify-center tw-m-5 tw-p-4 tw-text-xl tw-rounded-md">
-                <!-- Maya Angelou’s debut memoir is a modern American classic beloved worldwide.
-                Her life story is told in the documentary film And Still I Rise, as seen on PBS’s American Masters.Here is a
-                book as joyous and painful,
-                as mysterious and memorable, as childhood itself. I Know Why the Caged Bird Sings captures the longing of
-                lonely children, the brute insult of bigotry, and the wonder of words that can make the world right. Maya
-                Angelou’s
-                debut memoir is a modern American classic beloved worldwide. Sent by their mother to live with their devout,
-                self-sufficient grandmother in a small Southern town, Maya and her brother, Bailey, endure the ache of
-                abandonment
-                and the prejudice of the local “powhitetrash.” At eight years old and back at her mother’s side in St.
-                Louis, Maya is attacked by a man many times her age—and has to live with the consequences for a lifetime. -->
-                {{ book.data.bookDetail }}
+    <div class="web-grey-color">
+        <div class="tw-bg-white tw-space-y-1 tw-pt-1 tw-pb-10 tw-drop-shadow-lg">
+            <div class="tw-mx-36 tw-mt-5">
+                <v-btn prepend-icon="mdi mdi-chevron-left" variant="text" @click="$router.go(-1)" width="8%"
+                    color="#082250">
+                    <p class="tw-font-bold">Back</p>
+                </v-btn>
             </div>
-        </v-card>
-    </div>
-
-    <div class="tw-flex tw-justify-left my-2 tw-bg-[#D9D9D9] tw-min-h-[24rem] bg-opct">
-        <p class="tw-text-4xl tw-text-[#082266] tw-px-6 tw-py-2">Similar Book</p>
-    </div>
-
-    <div class="tw-flex tw-justify-center my-2 ">
-        <div class="tw-bg-[#D9D9D9] tw-w-10/12 tw-rounded-lg bg-opct">
-            <p class="tw-text-3xl tw-text-[#082266] tw-px-6 tw-py-2"> Review (0): </p>
-            <div class="tw-bg-white tw-flex tw-justify-center tw-m-5 tw-p-4  tw-rounded-lg">
-                <v-container>
+            <div class="tw-flex tw-justify-center tw-h-3/5 tw-max-h-[30rem] tw-min-h-[30rem]">
+                <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
+                <!-- <v-row no-gutters>
+                    <v-col cols="10"></v-col>
+                    <v-col cols="2" class="tw-flex tw-justify-center"><v-btn >Report</v-btn></v-col>
+                </v-row> -->
                     <v-row no-gutters>
-                        <v-col cols="10">
-                            <v-text-field label="Search" variant="solo-filled"> </v-text-field>
+                        <v-col cols="4" class="tw-my-10 web-text-detail" align="center">
+                            <v-img src="/image/cover_not_available.jpg" height="360"></v-img>
+                            <div class="tw-space-x-1 tw-inline-flex tw-items-center">
+                                <v-rating :model-value="library.getStarRating(library.bookDetail.data.bookRating)"
+                                    color="#FFB703" density="compact" size="large" half-increments readonly></v-rating>
+                                <p class="web-text-rate">{{ library.bookDetail.data.bookRating }}</p>
+                            </div>
                         </v-col>
-                        <v-col cols="1"><v-btn height="58" class="pa-5" color="#082266" rounded="lg"> Search
-                            </v-btn></v-col>
-                        <v-col cols="1"><v-btn height="58" class="mx-5 pa-5" color="#082266" rounded="lg"> <v-icon
-                                    icon="mdi mdi-filter-variant"></v-icon>
-                                Filter
-                            </v-btn></v-col>
-                    </v-row>
-                    <v-row no-gutters v-show="reviews.data.length == 0">
-                        <v-col cols="12" align="center">
-                            <v-img src="/image/rvnotfound.png" width="40%" class="tw-opacity-50"></v-img>
-                        </v-col>
-                    </v-row>
-                    <v-row v-show="reviews.data.length !== 0"> 
-                        <ReviewCard :reviewList="reviews.data"/>
-                    </v-row>
+                        <v-col cols="6" class="tw-my-16 web-text-detail tw-space-y-12 ">
+                            <div class="tw-space-y-6 ">
+                                <p class="web-text-title">{{ library.bookDetail.data.bookName }}</p>
+                                <p><span>Author:</span> {{ library.bookDetail.data.author }}</p>
+                                <p>Bookmarked by:
+                                    <span v-show="library.bookDetail.data.bookTotalBookmarked == null">0</span>
+                                    <span v-show="library.bookDetail.data.bookTotalBookmarked != null">{{
+                                        library.bookDetail.data.bookTotalBookmarked
+                                    }}</span> people
+                                </p>
+                                <p>Booktype: <v-btn color="#1D419F" v-show="library.bookDetail.bookType != null">{{
+                                    library.bookDetail.data.bookType }}</v-btn></p>
+                                <p>Genre: </p>
+                                <v-btn color="#1D419F">{{ library.bookDetail.data.bookGenre }}</v-btn>
+                            </div>
 
-                </v-container>
+                            <div class="tw-flex tw-justify-center tw-gap-x-12">
+                                <v-btn class="text-none" color="#1D419F"><v-icon start
+                                        icon="mdi mdi-bookmark"></v-icon>Bookmark</v-btn>
+                                <NuxtLink :to="`../../review/create_${library.bookDetail.data.bookId}/`"><v-btn
+                                        class="text-none" color="#1D419F"><v-icon start
+                                            icon="mdi mdi-pencil-plus"></v-icon>Review</v-btn></NuxtLink>
+                            </div>
+                        </v-col>
+                        <v-col cols="2" class="tw-flex tw-justify-center my-2"><v-btn>Report</v-btn></v-col>
+                    </v-row>
+                </v-card>
+            </div>
+
+            <div class="tw-flex tw-justify-center my-4">
+                <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
+                    <div class="web-text-detail tw-indent-8 tw-m-4 tw-p-10 tw-bg-white tw-rounded-md tw-min-h-[30rem]">
+                        {{ library.bookDetail.data.bookDetail }}
+                    </div>
+                </v-card>
             </div>
         </div>
+
+        <div class="tw-mt-5 tw-min-h-[24rem]">
+            <p class="web-text-header tw-mx-16">Similar Book</p>
+            <similarBook />
+        </div>
+
+        <div class="tw-flex tw-justify-center tw-bg-white tw-py-10">
+            <div class="web-grey-color tw-w-10/12 tw-rounded-lg tw-drop-shadow-lg">
+                <div class="tw-px-6 tw-py-8">
+                    <p class="web-text-header tw-inline-block tw-align-middle"> Review
+                        ({{ reviews.reviewList.data.totalElements ? reviews.reviewList.data.totalElements : 0 }}): </p>
+                </div>
+                <div class="tw-bg-white tw-mx-5 tw-mb-5 tw-p-4 tw-max-h-[50rem] tw-rounded-lg">
+                    <v-container>
+                        <v-row no-gutters>
+                            <v-col cols="10">
+                                <v-text-field label="Search" variant="solo-filled"> </v-text-field>
+                            </v-col>
+                            <v-col cols="1"><v-btn height="58" class="pa-5" color="#082266" rounded="lg"> Search
+                                </v-btn></v-col>
+                            <v-col cols="1"><v-btn height="58" class="mx-5 pa-5" color="#082266" rounded="lg"> <v-icon
+                                        icon="mdi mdi-filter-variant"></v-icon>
+                                    Filter
+                                </v-btn></v-col>
+                        </v-row>
+                        <v-row no-gutters v-show="reviews.reviewList.data.content.length == 0">
+                            <v-col cols="12" align="center">
+                                <v-img src="/image/rvnotfound.png" width="40%" class="tw-opacity-50"></v-img>
+                            </v-col>
+                        </v-row>
+                        <v-row v-show="reviews.reviewList.data.content.length !== 0">
+                            <v-virtual-scroll :items="['']" max-height="35rem">
+                                <reviewCard :reviewList="reviews.reviewList.data.content"
+                                    :bookId="library.bookDetail.data.bookId" @toggle="togglePopup()"
+                                    @set="setDeleteId($event)" />
+                            </v-virtual-scroll>
+                        </v-row>
+                    </v-container>
+                    <div v-show="reviews.reviewList.data.content.length !== 0">
+                        <v-pagination v-model="page" class="my-4" :length="reviews.reviewList.data.totalPages"
+                            :total-visible="7" rounded="20"
+                            @update:model-value="reviews.changeReviewPage(route.params.id, page)">
+                        </v-pagination>
+                    </div>
+                </div>
+            </div>
+            <deleteConfirmPopup class="delete-popup" :dialog="confirmPopup" 
+            @toggle="togglePopup()" @delete="reviews.deleteReview(deleteId, library.bookDetail.data.bookId)" />
+        </div>
+        <footer class="tw-bg-white tw-py-5"></footer>
     </div>
 </template>
  
-<style scoped>
-.bg-opct {
-    background-color: rgb(217, 217, 217, 0.6) !important;
-    color: rgb(0, 0, 0) !important;
-    caret-color: rgb(0, 0, 0) !important;
-    /* width: 80% !important; */
-}
-</style>
+<style scoped>.delete-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}</style>

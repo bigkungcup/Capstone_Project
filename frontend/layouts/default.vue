@@ -9,7 +9,7 @@
         <div class="nav-text-before-click tw-flex tw-space-x-6 tw-place-self-center tw-text-xl ">
             <NuxtLink to="/">Home</NuxtLink>
             <NuxtLink to="">Ranking</NuxtLink>
-            <NuxtLink to="/library">Library</NuxtLink>
+            <NuxtLink to="/library/">Library</NuxtLink>
             <NuxtLink to="">History</NuxtLink>
         </div>
         <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">

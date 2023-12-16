@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap');
 
+
 .lily {
     font-family: 'Lily Script One', sans-serif;
 }
@@ -49,9 +50,46 @@
     line-height: 2rem; /* 32px */
 }
 
+.web-text-header{
+    color: #082266;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem; /* 36px */
+}
+
+
 .web-text-rate{
     color: #FFBB11
 }
+
+.action-popUp-header{
+    color: #082266;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem; /* 36px */
+}
+
+.action-popUp-detail{
+    color: #082266;
+    font-weight: 500;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
+
+.delete-popUp-header{
+    color: #BB0000;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem; /* 36px */
+}
+
+.delete-popUp-detail{
+    color: #BB0000;
+    font-weight: 500;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
+
 
 .tag-color{
     background-color: #1D419F;
@@ -62,6 +100,14 @@
     filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.2)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
 }
 
+.web-grey-color{
+    background-color: rgba(217, 217, 217, 0.6)
+}
+
 .book-card{
     background-color: #D9D9D9;
+}
+
+.popup-horizontal-line{
+    border-bottom: 2px solid #B8B4B4;
 }

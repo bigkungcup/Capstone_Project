@@ -23,18 +23,18 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO  book (bookName,author,bookGenre,bookDetail, bookTotalView, bookRating)" +
+    @Query(value = "INSERT INTO  Book (bookName,author,bookGenre,bookDetail, bookTotalView, bookRating)" +
             "values (:bookName, :author, :bookGenre, :bookDetail, 0, 0);", nativeQuery = true)
     void insertBook(@Param("bookName") String bookName, @Param("author") String author,
             @Param("bookGenre") String bookGenre, @Param("bookDetail") String bookDetail);
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE book SET bookName = :bookName, author = :author, bookGenre = :bookGenre, bookDetail = :bookDetail,  bookTotalView = :bookTotalView, bookRating = :bookRating " +
+    @Query(value = "UPDATE Book SET bookName = :bookName, author = :author, bookGenre = :bookGenre, bookDetail = :bookDetail,  bookTotalView = :bookTotalView, bookRating = :bookRating " +
             " WHERE bookId = :bookId;", nativeQuery = true)
     void updateBook(@Param("bookName") String bookName, @Param("author") String author, @Param("bookGenre") String bookGenre, @Param("bookDetail") String bookDetail, 
                     @Param("bookTotalView") Integer bookTotalView, @Param("bookRating") Long bookRating, @Param("bookId") Integer bookId);
 
-    @Query(value = "DELETE FROM book WHERE bookId = :bookId", nativeQuery = true)
+    @Query(value = "DELETE FROM Book WHERE bookId = :bookId", nativeQuery = true)
     void deleteBook(@Param("bookId") Integer bookId);
 }
