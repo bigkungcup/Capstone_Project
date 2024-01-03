@@ -10,8 +10,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class HandleExceptionFile extends RuntimeException{
-    
-    public HandleExceptionFile(String message, Throwable cause) {
-        super(message, cause);
-    }
+    public HandleExceptionFile(String message) {
+		super(message);
+	}
+
+	public HandleExceptionFile(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

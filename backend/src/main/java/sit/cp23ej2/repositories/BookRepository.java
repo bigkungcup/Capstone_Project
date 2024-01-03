@@ -31,10 +31,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Modifying
     @Transactional
     @Query(value = "UPDATE Book SET bookName = :bookName, author = :author, bookGenre = :bookGenre, bookDetail = :bookDetail,  bookTotalView = :bookTotalView, bookRating = :bookRating " +
-            " WHERE bookId = :bookId;", nativeQuery = true)
+            " WHERE bookId = :bookId", nativeQuery = true)
     void updateBook(@Param("bookName") String bookName, @Param("author") String author, @Param("bookGenre") String bookGenre, @Param("bookDetail") String bookDetail, 
                     @Param("bookTotalView") Integer bookTotalView, @Param("bookRating") Long bookRating, @Param("bookId") Integer bookId);
 
+    @Modifying
+    @Transactional
     @Query(value = "DELETE FROM Book WHERE bookId = :bookId", nativeQuery = true)
     void deleteBook(@Param("bookId") Integer bookId);
 }

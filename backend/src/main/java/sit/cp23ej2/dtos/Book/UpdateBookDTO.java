@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UpdateBookDTO {
-    private Integer bookId;
+    // private Integer bookId;
     private String bookName;
     private String author;
     private String bookGenre;

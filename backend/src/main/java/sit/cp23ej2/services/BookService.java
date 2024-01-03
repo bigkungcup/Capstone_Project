@@ -3,12 +3,15 @@ package sit.cp23ej2.services;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import sit.cp23ej2.controllers.CommonController;
 // import sit.cp23ej2.dtos.Paginate;
@@ -19,7 +22,12 @@ import sit.cp23ej2.dtos.Book.UpdateBookDTO;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.entities.Book;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
+import sit.cp23ej2.properties.FileStorageProperties;
 import sit.cp23ej2.repositories.BookRepository;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 
 @Service
@@ -27,6 +35,12 @@ public class BookService extends CommonController {
 
     @Autowired
     private BookRepository repository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
+    private FileStorageProperties fileStorageProperties;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -59,7 +73,18 @@ public class BookService extends CommonController {
                 // + " minutes ago " + Math.abs(duration.toSeconds()) + " seconds ago");
                 Duration duration = Duration.between(LocalDateTime.now(), bookDTO.getBookUpdateDateTime());
                 bookDTO.setCountDateTime(Math.abs(duration.toSeconds()));
-
+                Path path = Paths.get(fileStorageProperties.getUploadDir() + "/" + bookDTO.getBookName());
+                System.out.println("Path" + path.toString());
+                // Resource resource = fileStorageService.loadAsResource(bookDTO);  
+                try {
+                    Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
+                    System.out.println("Path File" + pathFile.toString());
+                    // System.out.println("File name" + resource.getFile().getName());
+                    // System.out.println("Resource"+ resource.getURI().toString());
+                    bookDTO.setFile(pathFile.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             });
             response.setResponse_code(200);
             response.setResponse_status("OK");
@@ -89,9 +114,12 @@ public class BookService extends CommonController {
         return response;
     }
 
-    public DataResponse createBook(CreateBookDTO book) {
+    public DataResponse createBook(CreateBookDTO book, MultipartFile file) {
         DataResponse response = new DataResponse();
         repository.insertBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail());
+        if(file != null){
+            fileStorageService.store(file, book.getBookName());
+        }
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Book Created");
@@ -99,11 +127,14 @@ public class BookService extends CommonController {
         return response;
     }
 
-    public DataResponse updateBook(UpdateBookDTO book, Integer bookId) {
+    public DataResponse updateBook(UpdateBookDTO book, Integer bookId, MultipartFile file) {
         DataResponse response = new DataResponse();
         repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
                 book.getBookTotalView(), book.getBookRating(), bookId);
         Book dataBook = repository.findBookById(bookId);
+         if(file != null){    
+            fileStorageService.store(file, book.getBookName());
+        }
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Book Updated");
@@ -114,6 +145,8 @@ public class BookService extends CommonController {
 
     public DataResponse deleteBook(int bookId) {
         DataResponse response = new DataResponse();
+        Book dataBook = repository.findBookById(bookId);
+        fileStorageService.deleteFile(dataBook);
         repository.deleteBook(bookId);
         response.setResponse_code(200);
         response.setResponse_status("OK");

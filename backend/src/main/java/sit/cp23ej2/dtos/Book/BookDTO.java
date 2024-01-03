@@ -23,4 +23,5 @@ public class BookDTO {
     private Instant bookCreateDateTime;
     private LocalDateTime bookUpdateDateTime;
     private Long countDateTime;
+    private String file;
 }

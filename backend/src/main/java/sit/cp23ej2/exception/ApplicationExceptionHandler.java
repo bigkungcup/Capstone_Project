@@ -57,7 +57,7 @@ public class ApplicationExceptionHandler extends RuntimeException{
         });
         response.setResponse_code(HttpStatus.BAD_REQUEST.value());
         response.setResponse_status(HttpStatus.BAD_REQUEST.name());
-        // response.setResponse_message(ex.getMessage());
+        response.setResponse_message("");
         response.setResponse_datetime(Instant.now());
         response.setFiledErrors(error);
         response.setPath(request.getRequest().getRequestURI());
@@ -71,7 +71,7 @@ public class ApplicationExceptionHandler extends RuntimeException{
         error.put("Error:", ex.getMessage());
         response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
-        // response.setResponse_message(ex.getMessage());
+        response.setResponse_message("");
         response.setResponse_datetime(Instant.now());
         response.setFiledErrors(error);
         response.setPath(request.getRequest().getRequestURI());
@@ -85,7 +85,7 @@ public class ApplicationExceptionHandler extends RuntimeException{
         error.put("Error:", ex.getMessage());
         response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
-        // response.setResponse_message(ex.getMessage());
+        response.setResponse_message("");
         response.setResponse_datetime(Instant.now());
         response.setFiledErrors(error);
         response.setPath(request.getRequest().getRequestURI());
@@ -99,7 +99,7 @@ public class ApplicationExceptionHandler extends RuntimeException{
         error.put("Error:", ex.getMessage());
         response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
-        // response.setResponse_message(ex.getMessage());
+        response.setResponse_message("");
         response.setResponse_datetime(Instant.now());
         response.setFiledErrors(error);
         response.setPath(request.getRequest().getRequestURI());
@@ -132,7 +132,7 @@ public class ApplicationExceptionHandler extends RuntimeException{
         error.put("Error:", ex.getMessage());
         response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
-        // response.setResponse_message(ex.getMessage());
+        response.setResponse_message("");
         response.setResponse_datetime(Instant.now());
         response.setFiledErrors(error);
         response.setPath(request.getRequest().getRequestURI());
@@ -146,7 +146,7 @@ public class ApplicationExceptionHandler extends RuntimeException{
         error.put("Error:", ex.getMessage());
         response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
-        // response.setResponse_message(ex.getMessage());
+        response.setResponse_message("");
         response.setResponse_datetime(Instant.now());
         response.setFiledErrors(error);
         response.setPath(request.getRequest().getRequestURI());
@@ -160,24 +160,38 @@ public class ApplicationExceptionHandler extends RuntimeException{
         error.put("Error:", ex.getMessage());
         response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
-        // response.setResponse_message(ex.getMessage());
+        response.setResponse_message("");
         response.setResponse_datetime(Instant.now());
         response.setFiledErrors(error);
         response.setPath(request.getRequest().getRequestURI());
         return response;
     }
 
-    // @ResponseStatus(HttpStatus.CREATED)
-    // @ExceptionHandler(HandleExceptionNotFound.class)
-    // public ExceptionResponse handleNullPointerException(HandleExceptionNotFound exception, ServletWebRequest request) {
-    //     Map<String, String> error = new HashMap<>();
-    //     error.put("Error:", exception.getMessage());
-    //     response.setResponse_code(HttpStatus.CREATED.value());
-    //     response.setResponse_status(HttpStatus.CREATED.name());
-    //     response.setResponse_message(exception.getMessage());
-    //     response.setResponse_datetime(Instant.now());
-    //     response.setFiledErrors(error);
-    //     response.setPath(request.getRequest().getRequestURI());
-    //     return response;
-    // }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {java.lang.NullPointerException.class})
+    public ExceptionResponse handleNullPointerException(java.lang.NullPointerException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        response.setResponse_message("");
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {sit.cp23ej2.exception.HandleExceptionFile.class})
+    public ExceptionResponse handleExceptionFile(sit.cp23ej2.exception.HandleExceptionFile ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        response.setResponse_message("");
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
 }
