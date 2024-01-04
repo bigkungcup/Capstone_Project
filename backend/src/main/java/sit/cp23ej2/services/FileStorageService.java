@@ -21,6 +21,7 @@ import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.properties.FileStorageProperties;
 
 import java.nio.file.StandardCopyOption;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.util.StringUtils;
 import org.springframework.core.io.Resource;
@@ -101,8 +102,15 @@ public class FileStorageService {
 	}
 
 	public Path load(BookDTO book) {
-		String path = book.getBookName().toString();
-		return rootLocation.resolve(path);
+		// String path = book.getBookName().toString();
+		try{
+			Path path =  rootLocation.resolve(book.getBookName().toString());
+			Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
+			return pathFile;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public Resource loadAsResource(BookDTO book) {

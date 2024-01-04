@@ -3,7 +3,6 @@ package sit.cp23ej2.services;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +21,9 @@ import sit.cp23ej2.dtos.Book.UpdateBookDTO;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.entities.Book;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
-import sit.cp23ej2.properties.FileStorageProperties;
 import sit.cp23ej2.repositories.BookRepository;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 
 @Service
@@ -38,9 +34,6 @@ public class BookService extends CommonController {
 
     @Autowired
     private FileStorageService fileStorageService;
-
-    @Autowired
-    private FileStorageProperties fileStorageProperties;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -73,14 +66,16 @@ public class BookService extends CommonController {
                 // + " minutes ago " + Math.abs(duration.toSeconds()) + " seconds ago");
                 Duration duration = Duration.between(LocalDateTime.now(), bookDTO.getBookUpdateDateTime());
                 bookDTO.setCountDateTime(Math.abs(duration.toSeconds()));
-                Path path = Paths.get(fileStorageProperties.getUploadDir() + "/" + bookDTO.getBookName());
-                System.out.println("Path" + path.toString());
-                // Resource resource = fileStorageService.loadAsResource(bookDTO);  
+                // Path path = Paths.get(fileStorageProperties.getUploadDir() + "/" +
+                // bookDTO.getBookName());
+                // System.out.println("Path" + path.toString());
+                // Resource resource = fileStorageService.loadAsResource(bookDTO);
                 try {
-                    Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
-                    System.out.println("Path File" + pathFile.toString());
+                    // Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
+                    // System.out.println("Path File" + pathFile.toString());
                     // System.out.println("File name" + resource.getFile().getName());
                     // System.out.println("Resource"+ resource.getURI().toString());
+                    Path pathFile = fileStorageService.load(bookDTO);
                     bookDTO.setFile(pathFile.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -101,13 +96,20 @@ public class BookService extends CommonController {
     public DataResponse getBookById(int bookId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         Book book = repository.findBookById(bookId);
+        BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+        try {
 
+            Path pathFile = fileStorageService.load(bookDTO);
+            bookDTO.setFile(pathFile.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (book != null) {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Book Detail");
             response.setResponse_datetime(Instant.now());
-            response.setData(book);
+            response.setData(bookDTO);
         } else {
             throw new HandleExceptionNotFound("Book Not Found", "Book");
         }
@@ -117,7 +119,7 @@ public class BookService extends CommonController {
     public DataResponse createBook(CreateBookDTO book, MultipartFile file) {
         DataResponse response = new DataResponse();
         repository.insertBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail());
-        if(file != null){
+        if (file != null) {
             fileStorageService.store(file, book.getBookName());
         }
         response.setResponse_code(201);
@@ -132,14 +134,22 @@ public class BookService extends CommonController {
         repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
                 book.getBookTotalView(), book.getBookRating(), bookId);
         Book dataBook = repository.findBookById(bookId);
-         if(file != null){    
+        BookDTO bookDTO = modelMapper.map(dataBook, BookDTO.class);
+        if (file != null) {
             fileStorageService.store(file, book.getBookName());
+        }
+         try {
+
+            Path pathFile = fileStorageService.load(bookDTO);
+            bookDTO.setFile(pathFile.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Book Updated");
         response.setResponse_datetime(Instant.now());
-        response.setData(dataBook);
+        response.setData(bookDTO);
         return response;
     }
 
