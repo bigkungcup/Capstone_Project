@@ -194,4 +194,32 @@ public class ApplicationExceptionHandler extends RuntimeException{
         response.setPath(request.getRequest().getRequestURI());
         return response;
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {java.nio.file.NoSuchFileException.class})
+    public ExceptionResponse handleNoSuchFileException(java.nio.file.NoSuchFileException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        response.setResponse_message("");
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {HandleExceptionBadRequest.class})
+    public ExceptionResponse handleNoSuchFileException(HandleExceptionBadRequest ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.BAD_REQUEST.value());
+        response.setResponse_status(HttpStatus.BAD_REQUEST.name());
+        response.setResponse_message("");
+        response.setResponse_datetime(Instant.now());
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
 }

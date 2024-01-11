@@ -20,6 +20,7 @@ import sit.cp23ej2.dtos.Book.PageBookDTO;
 import sit.cp23ej2.dtos.Book.UpdateBookDTO;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.entities.Book;
+import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 
@@ -76,7 +77,9 @@ public class BookService extends CommonController {
                     // System.out.println("File name" + resource.getFile().getName());
                     // System.out.println("Resource"+ resource.getURI().toString());
                     Path pathFile = fileStorageService.load(bookDTO);
-                    bookDTO.setFile(pathFile.toString());
+                    if(pathFile != null){
+                        bookDTO.setFile(pathFile.toString());
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -118,9 +121,15 @@ public class BookService extends CommonController {
 
     public DataResponse createBook(CreateBookDTO book, MultipartFile file) {
         DataResponse response = new DataResponse();
-        repository.insertBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail());
-        if (file != null) {
-            fileStorageService.store(file, book.getBookName());
+        Boolean existsByAuthorAndBookName = repository.existsByAuthorAndBookName(book.getAuthor(), book.getBookName());
+        System.out.println("existsByAuthorAndBookName: " + existsByAuthorAndBookName);
+        if (!existsByAuthorAndBookName) {
+            repository.insertBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail());
+            if (file != null) {
+                fileStorageService.store(file, book.getBookName(), book.getAuthor());
+            }
+        } else {
+            throw new HandleExceptionBadRequest("Book Already Exists");
         }
         response.setResponse_code(201);
         response.setResponse_status("Created");
@@ -136,10 +145,9 @@ public class BookService extends CommonController {
         Book dataBook = repository.findBookById(bookId);
         BookDTO bookDTO = modelMapper.map(dataBook, BookDTO.class);
         if (file != null) {
-            fileStorageService.store(file, book.getBookName());
+            fileStorageService.store(file, book.getBookName(), book.getAuthor());
         }
-         try {
-
+        try {
             Path pathFile = fileStorageService.load(bookDTO);
             bookDTO.setFile(pathFile.toString());
         } catch (Exception e) {

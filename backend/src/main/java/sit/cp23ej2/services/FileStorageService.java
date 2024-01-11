@@ -44,8 +44,11 @@ public class FileStorageService {
 		}
 	}
 
-	public void store(MultipartFile file, String bookName) {
-		String path =bookName;
+	public void store(MultipartFile file, String bookName, String author) {
+		// boo_name = boo_name.replace(" ", "_");
+		// boo_name = boo_name + "_" + author;
+		String path = bookName + "_" + author;
+
 		try {
 			if (file.isEmpty()) {
 				throw new HandleExceptionFile("Failed to store empty file.");
@@ -102,15 +105,20 @@ public class FileStorageService {
 	}
 
 	public Path load(BookDTO book) {
-		// String path = book.getBookName().toString();
+		String pathSave = book.getBookName().toString() + "_" + book.getAuthor().toString();
 		try{
-			Path path =  rootLocation.resolve(book.getBookName().toString());
-			Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
-			return pathFile;
+			Path path =  rootLocation.resolve(pathSave);
+			if(path.toFile().exists()) {
+				Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
+				if(pathFile.toFile().exists()){
+					return pathFile;
+				}
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
+		
+		return null;
 	}
 
 	public Resource loadAsResource(BookDTO book) {
@@ -135,7 +143,7 @@ public class FileStorageService {
 	}
 
 	public void deleteFile(Book book) {
-		String path = book.getBookName().toString();
+		String path = book.getBookName().toString() + "_" + book.getAuthor().toString();
 		Path destinationFile = this.rootLocation.resolve(path);
 			if (destinationFile.toFile().exists()) {
 				System.out.println("File Exists");

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.lang.Nullable;
+import jakarta.validation.Valid;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.CreateBookDTO;
 import sit.cp23ej2.dtos.Book.UpdateBookDTO;
@@ -54,7 +55,7 @@ public class BookController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public DataResponse createBook(@RequestPart("book") CreateBookDTO book, @RequestPart(value = "file") @Nullable MultipartFile file) {
+    public DataResponse createBook(@RequestPart("book") @Valid CreateBookDTO book, @RequestPart(value = "file") @Nullable MultipartFile file) {
         return bookService.createBook(book,file);
     }
 
