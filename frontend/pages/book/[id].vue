@@ -5,6 +5,8 @@ import { useBooks } from "~/stores/book";
 import { useReviews } from "~/stores/review";
 import { ref } from "vue";
 import similarBook from "~/components/similarBook.vue";
+import { mergeProps } from 'vue'
+
 
 
 const library = useBooks();
@@ -43,10 +45,6 @@ function bookCoverPath(filePath) {
             </div>
             <div class="tw-flex tw-justify-center tw-h-3/5 tw-max-h-[30rem] tw-min-h-[30rem]">
                 <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
-                <!-- <v-row no-gutters>
-                    <v-col cols="10"></v-col>
-                    <v-col cols="2" class="tw-flex tw-justify-center"><v-btn >Report</v-btn></v-col>
-                </v-row> -->
                     <v-row no-gutters>
                         <v-col cols="4" class="tw-my-10 web-text-detail" align="center">
                             <v-img src="/image/cover_not_available.jpg" v-show="library.bookDetail.data.file == null" height="360" width="240"></v-img>
@@ -57,7 +55,7 @@ function bookCoverPath(filePath) {
                                 <p class="web-text-rate">{{ library.bookDetail.data.bookRating }}</p>
                             </div>
                         </v-col>
-                        <v-col cols="6" class="tw-my-16 web-text-detail tw-space-y-12 ">
+                        <v-col cols="7" class="tw-my-16 web-text-detail tw-space-y-12 ">
                             <div class="tw-space-y-6 ">
                                 <p class="web-text-title">{{ library.bookDetail.data.bookName }}</p>
                                 <p><span>Author:</span> {{ library.bookDetail.data.author }}</p>
@@ -81,7 +79,33 @@ function bookCoverPath(filePath) {
                                             icon="mdi mdi-pencil-plus"></v-icon>Review</v-btn></NuxtLink>
                             </div>
                         </v-col>
-                        <v-col cols="2" class="tw-flex tw-justify-center my-2"><v-btn>Report</v-btn></v-col>
+                        <v-col cols="1" class="tw-flex tw-justify-center my-2">
+                            <span class="text-center">
+                            <v-menu>
+                                <template v-slot:activator="{ props: menu }">
+                                    <v-tooltip location="top">
+                                        <template v-slot:activator="{ props: tooltip }">
+                                            <v-icon icon="mdi mdi-dots-horizontal" style="font-size: 42px;" v-bind="mergeProps(menu, tooltip)"></v-icon>
+                                        </template>
+                                        <span>More</span>
+                                    </v-tooltip>
+                                </template>
+                                <v-list>
+                                    <v-list-item :to="`../../book/update_${library.bookDetail.data.bookId}/`">
+                                        <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-pencil-outline"></v-icon><span>Edit this book</span></v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
+                                        <v-list-item-title class="web-text-detail">
+                                            <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this book</span></v-list-item-title>
+                                        </v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item>
+                                        <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-flag-variant-outline"></v-icon><span>Report this book</span></v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+                        </span>
+                        </v-col>
                     </v-row>
                 </v-card>
             </div>
