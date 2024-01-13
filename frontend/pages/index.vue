@@ -26,6 +26,8 @@ const bookcovers = [
 
       ]
 const path = '/ej2'
+
+const bookPath = ref('_nuxt/@fs\\Files\\Uploads\\TEST\\foryou2.jpg')
 </script>
 
 <template>
@@ -43,8 +45,8 @@ const path = '/ej2'
     
   <div class="ma-8">
     <div class="tw-text-4xl tw-text-[#082266] tw-font-extrabold tw-py-8"> Recommend </div>
-
-  <v-sheet class="mx-auto tw-p-4" elevation="2" width="100%" height="100%" color="blue" style="border-radius:20px;" >
+    <v-img :src="bookPath" width="180" alt="aaa"/>
+  <!-- <v-sheet class="mx-auto tw-p-4" elevation="2" width="100%" height="100%" color="blue" style="border-radius:20px;" >
       <v-slide-group  show-arrows>
         <v-slide-group-item>
           <div class="tw-flex tw-items-center tw-text-7xl" style="font-family: 'Rampart One';"> For You </div>
@@ -55,8 +57,9 @@ const path = '/ej2'
           </v-card>
         </v-slide-group-item>
       </v-slide-group>
-    </v-sheet>
+    </v-sheet> -->
   </div>
+
   </div>
 <!-- 
 <div class="my-5">

@@ -15,14 +15,23 @@ function countDateTime(time) {
    dateTime.value = library.countUpdateTime(time)
 }
 
+function bookCoverPath(filePath) {
+    console.log(filePath);
+   return filePath = (`../_nuxt/@fs/${filePath}`)
+}
+
+// const bookPath = ref('../_nuxt/@fs\\Files\\Uploads\\TEST\\foryou2.jpg')
+
 </script>
  
 <template>
     <div class="tw-px-36 tw-space-y-4">
         <v-card v-for="book in bookList" color="rgb(217, 217, 217, 0.6)" class="tw-min-h-[19rem] tw-max-h-[19rem]" :to="`/book/${book.bookId}/`">
             <v-row no-gutters>
-                <v-col cols="3" class="tw-my-3" align="center">
-                    <v-img src="/image/cover_not_available.jpg" width="180" />
+                <v-col cols="3" class="my-3 " align="center">
+                    <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="180" height="280" cover v-show="book.file == null"/>
+                    <v-img class="tw-drop-shadow-lg" :src="bookCoverPath(book.file)" width="180" height="280" cover v-show="book.file != null" />
+                    <!-- <v-img src="~\Files\Uploads\TEST1\foryou2.jpg" width="180" v-show="book.file !== null"/> -->
                 </v-col>
                 <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
                     <div>

@@ -10,6 +10,13 @@ export const useBooks = defineStore("Books", () => {
       }
     }
 });
+  const newBook = ref({
+    bookName: '',
+    author: '',
+    bookGenre: '',
+    bookDetail: ''
+  });
+  const newBookFile = ref();
   const bookDetail = ref();
   const bookPage = ref(0);
   const runtimeConfig = useRuntimeConfig();
@@ -67,6 +74,41 @@ async function getBookDetail(bookId) {
   }
 }
 
+//Create Book
+  async function createBook() {
+    let status = 0;
+    const book = {
+      bookName: newBook.value.bookName,
+      author: newBook.value.author,
+      bookGenre: newBook.value.bookGenre,
+      bookDetail: newBook.value.bookDetail
+    }
+  
+  const formData = new FormData();
+  formData.append('book',new Blob([JSON.stringify(book)],{ type: 'application/json' }))
+  formData.append('file',newBookFile.value != undefined ? newBookFile.value[0] : null)
+  console.log(formData);
+    await $fetch(
+      `${import.meta.env.VITE_BASE_URL}/book`,
+      {
+        method: "POST",
+        body: formData
+        , onResponse({ request, response, options }) {
+          status = response._data.response_code
+          if (status == 400) {
+            console.log('upload book uncompleted')
+          }
+        }
+      }
+    );
+    if (status == 201) { 
+      backPage().then(() => {
+        clearNewBook();
+      })
+      console.log('upload book completed');
+    }
+  }
+
 // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds){
     let interval = Math.floor(seconds / 31536000);
@@ -107,7 +149,24 @@ function changeLibraryPage(page) {
 function getStarRating(number){
   return number = 0.5 * Math.floor(2 * number);
 }
-  return { bookList,bookDetail, bookPage, getLibrary, getBookDetail, changeLibraryPage, getStarRating, countUpdateTime };
+
+  //Clear new review
+  function clearNewBook() {
+    newBook.value = {
+      bookName: '',
+      author: '',
+      bookGenre: '',
+      bookDetail: ''
+    },
+    newBookFile.value = null
+  }
+
+    //Back Page
+    function backPage() {
+      window.history.back()
+    }
+
+  return { bookList,bookDetail, newBook, newBookFile, bookPage, getLibrary, getBookDetail, createBook, changeLibraryPage, getStarRating, countUpdateTime, clearNewBook };
 
 });
 

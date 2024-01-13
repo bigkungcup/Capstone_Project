@@ -25,6 +25,11 @@ function togglePopup() {
 await library.getBookDetail(route.params.id);
 await reviews.getReview(route.params.id, 0);
 
+function bookCoverPath(filePath) {
+    console.log(filePath);
+   return filePath = (`../../_nuxt/@fs/${filePath}`)
+}
+
 </script>
  
 <template>
@@ -44,7 +49,8 @@ await reviews.getReview(route.params.id, 0);
                 </v-row> -->
                     <v-row no-gutters>
                         <v-col cols="4" class="tw-my-10 web-text-detail" align="center">
-                            <v-img src="/image/cover_not_available.jpg" height="360"></v-img>
+                            <v-img src="/image/cover_not_available.jpg" v-show="library.bookDetail.data.file == null" height="360" width="240"></v-img>
+                            <v-img class="tw-drop-shadow-xl mb-2" :src="bookCoverPath(library.bookDetail.data.file)" v-show="library.bookDetail.data.file != null" height="360" width="240" cover></v-img>
                             <div class="tw-space-x-1 tw-inline-flex tw-items-center">
                                 <v-rating :model-value="library.getStarRating(library.bookDetail.data.bookRating)"
                                     color="#FFB703" density="compact" size="large" half-increments readonly></v-rating>

@@ -26,6 +26,11 @@ export default defineNuxtConfig({
     close: () => {},
   },
   vite: {
+    server: {
+      fs: {
+          allow: ["C:/Files/Uploads"]
+      }
+  },
     vue: {
       template: {
         transformAssetUrls,
