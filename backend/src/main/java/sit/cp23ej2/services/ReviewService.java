@@ -1,7 +1,6 @@
 package sit.cp23ej2.services;
 
 import java.time.Instant;
-// import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
-// import sit.cp23ej2.dtos.Paginate;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
