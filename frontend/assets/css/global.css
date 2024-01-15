@@ -90,6 +90,19 @@
     line-height: 2rem; /* 32px */
 }
 
+.confirm-popUp-header{
+    color: #20D43D;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem; /* 36px */
+}
+
+.confirm-popUp-detail{
+    /* color: #646363; */
+    font-weight: 500;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
 
 .tag-color{
     background-color: #1D419F;

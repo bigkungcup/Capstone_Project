@@ -13,7 +13,7 @@ defineProps({
         <v-card style="height: 20rem; width: 40rem;" class="rounded-xl tw-place-self-center">
         <v-card-title style="height: 5rem; width: 40rem;">
           <p class="action-popUp-header tw-flex tw-justify-center tw-my-4">Do you want to leave this site?</p>
-          <div class="horizontal-line"></div>
+          <div class="popup-horizontal-line"></div>
         </v-card-title>
         <v-card-text class="d-flex align-content-center justify-center flex-wrap" style="height: 10rem; width: 40rem;"><div class="action-popUp-detail">Changes you made may not be saved.</div></v-card-text>
         <v-card-actions style="height: 5rem; width: 40rem;">
