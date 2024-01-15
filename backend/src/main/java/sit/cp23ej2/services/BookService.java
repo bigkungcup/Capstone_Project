@@ -6,14 +6,12 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import sit.cp23ej2.controllers.CommonController;
-// import sit.cp23ej2.dtos.Paginate;
 import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.dtos.Book.CreateBookDTO;
 import sit.cp23ej2.dtos.Book.PageBookDTO;
@@ -140,10 +138,14 @@ public class BookService extends CommonController {
 
     public DataResponse updateBook(UpdateBookDTO book, Integer bookId, MultipartFile file) {
         DataResponse response = new DataResponse();
-        repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
-                book.getBookTotalView(), book.getBookRating(), bookId);
         Book dataBook = repository.findBookById(bookId);
-        BookDTO bookDTO = modelMapper.map(dataBook, BookDTO.class);
+        fileStorageService.deleteFile(dataBook);
+
+        repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
+                book.getBookRating(), bookId);
+
+        Book newDataBook = repository.findBookById(bookId);
+        BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
         if (file != null) {
             fileStorageService.store(file, book.getBookName(), book.getAuthor());
         }

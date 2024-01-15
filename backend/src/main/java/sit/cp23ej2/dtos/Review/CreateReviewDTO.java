@@ -19,7 +19,7 @@ public class CreateReviewDTO {
     private String detail;
 
     @NotBlank(message = "Title shouldn't be blank or null")
-    @Size(max = 255, message = "Title shouldn't be more than 255 characters")
+    @Size(max = 255, min = 1, message = "Title shouldn't be more than 255 characters and less than 1 characters")
     private String title;
 
     @NotNull(message = "User Id shouldn't be null")

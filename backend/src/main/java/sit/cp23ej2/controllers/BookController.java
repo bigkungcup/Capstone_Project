@@ -60,7 +60,7 @@ public class BookController {
     }
 
     @PutMapping("/{bookId}")
-    public DataResponse updateBook(@RequestPart("book") UpdateBookDTO book, @PathVariable Integer bookId, @RequestPart(required = false, value = "file") MultipartFile file) {
+    public DataResponse updateBook(@RequestPart("book") @Valid  UpdateBookDTO book, @PathVariable Integer bookId, @RequestPart(required = false, value = "file") MultipartFile file) {
         return bookService.updateBook(book, bookId, file);
     }
 

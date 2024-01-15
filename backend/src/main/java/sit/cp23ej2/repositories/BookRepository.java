@@ -38,13 +38,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE Book SET bookName = :bookName, author = :author, bookGenre = :bookGenre, bookDetail = :bookDetail,  bookTotalView = :bookTotalView, bookRating = :bookRating "
+        @Query(value = "UPDATE Book SET bookName = :bookName, author = :author, bookGenre = :bookGenre, bookDetail = :bookDetail, bookRating = :bookRating "
                         +
                         " WHERE bookId = :bookId", nativeQuery = true)
         void updateBook(@Param("bookName") String bookName, @Param("author") String author,
                         @Param("bookGenre") String bookGenre, @Param("bookDetail") String bookDetail,
-                        @Param("bookTotalView") Integer bookTotalView, @Param("bookRating") Long bookRating,
-                        @Param("bookId") Integer bookId);
+                        @Param("bookRating") Long bookRating, @Param("bookId") Integer bookId);
 
         @Modifying
         @Transactional
