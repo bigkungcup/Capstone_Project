@@ -16,7 +16,9 @@ export const useBooks = defineStore("Books", () => {
     bookGenre: '',
     bookDetail: ''
   });
+  const editBook = ref();
   const newBookFile = ref();
+  const editBookFile = ref();
   const bookDetail = ref();
   const bookPage = ref(0);
   const runtimeConfig = useRuntimeConfig();
@@ -109,6 +111,68 @@ async function getBookDetail(bookId) {
     }
   }
 
+  //Update Book
+  async function updateBook(bookId) {
+    let status = 0;
+    const book = {
+      bookName: editBook.value.bookName,
+      author: editBook.value.author,
+      bookGenre: editBook.value.bookGenre,
+      bookDetail: editBook.value.bookDetail,
+      bookTotalView: 5,
+      bookRating: 4
+    }
+  
+  const formData = new FormData();
+  formData.append('book',new Blob([JSON.stringify(book)],{ type: 'application/json' }))
+  formData.append('file',editBookFile.value != undefined ? editBookFile.value[0] : null)
+  console.log(formData);
+    await $fetch(
+      `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
+      {
+        method: "PUT",
+        body: formData
+        , onResponse({ request, response, options }) {
+          status = response._data.response_code
+          if (status == 400) {
+            console.log('update book uncompleted')
+          }
+        }
+      }
+    );
+    if (status == 200) { 
+      backPage().then(() => {
+        clearEditBook();
+      })
+      console.log('update book completed');
+    }
+  }
+
+    //Delete book
+    async function deleteBook(bookId) {
+      let status = 0;
+      const { data } = await useFetch(
+        `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
+        {
+          onRequest({ request, options }) {
+            options.method = "Delete";
+            options.headers = {
+              "Content-Type": "application/json",
+            };
+          },
+          onResponse({ request, response, options }) {
+            status = response._data.response_code;
+          }
+        },
+      );
+      if (status == 200) {
+        backPage();
+        console.log('delete book completed');
+      } else if (status == 404) {
+        console.log('delete book uncompleted')
+      }
+    }
+
 // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds){
     let interval = Math.floor(seconds / 31536000);
@@ -150,7 +214,7 @@ function getStarRating(number){
   return number = 0.5 * Math.floor(2 * number);
 }
 
-  //Clear new review
+  //Clear new book
   function clearNewBook() {
     newBook.value = {
       bookName: '',
@@ -161,12 +225,23 @@ function getStarRating(number){
     newBookFile.value = null
   }
 
+    // Clear update book
+    function clearEditBook() {
+      editBook.value = null
+      editBookFile.value = null
+    }
+
+//set edit book
+function setEditBook() {
+  editBook.value = bookDetail.value.data
+}
+
     //Back Page
     function backPage() {
       window.history.back()
     }
 
-  return { bookList,bookDetail, newBook, newBookFile, bookPage, getLibrary, getBookDetail, createBook, changeLibraryPage, getStarRating, countUpdateTime, clearNewBook };
+  return { bookList,bookDetail, newBook, newBookFile, editBook, editBookFile, bookPage, getLibrary, getBookDetail, createBook, updateBook, deleteBook, changeLibraryPage, getStarRating, countUpdateTime, clearNewBook, setEditBook, clearEditBook };
 
 });
 

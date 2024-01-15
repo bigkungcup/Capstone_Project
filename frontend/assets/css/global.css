@@ -90,6 +90,11 @@
     line-height: 2rem; /* 32px */
 }
 
+.validate-text{
+    color: #BB0000;
+    font-weight: 400;
+    font-size: 0.7rem; /* 24px */
+}
 
 .tag-color{
     background-color: #1D419F;

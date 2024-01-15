@@ -20,8 +20,6 @@ function bookCoverPath(filePath) {
    return filePath = (`../_nuxt/@fs/${filePath}`)
 }
 
-// const bookPath = ref('../_nuxt/@fs\\Files\\Uploads\\TEST\\foryou2.jpg')
-
 </script>
  
 <template>

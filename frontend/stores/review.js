@@ -21,6 +21,7 @@ export const useReviews = defineStore("Reviews", () => {
     bookId: '',
     spoileFlag: false
   })
+  const editReview = ref();
 
   //Get reviews
   async function getReview(bookId) {
