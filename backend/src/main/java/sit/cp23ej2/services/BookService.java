@@ -142,7 +142,7 @@ public class BookService extends CommonController {
         fileStorageService.deleteFile(dataBook);
 
         repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
-                book.getBookTotalView(), book.getBookRating(), bookId);
+                book.getBookRating(), bookId);
 
         Book newDataBook = repository.findBookById(bookId);
         BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);

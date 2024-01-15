@@ -26,7 +26,7 @@ public class UpdateBookDTO {
 
     private String bookDetail;
 
-    private Integer bookTotalView;
+    // private Integer bookTotalView;
 
     private Long bookRating;
 }
