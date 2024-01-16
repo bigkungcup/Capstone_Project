@@ -7,7 +7,10 @@ import { useBooks } from '~/stores/book'
 const library = useBooks();
 const page = ref(1)
 
-await library.getLibrary();
+onBeforeMount( async () => {
+  await library.getLibrary();
+});
+
 
 </script>
 

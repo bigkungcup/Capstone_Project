@@ -1,5 +1,6 @@
 <script setup>
-import deleteConfirmPopup from "~/components/reviews/popups/deleteConfirmPopup.vue";
+import deleteReviewConfirmPopup from "~/components/reviews/popups/deleteReviewConfirmPopup.vue";
+import deleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmPopup.vue";
 import reviewCard from "~/components/reviews/reviewCard.vue";
 import { useBooks } from "~/stores/book";
 import { useReviews } from "~/stores/review";
@@ -7,21 +8,24 @@ import { ref } from "vue";
 import similarBook from "~/components/similarBook.vue";
 import { mergeProps } from 'vue'
 
-
-
 const library = useBooks();
 const reviews = useReviews();
 const route = useRoute()
 const page = ref(1)
 const deleteId = ref(0)
-const confirmPopup = ref(false);
+const bookConfirmPopup = ref(false);
+const reviewConfirmPopup = ref(false);
 
 function setDeleteId(id) {
     deleteId.value = id;
 }
 
-function togglePopup() {
-    confirmPopup.value = !confirmPopup.value
+function toggleBookPopup() {
+    bookConfirmPopup.value = !bookConfirmPopup.value
+}
+
+function toggleReviewPopup() {
+    reviewConfirmPopup.value = !reviewConfirmPopup.value
 }
 
 await library.getBookDetail(route.params.id);
@@ -30,6 +34,11 @@ await reviews.getReview(route.params.id, 0);
 function bookCoverPath(filePath) {
     console.log(filePath);
    return filePath = (`../../_nuxt/@fs/${filePath}`)
+}
+
+function deleteBook() {
+    library.deleteBook(route.params.id)
+    window.history.back();
 }
 
 </script>
@@ -95,7 +104,7 @@ function bookCoverPath(filePath) {
                                         <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-pencil-outline"></v-icon><span>Edit this book</span></v-list-item-title>
                                     </v-list-item>
                                     <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
-                                        <v-list-item-title class="web-text-detail">
+                                        <v-list-item-title class="web-text-detail" @click="toggleBookPopup()">
                                             <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this book</span></v-list-item-title>
                                         </v-list-item-title>
                                     </v-list-item>
@@ -164,8 +173,10 @@ function bookCoverPath(filePath) {
                     </div>
                 </div>
             </div>
-            <deleteConfirmPopup class="delete-popup" :dialog="confirmPopup" 
-            @toggle="togglePopup()" @delete="reviews.deleteReview(deleteId, library.bookDetail.data.bookId)" />
+            <deleteReviewConfirmPopup class="delete-popup" :dialog="reviewConfirmPopup" 
+            @toggle="toggleReviewPopup()" @delete="reviews.deleteReview(deleteId, library.bookDetail.data.bookId)" />
+            <deleteBookConfirmPopup class="delete-popup" :dialog="bookConfirmPopup" 
+            @toggle="toggleBookPopup()" @delete="deleteBook()" />
         </div>
         <footer class="tw-bg-white tw-py-5"></footer>
     </div>

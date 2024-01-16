@@ -2,62 +2,59 @@ import { defineStore, acceptHMRUpdate } from "pinia";
 import { ref } from "vue";
 
 export const useReviews = defineStore("Reviews", () => {
-  const reviewList = ref(
-    {
-      data: {
-        content: [],
-        pageable: {
-          totalPages: 1
-        }
-      }
-    }
-  );
+  const reviewList = ref({
+    data: {
+      content: [],
+      pageable: {
+        totalPages: 1,
+      },
+    },
+  });
   const reviewPage = ref(0);
   const newReview = ref({
     rating: 1,
-    detail: '',
-    title: '',
-    userId: '1',
-    bookId: '',
-    spoileFlag: false
-  })
+    detail: "",
+    title: "",
+    userId: "1",
+    bookId: "",
+    spoileFlag: false,
+  });
   const editReview = ref();
+  const successfulPopup = ref(false);
 
   //Get reviews
   async function getReview(bookId) {
     let status = 0;
-    const { data } = await useFetch(
-      `${import.meta.env.VITE_BASE_URL}/review`,
-      {
-        onRequest({ request, options }) {
-          options.method = "GET";
-          options.headers = {
-            "Content-Type": "application/json",
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+        options.params = {
+          bookId: bookId,
+          page: reviewPage.value,
+          size: 10,
+        };
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          reviewList.value = {
+            data: {
+              content: [],
+              pageable: {
+                totalPages: 1,
+              },
+            },
           };
-          options.params = {
-            bookId: bookId,
-            page: reviewPage.value,
-            size: 10
-          }
-        }, onResponse({ request, response, options }) {
-          status = response._data.response_code
-          if (status == 400) {
-            reviewList.value = {
-              data: {
-                content: [],
-                pageable: {
-                  totalPages: 1
-                }
-              }
-            }
-            console.log('get review list uncompleted')
-          }
+          console.log("get review list uncompleted");
         }
       },
-    );
+    });
     if (status == 200) {
-      reviewList.value = data.value
-      console.log('get review list completed');
+      reviewList.value = data.value;
+      console.log("get review list completed");
     }
   }
 
@@ -72,79 +69,73 @@ export const useReviews = defineStore("Reviews", () => {
           options.headers = {
             "Content-Type": "application/json",
           };
-        }, onResponse({ request, response, options }) {
-          status = response._data.response_code
-        }
-      },
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
     );
     if (status == 200) {
-      newReview.value = data.value
+      newReview.value = data.value;
       setNewReview();
-      console.log('get review detail completed');
+      console.log("get review detail completed");
     } else if (status == 400) {
-      console.log('get review detail uncompleted')
+      console.log("get review detail uncompleted");
     }
   }
-
 
   //Create review
   async function createReview() {
     let status = 0;
-    await $fetch(
-      `${import.meta.env.VITE_BASE_URL}/review`,
-      {
-        method: "POST",
-        body: {
-          rating: newReview.value.rating,
-          detail: newReview.value.detail,
-          title: newReview.value.title,
-          userId: '1',
-          bookId: newReview.value.bookId,
-          spoileFlag: newReview.value.spoileFlag == false ?  0 : 1
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/review`, {
+      method: "POST",
+      body: {
+        rating: newReview.value.rating,
+        detail: newReview.value.detail,
+        title: newReview.value.title,
+        userId: "1",
+        bookId: newReview.value.bookId,
+        spoileFlag: newReview.value.spoileFlag == false ? 0 : 1,
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          console.log("upload review uncompleted");
         }
-        , onResponse({ request, response, options }) {
-          status = response._data.response_code
-          if (status == 400) {
-            console.log('upload review uncompleted')
-          }
-        }
-      }
-    );
-    if (status == 201) { 
+      },
+    });
+    if (status == 201) {
       backPage().then(() => {
         clearNewReview();
-      })
-      console.log('upload review completed');
+      });
+      console.log("upload review completed");
     }
   }
 
   //Update review
   async function updateReview(reviewId) {
     let status = 0;
-    await $fetch(
-      `${import.meta.env.VITE_BASE_URL}/review/${reviewId}`,
-      {
-        method: "PUT",
-        body: {
-          rating: newReview.value.rating,
-          detail: newReview.value.detail,
-          title: newReview.value.title,
-          bookId: newReview.value.bookId,
-          spoileFlag: newReview.value.spoileFlag == false ?  0 : 1
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/review/${reviewId}`, {
+      method: "PUT",
+      body: {
+        rating: newReview.value.rating,
+        detail: newReview.value.detail,
+        title: newReview.value.title,
+        bookId: newReview.value.bookId,
+        spoileFlag: newReview.value.spoileFlag == false ? 0 : 1,
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          console.log("update review uncompleted");
         }
-        , onResponse({ request, response, options }) {
-          status = response._data.response_code
-          if (status == 400) {
-            console.log('update review uncompleted')
-          }
-        }
-      }
-    );
+      },
+    });
     if (status == 200) {
       backPage().then(() => {
         clearNewReview();
-      })
-      console.log('update review completed');
+      });
+      console.log("update review completed");
     }
   }
 
@@ -162,18 +153,19 @@ export const useReviews = defineStore("Reviews", () => {
         },
         onResponse({ request, response, options }) {
           status = response._data.response_code;
-        }
-      },
+        },
+      }
     );
     if (status == 200) {
       reviewPage.value = 0;
       getReview(bookId);
-      console.log('delete review completed');
+      console.log("delete review completed");
     } else if (status == 404) {
-      console.log('delete review uncompleted')
+      console.log("delete review uncompleted");
     }
   }
 
+  //Set new review
   function setNewReview() {
     newReview.value = {
       reviewId: newReview.value.data.reviewId,
@@ -181,8 +173,16 @@ export const useReviews = defineStore("Reviews", () => {
       detail: newReview.value.data.reviewDetail,
       title: newReview.value.data.reviewTitle,
       spoileFlag: newReview.value.data.spoileFlag == 0 ? false : true,
-      bookId: newReview.value.data.book.bookId
-    }
+      bookId: newReview.value.data.book.bookId,
+    };
+  }
+
+  //Close successful popup
+  function closeSuccessfulPopup() {
+    successfulPopup.value = false;
+    backPage().then(() => {
+      clearNewBook();
+    });
   }
 
   //Clear new review
@@ -191,8 +191,8 @@ export const useReviews = defineStore("Reviews", () => {
       rating: 1,
       detail: "",
       title: "",
-      spoileFlag: false
-    }
+      spoileFlag: false,
+    };
   }
 
   //Change review page
@@ -203,13 +203,14 @@ export const useReviews = defineStore("Reviews", () => {
 
   //Back Page
   function backPage() {
-    window.history.back()
+    window.history.back();
   }
 
   return {
     reviewList,
     newReview,
     reviewPage,
+    successfulPopup,
     getReview,
     getReviewDetail,
     createReview,
@@ -218,8 +219,8 @@ export const useReviews = defineStore("Reviews", () => {
     changeReviewPage,
     setNewReview,
     clearNewReview,
+    closeSuccessfulPopup,
   };
-
 });
 
 //-----------------------------------------------------------------------------------
