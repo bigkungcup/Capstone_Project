@@ -32,7 +32,6 @@ await library.getBookDetail(route.params.id);
 await reviews.getReview(route.params.id, 0);
 
 function bookCoverPath(filePath) {
-    console.log(filePath);
    return filePath = (`../../_nuxt/@fs/${filePath}`)
 }
 

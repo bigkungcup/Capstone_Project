@@ -1,5 +1,5 @@
 <script setup>
-defineEmits(["toggle",]);
+defineEmits(["close"]);
 defineProps({
     dialog: {
         type: Boolean,
@@ -19,7 +19,7 @@ defineProps({
             <div class="confirm-popUp-detail">Your review has been created successfully.</div></v-card-text>
         <v-card-actions style="height: 5rem; width: 40rem;">
           <v-spacer></v-spacer>
-          <v-btn class="tw-mx-2" style="height: 3rem; width: 7rem; color: white;" color="#28E546" variant="flat" size="large" rounded="xl" @click="$emit('toggle')">OK</v-btn>
+          <v-btn class="tw-mx-2" style="height: 3rem; width: 7rem; color: white;" color="#28E546" variant="flat" size="large" rounded="xl" @click="$emit('close')">OK</v-btn>
         </v-card-actions>
       </v-card>
     </div>

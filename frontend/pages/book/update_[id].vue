@@ -10,6 +10,11 @@ definePageMeta({
 const book = useBooks();
 const route = useRoute();
 const selectedImage = ref();
+const validateSize = ref(false);
+
+function showValidateSize() {
+  validateSize.value = true;
+}
 
 function handleFileChange(event) {
   if (book.editBookFile[0]) {
@@ -25,11 +30,11 @@ function handleFileChange(event) {
 const rules = {
   required: (value) => !!value || "Field is required",
   limited: (value) => value.length <= 255 || "Max 255 characters",
-  size: (value) => !value || value[0].size <= 64000000 || showValidateSize(),
+  size: (value) => !!value || value[0].size <= 64000000 || showValidateSize(),
 };
 
 onBeforeMount(() => {
-  selectedImage.value =
+    selectedImage.value = book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`
     book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
 });
 
@@ -67,14 +72,14 @@ book.setEditBook();
               >
                 <v-img
                   src="/image/upload_book_cover.png"
-                  v-show="book.editBook.file == null"
+                  v-show="book.editBook.file == null && book.editBookFile == null"
                   width="250"
                   height="320"
                   cover
                 ></v-img>
                 <v-img
                   :src="selectedImage"
-                  v-show="book.editBook.file != null"
+                  v-show="book.editBook.file != null || book.editBookFile != null"
                   width="250"
                   height="320"
                   cover

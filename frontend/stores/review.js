@@ -11,6 +11,7 @@ export const useReviews = defineStore("Reviews", () => {
     },
   });
   const reviewPage = ref(0);
+  const reviewDetail = ref();
   const newReview = ref({
     rating: 1,
     detail: "",
@@ -105,9 +106,10 @@ export const useReviews = defineStore("Reviews", () => {
       },
     });
     if (status == 201) {
-      backPage().then(() => {
-        clearNewReview();
-      });
+      successfulPopup.value = true;
+      // backPage().then(() => {
+      //   clearNewReview();
+      // });
       console.log("upload review completed");
     }
   }
@@ -132,9 +134,10 @@ export const useReviews = defineStore("Reviews", () => {
       },
     });
     if (status == 200) {
-      backPage().then(() => {
-        clearNewReview();
-      });
+      successfulPopup.value = true;
+      // backPage().then(() => {
+      //   clearNewReview();
+      // });
       console.log("update review completed");
     }
   }

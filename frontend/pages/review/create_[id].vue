@@ -10,7 +10,6 @@ const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
 const confirmLeavePopup = ref(false);
-const confirmUploadPopup = ref(false);
 
 definePageMeta({
   layout: false,
@@ -31,6 +30,10 @@ const rules = {
 
 function setBookId() {
   reviews.newReview.bookId = route.params.id;
+}
+
+function bookCoverPath(filePath) {
+   return filePath = (`../../_nuxt/@fs/${filePath}`)
 }
 
 await book.getBookDetail(route.params.id);
@@ -60,9 +63,10 @@ setBookId();
       <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
         <v-row>
           <v-col cols="2">
-            <v-avatar class="mx-8 my-4" size="150" rounded="0">
-              <v-img src="/image/cover_not_available.jpg"></v-img>
-            </v-avatar>
+            <div class="d-flex px-8 my-4" rounded="0">
+              <v-img src="/image/cover_not_available.jpg" v-show="book.bookDetail.data.file == null" height="150" width="100"></v-img>
+              <v-img class="tw-drop-shadow-xl mb-2" :src="bookCoverPath(book.bookDetail.data.file)" v-show="book.bookDetail.data.file != null" height="150" width="100" cover></v-img>
+            </div>
           </v-col>
           <v-col cols="10">
             <div class="web-text-sub tw-my-8 tw-space-y-3">
