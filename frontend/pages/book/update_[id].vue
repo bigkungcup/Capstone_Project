@@ -33,13 +33,31 @@ const rules = {
   size: (value) => !!value || value[0].size <= 64000000 || showValidateSize(),
 };
 
+function setSelectedImage() {
+  selectedImage.value = book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`
+  book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
+}
+
 onBeforeMount(() => {
-    selectedImage.value = book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`
-    book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
+  setSelectedImage();
 });
 
-await book.getBookDetail(route.params.id);
-book.setEditBook();
+onBeforeRouteLeave(() => {
+  book.getBookDetail(route.params.id);
+  console.log(book.bookDetail.data);
+  if (
+    book.editBook.bookName !== book.bookDetail.data.bookName 
+  ) {
+    const shouldShowPopup = confirm("Do you really want to leave?");
+    if (shouldShowPopup) {
+      return null
+    } else {
+      next(false); // Prevent leaving the page
+    }
+  }
+});
+
+await book.setEditBook(route.params.id);
 </script>
 
 <template>
@@ -151,13 +169,22 @@ book.setEditBook();
     </div>
 
     <div class="d-flex justify-end tw-mx-[9rem] tw-space-x-4">
-      <v-btn color="#1D419F" variant="outlined" @click="book.setEditBook()"
+      <v-btn color="#1D419F" variant="outlined" @click="book.setEditBook(route.params.id).then(setSelectedImage())"
         >reset</v-btn
       >
       <v-btn
         color="#1D419F"
         variant="flat"
         @click="book.updateBook(route.params.id)"
+        :disabled="
+          book.editBook.bookName == '' ||
+          book.editBook.author == '' ||
+          book.editBook.bookGenre == '' ||
+          book.editBook.bookDetail == '' ||
+          book.editBook.bookName.length > 255 ||
+          book.editBook.author.length > 255 ||
+          book.editBookFile == null ? false : book.editBookFile[0].size > 64000000
+        "
         >submit</v-btn
       >
     </div>

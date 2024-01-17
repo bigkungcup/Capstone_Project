@@ -225,23 +225,18 @@ export const useBooks = defineStore("Books", () => {
 
   //Clear new book
   function clearNewBook() {
-    (newBook.value = {
+    newBook.value = {
       bookName: "",
       author: "",
       bookGenre: "",
       bookDetail: "",
-    }),
-      (newBookFile.value = null);
-  }
-
-  // Clear update book
-  function clearEditBook() {
-    editBook.value = null;
-    editBookFile.value = null;
+    },
+      newBookFile.value = null;
   }
 
   //set edit book
-  function setEditBook() {
+  async function setEditBook(bookId) {
+    await getBookDetail(bookId)
     editBook.value = bookDetail.value.data;
   }
 
@@ -269,7 +264,6 @@ export const useBooks = defineStore("Books", () => {
     countUpdateTime,
     clearNewBook,
     setEditBook,
-    clearEditBook,
     closeSuccessfulPopup
   };
 });

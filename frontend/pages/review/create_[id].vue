@@ -19,9 +19,9 @@ function toggleLeavePopup() {
   confirmLeavePopup.value = !confirmLeavePopup.value;
 }
 
-function toggleValidatePopup() {
-  reviews.validate = !reviews.validate;
-}
+// function toggleValidatePopup() {
+//   reviews.validate = !reviews.validate;
+// }
 
 const rules = {
   required: (value) => !!value || "Field is required",
@@ -36,9 +36,13 @@ function bookCoverPath(filePath) {
    return filePath = (`../../_nuxt/@fs/${filePath}`)
 }
 
+onBeforeMount(() => {
+  reviews.clearNewReview();
+  setBookId();
+});
+
 await book.getBookDetail(route.params.id);
-reviews.clearNewReview();
-setBookId();
+
 </script>
 
 <template>
@@ -134,7 +138,7 @@ setBookId();
           reviews.newReview.detail == '' ||
           reviews.newReview.title.length > 255
         "
-        >upload</v-btn
+        >submit</v-btn
       >
     </div>
     <CreateReviewSuccessPopup

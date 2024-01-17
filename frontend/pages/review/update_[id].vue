@@ -31,8 +31,10 @@ function bookCoverPath(filePath) {
    return filePath = (`../../_nuxt/@fs/${filePath}`)
 }
 
-await reviews.getReviewDetail(route.params.id);
-await book.getBookDetail(reviews.newReview.bookId);
+await reviews.setEditReview(route.params.id);
+// await reviews.getReviewDetail(route.params.id);
+// reviews.setEditReview();
+await book.getBookDetail(reviews.editReview.bookId);
 </script>
 
 <template>
@@ -77,7 +79,7 @@ await book.getBookDetail(reviews.newReview.bookId);
                   :model-value="0"
                   color="orange-lighten-1"
                   active-color="#FFBB11"
-                  v-model="reviews.newReview.rating"
+                  v-model="reviews.editReview.rating"
                 />
               </div>
             </div>
@@ -85,7 +87,7 @@ await book.getBookDetail(reviews.newReview.bookId);
         </v-row>
         <div class="tw-mx-8 tw-space-y-4">
           <v-text-field
-            v-model="reviews.newReview.title"
+            v-model="reviews.editReview.title"
             label="Review Header"
             variant="solo"
             height="100px"
@@ -93,7 +95,7 @@ await book.getBookDetail(reviews.newReview.bookId);
             counter
           ></v-text-field>
           <v-textarea
-            v-model="reviews.newReview.detail"
+            v-model="reviews.editReview.detail"
             label="Review Detail"
             variant="solo"
             rows="5"
@@ -104,7 +106,7 @@ await book.getBookDetail(reviews.newReview.bookId);
           <v-checkbox
             label="Hide entire review because of spoilers"
             hide-details
-            v-model="reviews.newReview.spoileFlag"
+            v-model="reviews.editReview.spoileFlag"
           ></v-checkbox>
         </div>
       </v-card>
@@ -114,17 +116,17 @@ await book.getBookDetail(reviews.newReview.bookId);
       <v-btn
         color="#1D419F"
         variant="outlined"
-        @click="reviews.clearNewReview()"
-        >clear</v-btn
+        @click="reviews.setEditReview(route.params.id)"
+        >reset</v-btn
       >
       <v-btn
         color="#1D419F"
         variant="flat"
         @click="reviews.updateReview(route.params.id)"
         :disabled="
-          reviews.newReview.title == '' ||
-          reviews.newReview.detail == '' ||
-          reviews.newReview.title.length > 255
+          reviews.editReview.title == '' ||
+          reviews.editReview.detail == '' ||
+          reviews.editReview.title.length > 255
         "
         >submit</v-btn
       >

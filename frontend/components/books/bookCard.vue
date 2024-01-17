@@ -16,7 +16,6 @@ function countDateTime(time) {
 }
 
 function bookCoverPath(filePath) {
-    console.log(filePath);
    return filePath = (`../_nuxt/@fs/${filePath}`)
 }
 

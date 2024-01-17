@@ -77,8 +77,7 @@ export const useReviews = defineStore("Reviews", () => {
       }
     );
     if (status == 200) {
-      newReview.value = data.value;
-      setNewReview();
+      reviewDetail.value = data.value;
       console.log("get review detail completed");
     } else if (status == 400) {
       console.log("get review detail uncompleted");
@@ -107,9 +106,6 @@ export const useReviews = defineStore("Reviews", () => {
     });
     if (status == 201) {
       successfulPopup.value = true;
-      // backPage().then(() => {
-      //   clearNewReview();
-      // });
       console.log("upload review completed");
     }
   }
@@ -135,9 +131,6 @@ export const useReviews = defineStore("Reviews", () => {
     });
     if (status == 200) {
       successfulPopup.value = true;
-      // backPage().then(() => {
-      //   clearNewReview();
-      // });
       console.log("update review completed");
     }
   }
@@ -168,15 +161,16 @@ export const useReviews = defineStore("Reviews", () => {
     }
   }
 
-  //Set new review
-  function setNewReview() {
-    newReview.value = {
-      reviewId: newReview.value.data.reviewId,
-      rating: newReview.value.data.reviewRating,
-      detail: newReview.value.data.reviewDetail,
-      title: newReview.value.data.reviewTitle,
-      spoileFlag: newReview.value.data.spoileFlag == 0 ? false : true,
-      bookId: newReview.value.data.book.bookId,
+  //Set edit review
+  async function setEditReview(bookId) {
+    await getReviewDetail(bookId);
+    editReview.value = {
+      reviewId: reviewDetail.value.data.reviewId,
+      rating: reviewDetail.value.data.reviewRating,
+      detail: reviewDetail.value.data.reviewDetail,
+      title: reviewDetail.value.data.reviewTitle,
+      spoileFlag: reviewDetail.value.data.spoileFlag == 0 ? false : true,
+      bookId: reviewDetail.value.data.book.bookId,
     };
   }
 
@@ -212,6 +206,7 @@ export const useReviews = defineStore("Reviews", () => {
   return {
     reviewList,
     newReview,
+    editReview,
     reviewPage,
     successfulPopup,
     getReview,
@@ -220,7 +215,7 @@ export const useReviews = defineStore("Reviews", () => {
     updateReview,
     deleteReview,
     changeReviewPage,
-    setNewReview,
+    setEditReview,
     clearNewReview,
     closeSuccessfulPopup,
   };

@@ -159,7 +159,7 @@ function deleteBook() {
                         <v-row v-show="reviews.reviewList.data.content.length !== 0">
                             <v-virtual-scroll :items="['']" max-height="35rem">
                                 <reviewCard :reviewList="reviews.reviewList.data.content"
-                                    :bookId="library.bookDetail.data.bookId" @toggle="togglePopup()"
+                                    :bookId="library.bookDetail.data.bookId" @toggle="toggleReviewPopup()"
                                     @set="setDeleteId($event)" />
                             </v-virtual-scroll>
                         </v-row>

@@ -1,16 +1,12 @@
 <script setup>
 import { useBooks } from "~/stores/book";
 import { ref } from "vue";
-import LeaveConfirmPopup from "~/components//popups/leaveConfirmPopup.vue";
+// import LeaveConfirmPopup from "~/components//popups/leaveConfirmPopup.vue";
 import CreateBookSuccessPopup from "~/components/books/popups/createBookSuccessPopup.vue";
-
-definePageMeta({
-  layout: false,
-});
 
 const book = useBooks();
 const selectedImage = ref(null);
-const confirmLeavePopup = ref(false);
+// const confirmLeavePopup = ref(false);
 
 function handleFileChange(event) {
   if (book.newBookFile[0]) {
@@ -35,9 +31,9 @@ const rules = {
   size: (value) => !value || value[0].size <= 64000000 || showValidateSize(),
 };
 
-function toggleLeavePopup() {
-  confirmLeavePopup.value = !confirmLeavePopup.value;
-}
+// function toggleLeavePopup() {
+//   confirmLeavePopup.value = !confirmLeavePopup.value;
+// }
 
 onBeforeRouteLeave(() => {
   if (
@@ -47,7 +43,12 @@ onBeforeRouteLeave(() => {
     book.newBook.bookGenre !== "" ||
     book.newBookFile !== null
   ) {
-    toggleLeavePopup();
+    const shouldShowPopup = confirm("Do you really want to leave?");
+    if (shouldShowPopup) {
+      return null
+    } else {
+      next(false); // Prevent leaving the page
+    }
   }
 });
 
@@ -57,11 +58,6 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div
-    class="tw-bg-[#3157BB] tw-h-[4rem] d-flex justify-center align-center tw-drop-shadow-xl"
-  >
-    <p class="lily tw-text-3xl tw-text-white">Bannarug</p>
-  </div>
   <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
@@ -167,15 +163,27 @@ onBeforeMount(() => {
       <v-btn color="#1D419F" variant="outlined" @click="book.clearNewBook()"
         >clear</v-btn
       >
-      <v-btn color="#1D419F" variant="flat" @click="book.createBook()"
+      <v-btn
+        color="#1D419F"
+        variant="flat"
+        @click="book.createBook()"
+        :disabled="
+          book.newBook.bookName == '' ||
+          book.newBook.author == '' ||
+          book.newBook.bookGenre == '' ||
+          book.newBook.bookDetail == '' ||
+          book.newBook.bookName.length > 255 ||
+          book.newBook.author.length > 255 ||
+          book.newBookFile[0].size > 64000000
+        "
         >submit</v-btn
       >
     </div>
-    <LeaveConfirmPopup
+    <!-- <LeaveConfirmPopup
       :dialog="confirmLeavePopup"
       @toggle="toggleLeavePopup()"
       @back="$router.go(-1)"
-    />
+    /> -->
     <CreateBookSuccessPopup
       :dialog="book.successfulPopup"
       @close="book.closeSuccessfulPopup()"
