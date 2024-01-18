@@ -48,5 +48,5 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         @Modifying
         @Transactional
         @Query(value = "DELETE FROM Book WHERE bookId = :bookId", nativeQuery = true)
-        void deleteBook(@Param("bookId") Integer bookId);
+        Integer deleteBook(@Param("bookId") Integer bookId);
 }

@@ -165,9 +165,14 @@ public class BookService extends CommonController {
 
     public DataResponse deleteBook(int bookId) {
         DataResponse response = new DataResponse();
+        try {
+            Integer deleteBook = repository.deleteBook(bookId);
+            System.out.println("deleteBook: " + deleteBook);
+        }catch (Exception e) {
+            throw new HandleExceptionBadRequest("Book Can not delete because book have reviews.");
+        }
         Book dataBook = repository.findBookById(bookId);
         fileStorageService.deleteFile(dataBook);
-        repository.deleteBook(bookId);
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Book Deleted");
