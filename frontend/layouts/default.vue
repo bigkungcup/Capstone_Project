@@ -14,7 +14,7 @@
         </div>
         <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
             <v-icon icon="mdi-magnify" style="font-size: 50px"></v-icon>
-            <v-icon icon="mdi-account-circle-outline" style="font-size: 50px"></v-icon>
+            <NuxtLink to="/login/"><v-icon icon="mdi-account-circle-outline" style="font-size: 50px"></v-icon></NuxtLink>
         </div>
     </div>
 </template>
