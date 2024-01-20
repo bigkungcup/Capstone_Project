@@ -29,4 +29,6 @@ public class UpdateBookDTO {
     // private Integer bookTotalView;
 
     private Long bookRating;
+
+    private String filePath;
 }

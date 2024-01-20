@@ -138,20 +138,24 @@ public class BookService extends CommonController {
 
     public DataResponse updateBook(UpdateBookDTO book, Integer bookId, MultipartFile file) {
         DataResponse response = new DataResponse();
-        Book dataBook = repository.findBookById(bookId);
-        fileStorageService.deleteFile(dataBook);
-
+       
         repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
                 book.getBookRating(), bookId);
 
         Book newDataBook = repository.findBookById(bookId);
         BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
+
         if (file != null) {
+            Book dataBook = repository.findBookById(bookId);
+            fileStorageService.deleteFile(dataBook);
             fileStorageService.store(file, book.getBookName(), book.getAuthor());
         }
+
         try {
-            Path pathFile = fileStorageService.load(bookDTO);
-            bookDTO.setFile(pathFile.toString());
+            if(book.getFilePath() != null){
+                Path pathFile = fileStorageService.load(bookDTO);
+                bookDTO.setFile(pathFile.toString());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -165,14 +169,14 @@ public class BookService extends CommonController {
 
     public DataResponse deleteBook(int bookId) {
         DataResponse response = new DataResponse();
+        Book dataBook = repository.findBookById(bookId);
+        fileStorageService.deleteFile(dataBook);
         try {
             Integer deleteBook = repository.deleteBook(bookId);
             System.out.println("deleteBook: " + deleteBook);
         }catch (Exception e) {
             throw new HandleExceptionBadRequest("Book Can not delete because book have reviews.");
         }
-        Book dataBook = repository.findBookById(bookId);
-        fileStorageService.deleteFile(dataBook);
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Book Deleted");
