@@ -3,14 +3,11 @@ import { useBooks } from "~/stores/book";
 import { ref } from "vue";
 import UpdateBookSuccessPopup from "~/components/books/popups/updateBookSuccessPopup.vue";
 
-definePageMeta({
-  layout: false,
-});
-
 const book = useBooks();
 const route = useRoute();
 const selectedImage = ref();
 const validateSize = ref(false);
+const notEditBook = ref();
 
 function showValidateSize() {
   validateSize.value = true;
@@ -34,8 +31,9 @@ const rules = {
 };
 
 function setSelectedImage() {
+  // book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
   selectedImage.value = book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`
-  book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
+  book.editBookFile = undefined;
 }
 
 onBeforeMount(() => {
@@ -43,11 +41,16 @@ onBeforeMount(() => {
 });
 
 onBeforeRouteLeave(() => {
-  book.getBookDetail(route.params.id);
-  console.log(book.bookDetail.data);
+  console.log(selectedImage.value);
+  console.log(book.bookDetail.data.file);
   if (
-    book.editBook.bookName !== book.bookDetail.data.bookName 
+    book.editBook.bookName !== book.bookDetail.data.bookName ||
+    book.editBook.author !== book.bookDetail.data.author ||
+    book.editBook.bookGenre !== book.bookDetail.data.bookGenre || 
+    book.editBook.bookDetail !== book.bookDetail.data.bookDetail ||
+    selectedImage.value != `../../_nuxt/@fs/${book.bookDetail.data.file}`
   ) {
+    if(book.leavePopup){
     const shouldShowPopup = confirm("Do you really want to leave?");
     if (shouldShowPopup) {
       return null
@@ -55,17 +58,14 @@ onBeforeRouteLeave(() => {
       next(false); // Prevent leaving the page
     }
   }
+}
 });
 
-await book.setEditBook(route.params.id);
+await book.getBookDetail(route.params.id);
+book.setEditBook();
 </script>
 
 <template>
-  <div
-    class="tw-bg-[#3157BB] tw-h-[4rem] d-flex justify-center align-center tw-drop-shadow-xl"
-  >
-    <p class="lily tw-text-3xl tw-text-white">Bannarug</p>
-  </div>
   <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
@@ -90,7 +90,7 @@ await book.setEditBook(route.params.id);
               >
                 <v-img
                   src="/image/upload_book_cover.png"
-                  v-show="book.editBook.file == null && book.editBookFile == null"
+                  v-show="book.editBook.file == null && book.editBookFile == undefined"
                   width="250"
                   height="320"
                   cover
