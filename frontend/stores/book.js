@@ -49,6 +49,7 @@ export const useBooks = defineStore("Books", () => {
       }
       console.log("get library completed");
     } else if (status == 400) {
+      clearBookList();
       console.log("get library uncompleted");
     }
   }
@@ -240,6 +241,18 @@ export const useBooks = defineStore("Books", () => {
     },
       newBookFile.value = null;
   }
+
+    //Clear book list
+    function clearBookList() {
+      bookList.value = {
+        data: {
+          content: [],
+          pageable: {
+            totalPages: 1,
+          },
+        },
+      };
+    }
 
   //set edit book
   async function setEditBook(bookId) {

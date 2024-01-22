@@ -37,18 +37,18 @@ function setSelectedImage() {
 }
 
 onBeforeMount(() => {
+  book.leavePopup = true;
   setSelectedImage();
 });
 
 onBeforeRouteLeave(() => {
-  console.log(selectedImage.value);
-  console.log(book.bookDetail.data.file);
+  const coverCheck = selectedImage.value == null ? selectedImage.value != book.bookDetail.data.file : selectedImage.value != `../../_nuxt/@fs/${book.bookDetail.data.file}`;
   if (
     book.editBook.bookName !== book.bookDetail.data.bookName ||
     book.editBook.author !== book.bookDetail.data.author ||
     book.editBook.bookGenre !== book.bookDetail.data.bookGenre || 
     book.editBook.bookDetail !== book.bookDetail.data.bookDetail ||
-    selectedImage.value != `../../_nuxt/@fs/${book.bookDetail.data.file}`
+    coverCheck
   ) {
     if(book.leavePopup){
     const shouldShowPopup = confirm("Do you really want to leave?");
@@ -103,6 +103,13 @@ book.setEditBook();
                   cover
                 ></v-img>
               </div>
+              <div class="px-10" v-show="book.editBook.file != null || book.editBookFile != null">
+              <v-btn block @click="book.editBook.file = null, book.editBookFile = null">
+                  <p class="tw-font-bold tw-text-[#1D419F] tw-text-xs">
+                    cancle
+                  </p>
+              </v-btn>
+            </div>
               <v-responsive class="mx-auto my-2" max-width="200">
                 <v-file-input
                   ref="fileInput"

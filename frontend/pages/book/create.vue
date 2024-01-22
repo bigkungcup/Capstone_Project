@@ -98,6 +98,13 @@ onBeforeMount(() => {
                   cover
                 ></v-img>
               </div>
+              <div class="px-10" v-show="book.newBookFile != null">
+              <v-btn block @click="book.newBookFile = null">
+                  <p class="tw-font-bold tw-text-[#1D419F] tw-text-xs">
+                    cancle
+                  </p>
+              </v-btn>
+            </div>
               <v-responsive class="mx-auto my-2 justify-center" max-width="200">
                 <v-file-input
                   ref="fileInput"

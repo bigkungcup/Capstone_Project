@@ -27,10 +27,6 @@ function toggleBookConfirmPopup() {
   bookConfirmPopup.value = !bookConfirmPopup.value;
 }
 
-function toggleBookSuccessfulPopup() {
-  library.successfulPopup = !library.successfulPopup;
-}
-
 function toggleReviewSuccessfulPopup() {
   reviews.successfulPopup = !reviews.successfulPopup;
 }
@@ -310,7 +306,7 @@ await reviews.getReview(route.params.id, 0);
       <deleteBookSuccessPopup
         class="delete-popup"
         :dialog="library.successfulPopup"
-        @close="toggleBookSuccessfulPopup()"
+        @close="library.closeSuccessfulPopup()"
       />
       <deleteReviewSuccessPopup 
         class="delete-popup"

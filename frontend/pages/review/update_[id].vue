@@ -8,7 +8,7 @@ import UpdateReviewSuccessPopup from "~/components/reviews/popups/updateReviewSu
 const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
-const confirmLeavePopup = ref(false);
+// const confirmLeavePopup = ref(false);
 
 // function toggleLeavePopup() {
 //   confirmLeavePopup.value = !confirmLeavePopup.value;
@@ -28,11 +28,12 @@ function bookCoverPath(filePath) {
 }
 
 onBeforeRouteLeave(() => {
+  const spoileFlag = reviews.reviewDetail.data.spoileFlag == 0 ? false : true;
   if (
     reviews.editReview.title !== reviews.reviewDetail.data.reviewTitle ||
     reviews.editReview.detail !== reviews.reviewDetail.data.reviewDetail ||
     reviews.editReview.rating !== reviews.reviewDetail.data.reviewRating ||
-    reviews.editReview.spoileFlag !== reviews.reviewDetail.data.spoileFlag
+    reviews.editReview.spoileFlag !== spoileFlag
   ) {
     if(reviews.leavePopup){
     const shouldShowPopup = confirm("Do you really want to leave?");
@@ -43,6 +44,10 @@ onBeforeRouteLeave(() => {
     }
   }
 }
+});
+
+onBeforeMount(() => {
+  reviews.leavePopup = true;
 });
 
 // await reviews.setEditReview(route.params.id);
