@@ -11,10 +11,6 @@ const reviews = useReviews();
 const route = useRoute();
 const confirmLeavePopup = ref(false);
 
-definePageMeta({
-  layout: false,
-});
-
 function toggleLeavePopup() {
   confirmLeavePopup.value = !confirmLeavePopup.value;
 }
@@ -36,8 +32,24 @@ function bookCoverPath(filePath) {
    return filePath = (`../../_nuxt/@fs/${filePath}`)
 }
 
+onBeforeRouteLeave(() => {
+  if (
+    reviews.newReview.title !== "" ||
+    reviews.newReview.detail !== "" 
+  ) {
+    if(reviews.leavePopup){
+    const shouldShowPopup = confirm("Do you really want to leave?");
+    if (shouldShowPopup) {
+      return null
+    } else {
+      next(false); // Prevent leaving the page
+    }
+  }
+}});
+
 onBeforeMount(() => {
   reviews.clearNewReview();
+  reviews.leavePopup = true;
   setBookId();
 });
 
@@ -46,17 +58,12 @@ await book.getBookDetail(route.params.id);
 </script>
 
 <template>
-  <div
-    class="tw-bg-[#3157BB] tw-h-[4rem] d-flex justify-center align-center tw-drop-shadow-xl"
-  >
-    <p class="lily tw-text-3xl tw-text-white">Bannarug</p>
-  </div>
   <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"
         variant="text"
-        @click="toggleLeavePopup()"
+        @click="$router.go(-1)"
         width="8%"
         color="#082250"
       >

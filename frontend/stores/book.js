@@ -22,6 +22,8 @@ export const useBooks = defineStore("Books", () => {
   const bookDetail = ref();
   const bookPage = ref(0);
   const successfulPopup = ref(false);
+  const failPopup = ref(false);
+  const leavePopup = ref(true);
   const runtimeConfig = useRuntimeConfig();
 
   //Get Library
@@ -47,6 +49,7 @@ export const useBooks = defineStore("Books", () => {
       }
       console.log("get library completed");
     } else if (status == 400) {
+      clearBookList();
       console.log("get library uncompleted");
     }
   }
@@ -168,7 +171,11 @@ export const useBooks = defineStore("Books", () => {
       }
     );
     if (status == 200) {
+      successfulPopup.value = true;
       console.log("delete book completed");
+      }else if (status == 400) {
+        failPopup.value = true;
+        console.log("delete book uncompleted");
     } else if (status == 404) {
       console.log("delete book uncompleted");
     }
@@ -177,27 +184,27 @@ export const useBooks = defineStore("Books", () => {
   // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds) {
     let interval = Math.floor(seconds / 31536000);
-    if (interval > 1) {
+    if (interval >= 1) {
       return interval + " years ago";
     }
 
     interval = Math.floor(seconds / 2592000);
-    if (interval > 1) {
+    if (interval >= 1) {
       return interval + " months ago";
     }
 
     interval = Math.floor(seconds / 86400);
-    if (interval > 1) {
+    if (interval >= 1) {
       return interval + " days ago";
     }
 
     interval = Math.floor(seconds / 3600);
-    if (interval > 1) {
+    if (interval >= 1) {
       return interval + " hours ago";
     }
 
     interval = Math.floor(seconds / 60);
-    if (interval > 1) {
+    if (interval >= 1) {
       return interval + " minutes ago";
     }
 
@@ -218,6 +225,7 @@ export const useBooks = defineStore("Books", () => {
   //Close successful popup
   function closeSuccessfulPopup() {
     successfulPopup.value = false;
+    leavePopup.value = false;
     backPage().then(() => {
       clearNewBook();
     });
@@ -234,10 +242,28 @@ export const useBooks = defineStore("Books", () => {
       newBookFile.value = null;
   }
 
+    //Clear book list
+    function clearBookList() {
+      bookList.value = {
+        data: {
+          content: [],
+          pageable: {
+            totalPages: 1,
+          },
+        },
+      };
+    }
+
   //set edit book
   async function setEditBook(bookId) {
-    await getBookDetail(bookId)
-    editBook.value = bookDetail.value.data;
+    editBook.value = {
+      bookName: bookDetail.value.data.bookName,
+      author: bookDetail.value.data.author,
+      bookGenre: bookDetail.value.data.bookGenre,
+      bookDetail: bookDetail.value.data.bookDetail,
+      file: bookDetail.value.data.file
+    },
+      editBookFile.value = bookDetail.value.data.file;
   }
 
   //Back Page
@@ -254,6 +280,8 @@ export const useBooks = defineStore("Books", () => {
     editBookFile,
     bookPage,
     successfulPopup,
+    failPopup,
+    leavePopup,
     getLibrary,
     getBookDetail,
     createBook,

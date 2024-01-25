@@ -8,19 +8,15 @@ import UpdateReviewSuccessPopup from "~/components/reviews/popups/updateReviewSu
 const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
-const confirmLeavePopup = ref(false);
+// const confirmLeavePopup = ref(false);
 
-definePageMeta({
-  layout: false,
-});
+// function toggleLeavePopup() {
+//   confirmLeavePopup.value = !confirmLeavePopup.value;
+// }
 
-function toggleLeavePopup() {
-  confirmLeavePopup.value = !confirmLeavePopup.value;
-}
-
-function toggleValidatePopup() {
-  reviews.validate = !reviews.validate;
-}
+// function toggleValidatePopup() {
+//   reviews.validate = !reviews.validate;
+// }
 
 const rules = {
   required: (value) => !!value || "Field is required",
@@ -31,24 +27,42 @@ function bookCoverPath(filePath) {
    return filePath = (`../../_nuxt/@fs/${filePath}`)
 }
 
-await reviews.setEditReview(route.params.id);
-// await reviews.getReviewDetail(route.params.id);
-// reviews.setEditReview();
+onBeforeRouteLeave(() => {
+  const spoileFlag = reviews.reviewDetail.data.spoileFlag == 0 ? false : true;
+  if (
+    reviews.editReview.title !== reviews.reviewDetail.data.reviewTitle ||
+    reviews.editReview.detail !== reviews.reviewDetail.data.reviewDetail ||
+    reviews.editReview.rating !== reviews.reviewDetail.data.reviewRating ||
+    reviews.editReview.spoileFlag !== spoileFlag
+  ) {
+    if(reviews.leavePopup){
+    const shouldShowPopup = confirm("Do you really want to leave?");
+    if (shouldShowPopup) {
+      return null
+    } else {
+      next(false); // Prevent leaving the page
+    }
+  }
+}
+});
+
+onBeforeMount(() => {
+  reviews.leavePopup = true;
+});
+
+// await reviews.setEditReview(route.params.id);
+await reviews.getReviewDetail(route.params.id);
+reviews.setEditReview();
 await book.getBookDetail(reviews.editReview.bookId);
 </script>
 
 <template>
-  <div
-    class="tw-bg-[#3157BB] tw-h-[4rem] d-flex justify-center align-center tw-drop-shadow-xl"
-  >
-    <p class="lily tw-text-3xl tw-text-white">Bannarug</p>
-  </div>
   <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"
         variant="text"
-        @click="toggleLeavePopup()"
+        @click="$router.go(-1)"
         width="8%"
         color="#082250"
       >
@@ -135,11 +149,11 @@ await book.getBookDetail(reviews.editReview.bookId);
       :dialog="reviews.successfulPopup"
       @close="reviews.closeSuccessfulPopup()"
     />
-    <leaveConfirmPopup
+    <!-- <leaveConfirmPopup
       :dialog="confirmLeavePopup"
       @toggle="toggleLeavePopup()"
       @back="$router.go(-1)"
-    />
+    /> -->
   </div>
 </template>
 

@@ -22,6 +22,7 @@ export const useReviews = defineStore("Reviews", () => {
   });
   const editReview = ref();
   const successfulPopup = ref(false);
+  const leavePopup = ref(true);
 
   //Get reviews
   async function getReview(bookId) {
@@ -116,11 +117,11 @@ export const useReviews = defineStore("Reviews", () => {
     await $fetch(`${import.meta.env.VITE_BASE_URL}/review/${reviewId}`, {
       method: "PUT",
       body: {
-        rating: newReview.value.rating,
-        detail: newReview.value.detail,
-        title: newReview.value.title,
-        bookId: newReview.value.bookId,
-        spoileFlag: newReview.value.spoileFlag == false ? 0 : 1,
+        rating: editReview.value.rating,
+        detail: editReview.value.detail,
+        title: editReview.value.title,
+        bookId: editReview.value.bookId,
+        spoileFlag: editReview.value.spoileFlag == false ? 0 : 1,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -153,6 +154,7 @@ export const useReviews = defineStore("Reviews", () => {
       }
     );
     if (status == 200) {
+      successfulPopup.value = true;
       reviewPage.value = 0;
       getReview(bookId);
       console.log("delete review completed");
@@ -162,8 +164,8 @@ export const useReviews = defineStore("Reviews", () => {
   }
 
   //Set edit review
-  async function setEditReview(bookId) {
-    await getReviewDetail(bookId);
+  function setEditReview(bookId) {
+    // await getReviewDetail(bookId);
     editReview.value = {
       reviewId: reviewDetail.value.data.reviewId,
       rating: reviewDetail.value.data.reviewRating,
@@ -172,14 +174,16 @@ export const useReviews = defineStore("Reviews", () => {
       spoileFlag: reviewDetail.value.data.spoileFlag == 0 ? false : true,
       bookId: reviewDetail.value.data.book.bookId,
     };
+    console.log();
   }
 
   //Close successful popup
   function closeSuccessfulPopup() {
     successfulPopup.value = false;
-    backPage().then(() => {
-      clearNewBook();
-    });
+    leavePopup.value = false;
+    backPage().then(()=>{
+      clearNewReview();
+    })
   }
 
   //Clear new review
@@ -205,10 +209,12 @@ export const useReviews = defineStore("Reviews", () => {
 
   return {
     reviewList,
+    reviewDetail,
     newReview,
     editReview,
     reviewPage,
     successfulPopup,
+    leavePopup,
     getReview,
     getReviewDetail,
     createReview,

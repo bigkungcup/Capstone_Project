@@ -41,8 +41,9 @@ onBeforeRouteLeave(() => {
     book.newBook.author !== "" ||
     book.newBook.bookDetail !== "" ||
     book.newBook.bookGenre !== "" ||
-    book.newBookFile !== null
+    book.newBookFile !== null 
   ) {
+    if(book.leavePopup){
     const shouldShowPopup = confirm("Do you really want to leave?");
     if (shouldShowPopup) {
       return null
@@ -50,11 +51,14 @@ onBeforeRouteLeave(() => {
       next(false); // Prevent leaving the page
     }
   }
+}
 });
 
 onBeforeMount(() => {
   book.clearNewBook();
+  book.leavePopup = true;
 });
+
 </script>
 
 <template>
@@ -94,6 +98,13 @@ onBeforeMount(() => {
                   cover
                 ></v-img>
               </div>
+              <div class="px-10" v-show="book.newBookFile != null">
+              <v-btn block @click="book.newBookFile = null">
+                  <p class="tw-font-bold tw-text-[#1D419F] tw-text-xs">
+                    cancle
+                  </p>
+              </v-btn>
+            </div>
               <v-responsive class="mx-auto my-2 justify-center" max-width="200">
                 <v-file-input
                   ref="fileInput"
@@ -174,7 +185,7 @@ onBeforeMount(() => {
           book.newBook.bookDetail == '' ||
           book.newBook.bookName.length > 255 ||
           book.newBook.author.length > 255 ||
-          book.newBookFile[0].size > 64000000
+          book.newBookFile == null ? false : book.newBookFile[0].size > 64000000
         "
         >submit</v-btn
       >
