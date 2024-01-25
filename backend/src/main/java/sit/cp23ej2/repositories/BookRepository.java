@@ -19,7 +19,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         Page<Book> getAllBooks(Pageable pageable);
 
         @Query(value = "SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime FROM Book b WHERE bookId = :bookId", nativeQuery = true)
-        Book findBookById(@Param("bookId") int bookId);
+        Book getBookById(@Param("bookId") int bookId);
 
         Boolean existsByAuthorAndBookName(String author, String bookName);
 

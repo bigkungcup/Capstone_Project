@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS `bannarug`.`User` (
   `userId` INT NOT NULL AUTO_INCREMENT,
   `displayName` VARCHAR(255) NOT NULL,
   `email` VARCHAR(255) NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
+  `password` LONGTEXT NOT NULL,
   `role` VARCHAR(45) NOT NULL,
   `followers` INT NOT NULL,
   `follows` INT NOT NULL,

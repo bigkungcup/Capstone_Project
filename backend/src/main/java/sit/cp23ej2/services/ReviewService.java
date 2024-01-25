@@ -83,21 +83,26 @@ public class ReviewService extends CommonController {
         return response;
     }
 
-    // public DataResponse updateReviewTotalLikeAndTotalDisLike(UpdateReviewDTO review, Integer reviewId) {
-    //     DataResponse response = new DataResponse();
-    //     repository.updateTotalLikeAndTotalDisLike(review.getTotalLike(), review.getTotalDisLike(), reviewId);
-    //     Review dataReview = repository.getReviewById(reviewId);
-    //     response.setResponse_code(200);
-    //     response.setResponse_status("OK");
-    //     response.setResponse_message("Review TotalLike and TotalDislike Updated");
-    //     response.setResponse_datetime(Instant.now());
-    //     response.setData(dataReview);
-    //     return response;
+    // public DataResponse updateReviewTotalLikeAndTotalDisLike(UpdateReviewDTO
+    // review, Integer reviewId) {
+    // DataResponse response = new DataResponse();
+    // repository.updateTotalLikeAndTotalDisLike(review.getTotalLike(),
+    // review.getTotalDisLike(), reviewId);
+    // Review dataReview = repository.getReviewById(reviewId);
+    // response.setResponse_code(200);
+    // response.setResponse_status("OK");
+    // response.setResponse_message("Review TotalLike and TotalDislike Updated");
+    // response.setResponse_datetime(Instant.now());
+    // response.setData(dataReview);
+    // return response;
     // }
 
     public DataResponse deleteReviewByBookId(int reviewId) {
         DataResponse response = new DataResponse();
-        repository.deleteReview(reviewId);
+        Integer deleteStatus = repository.deleteReview(reviewId);
+        if (deleteStatus == 0) {
+            throw new HandleExceptionNotFound("Review Not Found", "Review");
+        }
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Review Deleted");

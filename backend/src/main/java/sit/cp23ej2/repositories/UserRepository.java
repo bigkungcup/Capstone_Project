@@ -18,6 +18,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.follows, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u WHERE userId = :userId", nativeQuery = true)
     User getUserById(@Param("userId") int userId);
 
+    @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.follows, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u WHERE email = :email", nativeQuery = true)
+    User getUserByEmail(@Param("email") String email);
+
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO  User (displayName, email, password, role, followers, follows, totalReview, totalFavoriteReview, totalLike, bio)" +

@@ -96,16 +96,16 @@ public class BookService extends CommonController {
 
     public DataResponse getBookById(int bookId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
-        Book book = repository.findBookById(bookId);
-        BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-        try {
-
-            Path pathFile = fileStorageService.load(bookDTO);
-            bookDTO.setFile(pathFile.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Book book = repository.getBookById(bookId);
         if (book != null) {
+            BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+            try {
+    
+                Path pathFile = fileStorageService.load(bookDTO);
+                bookDTO.setFile(pathFile.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Book Detail");
@@ -142,11 +142,11 @@ public class BookService extends CommonController {
         repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
                 book.getBookRating(), bookId);
 
-        Book newDataBook = repository.findBookById(bookId);
+        Book newDataBook = repository.getBookById(bookId);
         BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
 
         if (file != null) {
-            Book dataBook = repository.findBookById(bookId);
+            Book dataBook = repository.getBookById(bookId);
             fileStorageService.deleteFile(dataBook);
             fileStorageService.store(file, book.getBookName(), book.getAuthor());
         }
@@ -155,6 +155,8 @@ public class BookService extends CommonController {
             if(book.getFilePath() != null){
                 Path pathFile = fileStorageService.load(bookDTO);
                 bookDTO.setFile(pathFile.toString());
+            }else{
+                fileStorageService.deleteFile(newDataBook);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -169,11 +171,13 @@ public class BookService extends CommonController {
 
     public DataResponse deleteBook(int bookId) {
         DataResponse response = new DataResponse();
-        Book dataBook = repository.findBookById(bookId);
-        fileStorageService.deleteFile(dataBook);
         try {
-            Integer deleteBook = repository.deleteBook(bookId);
-            System.out.println("deleteBook: " + deleteBook);
+            Integer deleteStatus = repository.deleteBook(bookId);
+            System.out.println("deleteBook: " + deleteStatus);
+            if(deleteStatus == 1){
+                Book dataBook = repository.getBookById(bookId);
+                fileStorageService.deleteFile(dataBook);
+            }
         }catch (Exception e) {
             throw new HandleExceptionBadRequest("Book Can not delete because book have reviews.");
         }
