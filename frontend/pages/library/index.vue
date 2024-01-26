@@ -18,14 +18,17 @@ onBeforeMount( async () => {
   <div class="tw-min-h-[80%]">
     <v-container>
       <v-row no-gutters>
-        <v-col cols="10">
+        <v-col cols="9">
           <v-text-field label="Search" variant="solo-filled"> </v-text-field>
         </v-col>
         <v-col cols="1"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Search </v-btn></v-col>
-        <v-col cols="1"><v-btn size="auto" class="ml-10 pa-5" color="#082266" rounded="lg"> <v-icon end
-              icon="mdi mdi-filter-variant"></v-icon>
-            Filter
+        <v-col cols="1"><v-btn size="auto" class="tw-mx-8 pa-5" color="#082266" rounded="lg"> 
+          <v-icon icon="mdi mdi-filter-variant"></v-icon>
           </v-btn></v-col>
+          <v-col cols="1"> 
+            <NuxtLink to="/book/create"><v-btn size="auto" class="tw-mx-7 pa-5" color="#082266" rounded="lg"> 
+          <v-icon icon="mdi mdi-plus"></v-icon>
+          </v-btn></NuxtLink></v-col>
       </v-row>
 
       <v-row no-gutters>

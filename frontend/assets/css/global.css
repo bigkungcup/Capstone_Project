@@ -116,6 +116,11 @@
     font-size: 1.875rem; /* 30px */
     line-height: 2.25rem;
 }
+.warning-popUp-detail{
+    font-weight: 500;
+    font-size: 1.25rem;
+    line-height: 2rem; /* 32px */
+}
 .tag-color{
     background-color: #1D419F;
     padding: 10px;
