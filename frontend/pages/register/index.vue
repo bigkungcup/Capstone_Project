@@ -5,9 +5,11 @@ import { ref } from "vue";
 
 const user = useUsers();
 const visible = ref(false);
+const confirmVisible = ref(false);
 const password = ref();
 const confirmPassword = ref();
-const checkPassword = ref(false);
+const checkPassword = ref(true);
+const validEmail = /^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 function handleCheckPassword() {
   if (password.value === confirmPassword.value) {
@@ -18,9 +20,15 @@ function handleCheckPassword() {
   }
 }
 
+function clearConfirmPassword() {
+  confirmPassword.value = '';
+}
+
 const rules = {
   required: (value) => !!value || "Field is required",
-  // limited: (value) => value.length <= 255 || "Max 255 characters",
+  email: (value) => value.match(validEmail) || "Please enter a valid email address",
+  same: () => password.value === confirmPassword.value || 'Password did not match',
+  limited: (value) => value.length <= 16 && value.length >= 8 || "Password must be 8-16 characters",
 };
 
 definePageMeta({
@@ -70,7 +78,7 @@ onBeforeMount(() => {
             label="Email*"
             type="email"
             variant="solo"
-            :rules="[rules.required]"
+            :rules="[rules.required,rules.email]"
             v-model="user.newUser.email"
           ></v-text-field>
           <v-text-field
@@ -80,21 +88,22 @@ onBeforeMount(() => {
             label="Password*"
             variant="solo"
             prepend-inner-icon="mdi-lock-outline"
-            :rules="[rules.required]"
+            :rules="[rules.required,rules.limited]"
             v-model="password"
+            @change="clearConfirmPassword()"
             @click:append-inner="visible = !visible"
           ></v-text-field>
           <v-text-field
-            :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-            :type="visible ? 'text' : 'password'"
+            :append-inner-icon="confirmVisible ? 'mdi-eye-off' : 'mdi-eye'"
+            :type="confirmVisible ? 'text' : 'password'"
             density="compact"
             label="Confirm Password*"
             variant="solo"
             prepend-inner-icon="mdi-lock-outline"
             :rules="[rules.required,rules.same]"
             v-model="confirmPassword"
-            @change="handleCheckPassword()"
-            @click:append-inner="visible = !visible"
+            @input="handleCheckPassword()"
+            @click:append-inner="confirmVisible = !confirmVisible"
           ></v-text-field>
         </div>
 
@@ -108,7 +117,10 @@ onBeforeMount(() => {
             :disabled="
               user.newUser.displayName == '' ||
               user.newUser.email == '' ||
-              user.newUser.password == ''
+              !user.newUser.email.match(validEmail) ||
+              user.newUser.password == '' ||
+              password.length < 8 || password.length > 16 ||
+              password !== confirmPassword
             "
             @click="user.registerUser()"
             >Register</v-btn

@@ -1,13 +1,23 @@
 <script setup>
-import { useUsers } from "~/stores/user";
+import { useLogin } from "~/stores/login";
 import { ref } from "vue";
 // import bgimage from '~/image/login.png'
 
-const user = useUsers();
+const login = useLogin();
 const visible = ref(false);
+const validEmail = /^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+const rules = {
+  required: (value) => !!value || "Field is required",
+  email: (value) => value.match(validEmail) || "Please enter a valid email address",
+};
 
 definePageMeta({
   layout: false,
+});
+
+onBeforeMount(() => {
+  login.clearLoginAccount;
 });
 </script>
 
@@ -42,7 +52,8 @@ definePageMeta({
             density="compact"
             label="Email address"
             variant="solo"
-            v-model="user.userLogin.email"
+            :rules="[rules.required,rules.email]"
+            v-model="login.loginAccount.email"
           ></v-text-field>
           <v-text-field
             :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
@@ -53,7 +64,8 @@ definePageMeta({
             prepend-inner-icon="mdi-lock-outline"
             @click:append-inner="visible = !visible"
             style="height: 40px"
-            v-model="user.userLogin.password"
+            :rules="[rules.required]"
+            v-model="login.loginAccount.password"
           ></v-text-field>
           <div class="">
             <!-- <v-checkbox label="Remember me" hide-details="auto"> </v-checkbox> -->
@@ -69,6 +81,12 @@ definePageMeta({
 
         <div class="tw-flex tw-justify-center">
           <v-btn class="px-14" color="#1D419F" rounded variant="flat" size="large"
+          :disabled="
+            login.loginAccount.email == '' ||
+            !login.loginAccount.email.match(validEmail) ||
+            login.loginAccount.password == ''
+          "
+          @click="login.handleLogin()"
             >Login</v-btn
           >
         </div>

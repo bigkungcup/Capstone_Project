@@ -1,12 +1,10 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
+import { useRouter } from "vue-router";
 import { ref } from "vue";
 
 export const useUsers = defineStore("Users", () => {
+  const router = useRouter();
   const userList = ref();
-  const userLogin = ref({
-    email: "",
-    password: "",
-  });
   const newUser = ref({
     displayName: "",
     email: "",
@@ -37,6 +35,7 @@ export const useUsers = defineStore("Users", () => {
       if (data.value) {
         userList.value = data.value;
       }
+      router.push("/");
       console.log("get user list completed");
     } else if (status == 400) {
       clearUserList();
@@ -63,7 +62,7 @@ export const useUsers = defineStore("Users", () => {
       },
     });
     if (status == 201) {
-        
+      
       //   successfulPopup.value = true;
       console.log("register user completed");
     }
@@ -93,7 +92,6 @@ export const useUsers = defineStore("Users", () => {
 
   return {
     userList,
-    userLogin,
     newUser,
     userPage,
     getUserList,
