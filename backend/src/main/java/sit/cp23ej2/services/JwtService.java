@@ -21,19 +21,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import sit.cp23ej2.dtos.security.LoginReq;
+import sit.cp23ej2.dtos.security.LoginDTO;
 import org.springframework.security.core.userdetails.User;
 
 @Component
 @Service
 public class JwtService {
-        
+
         @Value("${jwt.secret}")
         private String secret;
-        
+
         private final AuthenticationManager authenticationManager;
-        
-        private final Integer jwtExpirationInMs = 30 * 60 * 1000;
+
+        private final Integer jwtExpirationInMs = 60 * 60 * 1000;
 
         private final Integer refreshExpirationDateInMs = 24 * 60 * 60 * 1000;
 
@@ -42,7 +42,7 @@ public class JwtService {
         }
 
         public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response,
-                        LoginReq login) throws AuthenticationException {
+                        LoginDTO login) throws AuthenticationException {
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                                 login.getEmail(), login.getPassword());

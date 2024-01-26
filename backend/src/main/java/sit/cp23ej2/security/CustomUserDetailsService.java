@@ -13,7 +13,7 @@ import sit.cp23ej2.repositories.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    
+
     private final UserRepository userRepository;
 
     public CustomUserDetailsService(UserRepository userRepository) {
@@ -23,17 +23,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.getUserByEmail(email);
+
         List<String> roles = new ArrayList<>();
         roles.add(user.getRole());
-        System.out.println(user.getEmail());
-        System.out.println(user.getPassword());
-        System.out.println(roles.toArray(new String[0]));
-        UserDetails userDetails =
-                org.springframework.security.core.userdetails.User.builder()
-                        .username(user.getEmail())
-                        .password(user.getPassword())
-                        .roles(roles.toArray(new String[0]))
-                        .build();
+
+        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .roles(roles.toArray(new String[0]))
+                .build();
         return userDetails;
     }
 }

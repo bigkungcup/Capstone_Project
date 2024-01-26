@@ -4,12 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 
 import sit.cp23ej2.dtos.DataResponse;
-import sit.cp23ej2.dtos.security.LoginReq;
+import sit.cp23ej2.dtos.security.LoginDTO;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleUnauthorizedException;
 import sit.cp23ej2.services.JwtService;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,17 +46,22 @@ public class AuthController {
     private JwtService jwtService;
 
     @PostMapping("/login")
-    public DataResponse login(HttpServletRequest request, HttpServletResponse response, @RequestBody LoginReq loginReq)  {
+    public DataResponse login(HttpServletRequest request, HttpServletResponse response, @RequestBody LoginDTO loginDTO)  {
 
         DataResponse dataResponse = new DataResponse();
         try {
-            Authentication attemptAuthentication = jwtService.attemptAuthentication(request, response, loginReq);
+            Authentication attemptAuthentication = jwtService.attemptAuthentication(request, response, loginDTO);
+
             jwtService.authenticationSuccessful(request, response, attemptAuthentication);
+
+            loginDTO.setPassword(new BCryptPasswordEncoder().encode(loginDTO.getPassword())); 
+
             dataResponse.setResponse_code(200);
             dataResponse.setResponse_status("OK");
             dataResponse.setResponse_message("Login Success");
             dataResponse.setResponse_datetime(java.time.Instant.now());
-            dataResponse.setData(loginReq);
+            dataResponse.setData(loginDTO);
+            
             return dataResponse;
         }catch (BadCredentialsException e){
             // ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST,"Invalid username or password");
