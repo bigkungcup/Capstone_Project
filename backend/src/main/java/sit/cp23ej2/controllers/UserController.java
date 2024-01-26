@@ -2,6 +2,7 @@ package sit.cp23ej2.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,7 +40,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("")
+    @RequestMapping("/all")
     public DataResponse getAllUser(@RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) throws HandleExceptionNotFound {
         return userService.getUser(page, size);
@@ -53,6 +54,7 @@ public class UserController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public DataResponse createUser(@RequestBody @Valid CreateUserDTO user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
         return userService.createUser(user);
     }
 

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.lang.Nullable;
+import org.springframework.validation.annotation.Validated;
+
 import jakarta.validation.Valid;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.CreateBookDTO;
@@ -35,6 +37,7 @@ import sit.cp23ej2.services.BookService;
         RequestMethod.POST
 }, allowedHeaders = "*")
 @RestController
+@Validated
 @RequestMapping("/api/book")
 public class BookController {
 

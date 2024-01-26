@@ -16,7 +16,7 @@ public class CreateBookDTO {
     private String bookName;
 
     @NotBlank(message = "Author shouldn't be blank or null")
-    @Size(max = 255,min = 1,  message = "Title shouldn't be more than 255 characters and less than 1 characters")
+    @Size(max = 255, min = 1,  message = "Title shouldn't be more than 255 characters and less than 1 characters")
     private String author;
 
     @NotBlank(message = "Book Genre shouldn't be blank or null")
