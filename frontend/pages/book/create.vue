@@ -185,7 +185,7 @@ onBeforeMount(() => {
           book.newBook.bookDetail == '' ||
           book.newBook.bookName.length > 255 ||
           book.newBook.author.length > 255 ||
-          book.newBookFile == null ? false : book.newBookFile[0].size > 64000000
+          book.newBookFile == null ? true : book.newBookFile[0].size > 64000000
         "
         >submit</v-btn
       >

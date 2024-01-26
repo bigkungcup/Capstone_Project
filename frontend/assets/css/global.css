@@ -57,9 +57,15 @@
     line-height: 2.25rem; /* 36px */
 }
 
-
 .web-text-rate{
     color: #FFBB11
+}
+
+.login-text-sub{
+    color: #082266;
+    font-weight: 300;
+    font-size: 1rem; /* 16px */
+    line-height: 1.75rem; /* 28px */
 }
 
 .action-popUp-header{

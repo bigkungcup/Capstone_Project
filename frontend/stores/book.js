@@ -132,11 +132,17 @@ export const useBooks = defineStore("Books", () => {
       "book",
       new Blob([JSON.stringify(book)], { type: "application/json" })
     );
-    formData.append(
-      "file",
-      editBookFile.value != undefined ? editBookFile.value[0] : null
-    );
-    console.log(formData);
+      if(editBookFile.value != null){
+        formData.append("file",editBookFile.value[0])
+      }else if(editBookFile.value == null && bookDetail.value.data.file == null){
+        formData.append("file",null)
+      } 
+      console.log(editBookFile.value, bookDetail.value.data.file);
+    // formData.append(
+    //   "file",
+    //   editBookFile.value != undefined ? editBookFile.value[0] : null
+    // );
+    console.log(editBookFile.value);
     await $fetch(`${import.meta.env.VITE_BASE_URL}/book/${bookId}`, {
       method: "PUT",
       body: formData,

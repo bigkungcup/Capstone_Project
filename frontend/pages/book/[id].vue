@@ -7,7 +7,7 @@ import { useReviews } from "~/stores/review";
 import { ref } from "vue";
 import similarBook from "~/components/similarBook.vue";
 import { mergeProps } from "vue";
-import deleteBookSuccessPopup from "~/components/books/popups/createBookSuccessPopup.vue";
+import deleteBookSuccessPopup from "~/components/books/popups/deleteBookSuccessPopup.vue";
 import deleteReviewSuccessPopup from "~/components/reviews/popups/deleteReviewSuccessPopup.vue";
 import deleteBookFailPopup from "~/components/books/popups/deleteBookFailPopup.vue";
 
