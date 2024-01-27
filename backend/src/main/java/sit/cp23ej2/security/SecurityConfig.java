@@ -1,5 +1,7 @@
 package sit.cp23ej2.security;
 
+// import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+// import org.springframework.web.cors.CorsConfiguration;
+// import org.springframework.web.cors.CorsConfigurationSource;
+// import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+// import org.springframework.web.cors.reactive.CorsWebFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -43,6 +49,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
 
+        http.cors(cors -> cors.disable());
+
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
@@ -61,5 +69,42 @@ public class SecurityConfig {
         return http.build();
 
     }
+
+    // @Bean
+    // CorsConfigurationSource corsConfigurationSource() {
+    //     CorsConfiguration configuration = new CorsConfiguration();
+    //     configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000/**"));
+    //     configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
+    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    //     source.registerCorsConfiguration("/**", configuration);
+    //     return source;
+    // }
+
+    // @Bean
+    // public CorsConfigurationSource corsConfiguration() {
+    //     CorsConfiguration corsConfig = new CorsConfiguration();
+    //     corsConfig.applyPermitDefaultValues();
+    //     corsConfig.setAllowCredentials(true);
+    //     corsConfig.addAllowedMethod("GET");
+    //     corsConfig.addAllowedMethod("PATCH");
+    //     corsConfig.addAllowedMethod("POST");
+    //     corsConfig.addAllowedMethod("OPTIONS");
+    //     corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+    //     corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type"));
+    //     corsConfig.setExposedHeaders(Arrays.asList("X-Get-Header"));
+    //     UrlBasedCorsConfigurationSource source =
+    //             new UrlBasedCorsConfigurationSource();
+    //     source.registerCorsConfiguration("/**", corsConfig);
+    //     return source;
+    // }
+
+    // @Bean
+    // public CorsWebFilter corsWebFilter() {
+    //     return new CorsWebFilter(corsConfiguration());
+    // }
+
+    
+
+    
 
 }

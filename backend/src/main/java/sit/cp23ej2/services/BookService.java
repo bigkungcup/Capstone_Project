@@ -1,6 +1,5 @@
 package sit.cp23ej2.services;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,6 +22,8 @@ import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 
 import java.nio.file.Path;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 
 @Service
@@ -36,6 +37,8 @@ public class BookService extends CommonController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DataResponse getBook(int page, int size) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
@@ -85,7 +88,7 @@ public class BookService extends CommonController {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("All books");
-            response.setResponse_datetime(Instant.now());
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(books);
         } else {
             throw new HandleExceptionNotFound("Book Not Found", "Book");
@@ -109,7 +112,7 @@ public class BookService extends CommonController {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Book Detail");
-            response.setResponse_datetime(Instant.now());
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(bookDTO);
         } else {
             throw new HandleExceptionNotFound("Book Not Found", "Book");
@@ -132,7 +135,7 @@ public class BookService extends CommonController {
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Book Created");
-        response.setResponse_datetime(Instant.now());
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
 
@@ -164,7 +167,7 @@ public class BookService extends CommonController {
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Book Updated");
-        response.setResponse_datetime(Instant.now());
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         response.setData(bookDTO);
         return response;
     }
@@ -184,7 +187,7 @@ public class BookService extends CommonController {
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Book Deleted");
-        response.setResponse_datetime(Instant.now());
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
 

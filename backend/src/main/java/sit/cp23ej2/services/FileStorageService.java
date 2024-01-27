@@ -21,6 +21,7 @@ import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.properties.FileStorageProperties;
 
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.util.StringUtils;
@@ -28,7 +29,10 @@ import org.springframework.core.io.Resource;
 
 @Service
 public class FileStorageService {
+
 	private final Path rootLocation;
+
+	SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public FileStorageService(FileStorageProperties properties) {
 		// if(properties.getUploadDir().trim().length() == 0){

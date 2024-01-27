@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
+import sit.cp23ej2.dtos.User.UpdateUserDTO;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.services.UserService;
 
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @CrossOrigin(origins = {
     "http://localhost:3000",
@@ -47,7 +50,7 @@ public class UserController {
     }
 
     @RequestMapping("/{userId}")
-    public DataResponse getUserById(@RequestParam Integer userId) throws HandleExceptionNotFound {
+    public DataResponse getUserById(@PathVariable Integer userId) throws HandleExceptionNotFound {
         return userService.getUserById(userId);
     }
 
@@ -56,6 +59,11 @@ public class UserController {
     public DataResponse createUser(@RequestBody @Valid CreateUserDTO user) {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
         return userService.createUser(user);
+    }
+
+    @PutMapping("/{userId}")
+    public DataResponse updateUser(@RequestBody @Valid UpdateUserDTO user, @PathVariable Integer userId) {
+        return userService.updateUser(user, userId);
     }
 
     @DeleteMapping("/{userId}")

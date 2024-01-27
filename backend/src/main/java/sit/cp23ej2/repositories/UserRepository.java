@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import sit.cp23ej2.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    
+
     @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.follows, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u", nativeQuery = true)
     Page<User> getAllUsers(Pageable pageable);
 
@@ -23,10 +23,25 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO  User (displayName, email, password, role, followers, follows, totalReview, totalFavoriteReview, totalLike, bio)" +
-                        "values (:displayName, :email, :password, :role, 0, 0, 0, 0, 0, :bio);", nativeQuery = true)
-        Integer insertUser(@Param("displayName") String displayName, @Param("email") String email,
-                        @Param("password") String password, @Param("role") String role, @Param("bio") String bio);
+    @Query(value = "INSERT INTO  User (displayName, email, password, role, followers, follows, totalReview, totalFavoriteReview, totalLike, bio)"
+            +
+            "values (:displayName, :email, :password, :role, 0, 0, 0, 0, 0, :bio);", nativeQuery = true)
+    Integer insertUser(@Param("displayName") String displayName, @Param("email") String email,
+            @Param("password") String password, @Param("role") String role, @Param("bio") String bio);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE User SET displayName = :displayName, email = :email, password = :password. bio = :bio" +
+            "WHERE userId = :userId", nativeQuery = true)
+    void updateUser(@Param("displayName") String displayName, @Param("email") String email,
+            @Param("password") String password, @Param("bio") String bio, @Param("userId") int userId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE User SET password = :password" +
+            " WHERE email = :email", nativeQuery = true)
+    void updatePassword(@Param("email") String email,
+            @Param("password") String password);
 
     @Modifying
     @Transactional

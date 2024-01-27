@@ -1,6 +1,7 @@
 package sit.cp23ej2.services;
 
-import java.time.Instant;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
 import sit.cp23ej2.dtos.User.PageUserDTO;
+import sit.cp23ej2.dtos.User.UpdateUserDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.UserRepository;
@@ -25,6 +27,8 @@ public class UserService extends CommonController {
     @Autowired
     private ModelMapper modelMapper;
 
+    SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     public DataResponse getUser(int page, int size) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
@@ -34,7 +38,7 @@ public class UserService extends CommonController {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("All Users");
-            response.setResponse_datetime(Instant.now());
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(user);
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");
@@ -50,7 +54,7 @@ public class UserService extends CommonController {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("User");
-            response.setResponse_datetime(Instant.now());
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(user);
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");
@@ -66,7 +70,19 @@ public class UserService extends CommonController {
         response.setResponse_code(201);
         response.setResponse_status("OK");
         response.setResponse_message("User Created");
-        response.setResponse_datetime(Instant.now());
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+        return response;
+    }
+
+     public DataResponse updateUser(UpdateUserDTO user, Integer userId) {
+        DataResponse response = new DataResponse();
+        repository.updateUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getBio(), userId);
+        User dataUser = repository.getUserById(userId);
+        response.setResponse_code(200);
+        response.setResponse_status("OK");
+        response.setResponse_message("User Updated");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+        response.setData(dataUser);
         return response;
     }
 
@@ -78,7 +94,7 @@ public class UserService extends CommonController {
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("User Deleted");
-        response.setResponse_datetime(Instant.now());
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
 }

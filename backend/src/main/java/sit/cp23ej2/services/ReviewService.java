@@ -1,6 +1,7 @@
 package sit.cp23ej2.services;
 
-import java.time.Instant;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class ReviewService extends CommonController {
     @Autowired
     private ModelMapper modelMapper;
 
+    SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     public DataResponse getReviewByBookId(int bookId, int page, int size) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
@@ -35,7 +38,7 @@ public class ReviewService extends CommonController {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("All Reviews");
-            response.setResponse_datetime(Instant.now());
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(reviews);
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
@@ -51,7 +54,7 @@ public class ReviewService extends CommonController {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Review");
-            response.setResponse_datetime(Instant.now());
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(review);
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
@@ -66,7 +69,7 @@ public class ReviewService extends CommonController {
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Review Created");
-        response.setResponse_datetime(Instant.now());
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
 
@@ -78,7 +81,7 @@ public class ReviewService extends CommonController {
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Review Updated");
-        response.setResponse_datetime(Instant.now());
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         response.setData(dataReview);
         return response;
     }
@@ -92,7 +95,7 @@ public class ReviewService extends CommonController {
     // response.setResponse_code(200);
     // response.setResponse_status("OK");
     // response.setResponse_message("Review TotalLike and TotalDislike Updated");
-    // response.setResponse_datetime(Instant.now());
+    // response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
     // response.setData(dataReview);
     // return response;
     // }
@@ -106,7 +109,7 @@ public class ReviewService extends CommonController {
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Review Deleted");
-        response.setResponse_datetime(Instant.now());
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
 

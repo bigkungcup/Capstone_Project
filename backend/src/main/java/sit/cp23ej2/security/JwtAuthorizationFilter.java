@@ -6,7 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
+// import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
@@ -20,7 +20,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.WebUtils;
+// import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -43,16 +43,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        if (request.getServletPath().equals("/api/auth/login") || request.getServletPath().equals("/api/login")
+        if (request.getServletPath().equals("/api/auth/login") || request.getServletPath().equals("/api/auth/refresh")
                 || request.getServletPath().equals("/api/user")) {
             filterChain.doFilter(request, response);
         } else {
-            Cookie access_token = WebUtils.getCookie(request, "access_token");
-            if (access_token != null) {
+            // Cookie access_token = WebUtils.getCookie(request, "access_token");
+
+            String token = this.recoverToken(request);
+
+            if (token != null) {
                 try {
                     Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
                     JWTVerifier verifier = JWT.require(algorithm).build();
-                    DecodedJWT decodedJWT = verifier.verify(access_token.getValue());
+                    DecodedJWT decodedJWT = verifier.verify(token);
                     String username = decodedJWT.getSubject();
                     String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -94,5 +97,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         Base64.Decoder decoder = Base64.getUrlDecoder();
         String decode = new String(decoder.decode(chunks));
         return decode;
+    }
+
+    private String recoverToken(HttpServletRequest request) {
+        var authHeader = request.getHeader("Authorization");
+        if (authHeader == null)
+            return null;
+        return authHeader.replace("Bearer ", "");
     }
 }
