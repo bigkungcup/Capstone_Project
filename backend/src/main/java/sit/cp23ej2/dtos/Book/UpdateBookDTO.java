@@ -30,5 +30,5 @@ public class UpdateBookDTO {
 
     private Long bookRating;
 
-    private String filePath;
+    private String status;
 }

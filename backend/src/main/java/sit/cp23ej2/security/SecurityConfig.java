@@ -1,10 +1,12 @@
 package sit.cp23ej2.security;
 
-// import java.util.Arrays;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,13 +19,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-// import org.springframework.web.cors.CorsConfiguration;
-// import org.springframework.web.cors.CorsConfigurationSource;
-// import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-// import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class SecurityConfig {
 
     @Autowired
@@ -49,9 +53,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
 
-        http.cors(cors -> cors.disable());
-
-        http.authorizeHttpRequests(authorize -> authorize
+        
+        http.cors(withDefaults()).authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                 .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
@@ -70,41 +73,34 @@ public class SecurityConfig {
 
     }
 
-    // @Bean
-    // CorsConfigurationSource corsConfigurationSource() {
+    //   @Bean
+    // public CorsConfigurationSource corsConfigurationSource() {
     //     CorsConfiguration configuration = new CorsConfiguration();
-    //     configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000/**"));
-    //     configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
+    //     configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "*"));
+    //     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    //     configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+    //     configuration.setAllowedHeaders(Arrays.asList("*"));
+    //     configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
+    //     configuration.setAllowCredentials(true);
     //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     //     source.registerCorsConfiguration("/**", configuration);
     //     return source;
     // }
 
+
     // @Bean
-    // public CorsConfigurationSource corsConfiguration() {
-    //     CorsConfiguration corsConfig = new CorsConfiguration();
-    //     corsConfig.applyPermitDefaultValues();
-    //     corsConfig.setAllowCredentials(true);
-    //     corsConfig.addAllowedMethod("GET");
-    //     corsConfig.addAllowedMethod("PATCH");
-    //     corsConfig.addAllowedMethod("POST");
-    //     corsConfig.addAllowedMethod("OPTIONS");
-    //     corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-    //     corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Requestor-Type"));
-    //     corsConfig.setExposedHeaders(Arrays.asList("X-Get-Header"));
-    //     UrlBasedCorsConfigurationSource source =
-    //             new UrlBasedCorsConfigurationSource();
-    //     source.registerCorsConfiguration("/**", corsConfig);
+    // public CorsConfigurationSource corsConfigurationSource() {
+    //     CorsConfiguration configuration = new CorsConfiguration();
+    //     configuration.setAllowedOrigins(Arrays.asList("*"));
+    //     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH",
+    //             "DELETE", "OPTIONS"));
+    //     configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type",
+    //             "x-auth-token"));
+    //     configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    //     source.registerCorsConfiguration("/**", configuration);
+
     //     return source;
     // }
-
-    // @Bean
-    // public CorsWebFilter corsWebFilter() {
-    //     return new CorsWebFilter(corsConfiguration());
-    // }
-
-    
-
-    
 
 }

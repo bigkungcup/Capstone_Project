@@ -22,7 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-// import org.springframework.web.util.WebUtils;
+import org.springframework.web.util.WebUtils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -145,29 +145,30 @@ public class JwtService {
                                                                                 .collect(Collectors.toList()))
                                                 .sign(algorithm);
 
-                                // response.addCookie(createCookie("access_token", access_token, jwtExpirationInMs));
-                                // response.addCookie(createCookie("refresh_token", refresh_token.getValue(),
-                                //                 refreshExpirationDateInMs));
+                                response.addCookie(createCookie("access_token", access_token,
+                                jwtExpirationInMs));
+                                response.addCookie(createCookie("refresh_token", refresh_token,
+                                refreshExpirationDateInMs));
 
-                                Map<String, String> dataMap = new HashMap<>();
+                                // Map<String, String> dataMap = new HashMap<>();
 
-                                DataResponse dataResponse = new DataResponse();
+                                // DataResponse dataResponse = new DataResponse();
 
-                                dataResponse.setResponse_code(200);
-                                dataResponse.setResponse_status("OK");
-                                dataResponse.setResponse_message("Refresh token success");
-                                dataResponse.setResponse_datetime(
-                                                sdf3.format(new Timestamp(System.currentTimeMillis())));
+                                // dataResponse.setResponse_code(200);
+                                // dataResponse.setResponse_status("OK");
+                                // dataResponse.setResponse_message("Refresh token success");
+                                // dataResponse.setResponse_datetime(
+                                //                 sdf3.format(new Timestamp(System.currentTimeMillis())));
 
-                                dataMap.put("access_token", access_token);
-                                dataMap.put("refresh_token", refresh_token);
+                                // dataMap.put("access_token", access_token);
+                                // dataMap.put("refresh_token", refresh_token);
 
-                                dataResponse.setData(dataMap);
+                                // dataResponse.setData(dataMap);
 
-                                response.setStatus(HttpStatus.OK.value());
-                                response.setContentType(APPLICATION_JSON_VALUE);
+                                // response.setStatus(HttpStatus.OK.value());
+                                // response.setContentType(APPLICATION_JSON_VALUE);
 
-                                new ObjectMapper().writeValue(response.getOutputStream(), dataResponse);
+                                // new ObjectMapper().writeValue(response.getOutputStream(), dataResponse);
 
                         } catch (Exception exception) {
                                 response.setHeader("error", exception.getMessage());

@@ -1,6 +1,6 @@
 package sit.cp23ej2.controllers;
 
-// import java.sql.Timestamp;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import sit.cp23ej2.exception.HandleUnauthorizedException;
 import sit.cp23ej2.services.JwtService;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 // import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
     RequestMethod.PUT,
     RequestMethod.DELETE,
     RequestMethod.POST
-}, allowedHeaders = "*")
+}, allowedHeaders = "*", exposedHeaders = {"Access-Control-Allow-Origin","Access-Control-Allow-Credentials"})
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
