@@ -15,8 +15,34 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
-        @Query(value = "SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime FROM Book b", nativeQuery = true)
-        Page<Book> getAllBooks(Pageable pageable);
+        @Query(value = " SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime FROM Book b "
+                        +
+                        " WHERE (:bookRating IS NULL OR b.bookRating = :bookRating) "
+        // " ORDER BY " +
+        // // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END ASC, " +
+        // // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END DESC, " +
+        // // " CASE WHEN :sortBy = 'author' THEN b.author END ASC, " +
+        // // " CASE WHEN :sortBy = 'author' THEN b.author END DESC, " +
+        // // " CASE WHEN :sortBy = 'bookTotalView' THEN b.bookTotalView END ASC, " +
+        // " CASE WHEN :sortBy IS NOT NULL AND :sortBy = 'bookTotalView' THEN
+        // b.bookTotalView END ASC, " +
+        // // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END ASC, " +
+        // // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END DESC, " +
+        // // " CASE WHEN :sortBy = 'bookGenre' THEN b.bookGenre END ASC, " +
+        // // " CASE WHEN :sortBy = 'bookGenre' THEN b.bookGenre END DESC, " +
+        // " CASE WHEN :sortBy = '' THEN b.bookCreateDateTime END DESC, " +
+        // // " CASE WHEN :sortBy = 'bookCreateDateTime' THEN b.bookCreateDateTime END
+        // DESC "
+        // // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END
+        // ASC, " +
+        // // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END
+        // DESC, " +
+        // // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END ASC, " +
+        // // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END DESC, " +
+        // " CASE WHEN :sortBy IS NULL THEN b.bookId END DESC "
+        // // " ELSE b.bookName "
+                        , nativeQuery = true)
+        Page<Book> getAllBooks(Pageable pageable, @Param("bookRating") Long bookRating);
 
         @Query(value = "SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime FROM Book b WHERE bookId = :bookId", nativeQuery = true)
         Book getBookById(@Param("bookId") int bookId);
@@ -31,8 +57,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         // @Query(value =
         // " CALL createBookAndBookId(:bookName, :author, :bookGenre, :bookDetail); "
         // , nativeQuery = true)
-        @Query(value = "INSERT INTO  Book (bookName,author,bookGenre,bookDetail, bookTotalView, bookRating)" +
-                        "values (:bookName, :author, :bookGenre, :bookDetail, 0, 0);", nativeQuery = true)
+        // @Query(value = "INSERT INTO Book (bookName,author,bookGenre,bookDetail,
+        // bookTotalView, bookRating)" +
+        // "values (:bookName, :author, :bookGenre, :bookDetail, 0, 0);", nativeQuery =
+        // true)
+        @Query(value = "INSERT INTO Book (bookName, author, bookGenre, bookDetail, bookTotalView, bookRating) " +
+                        "VALUES (:bookName, :author, :bookGenre, :bookDetail, 0, 0);", nativeQuery = true)
         Integer insertBook(@Param("bookName") String bookName, @Param("author") String author,
                         @Param("bookGenre") String bookGenre, @Param("bookDetail") String bookDetail);
 
