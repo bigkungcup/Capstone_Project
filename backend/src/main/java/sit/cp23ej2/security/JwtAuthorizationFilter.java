@@ -6,7 +6,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-// import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
@@ -20,7 +19,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-// import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -49,13 +47,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         } else {
             // Cookie access_token = WebUtils.getCookie(request, "access_token");
 
-            String token = this.recoverToken(request);
-
-            if (token != null) {
+            String access_token = this.recoverToken(request);
+            
+            System.out.println("Access Token :" + access_token);
+            if (access_token != null) {
                 try {
                     Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
                     JWTVerifier verifier = JWT.require(algorithm).build();
-                    DecodedJWT decodedJWT = verifier.verify(token);
+                    DecodedJWT decodedJWT = verifier.verify(access_token);
                     String username = decodedJWT.getSubject();
                     String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();

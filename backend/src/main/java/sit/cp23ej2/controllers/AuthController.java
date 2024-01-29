@@ -1,6 +1,5 @@
 package sit.cp23ej2.controllers;
 
-// import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +10,9 @@ import sit.cp23ej2.dtos.security.LoginDTO;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleUnauthorizedException;
 import sit.cp23ej2.services.JwtService;
+import sit.cp23ej2.services.UserService;
 
 import org.springframework.security.core.Authentication;
-// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
     RequestMethod.PUT,
     RequestMethod.DELETE,
     RequestMethod.POST
-}, allowedHeaders = "*")
+}, allowedHeaders = "*", exposedHeaders = {"Access-Control-Allow-Origin","Access-Control-Allow-Credentials"})
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -47,6 +46,9 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private UserService userService;
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -87,4 +89,14 @@ public class AuthController {
     public void refreshtoken(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws Exception {
       jwtService.refreshToken(request, response, authentication);
     }
+
+   @GetMapping("/profile")
+    public DataResponse getProfile(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return userService.getUserByEmail();
+    }
+
+    // @GetMapping("/logout")
+    // public DataResponse logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    //     return jwtService.logout(request, response);
+    // }
 }

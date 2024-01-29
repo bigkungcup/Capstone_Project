@@ -22,7 +22,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-// import org.springframework.web.util.WebUtils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -145,9 +144,10 @@ public class JwtService {
                                                                                 .collect(Collectors.toList()))
                                                 .sign(algorithm);
 
-                                // response.addCookie(createCookie("access_token", access_token, jwtExpirationInMs));
-                                // response.addCookie(createCookie("refresh_token", refresh_token.getValue(),
-                                //                 refreshExpirationDateInMs));
+                                // response.addCookie(createCookie("access_token", access_token,
+                                // jwtExpirationInMs));
+                                // response.addCookie(createCookie("refresh_token", refresh_token,
+                                // refreshExpirationDateInMs));
 
                                 Map<String, String> dataMap = new HashMap<>();
 

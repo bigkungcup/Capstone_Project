@@ -150,7 +150,7 @@ public class FileStorageService {
 		String path = book.getBookName().toString() + "_" + book.getAuthor().toString();
 		Path destinationFile = this.rootLocation.resolve(path);
 			if (destinationFile.toFile().exists()) {
-				System.out.println("File Exists");
+				System.out.println("File Exists Delete");
 				FileSystemUtils.deleteRecursively(destinationFile.toFile());
 		}
 	}
