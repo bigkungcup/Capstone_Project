@@ -1,6 +1,5 @@
 package sit.cp23ej2.dtos.Book;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 import lombok.Getter;
@@ -20,8 +19,9 @@ public class BookDTO {
     private Integer bookTotalView;
     private Long bookRating;
     private String bookGenre;
-    private Instant bookCreateDateTime;
+    private LocalDateTime bookCreateDateTime;
     private LocalDateTime bookUpdateDateTime;
     private Long countDateTime;
     private String file;
+    private Integer bookTotalReview;
 }

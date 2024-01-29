@@ -15,32 +15,30 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
-        @Query(value = " SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime FROM Book b "
-                        +
-                        " WHERE (:bookRating IS NULL OR b.bookRating = :bookRating) "
-        // " ORDER BY " +
-        // // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END ASC, " +
-        // // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END DESC, " +
-        // // " CASE WHEN :sortBy = 'author' THEN b.author END ASC, " +
-        // // " CASE WHEN :sortBy = 'author' THEN b.author END DESC, " +
-        // // " CASE WHEN :sortBy = 'bookTotalView' THEN b.bookTotalView END ASC, " +
-        // " CASE WHEN :sortBy IS NOT NULL AND :sortBy = 'bookTotalView' THEN
-        // b.bookTotalView END ASC, " +
-        // // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END ASC, " +
-        // // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END DESC, " +
-        // // " CASE WHEN :sortBy = 'bookGenre' THEN b.bookGenre END ASC, " +
-        // // " CASE WHEN :sortBy = 'bookGenre' THEN b.bookGenre END DESC, " +
-        // " CASE WHEN :sortBy = '' THEN b.bookCreateDateTime END DESC, " +
-        // // " CASE WHEN :sortBy = 'bookCreateDateTime' THEN b.bookCreateDateTime END
-        // DESC "
-        // // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END
-        // ASC, " +
-        // // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END
-        // DESC, " +
-        // // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END ASC, " +
-        // // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END DESC, " +
-        // " CASE WHEN :sortBy IS NULL THEN b.bookId END DESC "
-        // // " ELSE b.bookName "
+        @Query(value = "SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, COUNT(r.reviewId) as bookTotalReview"  +
+                        " FROM Book b" +
+                        // "INNER JOIN BookGenre bg ON b.bookGenre = bg.bookGenre " +
+                        " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
+                        " WHERE (:bookRating IS NULL OR b.bookRating = :bookRating)" +
+                        " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime" 
+                        // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END ASC, " +
+                        // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END DESC, " +
+                        // " CASE WHEN :sortBy = 'author' THEN b.author END ASC, " +
+                        // " CASE WHEN :sortBy = 'author' THEN b.author END DESC, " +
+                        // " CASE WHEN :sortBy = 'bookTotalView' THEN b.bookTotalView END ASC, " +
+                        // " CASE WHEN :sortBy IS NOT NULL AND :sortBy = 'bookTotalView' THEN b.bookTotalView END ASC, " +
+                        // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END ASC, " +
+                        // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END DESC, " +
+                        // " CASE WHEN :sortBy = 'bookGenre' THEN b.bookGenre END ASC, " +
+                        // " CASE WHEN :sortBy = 'bookGenre' THEN b.bookGenre END DESC, " +
+                        // " CASE WHEN :sortBy = '' THEN b.bookCreateDateTime END DESC, " +
+                        // " CASE WHEN :sortBy = 'bookCreateDateTime' THEN b.bookCreateDateTime END DESC " +
+                        // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END ASC, " +
+                        // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END DESC, " +
+                        // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END ASC, " +
+                        // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END DESC, " +
+                        // " CASE WHEN :sortBy IS NULL THEN b.bookId END DESC "
+                        // " ELSE b.bookName "
                         , nativeQuery = true)
         Page<Book> getAllBooks(Pageable pageable, @Param("bookRating") Long bookRating);
 

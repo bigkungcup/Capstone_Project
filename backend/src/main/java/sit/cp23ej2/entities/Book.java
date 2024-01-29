@@ -40,4 +40,6 @@ public class Book {
     private LocalDateTime bookCreateDateTime;
 
     private LocalDateTime bookUpdateDateTime;
+
+    private Integer bookTotalReview;
 }
