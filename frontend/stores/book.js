@@ -34,6 +34,7 @@ export const useBooks = defineStore("Books", () => {
         options.method = "GET";
         options.headers = {
           "Content-Type": "application/json",
+          // Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJURVNUQG1haWwua211dHQuYWMudGgiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiL2FwaS9hdXRoL2xvZ2luIiwiZXhwIjoxNzA2Mzc2MDQwfQ.bih_fP8sjhxkzxHbZo2eOeT3ofZDdQpVKa45hBSDrqU`
         };
         options.params = {
           page: bookPage.value,
@@ -105,6 +106,7 @@ export const useBooks = defineStore("Books", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          failPopup.value = true;
           console.log("upload book uncompleted");
         }
       },
@@ -127,12 +129,15 @@ export const useBooks = defineStore("Books", () => {
       bookRating: 4,
     };
 
+    console.log(book);
+
     const formData = new FormData();
     formData.append(
       "book",
       new Blob([JSON.stringify(book)], { type: "application/json" })
     );
       if(editBookFile.value != null){
+        console.log(editBookFile.value[0]);
         formData.append("file",editBookFile.value[0])
       }else if(editBookFile.value == null && bookDetail.value.data.file == null){
         formData.append("file",null)

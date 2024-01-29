@@ -12,6 +12,7 @@ export const useUsers = defineStore("Users", () => {
     role: "USER",
   });
   const userPage = ref(0);
+  const failPopup = ref(false);
 
   //Get user list
   async function getUserList() {
@@ -58,6 +59,9 @@ export const useUsers = defineStore("Users", () => {
         status = response._data.response_code;
         if (status == 400) {
           console.log("register user uncompleted");
+        } else if(status == 500) {
+          failPopup.value = true;
+          console.log("register user uncompleted");
         }
       },
     });
@@ -90,14 +94,20 @@ export const useUsers = defineStore("Users", () => {
     }
   }
 
+  function toggleUserFailPopup() {
+    failPopup.value = !failPopup.value;
+  }
+
   return {
     userList,
     newUser,
     userPage,
+    failPopup,
     getUserList,
     registerUser,
     clearUserList,
-    clearNewUser
+    clearNewUser,
+    toggleUserFailPopup
   };
 });
 

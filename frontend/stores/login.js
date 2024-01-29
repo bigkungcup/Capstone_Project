@@ -9,10 +9,26 @@ export const useLogin = defineStore("Login", () => {
     password: "",
   });
 
+  const setToken = (token) => {
+    localStorage.setItem("accessToken", token.access_token);
+    localStorage.setItem("refreshToken", token.refresh_token);
+  };
+
+  const resetToken = () => {
+    // localStorage.removeItem("role");
+    // localStorage.removeItem("email");
+    // localStorage.removeItem("name");
+  };
+
+  const delete_cookie = (name) => {
+    document.cookie =
+      name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+  };
+
   //Register user
   async function handleLogin() {
     let status = 0;
-    await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
+    const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
       method: "POST",
       body: {
         email: loginAccount.value.email,
@@ -26,6 +42,7 @@ export const useLogin = defineStore("Login", () => {
       },
     });
     if (status == 200) {
+      setToken(data);
       router.push("/");
       //   successfulPopup.value = true;
       console.log("login completed");

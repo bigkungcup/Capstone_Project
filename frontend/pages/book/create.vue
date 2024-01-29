@@ -3,6 +3,7 @@ import { useBooks } from "~/stores/book";
 import { ref } from "vue";
 // import LeaveConfirmPopup from "~/components//popups/leaveConfirmPopup.vue";
 import CreateBookSuccessPopup from "~/components/books/popups/createBookSuccessPopup.vue";
+import DuplicateBookPopup from "~/components/books/popups/duplicateBookPopup.vue";
 
 const book = useBooks();
 const selectedImage = ref(null);
@@ -23,6 +24,10 @@ const validateSize = ref(false);
 
 function showValidateSize() {
   validateSize.value = true;
+}
+
+function toggleBookFailPopup() {
+  book.failPopup = !book.failPopup;
 }
 
 const rules = {
@@ -185,7 +190,7 @@ onBeforeMount(() => {
           book.newBook.bookDetail == '' ||
           book.newBook.bookName.length > 255 ||
           book.newBook.author.length > 255 ||
-          book.newBookFile == null ? true : book.newBookFile[0].size > 64000000
+          book.newBookFile == null ? false : book.newBookFile[0].size > 64000000
         "
         >submit</v-btn
       >
@@ -198,6 +203,10 @@ onBeforeMount(() => {
     <CreateBookSuccessPopup
       :dialog="book.successfulPopup"
       @close="book.closeSuccessfulPopup()"
+    />
+    <DuplicateBookPopup 
+      :dialog="book.failPopup"
+      @close="toggleBookFailPopup()"
     />
   </div>
 </template>

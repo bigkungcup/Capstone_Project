@@ -1,6 +1,7 @@
 <script setup>
 import { useUsers } from "~/stores/user";
 import { ref } from "vue";
+import RegisterFailPopup from "~/components/users/popups/registerFailPopup.vue";
 // import bgimage from "~/image/login.png";
 
 const user = useUsers();
@@ -134,6 +135,9 @@ onBeforeMount(() => {
         </div>
       </v-col>
     </v-row>
+    <RegisterFailPopup 
+    :dialog="user.failPopup"
+    @close="user.toggleUserFailPopup()"/>
   </v-row>
 </template>
 
