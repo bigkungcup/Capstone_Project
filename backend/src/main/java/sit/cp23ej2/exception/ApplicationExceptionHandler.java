@@ -277,4 +277,19 @@ public class ApplicationExceptionHandler extends RuntimeException {
         response.setPath(request.getRequest().getRequestURI());
         return response;
     }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = { org.springframework.http.converter.HttpMessageNotReadableException.class })
+    public ExceptionResponse handleHttpMessageNotReadableException(org.springframework.http.converter.HttpMessageNotReadableException ex,
+            ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        response.setResponse_message("");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
 }

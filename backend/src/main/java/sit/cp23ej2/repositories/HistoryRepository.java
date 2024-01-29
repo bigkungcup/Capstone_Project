@@ -31,5 +31,5 @@ public interface HistoryRepository extends JpaRepository<History, Integer> {
             , nativeQuery = true)
     Page<History> getBookHistory(Pageable pageable, @Param("userId") Integer userId);
 
-    Boolean existsByUserIdAndBookId(Integer userId, Integer bookId);    
+//     Boolean existsByUserIdAndBookId(Integer userId, Integer bookId);    
 }

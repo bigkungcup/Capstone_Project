@@ -135,9 +135,9 @@ public class BookService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        Boolean existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);;
+        // Boolean existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
 
-        if (user != null && !existsByUserIdAndBookId) {
+        if (user != null ) {
             historyRepository.insertHistory(user.getUserId(), bookId);
         }
 
@@ -192,7 +192,7 @@ public class BookService extends CommonController {
         if (dataBook.getAuthor().equals(book.getAuthor()) && dataBook.getBookName().equals(book.getBookName())) {
 
             repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
-                    book.getBookRating(), bookId);
+                     bookId);
 
             Book newDataBook = repository.getBookById(bookId);
             BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
@@ -226,7 +226,7 @@ public class BookService extends CommonController {
             if (!existsByAuthorAndBookName) {
 
                 repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
-                        book.getBookRating(), bookId);
+                         bookId);
 
                 Book newDataBook = repository.getBookById(bookId);
                 BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
