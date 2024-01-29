@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +20,12 @@ import sit.cp23ej2.dtos.Book.PageBookDTO;
 import sit.cp23ej2.dtos.Book.UpdateBookDTO;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.entities.Book;
+import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
+import sit.cp23ej2.repositories.HistoryRepository;
+import sit.cp23ej2.repositories.UserRepository;
 
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -32,6 +37,12 @@ public class BookService extends CommonController {
 
     @Autowired
     private BookRepository repository;
+
+    @Autowired
+    private HistoryRepository historyRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -117,8 +128,21 @@ public class BookService extends CommonController {
         return response;
     }
 
-    public DataResponse getBookById(int bookId) throws HandleExceptionNotFound {
+    public DataResponse getBookById(Integer bookId) throws HandleExceptionNotFound {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+
+        Boolean existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);;
+
+        if (user != null && !existsByUserIdAndBookId) {
+            historyRepository.insertHistory(user.getUserId(), bookId);
+        }
+
         DataResponse response = new DataResponse();
+
         Book book = repository.getBookById(bookId);
         if (book != null) {
             BookDTO bookDTO = modelMapper.map(book, BookDTO.class);

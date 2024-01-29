@@ -7,6 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import sit.cp23ej2.controllers.CommonController;
@@ -50,6 +52,26 @@ public class UserService extends CommonController {
     public DataResponse getUserById(int userId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         User user = repository.getUserById(userId);
+        if (user != null) {
+            response.setResponse_code(200);
+            response.setResponse_status("OK");
+            response.setResponse_message("User");
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+            response.setData(user);
+        } else {
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
+        return response;
+    }
+
+    public DataResponse getUserByEmail() throws HandleExceptionNotFound {
+        DataResponse response = new DataResponse();
+        
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = repository.getUserByEmail(currentPrincipalName);
         if (user != null) {
             response.setResponse_code(200);
             response.setResponse_status("OK");

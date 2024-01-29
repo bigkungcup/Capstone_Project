@@ -42,7 +42,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         , nativeQuery = true)
         Page<Book> getAllBooks(Pageable pageable, @Param("bookRating") Long bookRating);
 
-        @Query(value = "SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime FROM Book b WHERE bookId = :bookId", nativeQuery = true)
+        @Query(value = "SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, COUNT(r.reviewId) as bookTotalReview " +
+                        " FROM Book b" + 
+                        " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
+                        " WHERE bookId = :bookId" +
+                        " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime" 
+                        , nativeQuery = true)
         Book getBookById(@Param("bookId") int bookId);
 
         Boolean existsByAuthorAndBookName(String author, String bookName);

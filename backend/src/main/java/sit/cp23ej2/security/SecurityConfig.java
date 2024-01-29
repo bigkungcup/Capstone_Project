@@ -55,8 +55,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/book").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/book/**").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
-                .requestMatchers("/api/review").hasAnyAuthority("ROLE_USER")
+                .requestMatchers("/api/review").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/review/**").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/history").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
                 .anyRequest().authenticated());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
