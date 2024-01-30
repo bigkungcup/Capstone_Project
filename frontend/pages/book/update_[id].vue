@@ -106,7 +106,7 @@ book.setEditBook();
               <div class="px-10" v-show="book.editBook.file != null || book.editBookFile != null">
               <v-btn block @click="book.editBook.file = null, book.editBookFile = null">
                   <p class="tw-font-bold tw-text-[#1D419F] tw-text-xs">
-                    cancle
+                    cancel
                   </p>
               </v-btn>
             </div>

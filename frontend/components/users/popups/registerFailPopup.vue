@@ -26,8 +26,7 @@ defineProps({
         </v-icon>
       </div>
       <p class="warning-popUp-header tw-flex tw-justify-center tw-my-3">Warning !</p>
-      <div class="confirm-popUp-detail tw-flex tw-justify-center">Username or email is already in use
-        reviews.</div>
+      <div class="confirm-popUp-detail tw-flex tw-justify-center">Username or email has already used.</div>
       <v-card-actions style="height: 5rem; width: 40rem;" class="tw-flex tw-justify-center">
       <v-btn class=" tw-mx-2" style="height: 3rem; width: 7rem; color: white;" color="#BB0000" variant="flat"
         size="large" rounded="xl" @click="$emit('close')">Got it!</v-btn>
