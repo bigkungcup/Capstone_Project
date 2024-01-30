@@ -1,7 +1,10 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { ref } from "vue";
+import { useLogin } from "./login";
 
 export const useBooks = defineStore("Books", () => {
+  const accessToken = useCookie("accessToken");
+  const login = useLogin();
   const bookList = ref({
     data: {
       content: [],
@@ -34,7 +37,7 @@ export const useBooks = defineStore("Books", () => {
         options.method = "GET";
         options.headers = {
           "Content-Type": "application/json",
-          // Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJURVNUQG1haWwua211dHQuYWMudGgiLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiL2FwaS9hdXRoL2xvZ2luIiwiZXhwIjoxNzA2Mzc2MDQwfQ.bih_fP8sjhxkzxHbZo2eOeT3ofZDdQpVKa45hBSDrqU`
+          Authorization: `Bearer ${accessToken.value}`,
         };
         options.params = {
           page: bookPage.value,
@@ -52,6 +55,8 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 400) {
       clearBookList();
       console.log("get library uncompleted");
+    } else if (status == 401) {
+      login.handleRefresh(getLibrary());
     }
   }
 
@@ -65,6 +70,7 @@ export const useBooks = defineStore("Books", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -77,6 +83,8 @@ export const useBooks = defineStore("Books", () => {
       console.log("get book detail  completed");
     } else if (status == 400) {
       console.log("get book detail uncompleted");
+    } else if (status == 401) {
+      login.handleRefresh(getBookDetail(bookId));
     }
   }
 
@@ -102,6 +110,9 @@ export const useBooks = defineStore("Books", () => {
     console.log(formData);
     await $fetch(`${import.meta.env.VITE_BASE_URL}/book`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
       body: formData,
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -114,42 +125,56 @@ export const useBooks = defineStore("Books", () => {
     if (status == 201) {
       successfulPopup.value = true;
       console.log("upload book completed");
+    } else if (status == 401) {
+      login.handleRefresh(createBook());
     }
   }
 
   //Update Book
   async function updateBook(bookId) {
     let status = 0;
-    const book = {
-      bookName: editBook.value.bookName,
-      author: editBook.value.author,
-      bookGenre: editBook.value.bookGenre,
-      bookDetail: editBook.value.bookDetail,
-      bookTotalView: 5,
-      bookRating: 4,
-    };
+    let book = {};
 
-    console.log(book);
+    if (editBookFile.value == null && bookDetail.value.data.file !== null) {
+      book = {
+        bookName: editBook.value.bookName,
+        author: editBook.value.author,
+        bookGenre: editBook.value.bookGenre,
+        bookDetail: editBook.value.bookDetail,
+      };
+    } else {
+      book = {
+        bookName: editBook.value.bookName,
+        author: editBook.value.author,
+        bookGenre: editBook.value.bookGenre,
+        bookDetail: editBook.value.bookDetail,
+        bookTotalView: 5,
+        bookRating: 4,
+        status: "edit",
+      };
+    }
 
     const formData = new FormData();
     formData.append(
       "book",
       new Blob([JSON.stringify(book)], { type: "application/json" })
     );
-      if(editBookFile.value != null){
-        console.log(editBookFile.value[0]);
-        formData.append("file",editBookFile.value[0])
-      }else if(editBookFile.value == null && bookDetail.value.data.file == null){
-        formData.append("file",null)
-      } 
-      console.log(editBookFile.value, bookDetail.value.data.file);
-    // formData.append(
-    //   "file",
-    //   editBookFile.value != undefined ? editBookFile.value[0] : null
-    // );
-    console.log(editBookFile.value);
+    if (bookDetail.value.data.file == null && editBookFile.value !== null) {
+      //Add cover case
+      formData.append("file", editBookFile.value[0]);
+    } else if (
+      bookDetail.value.data.file !== null &&
+      editBookFile.value !== null
+    ) {
+      //Update cover case
+      formData.append("file", editBookFile.value[0]);
+    }
+
     await $fetch(`${import.meta.env.VITE_BASE_URL}/book/${bookId}`, {
       method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
       body: formData,
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -161,6 +186,8 @@ export const useBooks = defineStore("Books", () => {
     if (status == 200) {
       successfulPopup.value = true;
       console.log("update book completed");
+    } else if (status == 401) {
+      login.handleRefresh(updateBook(bookId));
     }
   }
 
@@ -174,6 +201,7 @@ export const useBooks = defineStore("Books", () => {
           options.method = "Delete";
           options.headers = {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -184,11 +212,13 @@ export const useBooks = defineStore("Books", () => {
     if (status == 200) {
       successfulPopup.value = true;
       console.log("delete book completed");
-      }else if (status == 400) {
-        failPopup.value = true;
-        console.log("delete book uncompleted");
+    } else if (status == 400) {
+      failPopup.value = true;
+      console.log("delete book uncompleted");
     } else if (status == 404) {
       console.log("delete book uncompleted");
+    } else if (status == 401) {
+      login.handleRefresh(deleteBook(bookId));
     }
   }
 
@@ -244,37 +274,37 @@ export const useBooks = defineStore("Books", () => {
 
   //Clear new book
   function clearNewBook() {
-    newBook.value = {
+    (newBook.value = {
       bookName: "",
       author: "",
       bookGenre: "",
       bookDetail: "",
-    },
-      newBookFile.value = null;
+    }),
+      (newBookFile.value = null);
   }
 
-    //Clear book list
-    function clearBookList() {
-      bookList.value = {
-        data: {
-          content: [],
-          pageable: {
-            totalPages: 1,
-          },
+  //Clear book list
+  function clearBookList() {
+    bookList.value = {
+      data: {
+        content: [],
+        pageable: {
+          totalPages: 1,
         },
-      };
-    }
+      },
+    };
+  }
 
   //set edit book
   async function setEditBook(bookId) {
-    editBook.value = {
+    (editBook.value = {
       bookName: bookDetail.value.data.bookName,
       author: bookDetail.value.data.author,
       bookGenre: bookDetail.value.data.bookGenre,
       bookDetail: bookDetail.value.data.bookDetail,
-      file: bookDetail.value.data.file
-    },
-      editBookFile.value = bookDetail.value.data.file;
+      file: bookDetail.value.data.file,
+    }),
+      (editBookFile.value = bookDetail.value.data.file);
   }
 
   //Back Page
@@ -303,7 +333,7 @@ export const useBooks = defineStore("Books", () => {
     countUpdateTime,
     clearNewBook,
     setEditBook,
-    closeSuccessfulPopup
+    closeSuccessfulPopup,
   };
 });
 

@@ -17,7 +17,7 @@ definePageMeta({
 });
 
 onBeforeMount(() => {
-  login.clearLoginAccount;
+  login.clearLoginAccount();
 });
 </script>
 

@@ -3,29 +3,20 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 
 export const useLogin = defineStore("Login", () => {
+  const cookieOptions = {
+    maxAge: 60 * 60 * 24, // 1 day
+    path: '/',
+  }
   const router = useRouter();
   const loginAccount = ref({
     email: "",
     password: "",
   });
 
-  const setToken = (token) => {
-    localStorage.setItem("accessToken", token.access_token);
-    localStorage.setItem("refreshToken", token.refresh_token);
-  };
+  const accessToken = useCookie('accessToken', cookieOptions)
+  const refreshToken = useCookie('refreshToken', cookieOptions)
 
-  const resetToken = () => {
-    // localStorage.removeItem("role");
-    // localStorage.removeItem("email");
-    // localStorage.removeItem("name");
-  };
-
-  const delete_cookie = (name) => {
-    document.cookie =
-      name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-  };
-
-  //Register user
+  //Login
   async function handleLogin() {
     let status = 0;
     const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
@@ -42,11 +33,40 @@ export const useLogin = defineStore("Login", () => {
       },
     });
     if (status == 200) {
-      setToken(data);
+      accessToken.value = data.access_token;
+      refreshToken.value = data.refresh_token;
       router.push("/");
-      //   successfulPopup.value = true;
       console.log("login completed");
     }
+  }
+
+  //Refresh token
+  async function handleRefresh(event) {
+    let status = 0;
+    const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
+      method: "GET",
+      headers: {
+        'Refresh-Token': refreshToken.value,
+      },
+      onResponse({ request, response, options }) {
+        status = response.status;
+        if (status == 401) {
+          logOut();
+        }
+      },
+    });
+    console.log(status);
+    if (status == 200) {
+      accessToken.value = data.access_token;
+      refreshToken.value = data.refresh_token;
+      event();
+    }
+  }
+
+  function logOut() {
+    accessToken.value = null;
+    refreshToken.value = null;
+    router.push("/login");
   }
 
   //Clear login account
@@ -60,6 +80,7 @@ export const useLogin = defineStore("Login", () => {
   return {
     loginAccount,
     handleLogin,
+    handleRefresh,
     clearLoginAccount,
   };
 });

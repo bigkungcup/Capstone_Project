@@ -1,7 +1,10 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { ref } from "vue";
+import { useLogin } from "./login";
 
 export const useReviews = defineStore("Reviews", () => {
+  const accessToken = useCookie("accessToken");
+  const login = useLogin();
   const reviewList = ref({
     data: {
       content: [],
@@ -32,6 +35,7 @@ export const useReviews = defineStore("Reviews", () => {
         options.method = "GET";
         options.headers = {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
         };
         options.params = {
           bookId: bookId,
@@ -57,6 +61,8 @@ export const useReviews = defineStore("Reviews", () => {
     if (status == 200) {
       reviewList.value = data.value;
       console.log("get review list completed");
+    } else if (status == 401) {
+      login.handleRefresh(getReview(bookId));
     }
   }
 
@@ -70,6 +76,7 @@ export const useReviews = defineStore("Reviews", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -82,6 +89,8 @@ export const useReviews = defineStore("Reviews", () => {
       console.log("get review detail completed");
     } else if (status == 400) {
       console.log("get review detail uncompleted");
+    } else if (status == 401) {
+      login.handleRefresh(getReviewDetail(reviewId));
     }
   }
 
@@ -90,6 +99,9 @@ export const useReviews = defineStore("Reviews", () => {
     let status = 0;
     await $fetch(`${import.meta.env.VITE_BASE_URL}/review`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
       body: {
         rating: newReview.value.rating,
         detail: newReview.value.detail,
@@ -108,6 +120,8 @@ export const useReviews = defineStore("Reviews", () => {
     if (status == 201) {
       successfulPopup.value = true;
       console.log("upload review completed");
+    } else if (status == 401) {
+      login.handleRefresh(createReview());
     }
   }
 
@@ -116,6 +130,9 @@ export const useReviews = defineStore("Reviews", () => {
     let status = 0;
     await $fetch(`${import.meta.env.VITE_BASE_URL}/review/${reviewId}`, {
       method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
       body: {
         rating: editReview.value.rating,
         detail: editReview.value.detail,
@@ -133,6 +150,8 @@ export const useReviews = defineStore("Reviews", () => {
     if (status == 200) {
       successfulPopup.value = true;
       console.log("update review completed");
+    } else if (status == 401) {
+      login.handleRefresh(updateReview(reviewId));
     }
   }
 
@@ -146,6 +165,7 @@ export const useReviews = defineStore("Reviews", () => {
           options.method = "Delete";
           options.headers = {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -160,6 +180,8 @@ export const useReviews = defineStore("Reviews", () => {
       console.log("delete review completed");
     } else if (status == 404) {
       console.log("delete review uncompleted");
+    } else if (status == 401) {
+      login.handleRefresh(deleteReview(reviewId, bookId));
     }
   }
 
@@ -181,9 +203,9 @@ export const useReviews = defineStore("Reviews", () => {
   function closeSuccessfulPopup() {
     successfulPopup.value = false;
     leavePopup.value = false;
-    backPage().then(()=>{
+    backPage().then(() => {
       clearNewReview();
-    })
+    });
   }
 
   //Clear new review
