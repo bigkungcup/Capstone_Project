@@ -1,8 +1,11 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import { useLogin } from "./login";
 
 export const useUsers = defineStore("Users", () => {
+  const accessToken = useCookie("accessToken");
+  const login = useLogin();
   const router = useRouter();
   const userList = ref();
   const newUser = ref({
@@ -66,8 +69,9 @@ export const useUsers = defineStore("Users", () => {
       },
     });
     if (status == 201) {
-      
-      //   successfulPopup.value = true;
+      login.loginAccount.email = newUser.value.email;
+      login.loginAccount.password = newUser.value.password;
+      login.handleLogin();
       console.log("register user completed");
     }
   }

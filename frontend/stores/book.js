@@ -134,8 +134,8 @@ export const useBooks = defineStore("Books", () => {
   async function updateBook(bookId) {
     let status = 0;
     let book = {};
-
-    if (editBookFile.value == null && bookDetail.value.data.file !== null) {
+    console.log(editBookFile.value,bookDetail.value.data.file);
+    if (editBookFile.value === null && bookDetail.value.data.file !== null) {
       book = {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
@@ -148,8 +148,6 @@ export const useBooks = defineStore("Books", () => {
         author: editBook.value.author,
         bookGenre: editBook.value.bookGenre,
         bookDetail: editBook.value.bookDetail,
-        bookTotalView: 5,
-        bookRating: 4,
         status: "edit",
       };
     }
@@ -161,14 +159,18 @@ export const useBooks = defineStore("Books", () => {
     );
     if (bookDetail.value.data.file == null && editBookFile.value !== null) {
       //Add cover case
+      console.log('a');
       formData.append("file", editBookFile.value[0]);
     } else if (
       bookDetail.value.data.file !== null &&
+      editBookFile.value !== undefined &&
       editBookFile.value !== null
     ) {
+      console.log('b');
       //Update cover case
       formData.append("file", editBookFile.value[0]);
     }
+    console.log(book);
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/book/${bookId}`, {
       method: "PUT",
