@@ -55,9 +55,9 @@ public class JwtService {
 
         private final AuthenticationManager authenticationManager;
 
-        private final Integer jwtExpirationInMs = 60 * 60 * 1000;
+        private final Integer jwtExpirationInMs =  60 * 1000;
 
-        private final Integer refreshExpirationDateInMs = 24 * 60 * 60 * 1000;
+        private final Integer refreshExpirationDateInMs =  2 * 60 * 1000;
 
         SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -170,12 +170,21 @@ public class JwtService {
                                 new ObjectMapper().writeValue(response.getOutputStream(), dataResponse);
 
                         } catch (Exception exception) {
+                                DataResponse dataResponse = new DataResponse();
+
+                                dataResponse.setResponse_code(401);
+                                dataResponse.setResponse_status("Unauthorized");
+                                dataResponse.setResponse_message("Refresh token is expired");
+                                dataResponse.setResponse_datetime(
+                                                sdf3.format(new Timestamp(System.currentTimeMillis())));
+
                                 response.setHeader("error", exception.getMessage());
                                 response.setStatus(UNAUTHORIZED.value());
                                 Map<String, String> error = new HashMap<>();
-                                error.put("error_message", exception.getMessage());
+                                error.put("error_message", "Refresh token is expired");
                                 response.setContentType(APPLICATION_JSON_VALUE);
-                                new ObjectMapper().writeValue(response.getOutputStream(), error);
+                                dataResponse.setData(error);
+                                new ObjectMapper().writeValue(response.getOutputStream(), dataResponse);
                         }
                 } else {
                         throw new HandleUnauthorizedException("Refresh token is missing");

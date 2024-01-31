@@ -262,16 +262,16 @@ public class BookService extends CommonController {
 
     public DataResponse deleteBook(int bookId) {
         DataResponse response = new DataResponse();
-        try {
+        // try {
             Integer deleteStatus = repository.deleteBook(bookId);
             System.out.println("deleteBook: " + deleteStatus);
             if (deleteStatus == 1) {
                 Book dataBook = repository.getBookById(bookId);
                 fileStorageService.deleteFile(dataBook);
             }
-        } catch (Exception e) {
-            throw new HandleExceptionBadRequest("Book Can not delete because book have reviews.");
-        }
+        // } catch (Exception e) {
+        //     throw new HandleExceptionBadRequest("Book Can not delete because book have reviews.");
+        // }
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Book Deleted");
