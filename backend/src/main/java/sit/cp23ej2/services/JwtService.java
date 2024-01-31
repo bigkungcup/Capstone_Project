@@ -55,9 +55,9 @@ public class JwtService {
 
         private final AuthenticationManager authenticationManager;
 
-        private final Integer jwtExpirationInMs =  60 * 1000;
+        private final Integer jwtExpirationInMs = 60 * 60 * 1000;
 
-        private final Integer refreshExpirationDateInMs =  2 * 60 * 1000;
+        private final Integer refreshExpirationDateInMs =  24 * 60 * 60 * 1000;
 
         SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
