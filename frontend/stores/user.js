@@ -7,7 +7,64 @@ export const useUsers = defineStore("Users", () => {
   const accessToken = useCookie("accessToken");
   const login = useLogin();
   const router = useRouter();
-  const userList = ref();
+  // const userList = ref();
+
+  //-------------------------------------------------
+//Test Data
+const userList = ref({
+  "data": {
+        "content": [
+            {
+                "userId": 1,
+                "displayName": "Test2",
+                "email": "Test2@mail.com",
+                "password": "$2a$10$j0TkBGjgAGeTV598646Dcu62UQJWXVuO1cfFw3FEP5xhKX69.JuvG",
+                "role": "USER",
+                "followers": 0,
+                "follows": 0,
+                "totalReview": 0,
+                "totalFavoriteReview": 0,
+                "totalLike": 0,
+                "bio": null
+            },
+            {
+                "userId": 2,
+                "displayName": "User Test",
+                "email": "TEST@mail.kmutt.ac.th",
+                "password": "$2a$10$x3abwpouwyjWGfiYm0/fxe0N4TIS12uduIXqBWUj9v9dBGh3jq.Y.",
+                "role": "USER",
+                "followers": 0,
+                "follows": 0,
+                "totalReview": 0,
+                "totalFavoriteReview": 0,
+                "totalLike": 0,
+                "bio": "TEST CREATE"
+            }
+        ],
+        "pageable": {
+            "pageNumber": 0,
+            "pageSize": 10,
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "offset": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "pageNumber": 0,
+        "size": 10,
+        "totalPages": 1,
+        "numberOfElements": 2,
+        "totalElements": 2,
+        "last": true,
+        "first": true,
+        "empty": false
+    }
+})
+// -----------------------------------------------------
+
   const newUser = ref({
     displayName: "",
     email: "",
@@ -69,9 +126,7 @@ export const useUsers = defineStore("Users", () => {
       },
     });
     if (status == 201) {
-      login.loginAccount.email = newUser.value.email;
-      login.loginAccount.password = newUser.value.password;
-      login.handleLogin();
+      router.push("/login");
       console.log("register user completed");
     }
   }
@@ -102,6 +157,11 @@ export const useUsers = defineStore("Users", () => {
     failPopup.value = !failPopup.value;
   }
 
+  function changeUserPage(page) {
+    userPage.value = page - 1;
+    getUserList();
+  }
+
   return {
     userList,
     newUser,
@@ -111,7 +171,8 @@ export const useUsers = defineStore("Users", () => {
     registerUser,
     clearUserList,
     clearNewUser,
-    toggleUserFailPopup
+    toggleUserFailPopup,
+    changeUserPage
   };
 });
 
