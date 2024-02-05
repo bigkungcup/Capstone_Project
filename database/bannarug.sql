@@ -263,6 +263,31 @@ CREATE TABLE IF NOT EXISTS `bannarug`.`User` (
   UNIQUE INDEX `displayName_UNIQUE` (`displayName` ASC) VISIBLE)
 ENGINE = InnoDB;
 
+USE `bannarug`;
+DROP procedure IF EXISTS `createBookAndBookId`;
+
+USE `bannarug`;
+DROP procedure IF EXISTS `bannarug`.`createBookAndBookId`;
+;
+
+DELIMITER $$
+USE `bannarug`$$
+CREATE DEFINER=`root`@`%` PROCEDURE `createBookAndBookId`(
+    IN bookName varchar(255),
+    IN author varchar(255),
+    IN bookGenre varchar(255),
+    IN bookDetail longtext,
+    OUT lastInsertId INT
+)
+BEGIN
+    INSERT INTO Book (bookName, author, bookGenre, bookDetail, bookTotalView, bookRating, bookTotalReview) 
+    VALUES (bookName, author, bookGenre, bookDetail, 0, 0, 0);
+	SET lastInsertId = LAST_INSERT_ID();
+END$$
+
+DELIMITER ;
+;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

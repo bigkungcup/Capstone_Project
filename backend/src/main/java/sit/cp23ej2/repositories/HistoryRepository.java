@@ -1,6 +1,5 @@
 package sit.cp23ej2.repositories;
 
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import sit.cp23ej2.entities.Book;
 import sit.cp23ej2.entities.History;
 
 public interface HistoryRepository extends JpaRepository<History, Integer> {
@@ -21,15 +19,16 @@ public interface HistoryRepository extends JpaRepository<History, Integer> {
             "values (:userId, :bookId);", nativeQuery = true)
     Integer insertHistory(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
 
-    @Query(value = "SELECT h.historyId, h.hu_userId, h.hb_bookId, h.historyCreateDateTime, h.historyUpdateDateTime, " +
-            " b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, COUNT(r.reviewId) as bookTotalReview" +
+    @Query(value = "SELECT h.historyId, h.hu_userId, h.hb_bookId, h.historyCreateDateTime, h.historyUpdateDateTime " +
+        //     " b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, COUNT(r.reviewId) as bookTotalReview" +
             " FROM History h" +
-            " LEFT JOIN Book b ON h.hb_bookId = b.bookId"  +
-            " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
-            " WHERE hu_userId = :userId" +
-            " GROUP BY h.historyId, h.hu_userId, h.hb_bookId, h.historyCreateDateTime, h.historyUpdateDateTime" 
+        //     " LEFT JOIN Book b ON h.hb_bookId = b.bookId"  +
+        //     " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
+            " WHERE hu_userId = :userId" 
+        //     " GROUP BY h.historyId, h.hu_userId, h.hb_bookId, h.historyCreateDateTime, h.historyUpdateDateTime" 
             , nativeQuery = true)
     Page<History> getBookHistory(Pageable pageable, @Param("userId") Integer userId);
 
-//     Boolean existsByUserIdAndBookId(Integer userId, Integer bookId);    
+    @Query(value = "SELECT COUNT(*) > 0 FROM History WHERE hu_userId = :userId AND hb_bookId = :bookId", nativeQuery = true)
+    Integer existsByUserIdAndBookId(Integer userId, Integer bookId);    
 }

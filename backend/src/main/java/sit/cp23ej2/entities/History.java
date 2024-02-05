@@ -37,27 +37,27 @@ public class History {
 
     private LocalDateTime historyUpdateDateTime;
 
-    private Integer bookId;
+    // private Integer bookId;
    
-    private String bookName;
+    // private String bookName;
 
-    private String author;
+    // private String author;
     
-    private String bookDetail;
+    // private String bookDetail;
 
-    private Integer bookTotalView;
+    // private Integer bookTotalView;
 
-    private Long bookRating;
+    // private Long bookRating;
 
-    private String bookGenre;
+    // private String bookGenre;
     
-    private LocalDateTime bookCreateDateTime;
+    // private LocalDateTime bookCreateDateTime;
 
-    private LocalDateTime bookUpdateDateTime;
+    // private LocalDateTime bookUpdateDateTime;
 
-    private Integer bookTotalReview;
+    // private Integer bookTotalReview;
 
-    @JsonIgnore
+    // @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hb_bookId", nullable = true)
     private Book book;

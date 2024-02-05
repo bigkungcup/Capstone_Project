@@ -48,11 +48,11 @@ public class FileStorageService {
 		}
 	}
 
-	public void store(MultipartFile file, String bookName, String author) {
+	public void store(MultipartFile file, Integer bookId) {
 		// boo_name = boo_name.replace(" ", "_");
 		// boo_name = boo_name + "_" + author;
-		String path = bookName + "_" + author;
-
+		// String path = bookName + "_" + author;
+		String path = "Book_Cover" + "_" + bookId.toString();
 		try {
 			if (file.isEmpty()) {
 				throw new HandleExceptionFile("Failed to store empty file.");
@@ -74,7 +74,7 @@ public class FileStorageService {
 			// Paths.get(file.getOriginalFilename()))
 			// .normalize().toAbsolutePath();
 			
-			Path destinationFile = this.rootLocation.resolve(path);
+			Path destinationFile = this.rootLocation.resolve("Book_Cover").resolve(path);
 			if (destinationFile.toFile().exists()) {
 				System.out.println("File Exists");
 				FileSystemUtils.deleteRecursively(destinationFile.toFile());
@@ -109,14 +109,19 @@ public class FileStorageService {
 	}
 
 	public Path load(BookDTO book) {
-		String pathSave = book.getBookName().toString() + "_" + book.getAuthor().toString();
+		// String pathSave = book.getBookName().toString() + "_" + book.getAuthor().toString();
+		String pathSave = "Book_Cover" + "_" + book.getBookId().toString();
 		try{
-			Path path =  rootLocation.resolve(pathSave);
+			Path path =  rootLocation.resolve("Book_Cover").resolve(pathSave);
 			if(path.toFile().exists()) {
 				Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
 				if(pathFile.toFile().exists()){
 					return pathFile;
+				}else{
+					return null;
 				}
+			}else{
+				return null;
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -147,8 +152,9 @@ public class FileStorageService {
 	}
 
 	public void deleteFile(Book book) {
-		String path = book.getBookName().toString() + "_" + book.getAuthor().toString();
-		Path destinationFile = this.rootLocation.resolve(path);
+		// String path = book.getBookName().toString() + "_" + book.getAuthor().toString();
+		String path = "Book_Cover" + "_" + book.getBookId().toString();
+		Path destinationFile = this.rootLocation.resolve("Book_Cover").resolve(path);
 			if (destinationFile.toFile().exists()) {
 				System.out.println("File Exists Delete");
 				FileSystemUtils.deleteRecursively(destinationFile.toFile());

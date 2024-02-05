@@ -135,13 +135,15 @@ public class BookService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        // Boolean existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
+        Integer existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
 
-        if (user != null ) {
+        if (user != null && existsByUserIdAndBookId == 0) {
             historyRepository.insertHistory(user.getUserId(), bookId);
         }
 
         DataResponse response = new DataResponse();
+
+        repository.increaseBookTotalView(bookId);
 
         Book book = repository.getBookById(bookId);
         if (book != null) {
@@ -170,8 +172,10 @@ public class BookService extends CommonController {
         System.out.println("existsByAuthorAndBookName: " + existsByAuthorAndBookName);
         if (!existsByAuthorAndBookName) {
             repository.insertBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail());
+            Integer lastInsertId = repository.getLastInsertId();
+            System.out.println("insertBook: " + lastInsertId);
             if (file != null) {
-                fileStorageService.store(file, book.getBookName(), book.getAuthor());
+                fileStorageService.store(file, lastInsertId);
             }
         } else {
             throw new HandleExceptionBadRequest("Book Already Exists");
@@ -194,13 +198,20 @@ public class BookService extends CommonController {
             repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
                      bookId);
 
-            Book newDataBook = repository.getBookById(bookId);
-            BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
-
+            
             if (file != null) {
                 fileStorageService.deleteFile(dataBook);
-                fileStorageService.store(file, book.getBookName(), book.getAuthor());
+                fileStorageService.store(file, bookId);
             }
+
+            Book newDataBook = repository.getBookById(bookId);
+            newDataBook.setAuthor(book.getAuthor());
+            newDataBook.setBookName(book.getBookName());
+            newDataBook.setBookGenre(book.getBookGenre());
+            newDataBook.setBookDetail(book.getBookDetail());
+            System.out.println("newDataBook: " + newDataBook);
+            BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
+
 
             try {
                 if (book.getStatus() != null) {
@@ -228,13 +239,20 @@ public class BookService extends CommonController {
                 repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
                          bookId);
 
-                Book newDataBook = repository.getBookById(bookId);
-                BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
+              
 
                 if (file != null) {
                     fileStorageService.deleteFile(dataBook);
-                    fileStorageService.store(file, book.getBookName(), book.getAuthor());
+                    fileStorageService.store(file, bookId);
                 }
+
+                Book newDataBook = repository.getBookById(bookId);
+                newDataBook.setAuthor(book.getAuthor());
+                newDataBook.setBookName(book.getBookName());
+                newDataBook.setBookGenre(book.getBookGenre());
+                newDataBook.setBookDetail(book.getBookDetail());
+                System.out.println("newDataBook: " + newDataBook);
+                BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
 
                 try {
                     if (book.getStatus() != null) {
