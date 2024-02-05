@@ -7,7 +7,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.security.LoginDTO;
-import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleUnauthorizedException;
 import sit.cp23ej2.services.JwtService;
 import sit.cp23ej2.services.UserService;
