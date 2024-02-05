@@ -3,11 +3,9 @@ package sit.cp23ej2.services;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -17,9 +15,7 @@ import org.springframework.stereotype.Service;
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
-import sit.cp23ej2.dtos.Book.PageBookDTO;
 import sit.cp23ej2.dtos.History.PageHistoryDTO;
-import sit.cp23ej2.entities.History;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.repositories.HistoryRepository;
 import sit.cp23ej2.repositories.UserRepository;
@@ -76,6 +72,7 @@ public class HistoryService extends CommonController {
         //     // }
 
         // });
+
         // PageBookDTO books = modelMapper.map(repository.getBookHistory(pageable,
         // user.getUserId()), PageBookDTO.class);
         response.setResponse_code(200);

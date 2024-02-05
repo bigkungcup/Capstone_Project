@@ -107,7 +107,7 @@ onBeforeMount(() => {
               <div class="px-10" v-show="book.newBookFile != null">
               <v-btn block @click="book.newBookFile = null">
                   <p class="tw-font-bold tw-text-[#1D419F] tw-text-xs">
-                    cancle
+                    cancel
                   </p>
               </v-btn>
             </div>

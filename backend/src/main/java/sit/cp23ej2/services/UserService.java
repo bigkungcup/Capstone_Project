@@ -17,6 +17,7 @@ import sit.cp23ej2.dtos.User.CreateUserDTO;
 import sit.cp23ej2.dtos.User.PageUserDTO;
 import sit.cp23ej2.dtos.User.UpdateUserDTO;
 import sit.cp23ej2.entities.User;
+import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.UserRepository;
 
@@ -86,6 +87,12 @@ public class UserService extends CommonController {
 
     public DataResponse createUser(CreateUserDTO user) {
         DataResponse response = new DataResponse();
+
+        User userByEmail = repository.getUserByEmail(user.getEmail());;
+
+        if (userByEmail != null) {
+            throw new HandleExceptionBadRequest("Email already exists");
+        }
 
         repository.insertUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getRole(), user.getBio());
 

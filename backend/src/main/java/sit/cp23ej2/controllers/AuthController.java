@@ -81,7 +81,7 @@ public class AuthController {
             // // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             // dataResponse.setData(errorResponse);
             // return dataResponse;
-            throw new HandleExceptionBadRequest(e.getMessage());
+            throw new HandleUnauthorizedException("Invalid email or password");
         }
     }
 
