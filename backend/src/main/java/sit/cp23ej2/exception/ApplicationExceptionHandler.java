@@ -88,7 +88,12 @@ public class ApplicationExceptionHandler extends RuntimeException {
     @ExceptionHandler(value = { java.sql.SQLException.class })
     public ExceptionResponse handleSQLErrorException(java.sql.SQLException ex, ServletWebRequest request) {
         Map<String, String> error = new HashMap<>();
-        error.put("Error:", ex.getMessage());
+        if(ex.getMessage().equals("Duplicate entry 'User Test' for key 'user.displayName_UNIQUE'")){
+            error.put("Error:", "Display name already exists");
+        }else{
+            error.put("Error:", ex.getMessage());
+        }
+        // error.put("Error:", ex.getMessage());
         response.setResponse_code(HttpStatus.BAD_REQUEST.value());
         response.setResponse_status(HttpStatus.BAD_REQUEST.name());
         response.setResponse_message("");
