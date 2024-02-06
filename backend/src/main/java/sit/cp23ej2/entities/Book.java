@@ -9,13 +9,29 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedStoredProcedureQuery;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.StoredProcedureParameter;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @Entity
+@NamedStoredProcedureQuery(
+    name = "insertBook",
+    procedureName = "createBookAndBookId",
+    parameters = {
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookName", type = String.class),
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "author", type = String.class),
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookGenre", type = String.class),
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookDetail", type = String.class),
+        @StoredProcedureParameter(mode = ParameterMode.OUT, name = "lastInsertId", type = Integer.class)
+    }
+)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "Book", schema = "bannarug")
 public class Book {

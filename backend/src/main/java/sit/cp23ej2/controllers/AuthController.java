@@ -7,7 +7,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.security.LoginDTO;
-import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleUnauthorizedException;
 import sit.cp23ej2.services.JwtService;
 import sit.cp23ej2.services.UserService;
@@ -81,7 +80,7 @@ public class AuthController {
             // // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
             // dataResponse.setData(errorResponse);
             // return dataResponse;
-            throw new HandleExceptionBadRequest(e.getMessage());
+            throw new HandleUnauthorizedException("Invalid email or password");
         }
     }
 

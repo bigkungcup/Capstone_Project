@@ -62,6 +62,7 @@ onBeforeRouteLeave(() => {
 onBeforeMount(() => {
   book.clearNewBook();
   book.leavePopup = true;
+  book.newBookFile = null;
 });
 
 </script>

@@ -13,8 +13,9 @@ export const useLogin = defineStore("Login", () => {
     password: "",
   });
 
-  const accessToken = useCookie('accessToken', cookieOptions)
-  const refreshToken = useCookie('refreshToken', cookieOptions)
+  const accessToken = ref(useCookie('accessToken', cookieOptions))
+  const refreshToken = ref(useCookie('refreshToken', cookieOptions))
+  const profile = ref(useCookie('profile', cookieOptions))
 
   //Login
   async function handleLogin() {
@@ -35,6 +36,7 @@ export const useLogin = defineStore("Login", () => {
     if (status == 200) {
       accessToken.value = data.access_token;
       refreshToken.value = data.refresh_token;
+      // getProfile();
       router.push("/");
       console.log("login completed");
     }
@@ -43,31 +45,64 @@ export const useLogin = defineStore("Login", () => {
   //Refresh token
   async function handleRefresh(event) {
     let status = 0;
-    const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
-      method: "GET",
-      headers: {
-        'Refresh-Token': refreshToken.value,
-      },
-      onResponse({ request, response, options }) {
-        status = response.status;
-        if (status == 401) {
-          logOut();
-        }
-      },
-    });
-    console.log(status);
-    if (status == 200) {
-      accessToken.value = data.access_token;
-      refreshToken.value = data.refresh_token;
-      event();
-    }
+      const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
+        method: "GET",
+        headers: {
+          'Refresh-Token': refreshToken.value,
+        },
+        onResponse({ request, response, options }) {
+          status = response.status;
+          if (status == 401) {
+            logOut();
+          }
+        },
+      });
+      if (status == 200) {
+        accessToken.value = data.access_token;
+        refreshToken.value = data.refresh_token;
+        event();
+      }
+
   }
 
+    //Profile
+    async function getProfile() {
+      let status = 0;
+      console.log(accessToken.value);
+      const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/profile`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+          if (status == 400) {
+            console.log("get ptofile uncompleted");
+          }
+        },
+      });
+      if (status == 200) {
+        profile.value = data.role;
+      }
+    }
+
   function logOut() {
+    const channel1 = new BroadcastChannel('accessToken');
+    const channel2 = new BroadcastChannel('refreshToken');
     accessToken.value = null;
     refreshToken.value = null;
+    channel1.close();
+    channel2.close();
+    // refreshToken.value = null;
+    // profile.value = null;
     router.push("/login");
   }
+
+
+  const delete_cookie = (name) => {
+    document.cookie =
+      name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+  };
 
   //Clear login account
   function clearLoginAccount() {
@@ -81,6 +116,7 @@ export const useLogin = defineStore("Login", () => {
     loginAccount,
     handleLogin,
     handleRefresh,
+    logOut,
     clearLoginAccount,
   };
 });

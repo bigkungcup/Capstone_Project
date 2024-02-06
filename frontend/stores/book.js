@@ -157,20 +157,17 @@ export const useBooks = defineStore("Books", () => {
       "book",
       new Blob([JSON.stringify(book)], { type: "application/json" })
     );
-    if (bookDetail.value.data.file == null && editBookFile.value !== null) {
+    if (bookDetail.value.data.file === null && editBookFile.value !== null && editBookFile.value !== undefined ) {
       //Add cover case
-      console.log('a');
       formData.append("file", editBookFile.value[0]);
     } else if (
       bookDetail.value.data.file !== null &&
       editBookFile.value !== undefined &&
       editBookFile.value !== null
     ) {
-      console.log('b');
       //Update cover case
       formData.append("file", editBookFile.value[0]);
     }
-    console.log(book);
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/book/${bookId}`, {
       method: "PUT",
@@ -298,7 +295,7 @@ export const useBooks = defineStore("Books", () => {
   }
 
   //set edit book
-  async function setEditBook(bookId) {
+  async function setEditBook() {
     (editBook.value = {
       bookName: bookDetail.value.data.bookName,
       author: bookDetail.value.data.author,
