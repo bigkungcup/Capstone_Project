@@ -281,10 +281,10 @@ public class BookService extends CommonController {
     public DataResponse deleteBook(int bookId) {
         DataResponse response = new DataResponse();
         // try {
+            Book dataBook = repository.getBookById(bookId);
             Integer deleteStatus = repository.deleteBook(bookId);
             System.out.println("deleteBook: " + deleteStatus);
             if (deleteStatus == 1) {
-                Book dataBook = repository.getBookById(bookId);
                 fileStorageService.deleteFile(dataBook);
             }
         // } catch (Exception e) {
