@@ -2,6 +2,8 @@
 import Bookmarks from '~/components/profiles/bookmark.vue';
 // import Reviews from '~/components/profiles/reviews.vue';
 
+const bookId = ref(1);
+
 </script>
  
 <template>
@@ -38,7 +40,7 @@ import Bookmarks from '~/components/profiles/bookmark.vue';
                     </v-col>
 
                     <v-col cols="2">
-                        <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2">Edit profile</v-btn>
+                        <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/${bookId}/`">Edit profile</v-btn>
                     </v-col>
                 </v-row>
             </div>

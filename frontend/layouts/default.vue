@@ -68,7 +68,7 @@ loginStatus.value = accessToken.value == undefined ? false : true;
           </template>
 
           <v-list>
-            <v-list-item :to="``" >
+            <v-list-item :to="`../profile`" >
               <v-list-item-title class="web-text-detail tw-space-x-2 px-3"
                 ><v-icon icon="mdi mdi-account"></v-icon
                 ><span>Profile</span></v-list-item-title
