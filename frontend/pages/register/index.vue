@@ -65,6 +65,7 @@ onBeforeMount(() => {
         </div>
 
         <div class="tw-mx-10 tw-my-10 tw-space-y-1">
+          <v-card :text="`${user.registerFailedError}`" variant="tonal" class="my-5" color="red-lighten-1" v-show="user.registerFailed"></v-card>
           <v-text-field
             prepend-inner-icon="mdi-account-outline"
             density="compact"

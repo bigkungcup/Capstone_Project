@@ -16,6 +16,7 @@ export const useLogin = defineStore("Login", () => {
   const accessToken = ref(useCookie('accessToken', cookieOptions))
   const refreshToken = ref(useCookie('refreshToken', cookieOptions))
   const profile = ref(useCookie('profile', cookieOptions))
+  const loginFailed = ref(false);
 
   //Login
   async function handleLogin() {
@@ -28,12 +29,14 @@ export const useLogin = defineStore("Login", () => {
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
-        if (status == 400) {
+        if (status == 401) {
+          loginFailed.value = true;
           console.log("login uncompleted");
         }
       },
     });
     if (status == 200) {
+      loginFailed.value = false;
       accessToken.value = data.access_token;
       refreshToken.value = data.refresh_token;
       // getProfile();
@@ -45,13 +48,14 @@ export const useLogin = defineStore("Login", () => {
   //Refresh token
   async function handleRefresh(event) {
     let status = 0;
+    console.log(refreshToken.value);
       const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
         method: "GET",
         headers: {
           'Refresh-Token': refreshToken.value,
         },
         onResponse({ request, response, options }) {
-          status = response.status;
+          status = response._data.response_code;
           if (status == 401) {
             logOut();
           }
@@ -60,10 +64,9 @@ export const useLogin = defineStore("Login", () => {
       if (status == 200) {
         accessToken.value = data.access_token;
         refreshToken.value = data.refresh_token;
-        event();
+        event;
       }
-
-  }
+    }
 
     //Profile
     async function getProfile() {
@@ -114,6 +117,7 @@ export const useLogin = defineStore("Login", () => {
 
   return {
     loginAccount,
+    loginFailed,
     handleLogin,
     handleRefresh,
     logOut,

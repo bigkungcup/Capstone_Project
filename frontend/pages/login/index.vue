@@ -47,6 +47,7 @@ onBeforeMount(() => {
           <p class="web-text-header">Login Account</p>
         </div>
         <div class="tw-mx-10 tw-my-10">
+          <v-card text="Incorrect username or password." variant="tonal" class="my-5" color="red-lighten-1" v-show="login.loginFailed"></v-card>
           <v-text-field
             prepend-inner-icon="mdi-email-outline"
             density="compact"

@@ -4,6 +4,7 @@ import { useLogin } from "./login";
 
 export const useBooks = defineStore("Books", () => {
   const accessToken = useCookie("accessToken");
+  const refreshToken = useCookie("refreshToken");
   const login = useLogin();
   const bookList = ref({
     data: {
@@ -56,7 +57,7 @@ export const useBooks = defineStore("Books", () => {
       clearBookList();
       console.log("get library uncompleted");
     } else if (status == 401) {
-      login.handleRefresh(getLibrary());
+      login.handleRefresh(getLibrary);
     }
   }
 
@@ -84,7 +85,9 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 400) {
       console.log("get book detail uncompleted");
     } else if (status == 401) {
-      login.handleRefresh(getBookDetail(bookId));
+      if(refreshToken.value !== null && refreshToken.value !== undefined){
+        login.handleRefresh(getBookDetail(bookId));
+      }
     }
   }
 
@@ -126,7 +129,7 @@ export const useBooks = defineStore("Books", () => {
       successfulPopup.value = true;
       console.log("upload book completed");
     } else if (status == 401) {
-      login.handleRefresh(createBook());
+      login.handleRefresh(createBook);
     }
   }
 

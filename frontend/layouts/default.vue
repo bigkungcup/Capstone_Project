@@ -2,8 +2,11 @@
 import { mergeProps } from "vue";
 import { useLogin } from "../stores/login";
 
-const profile = useCookie("profile");
+const accessToken = ref(useCookie("accessToken"))
+const loginStatus = ref(false);
 const login = useLogin();
+
+loginStatus.value = accessToken.value == undefined ? false : true;
 
 </script>
 
@@ -25,7 +28,7 @@ const login = useLogin();
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
       <v-icon icon="mdi-magnify" style="font-size: 50px"></v-icon>
-      <span class="text-center" v-show="profile === undefined">
+      <span class="text-center" v-show="!loginStatus">
         <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props: menu }">
             <v-icon
@@ -51,20 +54,10 @@ const login = useLogin();
                 >
               </v-list-item-title>
             </v-list-item>
-            <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
-              <v-list-item-title class="web-text-detail">
-                <v-list-item-title
-                  class="web-text-detail tw-space-x-2 px-3"
-                  @click="login.logOut()"
-                  ><v-icon icon="mdi mdi-logout"></v-icon
-                  ><span>Logout</span></v-list-item-title
-                >
-              </v-list-item-title>
-            </v-list-item>
           </v-list>
         </v-menu></span
       >
-      <span class="text-center" v-show="profile !== undefined">
+      <span class="text-center" v-show="loginStatus">
         <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props: menu }">
             <v-icon

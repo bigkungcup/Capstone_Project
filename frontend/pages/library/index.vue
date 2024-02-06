@@ -6,6 +6,7 @@ import { useBooks } from '~/stores/book'
 
 const library = useBooks();
 const page = ref(1)
+const result = ref(library.bookList.data.totalElements ? library.bookList.data.totalElements : 0);
 
 onBeforeMount( async () => {
   await library.getLibrary();
@@ -33,10 +34,10 @@ onBeforeMount( async () => {
 
       <v-row no-gutters>
         <v-col cols="5">
-          <v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Result - {{ library.bookList.data.totalElements }} </v-btn>
+          <v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Result - {{ result }} </v-btn>
         </v-col>
         <v-col cols="4"></v-col>
-        <v-col cols="3"> <v-btn size="auto" class="pa-5 ml-12" color="#082266" rounded="lg"> Sort By: Result - {{ library.bookList.data.totalElements }}
+        <v-col cols="3"> <v-btn size="auto" class="pa-5 ml-12" color="#082266" rounded="lg"> Sort By: Result - {{ result }}
             <v-icon end icon="mdi mdi-menu-down"></v-icon></v-btn>
         </v-col>
 

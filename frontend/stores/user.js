@@ -7,6 +7,8 @@ export const useUsers = defineStore("Users", () => {
   const accessToken = useCookie("accessToken");
   const login = useLogin();
   const router = useRouter();
+  const registerFailed = ref(false);
+  const registerFailedError = ref();
   // const userList = ref();
 
   //-------------------------------------------------
@@ -107,6 +109,8 @@ const userList = ref({
   //Register user
   async function registerUser() {
     let status = 0;
+    registerFailed.value = false;
+    registerFailedError.value = null;
     await $fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
       method: "POST",
       body: {
@@ -118,6 +122,8 @@ const userList = ref({
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          registerFailed.value = true;
+          registerFailedError.value = Object.values(response._data.filedErrors);
           console.log("register user uncompleted");
         } else if(status == 500) {
           failPopup.value = true;
@@ -167,6 +173,8 @@ const userList = ref({
     newUser,
     userPage,
     failPopup,
+    registerFailed,
+    registerFailedError,
     getUserList,
     registerUser,
     clearUserList,
