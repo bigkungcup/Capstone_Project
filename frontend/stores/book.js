@@ -137,7 +137,6 @@ export const useBooks = defineStore("Books", () => {
   async function updateBook(bookId) {
     let status = 0;
     let book = {};
-    console.log(editBookFile.value,bookDetail.value.data.file);
     if (editBookFile.value === null && bookDetail.value.data.file !== null) {
       book = {
         bookName: editBook.value.bookName,

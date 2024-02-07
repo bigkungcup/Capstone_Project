@@ -1,8 +1,13 @@
 <script setup>
 import Bookmarks from '~/components/profiles/bookmark.vue';
 // import Reviews from '~/components/profiles/reviews.vue';
+import { useLogin } from '~/stores/login'
 
-const bookId = ref(1);
+const login = useLogin();
+
+onBeforeMount( async () => {
+  await login.getProfile();
+});
 
 </script>
  
@@ -27,20 +32,20 @@ const bookId = ref(1);
 
                     <v-col cols="4">
                         <div>
-                            <p class="web-text-header">Cat the Reviewer</p>
-                            <p class="web-text-sub">mistercat@gmail.com</p>
-                            <p class="web-text-sub tw-py-6">I want to be a kamen rider.</p>
+                            <p class="web-text-header">{{ login.profile.displayName }}</p>
+                            <p class="web-text-sub">{{ login.profile.email }}</p>
+                            <p class="web-text-sub tw-py-6">{{ login.profile.bio }}</p>
                         </div>
                     </v-col>
 
                     <v-col cols="4">
                         <div>
-                            <p class="web-text-sub tw-flex tw-place-content-end">120 Following 30 Followers</p>
+                            <p class="web-text-sub tw-flex tw-place-content-end">{{ login.profile.follows }} Following {{ login.profile.followers }} Followers</p>
                         </div>
                     </v-col>
 
                     <v-col cols="2">
-                        <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/${bookId}/`">Edit profile</v-btn>
+                        <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/${login.profile.userId}/`">Edit profile</v-btn>
                     </v-col>
                 </v-row>
             </div>

@@ -15,7 +15,11 @@ export const useLogin = defineStore("Login", () => {
 
   const accessToken = ref(useCookie('accessToken', cookieOptions))
   const refreshToken = ref(useCookie('refreshToken', cookieOptions))
-  const profile = ref(useCookie('profile', cookieOptions))
+  const profile = ref({
+    data: {
+
+    }
+  })
   const loginFailed = ref(false);
 
   //Login
@@ -39,7 +43,6 @@ export const useLogin = defineStore("Login", () => {
       loginFailed.value = false;
       accessToken.value = data.access_token;
       refreshToken.value = data.refresh_token;
-      // getProfile();
       router.push("/");
       console.log("login completed");
     }
@@ -71,7 +74,6 @@ export const useLogin = defineStore("Login", () => {
     //Profile
     async function getProfile() {
       let status = 0;
-      console.log(accessToken.value);
       const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/profile`, {
         method: "GET",
         headers: {
@@ -85,19 +87,36 @@ export const useLogin = defineStore("Login", () => {
         },
       });
       if (status == 200) {
-        profile.value = data.role;
+        profile.value = data
+        // profile.value = {
+        //   userId: data.userId,
+        //   displayName: "",
+        //   email: "",
+        //   password: "$",
+        //   role: "",
+        //   followers: 0,
+        //   follows: 0,
+        //   totalReview: 0,
+        //   bio: ""
+        // };
+        console.log(profile);
       }
     }
 
   function logOut() {
     const channel1 = new BroadcastChannel('accessToken');
     const channel2 = new BroadcastChannel('refreshToken');
+
+    // const resetCookie = (cookieName) => {
+    //   const cookie = useCookie(cookieName)
+    //   cookie.value = null
+    // }
     accessToken.value = null;
     refreshToken.value = null;
+    // resetCookie('access_token')
+    // resetCookie('refresh_token')
     channel1.close();
     channel2.close();
-    // refreshToken.value = null;
-    // profile.value = null;
     router.push("/login");
   }
 
@@ -118,6 +137,8 @@ export const useLogin = defineStore("Login", () => {
   return {
     loginAccount,
     loginFailed,
+    profile,
+    getProfile,
     handleLogin,
     handleRefresh,
     logOut,

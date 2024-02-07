@@ -24,7 +24,7 @@ loginStatus.value = accessToken.value == undefined ? false : true;
       <NuxtLink to="/">Home</NuxtLink>
       <NuxtLink to="">Ranking</NuxtLink>
       <NuxtLink to="/library/">Library</NuxtLink>
-      <NuxtLink to="/book/create">History</NuxtLink>
+      <NuxtLink to="/user">History</NuxtLink>
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
       <v-icon icon="mdi-magnify" style="font-size: 50px"></v-icon>
@@ -44,7 +44,7 @@ loginStatus.value = accessToken.value == undefined ? false : true;
                 ><span>Log-in</span></v-list-item-title
               >
             </v-list-item>
-            <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" to="../user/">
+            <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" to="../register">
               <v-list-item-title class="web-text-detail">
                 <v-list-item-title
                   class="web-text-detail tw-space-x-2 px-3"
