@@ -18,6 +18,7 @@ import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
+import sit.cp23ej2.repositories.UserRepository;
 
 @Service
 public class ReviewService extends CommonController {
@@ -27,6 +28,9 @@ public class ReviewService extends CommonController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -71,6 +75,7 @@ public class ReviewService extends CommonController {
         repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(),
                 review.getBookId(), review.getSpoileFlag());
         bookRepository.increaseBookTotalReview(review.getBookId());
+        userRepository.increaseTotalReview(review.getUserId());
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Review Created");
@@ -109,6 +114,7 @@ public class ReviewService extends CommonController {
         DataResponse response = new DataResponse();
         Review review = repository.getReviewById(reviewId);
         bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
+        userRepository.decreaseTotalReview(review.getUser().getUserId());
         Integer deleteStatus = repository.deleteReview(reviewId);
         if (deleteStatus == 0) {
             throw new HandleExceptionNotFound("Review Not Found", "Review");

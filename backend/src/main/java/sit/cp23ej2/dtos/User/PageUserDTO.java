@@ -5,13 +5,13 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import sit.cp23ej2.entities.User;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class PageUserDTO {
-    private List<User> content;
+    private List<UserDTO> content;
     private Object pageable;
     private int pageNumber;
     private int size;

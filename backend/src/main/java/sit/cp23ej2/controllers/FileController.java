@@ -20,16 +20,16 @@ public class FileController {
 		this.fileStorageService = storageService;
 	}
 
-	@GetMapping("/")
-	public String listUploadedFiles(Model model) throws IOException {
+	// @GetMapping("/")
+	// public String listUploadedFiles(Model model) throws IOException {
 
-		model.addAttribute("files", fileStorageService.loadAll().map(
-				path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
-						"serveFile", path.getFileName().toString()).build().toUri().toString())
-				.collect(Collectors.toList()));
+	// 	model.addAttribute("files", fileStorageService.loadAll().map(
+	// 			path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
+	// 					"serveFile", path.getFileName().toString()).build().toUri().toString())
+	// 			.collect(Collectors.toList()));
 
-		return "uploadForm";
-	}
+	// 	return "uploadForm";
+	// }
 
 	// @GetMapping("/files/{filename:.+}")
 	// @ResponseBody

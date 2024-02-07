@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UpdateUserDTO {
+public class UpdateUserByAdminDTO {
     @NotBlank(message = "Display Name shouldn't be blank or null")
     private String displayName;
 
@@ -24,5 +24,8 @@ public class UpdateUserDTO {
 
     private String bio;
 
+    private String role;
+
     private String status;
 }
+

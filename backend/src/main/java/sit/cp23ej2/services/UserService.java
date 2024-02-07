@@ -1,7 +1,11 @@
 package sit.cp23ej2.services;
 
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.stream.Collectors;
+
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +14,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
 import sit.cp23ej2.dtos.User.PageUserDTO;
+import sit.cp23ej2.dtos.User.UpdateUserByAdminDTO;
 import sit.cp23ej2.dtos.User.UpdateUserDTO;
+import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
@@ -23,9 +30,12 @@ import sit.cp23ej2.repositories.UserRepository;
 
 @Service
 public class UserService extends CommonController {
-    
+
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -35,14 +45,26 @@ public class UserService extends CommonController {
     public DataResponse getUser(int page, int size) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
-        PageUserDTO user = modelMapper.map(repository.getAllUsers(pageable), PageUserDTO.class);
+        PageUserDTO users = modelMapper.map(repository.getAllUsers(pageable), PageUserDTO.class);
 
-        if (user.getContent().size() > 0) {
+        if (users.getContent().size() > 0) {
+            List<UserDTO> userDTO = users.getContent();
+            userDTO = userDTO.stream().map(user -> {
+                try {
+                    Path pathFile = fileStorageService.loadUserFile(user.getUserId());
+                    if (pathFile != null) {
+                        user.setFile(pathFile.toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return user;
+            }).collect(Collectors.toList());
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("All Users");
             response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(user);
+            response.setData(users);
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
@@ -53,12 +75,21 @@ public class UserService extends CommonController {
     public DataResponse getUserById(int userId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         User user = repository.getUserById(userId);
-        if (user != null) {
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        if (userDTO != null) {
+            try {
+                Path pathFile = fileStorageService.loadUserFile(userId);
+                if (pathFile != null) {
+                    userDTO.setFile(pathFile.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("User");
             response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(user);
+            response.setData(userDTO);
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
@@ -67,8 +98,7 @@ public class UserService extends CommonController {
 
     public DataResponse getUserByEmail() throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
-        
-        
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
@@ -88,13 +118,15 @@ public class UserService extends CommonController {
     public DataResponse createUser(CreateUserDTO user) {
         DataResponse response = new DataResponse();
 
-        User userByEmail = repository.getUserByEmail(user.getEmail());;
+        User userByEmail = repository.getUserByEmail(user.getEmail());
+        ;
 
         if (userByEmail != null) {
             throw new HandleExceptionBadRequest("Email already exists");
         }
 
-        repository.insertUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getRole(), user.getBio());
+        repository.insertUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getRole(),
+                user.getBio());
 
         response.setResponse_code(201);
         response.setResponse_status("OK");
@@ -103,15 +135,149 @@ public class UserService extends CommonController {
         return response;
     }
 
-     public DataResponse updateUser(UpdateUserDTO user, Integer userId) {
+    public DataResponse updateUser(UpdateUserDTO user, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
-        repository.updateUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getBio(), userId);
-        User dataUser = repository.getUserById(userId);
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("User Updated");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        response.setData(dataUser);
+        User userById = repository.getUserById(userId);
+        if (userById != null) {
+            if (userById.getEmail().equals(user.getEmail())
+                    && userById.getDisplayName().equals(user.getDisplayName())) {
+
+                repository.updateUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getBio(),
+                        userId);
+                if (file != null) {
+                    fileStorageService.deleteUserFile(userId);
+                    fileStorageService.storeUserProfile(file, userId);
+                }
+                User dataUser = repository.getUserById(userId);
+                UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+                try {
+                    if (user.getStatus() != null) {
+                        Path pathFile = fileStorageService.loadUserFile(userId);
+                        userDTO.setFile(pathFile.toString());
+                    } else {
+                        fileStorageService.deleteUserFile(userId);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                response.setResponse_code(200);
+                response.setResponse_status("OK");
+                response.setResponse_message("User Updated");
+                response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+                response.setData(userDTO);
+
+            } else {
+                boolean existsByEmailOrDisplayName = repository.existsByEmailOrDisplayName(user.getEmail(),
+                        user.getDisplayName());
+                if (!existsByEmailOrDisplayName) {
+                    repository.updateUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getBio(),
+                            userId);
+                    if (file != null) {
+                        fileStorageService.deleteUserFile(userId);
+                        fileStorageService.storeUserProfile(file, userId);
+                    }
+                    User dataUser = repository.getUserById(userId);
+                    UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+                    try {
+                        if (user.getStatus() != null) {
+                            Path pathFile = fileStorageService.loadUserFile(userId);
+                            userDTO.setFile(pathFile.toString());
+                        } else {
+                            fileStorageService.deleteUserFile(userId);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    response.setResponse_code(200);
+                    response.setResponse_status("OK");
+                    response.setResponse_message("User Updated");
+                    response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+                    response.setData(userDTO);
+                } else {
+                    throw new HandleExceptionBadRequest("Email or DisplayName already exists");
+                }
+            }
+        } else {
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
+
+        return response;
+    }
+
+    public DataResponse updateUserByAdmin(UpdateUserByAdminDTO user, Integer userId, MultipartFile file) {
+        DataResponse response = new DataResponse();
+        User userById = repository.getUserById(userId);
+        if (userById != null) {
+            if (userById.getEmail().equals(user.getEmail())
+                    && userById.getDisplayName().equals(user.getDisplayName())) {
+                repository.updateUserByAdmin(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getBio(),
+                        user.getRole(), userId);
+                if (file != null) {
+                    fileStorageService.deleteUserFile(userId);
+                    fileStorageService.storeUserProfile(file, userId);
+                }
+                User dataUser = repository.getUserById(userId);
+                UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+                try {
+                    if (user.getStatus() != null) {
+                        Path pathFile = fileStorageService.loadUserFile(userId);
+                        userDTO.setFile(pathFile.toString());
+                    } else {
+                        fileStorageService.deleteUserFile(userId);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                response.setResponse_code(200);
+                response.setResponse_status("OK");
+                response.setResponse_message("User Updated");
+                response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+                response.setData(userDTO);
+            } else {
+                boolean existsByEmailOrDisplayName = repository.existsByEmailOrDisplayName(user.getEmail(),
+                        user.getDisplayName());
+                if (!existsByEmailOrDisplayName) {
+                    repository.updateUserByAdmin(user.getDisplayName(), user.getEmail(), user.getPassword(),
+                            user.getBio(),
+                            user.getRole(), userId);
+                    if (file != null) {
+                        fileStorageService.deleteUserFile(userId);
+                        fileStorageService.storeUserProfile(file, userId);
+                    }
+                    User dataUser = repository.getUserById(userId);
+                    UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+                    try {
+                        if (user.getStatus() != null) {
+                            Path pathFile = fileStorageService.loadUserFile(userId);
+                            userDTO.setFile(pathFile.toString());
+                        } else {
+                            fileStorageService.deleteUserFile(userId);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    response.setResponse_code(200);
+                    response.setResponse_status("OK");
+                    response.setResponse_message("User Updated");
+                    response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+                    response.setData(userDTO);
+                } else {
+                    throw new HandleExceptionBadRequest("Email or DisplayName already exists");
+                }
+            }
+
+        } else {
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
+
         return response;
     }
 
