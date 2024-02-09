@@ -66,6 +66,12 @@ public class ReviewController {
       return reviewService.getReviewById(reviewId);
    }
 
+   @GetMapping("/me")
+   public DataResponse getReviewByUserId(@RequestParam(defaultValue = "0", required = false) Integer page,
+         @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
+      return reviewService.getReviewByUserId(page, size);
+   }
+
    @PostMapping("")
    @ResponseStatus(HttpStatus.CREATED)
    public DataResponse createReview(@RequestBody @Valid CreateReviewDTO review) {

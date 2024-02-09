@@ -1,24 +1,18 @@
 package sit.cp23ej2.controllers;
 
-import java.io.IOException;
-import java.util.stream.Collectors;
 
-import org.springframework.ui.Model;
-
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import sit.cp23ej2.services.FileStorageService;
+
 
 @RestController
 @RequestMapping("/api/files")
 public class FileController {
-    private final FileStorageService fileStorageService;
+    // private final FileStorageService fileStorageService;
 
-	public FileController(FileStorageService storageService) {
-		this.fileStorageService = storageService;
-	}
+	// public FileController(FileStorageService storageService) {
+	// 	this.fileStorageService = storageService;
+	// }
 
 	// @GetMapping("/")
 	// public String listUploadedFiles(Model model) throws IOException {

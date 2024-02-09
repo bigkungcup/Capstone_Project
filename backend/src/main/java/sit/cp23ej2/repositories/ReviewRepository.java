@@ -19,6 +19,9 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
         @Query(value = "SELECT * FROM Review WHERE reviewId = :reviewId", nativeQuery = true)
         Review getReviewById(@Param("reviewId") int reviewId);
 
+        @Query(value = "SELECT * FROM Review WHERE rvu_userId = :userId", nativeQuery = true)
+        Page<Review> getReviewByUserId(@Param("userId") int userId, Pageable pageable);
+
         @Modifying
         @Transactional
         @Query(value = "INSERT INTO Review (reviewRating, reviewDetail, reviewTitle, reviewTotalLike, reviewTotalDisLike, rvu_userId, rvb_bookId, spoileFlag)"
