@@ -1,5 +1,4 @@
 <script setup>
-import { mergeProps } from "vue";
 defineEmits(["toggle", "set"]);
 
 defineProps({
@@ -45,7 +44,6 @@ defineProps({
           <v-icon
             icon="mdi mdi-chevron-right-circle-outline"
             size="x-large"
-            v-bind="mergeProps(menu, tooltip)"
           ></v-icon>
         </v-col>
       </v-row>

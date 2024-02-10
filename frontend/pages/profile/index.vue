@@ -45,7 +45,7 @@ onBeforeMount( async () => {
                     </v-col>
 
                     <v-col cols="2">
-                        <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/${login.profile.userId}/`">Edit profile</v-btn>
+                        <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/update_${login.profile.userId}/`">Edit profile</v-btn>
                     </v-col>
                 </v-row>
             </div>

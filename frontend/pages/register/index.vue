@@ -37,6 +37,7 @@ definePageMeta({
 });
 
 onBeforeMount(() => {
+  user.registerFailed = false;
   user.clearNewUser();
 });
 

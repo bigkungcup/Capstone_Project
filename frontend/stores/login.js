@@ -16,9 +16,7 @@ export const useLogin = defineStore("Login", () => {
   const accessToken = ref(useCookie('accessToken', cookieOptions))
   const refreshToken = ref(useCookie('refreshToken', cookieOptions))
   const profile = ref({
-    data: {
-
-    }
+    data: {}
   })
   const loginFailed = ref(false);
 
@@ -88,17 +86,6 @@ export const useLogin = defineStore("Login", () => {
       });
       if (status == 200) {
         profile.value = data
-        // profile.value = {
-        //   userId: data.userId,
-        //   displayName: "",
-        //   email: "",
-        //   password: "$",
-        //   role: "",
-        //   followers: 0,
-        //   follows: 0,
-        //   totalReview: 0,
-        //   bio: ""
-        // };
         console.log(profile);
       }
     }
@@ -107,24 +94,14 @@ export const useLogin = defineStore("Login", () => {
     const channel1 = new BroadcastChannel('accessToken');
     const channel2 = new BroadcastChannel('refreshToken');
 
-    // const resetCookie = (cookieName) => {
-    //   const cookie = useCookie(cookieName)
-    //   cookie.value = null
-    // }
+
     accessToken.value = null;
     refreshToken.value = null;
-    // resetCookie('access_token')
-    // resetCookie('refresh_token')
+
     channel1.close();
     channel2.close();
     router.push("/login");
   }
-
-
-  const delete_cookie = (name) => {
-    document.cookie =
-      name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-  };
 
   //Clear login account
   function clearLoginAccount() {
