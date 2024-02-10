@@ -97,16 +97,40 @@ public class FileStorageService {
 		}
 	}
 
-	public Stream<Path> loadAll() {
+	public void storeUserProfile(MultipartFile file, Integer userId) {
+		
+		String path = "User_Profile" + "_" + userId.toString();
 		try {
-			return Files.walk(this.rootLocation, 1)
-					.filter(path -> !path.equals(this.rootLocation))
-					.map(this.rootLocation::relativize);
-		} catch (IOException e) {
-			throw new HandleExceptionFile("Failed to read stored files", e);
-		}
+			if (file.isEmpty()) {
+				throw new HandleExceptionFile("Failed to store empty file.");
+			}
+			String fileName = StringUtils.cleanPath((file.getOriginalFilename()));
 
+			Path destinationFile = this.rootLocation.resolve("User_Profile").resolve(path);
+			if (destinationFile.toFile().exists()) {
+				System.out.println("File Exists");
+				FileSystemUtils.deleteRecursively(destinationFile.toFile());
+			}
+			Path filePath = Files.createDirectories(destinationFile).resolve(fileName);
+			System.out.println("File PAth" + filePath);
+			try (InputStream inputStream = file.getInputStream()) {
+				Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+			}
+		} catch (IOException e) {
+			throw new HandleExceptionFile("Failed to store file.", e);
+		}
 	}
+
+	// public Stream<Path> loadAll() {
+	// 	try {
+	// 		return Files.walk(this.rootLocation, 1)
+	// 				.filter(path -> !path.equals(this.rootLocation))
+	// 				.map(this.rootLocation::relativize);
+	// 	} catch (IOException e) {
+	// 		throw new HandleExceptionFile("Failed to read stored files", e);
+	// 	}
+
+	// }
 
 	public Path load(BookDTO book) {
 		// String pathSave = book.getBookName().toString() + "_" + book.getAuthor().toString();
@@ -130,26 +154,47 @@ public class FileStorageService {
 		return null;
 	}
 
-	public Resource loadAsResource(BookDTO book) {
-		try {
-			Path file = load(book);
-			Resource resource = new UrlResource(file.toUri());
-			if (resource.exists() || resource.isReadable()) {
-				return resource;
-			} else {
-				// throw new HandleExceptionNotFound(
-				// 		"Could not read file: " + file.getFileName());
+	public Path loadUserFile(Integer userId) {
+		String pathSave = "User_Profile" + "_" + userId.toString();
+		try{
+			Path path =  rootLocation.resolve("User_Profile").resolve(pathSave);
+			if(path.toFile().exists()) {
+				Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
+				if(pathFile.toFile().exists()){
+					return pathFile;
+				}else{
+					return null;
+				}
+			}else{
 				return null;
-
 			}
-		} catch (MalformedURLException e) {
-			throw new HandleExceptionNotFound("Could not read file: " + book.getFile(), e);
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
+		
+		return null;
 	}
 
-	public void deleteAll() {
-		FileSystemUtils.deleteRecursively(rootLocation.toFile());
-	}
+	// public Resource loadAsResource(BookDTO book) {
+	// 	try {
+	// 		Path file = load(book);
+	// 		Resource resource = new UrlResource(file.toUri());
+	// 		if (resource.exists() || resource.isReadable()) {
+	// 			return resource;
+	// 		} else {
+	// 			// throw new HandleExceptionNotFound(
+	// 			// 		"Could not read file: " + file.getFileName());
+	// 			return null;
+
+	// 		}
+	// 	} catch (MalformedURLException e) {
+	// 		throw new HandleExceptionNotFound("Could not read file: " + book.getFile(), e);
+	// 	}
+	// }
+
+	// public void deleteAll() {
+	// 	FileSystemUtils.deleteRecursively(rootLocation.toFile());
+	// }
 
 	public void deleteFile(Book book) {
 		// String path = book.getBookName().toString() + "_" + book.getAuthor().toString();
@@ -161,12 +206,22 @@ public class FileStorageService {
 		}
 	}
 
-	public void init() {
-		try {
-			Files.createDirectories(rootLocation);
-		} catch (IOException e) {
-			throw new HandleExceptionFile("Could not initialize storage", e);
+	public void deleteUserFile(Integer userId) {
+		// String path = book.getBookName().toString() + "_" + book.getAuthor().toString();
+		String path = "User_Profile" + "_" + userId.toString();
+		Path destinationFile = this.rootLocation.resolve("User_Profile").resolve(path);
+			if (destinationFile.toFile().exists()) {
+				System.out.println("File Exists Delete");
+				FileSystemUtils.deleteRecursively(destinationFile.toFile());
 		}
 	}
+
+	// public void init() {
+	// 	try {
+	// 		Files.createDirectories(rootLocation);
+	// 	} catch (IOException e) {
+	// 		throw new HandleExceptionFile("Could not initialize storage", e);
+	// 	}
+	// }
 
 }

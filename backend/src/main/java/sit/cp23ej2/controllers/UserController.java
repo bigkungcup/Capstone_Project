@@ -2,6 +2,7 @@ package sit.cp23ej2.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,16 +12,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
+import sit.cp23ej2.dtos.User.UpdateUserByAdminDTO;
 import sit.cp23ej2.dtos.User.UpdateUserDTO;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.services.UserService;
 
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -62,8 +66,13 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public DataResponse updateUser(@RequestBody @Valid UpdateUserDTO user, @PathVariable Integer userId) {
-        return userService.updateUser(user, userId);
+    public DataResponse updateUser(@RequestPart("user") @Valid UpdateUserDTO user, @PathVariable Integer userId, @RequestPart(value = "file") @Nullable MultipartFile file) {
+        return userService.updateUser(user, userId, file);
+    }
+
+    @PutMapping("/admin/{userId}")
+    public DataResponse updateUserByAdmin(@RequestPart("user") @Valid UpdateUserByAdminDTO user, @PathVariable Integer userId, @RequestPart(value = "file") @Nullable MultipartFile file) {
+        return userService.updateUserByAdmin(user, userId, file);
     }
 
     @DeleteMapping("/{userId}")

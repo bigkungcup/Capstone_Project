@@ -1,17 +1,19 @@
-package sit.cp23ej2.dtos.User;
+package sit.cp23ej2.dtos.Bookmark;
 
 import java.util.List;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class PageUserDTO {
-    private List<UserDTO> content;
+@ToString
+public class PageBookmarkDTO {
+    private List<BookmarkDTO> content;
     private Object pageable;
     private int pageNumber;
     private int size;

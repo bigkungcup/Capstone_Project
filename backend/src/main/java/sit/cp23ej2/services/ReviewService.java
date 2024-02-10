@@ -7,6 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import sit.cp23ej2.controllers.CommonController;
@@ -15,9 +17,11 @@ import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.entities.Review;
+import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
+import sit.cp23ej2.repositories.UserRepository;
 
 @Service
 public class ReviewService extends CommonController {
@@ -27,6 +31,9 @@ public class ReviewService extends CommonController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -66,11 +73,34 @@ public class ReviewService extends CommonController {
         return response;
     }
 
+    public DataResponse getReviewByUserId(int page, int size) throws HandleExceptionNotFound {
+        DataResponse response = new DataResponse();
+        Pageable pageable = PageRequest.of(page, size);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+
+        PageReviewDTO review = modelMapper.map(repository.getReviewByUserId(user.getUserId(), pageable), PageReviewDTO.class);
+
+        if (review != null) {
+            response.setResponse_code(200);
+            response.setResponse_status("OK");
+            response.setResponse_message("Review");
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+            response.setData(review);
+        } else {
+            throw new HandleExceptionNotFound("Review Not Found", "Review");
+        }
+        return response;
+    }
+
     public DataResponse createReviewByBookId(CreateReviewDTO review) {
         DataResponse response = new DataResponse();
         repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(),
                 review.getBookId(), review.getSpoileFlag());
         bookRepository.increaseBookTotalReview(review.getBookId());
+        userRepository.increaseTotalReview(review.getUserId());
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Review Created");
@@ -109,6 +139,7 @@ public class ReviewService extends CommonController {
         DataResponse response = new DataResponse();
         Review review = repository.getReviewById(reviewId);
         bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
+        userRepository.decreaseTotalReview(review.getUser().getUserId());
         Integer deleteStatus = repository.deleteReview(reviewId);
         if (deleteStatus == 0) {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
