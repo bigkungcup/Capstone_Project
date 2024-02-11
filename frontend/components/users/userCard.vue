@@ -7,6 +7,11 @@ defineProps({
     require: true,
   },
 });
+
+function bookCoverPath(filePath) {
+  return (filePath = `../../ej2/_nuxt/@fs/${filePath}`);
+}
+
 </script>
 
 <template>
@@ -19,8 +24,9 @@ defineProps({
       <v-row no-gutters class="my-5">
         <v-col cols="2" align="center">
           <v-avatar size="80px" class="border-md">
-            <v-img alt="Avatar" src="/image/guest_icon.png"></v-img
-          ></v-avatar>
+            <v-img alt="Avatar" src="/image/guest_icon.png" v-show="user.file == null" ></v-img>
+            <v-img alt="Avatar" :src="bookCoverPath(user.file)" cover v-show="user.file != null" />
+          </v-avatar>
         </v-col>
         <v-col
           cols="3"

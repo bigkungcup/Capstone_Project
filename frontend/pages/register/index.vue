@@ -121,6 +121,8 @@ onBeforeMount(() => {
               user.newUser.displayName == '' ||
               user.newUser.email == '' ||
               !user.newUser.email.match(validEmail) ||
+              user.newUser.displayName.length > 255 ||
+              user.newUser.email.length > 255 ||
               user.newUser.password == '' ||
               password.length < 8 || password.length > 16 ||
               password !== confirmPassword

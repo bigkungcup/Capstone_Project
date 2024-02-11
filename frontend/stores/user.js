@@ -5,6 +5,7 @@ import { useLogin } from "./login";
 
 export const useUsers = defineStore("Users", () => {
   const accessToken = useCookie("accessToken");
+  const refreshToken = useCookie("refreshToken");
   const login = useLogin();
   const router = useRouter();
   const registerFailed = ref(false);
@@ -25,10 +26,13 @@ export const useUsers = defineStore("Users", () => {
     password: "",
     role: "USER",
   });
+  const editUser = ref();
+  const editUserFile = ref();
   const userPage = ref(0);
   const failPopup = ref(false);
   const successfulPopup = ref(false);
   const confirmPopup = ref(false);
+  const leavePopup = ref(true);
 
   //Get user list
   async function getUserList() {
@@ -87,7 +91,7 @@ export const useUsers = defineStore("Users", () => {
       console.log("get user detail uncompleted");
     } else if (status == 401) {
       if(refreshToken.value !== null && refreshToken.value !== undefined){
-        login.handleRefresh(getUserDetail(bookId));
+        login.handleRefresh(getUserDetail(userId));
       }
     }
   }
@@ -127,39 +131,41 @@ export const useUsers = defineStore("Users", () => {
   async function updateUser(userId) {
     let status = 0;
     let user = {};
-    // if (editBookFile.value === null && bookDetail.value.data.file !== null) {
-    //   book = {
-    //     bookName: editBook.value.bookName,
-    //     author: editBook.value.author,
-    //     bookGenre: editBook.value.bookGenre,
-    //     bookDetail: editBook.value.bookDetail,
-    //   };
-    // } else {
-    //   book = {
-    //     bookName: editBook.value.bookName,
-    //     author: editBook.value.author,
-    //     bookGenre: editBook.value.bookGenre,
-    //     bookDetail: editBook.value.bookDetail,
-    //     status: "edit",
-    //   };
-    // }
+    if (editUserFile.value === null && userDetail.value.data.file !== null) {
+      user = {
+        displayName: editUser.value.displayName,
+        email: editUser.value.email,
+        password: editUser.value.password,
+        bio: editUser.value.bio,
+        role: editUser.value.role
+      };
+    } else {
+      user = {
+        displayName: editUser.value.displayName,
+        email: editUser.value.email,
+        password: editUser.value.password,
+        bio: editUser.value.bio,
+        role: editUser.value.role,
+        status: "edit"
+      };
+    }
 
     const formData = new FormData();
     formData.append(
       "user",
       new Blob([JSON.stringify(user)], { type: "application/json" })
     );
-    // if (bookDetail.value.data.file === null && editBookFile.value !== null && editBookFile.value !== undefined ) {
-    //   //Add cover case
-    //   formData.append("file", editBookFile.value[0]);
-    // } else if (
-    //   bookDetail.value.data.file !== null &&
-    //   editBookFile.value !== undefined &&
-    //   editBookFile.value !== null
-    // ) {
-    //   //Update cover case
-    //   formData.append("file", editBookFile.value[0]);
-    // }
+    if (userDetail.value.data.file === null && editUserFile.value !== null && editUserFile.value !== undefined ) {
+      //Add cover case
+      formData.append("file", editUserFile.value[0]);
+    } else if (
+      userDetail.value.data.file !== null &&
+      editUserFile.value !== undefined &&
+      editUserFile.value !== null
+    ) {
+      //Update cover case
+      formData.append("file", editUserFile.value[0]);
+    }
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/user/admin/${userId}`, {
       method: "PUT",
@@ -242,14 +248,42 @@ export const useUsers = defineStore("Users", () => {
     getUserList();
   }
 
+    //set edit book
+    async function setEditUser() {
+      (editUser.value = {
+        displayName: userDetail.value.data.displayName,
+        email: userDetail.value.data.email,
+        password: '',
+        bio: userDetail.value.data.bio,
+        role: userDetail.value.data.role,
+        file: userDetail.value.data.file,
+      }),
+        (editUserFile.value = userDetail.value.data.file);
+    }
+
+  //Close successful popup
+  function closeSuccessfulPopup() {
+    successfulPopup.value = false;
+    leavePopup.value = false;
+    backPage()
+  }
+
+  //Back Page
+  function backPage() {
+    window.history.back();
+  }
+
   return {
     userList,
     userDetail,
     newUser,
+    editUser,
+    editUserFile,
     userPage,
     failPopup,
     confirmPopup,
     successfulPopup,
+    leavePopup,
     registerFailed,
     registerFailedError,
     getUserList,
@@ -260,7 +294,9 @@ export const useUsers = defineStore("Users", () => {
     clearUserList,
     clearNewUser,
     toggleUserFailPopup,
-    changeUserPage
+    changeUserPage,
+    setEditUser,
+    closeSuccessfulPopup
   };
 });
 
