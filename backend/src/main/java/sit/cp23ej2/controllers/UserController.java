@@ -67,11 +67,13 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public DataResponse updateUser(@RequestPart("user") @Valid UpdateUserDTO user, @PathVariable Integer userId, @RequestPart(value = "file") @Nullable MultipartFile file) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
         return userService.updateUser(user, userId, file);
     }
 
     @PutMapping("/admin/{userId}")
     public DataResponse updateUserByAdmin(@RequestPart("user") @Valid UpdateUserByAdminDTO user, @PathVariable Integer userId, @RequestPart(value = "file") @Nullable MultipartFile file) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
         return userService.updateUserByAdmin(user, userId, file);
     }
 
