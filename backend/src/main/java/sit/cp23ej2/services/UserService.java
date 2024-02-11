@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -138,12 +139,16 @@ public class UserService extends CommonController {
     public DataResponse updateUser(UpdateUserDTO user, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
+
+        if (new BCryptPasswordEncoder().matches(userById.getPassword(), user.getPassword())) {
+            throw new HandleExceptionBadRequest("Password is incorrect");
+        }
+
         if (userById != null) {
             if (userById.getEmail().equals(user.getEmail())
                     && userById.getDisplayName().equals(user.getDisplayName())) {
 
-                repository.updateUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getBio(),
-                        userId);
+                repository.updateUserDetailByUser(user.getPassword(), user.getBio(), userId);
                 if (file != null) {
                     fileStorageService.deleteUserFile(userId);
                     fileStorageService.storeUserProfile(file, userId);
@@ -161,7 +166,7 @@ public class UserService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
                 response.setResponse_code(200);
                 response.setResponse_status("OK");
                 response.setResponse_message("User Updated");
@@ -191,7 +196,7 @@ public class UserService extends CommonController {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
+                    userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
                     response.setResponse_code(200);
                     response.setResponse_status("OK");
                     response.setResponse_message("User Updated");
@@ -201,9 +206,10 @@ public class UserService extends CommonController {
                     throw new HandleExceptionBadRequest("Email or DisplayName already exists");
                 }
             }
-        } else {
-            throw new HandleExceptionNotFound("User Not Found", "User");
-        }
+        } 
+        // else {
+        // throw new HandleExceptionNotFound("User Not Found", "User");
+        // }
 
         return response;
     }
@@ -233,7 +239,7 @@ public class UserService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
                 response.setResponse_code(200);
                 response.setResponse_status("OK");
                 response.setResponse_message("User Updated");
@@ -263,7 +269,33 @@ public class UserService extends CommonController {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                    response.setResponse_code(200);
+                    response.setResponse_status("OK");
+                    response.setResponse_message("User Updated");
+                    response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+                    response.setData(userDTO);
+                } else if (existsByEmailOrDisplayName && userById.getEmail().equals(user.getEmail())
+                        && userById.getDisplayName().equals(user.getDisplayName())) {
+                    repository.updateUserDetailByAdmin(user.getPassword(), user.getBio(), user.getRole(), userId);
+                    if (file != null) {
+                        fileStorageService.deleteUserFile(userId);
+                        fileStorageService.storeUserProfile(file, userId);
+                    }
+                    User dataUser = repository.getUserById(userId);
+                    UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
 
+                    try {
+                        if (user.getStatus() != null) {
+                            Path pathFile = fileStorageService.loadUserFile(userId);
+                            userDTO.setFile(pathFile.toString());
+                        } else {
+                            fileStorageService.deleteUserFile(userId);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
                     response.setResponse_code(200);
                     response.setResponse_status("OK");
                     response.setResponse_message("User Updated");
