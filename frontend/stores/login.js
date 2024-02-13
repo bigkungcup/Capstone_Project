@@ -5,38 +5,46 @@ import { ref } from "vue";
 export const useLogin = defineStore("Login", () => {
   const cookieOptions = {
     maxAge: 60 * 60 * 24, // 1 day
-    path: '/',
-  }
+    path: "/",
+  };
   const router = useRouter();
   const loginAccount = ref({
     email: "",
     password: "",
   });
 
-  const accessToken = ref(useCookie('accessToken', cookieOptions))
-  const refreshToken = ref(useCookie('refreshToken', cookieOptions))
+  const accessToken = ref(useCookie("accessToken", cookieOptions));
+  const refreshToken = ref(useCookie("refreshToken", cookieOptions));
   const profile = ref({
-    data: {}
-  })
+    data: {},
+  });
+  const editProfile = ref();
+  const editProfileFile = ref();
+  const failPopup = ref(false);
+  const successfulPopup = ref(false);
   const loginFailed = ref(false);
+  const leavePopup = ref(true);
 
   //Login
   async function handleLogin() {
     let status = 0;
-    const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
-      method: "POST",
-      body: {
-        email: loginAccount.value.email,
-        password: loginAccount.value.password,
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-        if (status == 401) {
-          loginFailed.value = true;
-          console.log("login uncompleted");
-        }
-      },
-    });
+    const { data } = await $fetch(
+      `${import.meta.env.VITE_BASE_URL}/auth/login`,
+      {
+        method: "POST",
+        body: {
+          email: loginAccount.value.email,
+          password: loginAccount.value.password,
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+          if (status == 401) {
+            loginFailed.value = true;
+            console.log("login uncompleted");
+          }
+        },
+      }
+    );
     if (status == 200) {
       loginFailed.value = false;
       accessToken.value = data.access_token;
@@ -50,10 +58,12 @@ export const useLogin = defineStore("Login", () => {
   async function handleRefresh(event) {
     let status = 0;
     console.log(refreshToken.value);
-      const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {
+    const { data } = await $fetch(
+      `${import.meta.env.VITE_BASE_URL}/auth/refresh`,
+      {
         method: "GET",
         headers: {
-          'Refresh-Token': refreshToken.value,
+          "Refresh-Token": refreshToken.value,
         },
         onResponse({ request, response, options }) {
           status = response._data.response_code;
@@ -61,18 +71,21 @@ export const useLogin = defineStore("Login", () => {
             logOut();
           }
         },
-      });
-      if (status == 200) {
-        accessToken.value = data.access_token;
-        refreshToken.value = data.refresh_token;
-        event;
       }
+    );
+    if (status == 200) {
+      accessToken.value = data.access_token;
+      refreshToken.value = data.refresh_token;
+      event;
     }
+  }
 
-    //Profile
-    async function getProfile() {
-      let status = 0;
-      const { data } = await $fetch(`${import.meta.env.VITE_BASE_URL}/auth/profile`, {
+  //Profile
+  async function getProfile() {
+    let status = 0;
+    const { data } = await $fetch(
+      `${import.meta.env.VITE_BASE_URL}/auth/profile`,
+      {
         method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken.value}`,
@@ -83,17 +96,84 @@ export const useLogin = defineStore("Login", () => {
             console.log("get ptofile uncompleted");
           }
         },
-      });
-      if (status == 200) {
-        profile.value = data
-        console.log(profile);
       }
+    );
+    if (status == 200) {
+      profile.value = data;
+    }
+  }
+
+  //Update Profile
+  async function updateProfile() {
+    let status = 0;
+    let user = {};
+    if (editProfileFile.value === null && profile.value.file !== null) {
+      user = {
+        displayName: editProfile.value.displayName,
+        email: editProfile.value.email,
+        // newPassword: editProfile.value.newPassword,
+        // oldPassword: editProfile.value.oldPassword,
+        bio: editProfile.value.bio,
+        role: editProfile.value.role,
+      };
+    } else {
+      user = {
+        displayName: editProfile.value.displayName,
+        email: editProfile.value.email,
+        // newPassword: editProfile.value.newPassword,
+        // oldPassword: editProfile.value.oldPassword,
+        bio: editProfile.value.bio,
+        role: editProfile.value.role,
+        status: "edit",
+      };
     }
 
-  function logOut() {
-    const channel1 = new BroadcastChannel('accessToken');
-    const channel2 = new BroadcastChannel('refreshToken');
+    const formData = new FormData();
+    formData.append(
+      "user",
+      new Blob([JSON.stringify(user)], { type: "application/json" })
+    );
+    if (
+      profile.value.file === null &&
+      editProfileFile.value !== null &&
+      editProfileFile.value !== undefined
+    ) {
+      //Add cover case
+      formData.append("file", editProfileFile.value[0]);
+    } else if (
+      profile.value.file !== null &&
+      editProfileFile.value !== undefined &&
+      editProfileFile.value !== null
+    ) {
+      //Update cover case
+      formData.append("file", editProfileFile.value[0]);
+    }
 
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/user/${profile.value.userId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+      body: formData,
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          console.log("update user uncompleted");
+        }
+      },
+    });
+    if (status == 200) {
+      successfulPopup.value = true;
+      console.log("update user completed");
+    } else if (status == 401) {
+      login.handleRefresh(updateProfile);
+    }
+  }
+
+  //Log out
+  function logOut() {
+    const channel1 = new BroadcastChannel("accessToken");
+    const channel2 = new BroadcastChannel("refreshToken");
 
     accessToken.value = null;
     refreshToken.value = null;
@@ -111,15 +191,56 @@ export const useLogin = defineStore("Login", () => {
     };
   }
 
+  function toggleProfileFailPopup() {
+    failPopup.value = !failPopup.value;
+  }
+
+    //set edit profile
+    async function setEditProfile() {
+      (editProfile.value = {
+        displayName: profile.value.displayName,
+        email: profile.value.email,
+        oldPassword: '',
+        newPassword: '',
+        bio: profile.value.bio,
+        role: profile.value.role,
+        file: profile.value.file,
+      }),
+        (editProfileFile.value = profile.value.file);
+    }
+
+  //Close successful popup
+  function closeSuccessfulPopup() {
+    successfulPopup.value = false;
+    leavePopup.value = false;
+    backPage()
+  }
+
+  //Back Page
+  function backPage() {
+    window.history.back();
+  }
+
+
   return {
     loginAccount,
     loginFailed,
     profile,
+    editProfile,
+    editProfileFile,
+    failPopup,
+    // confirmPopup,
+    successfulPopup,
+    leavePopup,
     getProfile,
+    updateProfile,
     handleLogin,
     handleRefresh,
     logOut,
     clearLoginAccount,
+    toggleProfileFailPopup,
+    setEditProfile,
+    closeSuccessfulPopup,
   };
 });
 

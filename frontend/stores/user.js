@@ -248,7 +248,7 @@ export const useUsers = defineStore("Users", () => {
     getUserList();
   }
 
-    //set edit book
+    //set edit user
     async function setEditUser() {
       (editUser.value = {
         displayName: userDetail.value.data.displayName,

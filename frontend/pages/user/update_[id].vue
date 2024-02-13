@@ -106,20 +106,13 @@ user.setEditUser();
       <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
         <v-row no-gutters>
           <v-col cols="3" align="center" class="tw-my-3">
-            <!-- <v-img
-              src="/image/cat.jpg"
-              width="200"
-              height="200"
-              class="tw-rounded-full tw-m-5"
-              cover
-            /> -->
             <div>
             <div
                 class="tw-m-5"
                 @click="$refs.fileInput.click()"
               >
                 <v-img
-                  src="/image/upload_book_cover.png"
+                  src="/image/upload_photo.png"
                   class="tw-rounded-full"
                   v-show="user.editUser.file == null && user.editUserFile == undefined"
                   width="200"

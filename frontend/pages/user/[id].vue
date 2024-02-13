@@ -31,10 +31,10 @@ onBeforeMount(async () => {
   <div class="tw-bg-[#D9D9D9] tw-h-full">
     <div class="tw-flex tw-place-content-center">
       <div class="tw-w-[70rem] tw-max-h-[16rem]">
-        <v-img src="/image/bookbanner3.png" v-show="user.userDetail.data.file == null" cover></v-img>
+        <v-img src="/image/profile_banner.jpg" v-show="user.userDetail.data.file == null" cover></v-img>
         <v-img
           class="tw-blur-[2px]"
-          v-show="user.userDetail.data.file != null"
+          v-show="user.userDetail.data.file != null"  
           :src="bookCoverPath(user.userDetail.data.file)"
           cover
         ></v-img>
@@ -48,7 +48,7 @@ onBeforeMount(async () => {
         <v-row class="tw-py-2">
           <v-col cols="2">
             <v-img
-              src="/image/cat.jpg"
+              src="/image/guest_icon.png"
               v-show="user.userDetail.data.file == null"
               width="140"
               height="140"

@@ -1,9 +1,16 @@
 <script setup>
 import Bookmarks from '~/components/profiles/bookmark.vue';
+import changePasswordPopup from "~/components/profiles/popups/changePasswordPopup.vue";
 // import Reviews from '~/components/profiles/reviews.vue';
 import { useLogin } from '~/stores/login'
+import { mergeProps } from "vue";
 
 const login = useLogin();
+const changePassword = ref(false);
+
+function handleChangePassword() {
+    changePassword.value = !changePassword.value;
+}
 
 function bookCoverPath(filePath) {
   return (filePath = `../../ej2/_nuxt/@fs/${filePath}`);
@@ -19,10 +26,10 @@ onBeforeMount( async () => {
     <div class="tw-bg-[#D9D9D9] tw-h-full">
         <div class="tw-flex tw-place-content-center ">
             <div class="tw-w-[70rem] tw-max-h-[16rem]">
-                <v-img src="/image/bookbanner3.png" v-show="login.profile.file == null" cover></v-img>
+                <v-img src="/image/profile_banner.jpg" v-show="login.profile.file == null" cover></v-img>
         <v-img
           class="tw-blur-[2px]"
-          v-show="login.profile.file != null"
+          v-show="login.profile.file != null"  
           :src="bookCoverPath(login.profile.file)"
           cover
         ></v-img>
@@ -37,7 +44,7 @@ onBeforeMount( async () => {
                 <v-row class="tw-py-2" >
                     <v-col cols="2" >
                         <v-img
-              src="/image/cat.jpg"
+              src="/image/guest_icon.png"
               v-show="login.profile.file == null"
               width="140"
               height="140"
@@ -62,14 +69,53 @@ onBeforeMount( async () => {
                         </div>
                     </v-col>
 
-                    <v-col cols="4">
-                        <div>
-                            <p class="web-text-sub tw-flex tw-place-content-end">{{ login.profile.follows }} Following {{ login.profile.followers }} Followers</p>
+                    <v-col cols="5">
+                        <div class="py-1">
+                            <p class="web-text-sub tw-flex tw-place-content-end">
+                                {{ login.profile.follows }} Following 
+                                {{ login.profile.followers }} Followers
+                            </p>
                         </div>
                     </v-col>
 
-                    <v-col cols="2">
-                        <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/update_${login.profile.userId}/`">Edit profile</v-btn>
+                    <v-col cols="1">
+                        <!-- <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/update_${login.profile.userId}/`">Edit profile</v-btn> -->
+                        <span class="text-center web-text-detail">
+              <v-menu>
+                <template v-slot:activator="{ props: menu }">
+                  <v-tooltip location="top">
+                    <template v-slot:activator="{ props: tooltip }">
+                      <v-icon
+                        icon="mdi mdi-dots-vertical-circle-outline"
+                        size="x-large"
+                        v-bind="mergeProps(menu, tooltip)"
+                      ></v-icon>
+                    </template>
+                    <span>More</span>
+                  </v-tooltip>
+                </template>
+                <v-list>
+                  <v-list-item :to="`/profile/update_${login.profile.userId}/`">
+                    <v-list-item-title class="web-text-detail tw-space-x-2"
+                      ><v-icon icon="mdi mdi-pencil-outline"></v-icon
+                      ><span>Edit profile</span></v-list-item-title
+                    >
+                  </v-list-item>
+                  <v-list-item
+                    class="hover:tw-bg-zinc-300/20 tw-cursor-pointer"
+                  >
+                    <v-list-item-title class="web-text-detail">
+                      <v-list-item-title
+                        class="web-text-detail tw-space-x-2"
+                        @click="handleChangePassword()"
+                        ><v-icon icon="mdi mdi-key"></v-icon
+                        ><span>Change password</span></v-list-item-title
+                      >
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </span>
                     </v-col>
                 </v-row>
             </div>
@@ -96,12 +142,13 @@ onBeforeMount( async () => {
                 </div>
 
                 <!-------- insert component here ---------->
-
                 <Bookmarks />
                 <!-- <Reviews /> -->
 
             </div>
         </div>
+        <!-- Popup -->
+        <changePasswordPopup :dialog="changePassword" @toggle="handleChangePassword()"/>
     </div>
 </template>
  
