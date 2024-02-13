@@ -3,6 +3,8 @@ package sit.cp23ej2.services;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +59,7 @@ public class BookmarkService extends CommonController {
                     bookmark.getBook().setFile(pathFile.toString());
 
                 }
-
+                book.setBookTagList(new ArrayList<String>(Arrays.asList(bookmark.getBook().getBookTag().split(","))) );
             });
             response.setResponse_code(200);
             response.setResponse_status("OK");

@@ -1,6 +1,8 @@
 package sit.cp23ej2.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -24,6 +26,7 @@ import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
+import sit.cp23ej2.repositories.BooktypeRepository;
 import sit.cp23ej2.repositories.HistoryRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
@@ -46,6 +49,9 @@ public class BookService extends CommonController {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private BooktypeRepository booktypeRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -79,35 +85,13 @@ public class BookService extends CommonController {
         if (books.getContent().size() > 0) {
             List<BookDTO> bookDTOs = books.getContent();
             bookDTOs.forEach(bookDTO -> {
-                // bookDTO.setBookTotalView(bookDTO.getBookTotalView() + 1);
-                // repository.updateBook(bookDTO.getBookName(), bookDTO.getAuthor(),
-                // bookDTO.getBookGenre(), bookDTO.getBookDetail(), bookDTO.getBookTotalView(),
-                // bookDTO.getBookRating(), bookDTO.getBookId());
-                // LocalDateTime targetTime =
-                // LocalDateTime.parse(bookDTO.getBookUpdateDateTime());
-                // if(Math.abs(duration.toHours()) > 24){
-                // bookDTO.setCountDateTime(Math.abs(duration.toDays()) + " days");
-                // }else if (Math.abs(duration.toMinutes()) > 60) {
-                // bookDTO.setCountDateTime(Math.abs(duration.toHours()) + " hours");
-                // }else if (Math.abs(duration.toSeconds()) > 60) {
-                // bookDTO.setCountDateTime(Math.abs(duration.toMinutes()) + " minutes");
-                // }else if (Math.abs(duration.toSeconds()) < 60) {
-                // bookDTO.setCountDateTime(Math.abs(duration.toSeconds()) + " seconds ago");
-                // }
-                // bookDTO.setUpdateDateTime(Math.abs(duration.toDays()) + " days ago " +
-                // Math.abs(duration.toHours()) + " hours ago " + Math.abs(duration.toMinutes())
-                // + " minutes ago " + Math.abs(duration.toSeconds()) + " seconds ago");
+              
                 Duration duration = Duration.between(LocalDateTime.now(), bookDTO.getBookUpdateDateTime());
                 bookDTO.setCountDateTime(Math.abs(duration.toSeconds()));
-                // Path path = Paths.get(fileStorageProperties.getUploadDir() + "/" +
-                // bookDTO.getBookName());
-                // System.out.println("Path" + path.toString());
-                // Resource resource = fileStorageService.loadAsResource(bookDTO);
+                ArrayList<String> bookTag = new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(",")));
+                bookDTO.setBookTagList(bookTag);
                 try {
-                    // Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
-                    // System.out.println("Path File" + pathFile.toString());
-                    // System.out.println("File name" + resource.getFile().getName());
-                    // System.out.println("Resource"+ resource.getURI().toString());
+                   
                     Path pathFile = fileStorageService.load(bookDTO);
                     if (pathFile != null) {
                         bookDTO.setFile(pathFile.toString());
@@ -131,14 +115,16 @@ public class BookService extends CommonController {
     public DataResponse getBookById(Integer bookId) throws HandleExceptionNotFound {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("authentication: " + authentication.getName());
         String currentPrincipalName = authentication.getName();
+        System.out.println("currentPrincipalName: " + currentPrincipalName);
 
-        User user = userRepository.getUserByEmail(currentPrincipalName);
-
-        Integer existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
-
-        if (user != null && existsByUserIdAndBookId == 0) {
-            historyRepository.insertHistory(user.getUserId(), bookId);
+        if(!currentPrincipalName.equals("anonymousUser")){
+            User user = userRepository.getUserByEmail(currentPrincipalName);
+            Integer existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
+            if (user != null && existsByUserIdAndBookId == 0) {
+                historyRepository.insertHistory(user.getUserId(), bookId);
+            }
         }
 
         DataResponse response = new DataResponse();
@@ -148,6 +134,7 @@ public class BookService extends CommonController {
         Book book = repository.getBookById(bookId);
         if (book != null) {
             BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+            bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(","))));
             try {
 
                 Path pathFile = fileStorageService.load(bookDTO);
@@ -171,7 +158,7 @@ public class BookService extends CommonController {
         Boolean existsByAuthorAndBookName = repository.existsByAuthorAndBookName(book.getAuthor(), book.getBookName());
         System.out.println("existsByAuthorAndBookName: " + existsByAuthorAndBookName);
         if (!existsByAuthorAndBookName) {
-            repository.insertBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail());
+            repository.insertBook(book.getBookTypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail());
             Integer lastInsertId = repository.getLastInsertId();
             System.out.println("insertBook: " + lastInsertId);
             if (file != null) {
@@ -195,7 +182,7 @@ public class BookService extends CommonController {
 
         if (dataBook.getAuthor().equals(book.getAuthor()) && dataBook.getBookName().equals(book.getBookName())) {
 
-            repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
+            repository.updateBook(book.getBookTypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail(),
                      bookId);
 
             
@@ -207,11 +194,12 @@ public class BookService extends CommonController {
             Book newDataBook = repository.getBookById(bookId);
             newDataBook.setAuthor(book.getAuthor());
             newDataBook.setBookName(book.getBookName());
-            newDataBook.setBookGenre(book.getBookGenre());
+            newDataBook.setBookTag(book.getBookTag());
             newDataBook.setBookDetail(book.getBookDetail());
-            System.out.println("newDataBook: " + newDataBook);
             BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
 
+            bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBookTypeId()));
+            bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(","))));
 
             try {
                 if (book.getStatus() != null) {
@@ -236,10 +224,8 @@ public class BookService extends CommonController {
 
             if (!existsByAuthorAndBookName) {
 
-                repository.updateBook(book.getBookName(), book.getAuthor(), book.getBookGenre(), book.getBookDetail(),
+                repository.updateBook(book.getBookTypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail(),
                          bookId);
-
-              
 
                 if (file != null) {
                     fileStorageService.deleteFile(dataBook);
@@ -249,10 +235,13 @@ public class BookService extends CommonController {
                 Book newDataBook = repository.getBookById(bookId);
                 newDataBook.setAuthor(book.getAuthor());
                 newDataBook.setBookName(book.getBookName());
-                newDataBook.setBookGenre(book.getBookGenre());
+                newDataBook.setBookTag(book.getBookTag());
                 newDataBook.setBookDetail(book.getBookDetail());
-                System.out.println("newDataBook: " + newDataBook);
+         
                 BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
+
+                bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBookTypeId()));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(","))));
 
                 try {
                     if (book.getStatus() != null) {

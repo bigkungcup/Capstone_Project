@@ -3,6 +3,8 @@ package sit.cp23ej2.services;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +60,10 @@ public class HistoryService extends CommonController {
             BookDTO book = modelMapper.map(history.getBook(), BookDTO.class);
             Path pathFile = fileStorageService.load(book);
             if (pathFile != null) {
-                history.setFile(pathFile.toString());
+                // history.setFile(pathFile.toString());
+                book.setFile(pathFile.toString());
+                book.setBookTagList(new ArrayList<String>(Arrays.asList(history.getBook().getBookTag().split(","))));
+                history.setBookData(book);
             }
 
         });
@@ -80,6 +85,49 @@ public class HistoryService extends CommonController {
         response.setResponse_message("All Books");
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         response.setData(bookHistory);
+
+        return response;
+    }
+
+    public DataResponse deleteHistory(Integer historyId) {
+        DataResponse response = new DataResponse();
+
+        repository.deleteHistory(historyId);
+
+        response.setResponse_code(200);
+        response.setResponse_status("OK");
+        response.setResponse_message("History Deleted");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+
+        return response;
+    }
+
+    public DataResponse deleteHistoryByUserId() {
+        DataResponse response = new DataResponse();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+
+        repository.deleteHistoryByUserId(user.getUserId());
+
+        response.setResponse_code(200);
+        response.setResponse_status("OK");
+        response.setResponse_message("History Deleted");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+
+        return response;
+    }
+
+    public DataResponse deleteHistoryByUserIdAndAdmin(Integer userId) {
+        DataResponse response = new DataResponse();
+
+        repository.deleteHistoryByUserId(userId);
+        response.setResponse_code(200);
+        response.setResponse_status("OK");
+        response.setResponse_message("History Deleted");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
 
         return response;
     }

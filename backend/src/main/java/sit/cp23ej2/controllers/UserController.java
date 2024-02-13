@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
+import sit.cp23ej2.dtos.User.ResetPasswordDTO;
 import sit.cp23ej2.dtos.User.UpdateUserByAdminDTO;
 import sit.cp23ej2.dtos.User.UpdateUserDTO;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
@@ -67,8 +68,14 @@ public class UserController {
 
     @PutMapping("/{userId}")
     public DataResponse updateUser(@RequestPart("user") @Valid UpdateUserDTO user, @PathVariable Integer userId, @RequestPart(value = "file") @Nullable MultipartFile file) {
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
+        // user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
         return userService.updateUser(user, userId, file);
+    }
+
+    @PutMapping("/resetPassword")
+    public DataResponse updateUserByAdmin(@RequestBody @Valid ResetPasswordDTO user) {
+        // user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
+        return userService.resetPassword(user);
     }
 
     @PutMapping("/admin/{userId}")

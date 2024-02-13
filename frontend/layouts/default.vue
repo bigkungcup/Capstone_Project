@@ -24,7 +24,7 @@ loginStatus.value = accessToken.value == undefined ? false : true;
       <NuxtLink to="/">Home</NuxtLink>
       <NuxtLink to="">Ranking</NuxtLink>
       <NuxtLink to="/library/">Library</NuxtLink>
-      <NuxtLink to="/user">History</NuxtLink>
+      <NuxtLink to="/history/">History</NuxtLink>
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
       <span class="d-flex align-center justify-center"><v-icon icon="mdi-bell" style="font-size: 40px"></v-icon></span>

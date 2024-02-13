@@ -18,6 +18,7 @@ import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.entities.User;
+import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
@@ -81,7 +82,8 @@ public class ReviewService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        PageReviewDTO review = modelMapper.map(repository.getReviewByUserId(user.getUserId(), pageable), PageReviewDTO.class);
+        PageReviewDTO review = modelMapper.map(repository.getReviewByUserId(user.getUserId(), pageable),
+                PageReviewDTO.class);
 
         if (review != null) {
             response.setResponse_code(200);
@@ -110,14 +112,33 @@ public class ReviewService extends CommonController {
 
     public DataResponse updateReviewByBookId(UpdateReviewDTO review, Integer reviewId) {
         DataResponse response = new DataResponse();
-        repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
-                reviewId);
-        Review dataReview = repository.getReviewById(reviewId);
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Review Updated");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        response.setData(dataReview);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+        Review reviewData = repository.getReviewById(reviewId);
+        if (reviewData.getUser().getUserId() != user.getUserId() && user.getRole().equals("ROLE_ADMIN")) {
+            repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
+                    reviewId);
+            Review dataReview = repository.getReviewById(reviewId);
+            response.setResponse_code(200);
+            response.setResponse_status("OK");
+            response.setResponse_message("Review Updated");
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+            response.setData(dataReview);
+        }else if(reviewData.getUser().getUserId() == user.getUserId() && user.getRole().equals("ROLE_USER")) {
+            repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
+                    reviewId);
+            Review dataReview = repository.getReviewById(reviewId);
+            response.setResponse_code(200);
+            response.setResponse_status("OK");
+            response.setResponse_message("Review Updated");
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+            response.setData(dataReview);
+        }else{
+            throw new HandleExceptionForbidden("Access denied for user: ");
+        }
+
         return response;
     }
 
@@ -130,7 +151,8 @@ public class ReviewService extends CommonController {
     // response.setResponse_code(200);
     // response.setResponse_status("OK");
     // response.setResponse_message("Review TotalLike and TotalDislike Updated");
-    // response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+    // response.setResponse_datetime(sdf3.format(new
+    // Timestamp(System.currentTimeMillis())));
     // response.setData(dataReview);
     // return response;
     // }

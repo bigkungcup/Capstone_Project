@@ -6,9 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedStoredProcedureQuery;
 import jakarta.persistence.ParameterMode;
 import jakarta.persistence.StoredProcedureParameter;
@@ -25,9 +28,10 @@ import lombok.ToString;
     name = "insertBook",
     procedureName = "createBookAndBookId",
     parameters = {
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookTypeId", type = Integer.class),
         @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookName", type = String.class),
         @StoredProcedureParameter(mode = ParameterMode.IN, name = "author", type = String.class),
-        @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookGenre", type = String.class),
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookTag", type = String.class),
         @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookDetail", type = String.class),
         @StoredProcedureParameter(mode = ParameterMode.OUT, name = "lastInsertId", type = Integer.class)
     }
@@ -40,6 +44,8 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookId")
     private Integer bookId;
+
+    // private Integer bookTypeId;
    
     private String bookName;
 
@@ -51,11 +57,15 @@ public class Book {
 
     private Long bookRating;
 
-    private String bookGenre;
+    private String bookTag;
     
     private LocalDateTime bookCreateDateTime;
 
     private LocalDateTime bookUpdateDateTime;
 
     private Integer bookTotalReview;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bb_booktypeId", nullable = true)
+    private Booktype booktype;
 }
