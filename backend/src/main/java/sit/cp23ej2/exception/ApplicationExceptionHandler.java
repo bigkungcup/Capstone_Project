@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -90,6 +92,8 @@ public class ApplicationExceptionHandler extends RuntimeException {
         Map<String, String> error = new HashMap<>();
         if(ex.getMessage().contains("'user.displayName_UNIQUE'")){
             error.put("Error:", "Display name already exists");
+        }else if(ex.getMessage().contains("'booktype.bookTypeName_UNIQUE'")){
+            error.put("Error:", "Booktype already exists");
         }else{
             error.put("Error:", ex.getMessage());
         }
@@ -291,6 +295,24 @@ public class ApplicationExceptionHandler extends RuntimeException {
         error.put("Error:", ex.getMessage());
         response.setResponse_code(HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.setResponse_status(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        response.setResponse_message("");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = {HandleExceptionForbidden.class })
+    public ExceptionResponse handleExceptionForbidden(HandleExceptionForbidden ex,
+            ServletWebRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage() + currentPrincipalName);
+        response.setResponse_code(HttpStatus.FORBIDDEN.value());
+        response.setResponse_status(HttpStatus.FORBIDDEN.name());
         response.setResponse_message("");
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         response.setFiledErrors(error);

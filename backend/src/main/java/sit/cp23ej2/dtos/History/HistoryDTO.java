@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.entities.Book;
 
 
@@ -24,28 +25,30 @@ public class HistoryDTO {
 
     private LocalDateTime historyUpdateDateTime;
 
-    private Integer bookId;
+    // private Integer bookId;
    
-    private String bookName;
+    // private String bookName;
 
-    private String author;
+    // private String author;
     
-    private String bookDetail;
+    // private String bookDetail;
 
-    private Integer bookTotalView;
+    // private Integer bookTotalView;
 
-    private Long bookRating;
+    // private Long bookRating;
 
-    private String bookGenre;
+    // private String bookTag;
     
-    private LocalDateTime bookCreateDateTime;
+    // private LocalDateTime bookCreateDateTime;
 
-    private LocalDateTime bookUpdateDateTime;
+    // private LocalDateTime bookUpdateDateTime;
 
-    private Integer bookTotalReview;
+    // private Integer bookTotalReview;
 
-    private String file;
+    // private String file;
 
     @JsonIgnore
     private Book book;
+
+    private BookDTO bookData;
 }

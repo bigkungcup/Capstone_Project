@@ -51,8 +51,20 @@ public class BookController {
 
     }
 
+    @RequestMapping("/guest")
+    public DataResponse getAllBookByGuest(@RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size, @RequestParam(required =  false) Long  bookRating, @RequestParam(required =  false) String  sortBy, @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
+        return bookService.getBook(page, size, bookRating, sortBy, sortType);
+
+    }
+
     @RequestMapping("/{bookId}")
     public DataResponse getBookById(@PathVariable Integer bookId) throws HandleExceptionNotFound {
+        return bookService.getBookById(bookId);
+    }
+
+    @RequestMapping("/guest/{bookId}")
+    public DataResponse getBookByIdGuest(@PathVariable Integer bookId) throws HandleExceptionNotFound {
         return bookService.getBookById(bookId);
     }
 

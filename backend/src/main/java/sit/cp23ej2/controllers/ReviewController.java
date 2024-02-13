@@ -47,15 +47,17 @@ public class ReviewController {
    public DataResponse getAllBook(@NotNull @RequestParam(required = false) Integer bookId,
          @NotNull @RequestParam(defaultValue = "0", required = false) Integer page,
          @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
-      // DataResponse response = new DataResponse();
-
       if (bookId == 0 || bookId == null) {
-         // response.setResponse_code(400);
-         // response.setResponse_status("Bad Request");
-         // response.setResponse_message("Book Id is required");
-         // response.setResponse_datetime(Instant.now());
-         // return response;
+         throw new HandleExceptionBadRequest("Book Id is required");
+      }
+      return reviewService.getReviewByBookId(bookId, page, size);
+   }
 
+   @GetMapping("/guest")
+   public DataResponse getAllBookByGuest(@NotNull @RequestParam(required = false) Integer bookId,
+         @NotNull @RequestParam(defaultValue = "0", required = false) Integer page,
+         @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
+      if (bookId == 0 || bookId == null) {
          throw new HandleExceptionBadRequest("Book Id is required");
       }
       return reviewService.getReviewByBookId(bookId, page, size);
@@ -63,6 +65,11 @@ public class ReviewController {
 
    @GetMapping("/{reviewId}")
    public DataResponse getReviewById(@PathVariable Integer reviewId) throws HandleExceptionNotFound {
+      return reviewService.getReviewById(reviewId);
+   }
+
+   @GetMapping("/guest/{reviewId}")
+   public DataResponse getReviewByIdGuest(@PathVariable Integer reviewId) throws HandleExceptionNotFound {
       return reviewService.getReviewById(reviewId);
    }
 

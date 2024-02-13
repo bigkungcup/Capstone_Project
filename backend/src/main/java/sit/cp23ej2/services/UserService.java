@@ -21,6 +21,7 @@ import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
 import sit.cp23ej2.dtos.User.PageUserDTO;
+import sit.cp23ej2.dtos.User.ResetPasswordDTO;
 import sit.cp23ej2.dtos.User.UpdateUserByAdminDTO;
 import sit.cp23ej2.dtos.User.UpdateUserDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
@@ -139,16 +140,16 @@ public class UserService extends CommonController {
     public DataResponse updateUser(UpdateUserDTO user, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
-
-        if (new BCryptPasswordEncoder().matches(userById.getPassword(), user.getPassword())) {
-            throw new HandleExceptionBadRequest("Password is incorrect");
-        }
+        
+        // if (new BCryptPasswordEncoder().matches(userById.getPassword(), user.getPassword())) {
+        //     throw new HandleExceptionBadRequest("Password is incorrect");
+        // }
 
         if (userById != null) {
             if (userById.getEmail().equals(user.getEmail())
                     && userById.getDisplayName().equals(user.getDisplayName())) {
 
-                repository.updateUserDetailByUser(user.getPassword(), user.getBio(), userId);
+                repository.updateUserDetailByUser(user.getBio(), userId);
                 if (file != null) {
                     fileStorageService.deleteUserFile(userId);
                     fileStorageService.storeUserProfile(file, userId);
@@ -166,7 +167,8 @@ public class UserService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                // userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                userDTO.setBio(user.getBio());
                 response.setResponse_code(200);
                 response.setResponse_status("OK");
                 response.setResponse_message("User Updated");
@@ -177,7 +179,7 @@ public class UserService extends CommonController {
                 boolean existsByEmailOrDisplayName = repository.existsByEmailOrDisplayName(user.getEmail(),
                         user.getDisplayName());
                 if (!existsByEmailOrDisplayName) {
-                    repository.updateUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getBio(),
+                    repository.updateUser(user.getDisplayName(), user.getEmail(), user.getBio(),
                             userId);
                     if (file != null) {
                         fileStorageService.deleteUserFile(userId);
@@ -196,7 +198,10 @@ public class UserService extends CommonController {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                    // userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                    userDTO.setBio(user.getBio());
+                    userDTO.setDisplayName(user.getDisplayName());
+                    userDTO.setEmail(user.getEmail());
                     response.setResponse_code(200);
                     response.setResponse_status("OK");
                     response.setResponse_message("User Updated");
@@ -240,6 +245,10 @@ public class UserService extends CommonController {
                     e.printStackTrace();
                 }
                 userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                userDTO.setBio(user.getBio());
+                userDTO.setDisplayName(user.getDisplayName());
+                userDTO.setEmail(user.getEmail());
+                userDTO.setRole(user.getRole());
                 response.setResponse_code(200);
                 response.setResponse_status("OK");
                 response.setResponse_message("User Updated");
@@ -270,6 +279,10 @@ public class UserService extends CommonController {
                         e.printStackTrace();
                     }
                     userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                    userDTO.setBio(user.getBio());
+                    userDTO.setDisplayName(user.getDisplayName());
+                    userDTO.setEmail(user.getEmail());
+                    userDTO.setRole(user.getRole());
                     response.setResponse_code(200);
                     response.setResponse_status("OK");
                     response.setResponse_message("User Updated");
@@ -296,6 +309,8 @@ public class UserService extends CommonController {
                         e.printStackTrace();
                     }
                     userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                    userDTO.setBio(user.getBio());
+                    userDTO.setRole(user.getRole());
                     response.setResponse_code(200);
                     response.setResponse_status("OK");
                     response.setResponse_message("User Updated");
@@ -310,6 +325,26 @@ public class UserService extends CommonController {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
 
+        return response;
+    }
+
+
+    public DataResponse resetPassword(ResetPasswordDTO resetPassword){
+        DataResponse response = new DataResponse();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User user = repository.getUserByEmail(currentPrincipalName);
+
+        if (new BCryptPasswordEncoder().matches(user.getPassword(), resetPassword.getPassword())) {
+            throw new HandleExceptionBadRequest("Password is incorrect");
+        }
+
+        repository.resetPassword(currentPrincipalName,new BCryptPasswordEncoder().encode(resetPassword.getNewPassword()));
+        response.setResponse_code(200);
+        response.setResponse_status("OK");
+        response.setResponse_message("Password Reset");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
 

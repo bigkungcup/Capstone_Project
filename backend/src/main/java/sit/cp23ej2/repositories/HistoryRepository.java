@@ -31,4 +31,14 @@ public interface HistoryRepository extends JpaRepository<History, Integer> {
 
     @Query(value = "SELECT COUNT(*) > 0 FROM History WHERE hu_userId = :userId AND hb_bookId = :bookId", nativeQuery = true)
     Integer existsByUserIdAndBookId(Integer userId, Integer bookId);    
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM History WHERE historyId = :historyId", nativeQuery = true)
+    Integer deleteHistory(@Param("historyId") Integer userId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM History WHERE hu_userId = :userId", nativeQuery = true)
+    Integer deleteHistoryByUserId(@Param("userId") Integer userId);
 }

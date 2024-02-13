@@ -33,10 +33,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE User SET displayName = :displayName, email = :email, password = :password, bio = :bio" +
+        @Query(value = "UPDATE User SET displayName = :displayName, email = :email, bio = :bio" +
                         " WHERE userId = :userId", nativeQuery = true)
         void updateUser(@Param("displayName") String displayName, @Param("email") String email,
-                        @Param("password") String password, @Param("bio") String bio, @Param("userId") int userId);
+                        @Param("bio") String bio, @Param("userId") int userId);
 
         @Modifying
         @Transactional
@@ -49,9 +49,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE User SET password = :password, bio = :bio" +
+        @Query(value = "UPDATE User SET bio = :bio" +
                         " WHERE userId = :userId", nativeQuery = true)
-        void updateUserDetailByUser(@Param("password") String password, @Param("bio") String bio, @Param("userId") int userId);
+        void updateUserDetailByUser(@Param("bio") String bio, @Param("userId") int userId);
 
         @Modifying
         @Transactional
@@ -66,7 +66,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
         @Transactional
         @Query(value = "UPDATE User SET password = :password" +
                         " WHERE email = :email", nativeQuery = true)
-        void updatePassword(@Param("email") String email,
+        void resetPassword(@Param("email") String email,
                         @Param("password") String password);
 
         @Modifying

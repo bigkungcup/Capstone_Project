@@ -15,13 +15,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
-        @Query(value = "SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, bookTotalReview"
+        @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
-                        // "INNER JOIN BookGenre bg ON b.bookGenre = bg.bookGenre " +
+                        // "INNER JOIN bookTag bg ON b.bookTag = bg.bookTag " +
                         // " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
                         " WHERE (:bookRating IS NULL OR b.bookRating = :bookRating)" 
-                        // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
+                        // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
         // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END ASC, " +
         // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END DESC, " +
         // " CASE WHEN :sortBy = 'author' THEN b.author END ASC, " +
@@ -31,8 +31,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         // b.bookTotalView END ASC, " +
         // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END ASC, " +
         // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END DESC, " +
-        // " CASE WHEN :sortBy = 'bookGenre' THEN b.bookGenre END ASC, " +
-        // " CASE WHEN :sortBy = 'bookGenre' THEN b.bookGenre END DESC, " +
+        // " CASE WHEN :sortBy = 'bookTag' THEN b.bookTag END ASC, " +
+        // " CASE WHEN :sortBy = 'bookTag' THEN b.bookTag END DESC, " +
         // " CASE WHEN :sortBy = '' THEN b.bookCreateDateTime END DESC, " +
         // " CASE WHEN :sortBy = 'bookCreateDateTime' THEN b.bookCreateDateTime END DESC
         // " +
@@ -47,12 +47,13 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         , nativeQuery = true)
         Page<Book> getAllBooks(Pageable pageable, @Param("bookRating") Long bookRating);
 
-        @Query(value = "SELECT b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, COUNT(r.reviewId) as bookTotalReview "
+        @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
-                        " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
-                        " WHERE bookId = :bookId" +
-                        " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookGenre, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime", nativeQuery = true)
+                        // " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
+                        " WHERE bookId = :bookId" 
+                        // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
+                        , nativeQuery = true)
         Book getBookById(@Param("bookId") int bookId);
 
         Boolean existsByAuthorAndBookName(String author, String bookName);
@@ -62,30 +63,30 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = " CALL createBookAndBookId(:bookName, :author, :bookGenre, :bookDetail, @lastInsertId); ", nativeQuery = true)
+        @Query(value = " CALL createBookAndBookId(:bookTypeId, :bookName, :author, :bookTag, :bookDetail, @lastInsertId); ", nativeQuery = true)
 
-        // @Query(value = "INSERT INTO Book (bookName,author,bookGenre,bookDetail,
+        // @Query(value = "INSERT INTO Book (bookName,author,bookTag,bookDetail,
         // bookTotalView, bookRating)" +
-        // "values (:bookName, :author, :bookGenre, :bookDetail, 0, 0);", nativeQuery =
+        // "values (:bookName, :author, :bookTag, :bookDetail, 0, 0);", nativeQuery =
         // true)
 
-        // @Query(value = "INSERT INTO Book (bookName, author, bookGenre, bookDetail,
+        // @Query(value = "INSERT INTO Book (bookName, author, bookTag, bookDetail,
         // bookTotalView, bookRating) " +
-        // "VALUES (:bookName, :author, :bookGenre, :bookDetail, 0, 0);", nativeQuery =
+        // "VALUES (:bookName, :author, :bookTag, :bookDetail, 0, 0);", nativeQuery =
         // true)
-        Integer insertBook(@Param("bookName") String bookName, @Param("author") String author,
-                        @Param("bookGenre") String bookGenre, @Param("bookDetail") String bookDetail);
+        Integer insertBook(@Param("bookTypeId") Integer bookTypeId, @Param("bookName") String bookName, @Param("author") String author,
+                        @Param("bookTag") String bookTag, @Param("bookDetail") String bookDetail);
 
         @Query(value = "SELECT @lastInsertId as id", nativeQuery = true)
         Integer getLastInsertId();
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE Book SET bookName = :bookName, author = :author, bookGenre = :bookGenre, bookDetail = :bookDetail "
+        @Query(value = "UPDATE Book SET bb_booktypeId =:bookTypeId, bookName = :bookName, author = :author, bookTag = :bookTag, bookDetail = :bookDetail "
                         +
                         " WHERE bookId = :bookId", nativeQuery = true)
-        void updateBook(@Param("bookName") String bookName, @Param("author") String author,
-                        @Param("bookGenre") String bookGenre, @Param("bookDetail") String bookDetail,
+        void updateBook(@Param("bookTypeId") Integer bookTypeId, @Param("bookName") String bookName, @Param("author") String author,
+                        @Param("bookTag") String bookTag, @Param("bookDetail") String bookDetail,
                         @Param("bookId") Integer bookId);
 
         @Modifying
