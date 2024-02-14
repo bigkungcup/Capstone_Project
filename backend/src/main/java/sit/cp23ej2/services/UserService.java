@@ -105,12 +105,22 @@ public class UserService extends CommonController {
         String currentPrincipalName = authentication.getName();
 
         User user = repository.getUserByEmail(currentPrincipalName);
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        try {
+            Path pathFile = fileStorageService.loadUserFile(user.getUserId());
+            if (pathFile != null) {
+                userDTO.setFile(pathFile.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         if (user != null) {
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("User");
             response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(user);
+            response.setData(userDTO);
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
