@@ -25,7 +25,7 @@ public class Booktype {
     @Column(name = "booktypeId")
     private Integer booktypeId;
     
-    private String bookTypeName;
+    private String booktypeName;
     
     private String booktypeCreateDateTime;
 

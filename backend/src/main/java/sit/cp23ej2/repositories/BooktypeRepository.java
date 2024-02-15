@@ -15,20 +15,20 @@ public interface BooktypeRepository extends JpaRepository<Booktype, Integer>{
     @Query(value = "SELECT * FROM Booktype ", nativeQuery = true)
     List<Booktype> getAllBooktype();
 
-    @Query(value = "SELECT * FROM Booktype WHERE bookTypeId = :bookTypeId", nativeQuery = true)
-    Booktype getBooktypeById(@Param("bookTypeId") Integer bookTypeId);
+    @Query(value = "SELECT * FROM Booktype WHERE booktypeId = :booktypeId", nativeQuery = true)
+    Booktype getBooktypeById(@Param("booktypeId") Integer bookTypeId);
     
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO  Booktype (bookTypeName)" +
-            "values (:bookTypeName);", nativeQuery = true)
-    Integer insertBooktype(@Param("bookTypeName") String bookTypeName);
+    @Query(value = "INSERT INTO  Booktype (booktypeName)" +
+            "values (:booktypeName);", nativeQuery = true)
+    Integer insertBooktype(@Param("booktypeName") String booktypeName);
 
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM Booktype WHERE booktypeId = :booktypeId", nativeQuery = true)
     Integer deleteBooktype(@Param("booktypeId") Integer booktypeId);
 
-    boolean existsByBooktypeId(Integer bookTypeId);
+    boolean existsByBooktypeId(Integer booktypeId);
 
 }

@@ -28,7 +28,7 @@ import lombok.ToString;
     name = "insertBook",
     procedureName = "createBookAndBookId",
     parameters = {
-        @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookTypeId", type = Integer.class),
+        @StoredProcedureParameter(mode = ParameterMode.IN, name = "booktypeId", type = Integer.class),
         @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookName", type = String.class),
         @StoredProcedureParameter(mode = ParameterMode.IN, name = "author", type = String.class),
         @StoredProcedureParameter(mode = ParameterMode.IN, name = "bookTag", type = String.class),

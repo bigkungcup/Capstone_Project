@@ -41,8 +41,8 @@ public class BooktypeController {
     }
 
     @PostMapping("")
-    public DataResponse insertBooktype(@RequestBody CreateBooktypeDTO bookType) {
-        return booktypeService.insertBooktype(bookType);
+    public DataResponse insertBooktype(@RequestBody CreateBooktypeDTO booktype) {
+        return booktypeService.insertBooktype(booktype);
     }
 
     @DeleteMapping("/{booktypeId}")
