@@ -33,6 +33,8 @@ export const useUsers = defineStore("Users", () => {
   const successfulPopup = ref(false);
   const confirmPopup = ref(false);
   const leavePopup = ref(true);
+  const updateFailed = ref(false);
+  const updateFailedError = ref();
 
   //Get user list
   async function getUserList() {
@@ -176,12 +178,15 @@ export const useUsers = defineStore("Users", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          updateFailed.value = true;
+          updateFailedError.value = Object.values(response._data.filedErrors);
           console.log("update user uncompleted");
         }
       },
     });
     if (status == 200) {
       successfulPopup.value = true;
+      updateFailed.value = false;
       console.log("update user completed");
     } else if (status == 401) {
       login.handleRefresh(updateUser(userId));
@@ -286,6 +291,8 @@ export const useUsers = defineStore("Users", () => {
     leavePopup,
     registerFailed,
     registerFailedError,
+    updateFailed,
+    updateFailedError,
     getUserList,
     getUserDetail,
     updateUser,

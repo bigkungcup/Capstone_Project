@@ -24,6 +24,8 @@ export const useLogin = defineStore("Login", () => {
   const successfulPopup = ref(false);
   const loginFailed = ref(false);
   const leavePopup = ref(true);
+  const updateFailed = ref(false);
+  const updateFailedError = ref()
 
   //Login
   async function handleLogin() {
@@ -94,6 +96,8 @@ export const useLogin = defineStore("Login", () => {
           status = response._data.response_code;
           if (status == 400) {
             console.log("get ptofile uncompleted");
+          }else if (status == 401) {
+            handleRefresh(getProfile);
           }
         },
       }
@@ -158,17 +162,22 @@ export const useLogin = defineStore("Login", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          updateFailed.value = true;
+          updateFailedError.value = Object.values(response._data.filedErrors);
           console.log("update user uncompleted");
         }
       },
     });
     if (status == 200) {
+      updateFailed.value = false;
       successfulPopup.value = true;
       console.log("update user completed");
     } else if (status == 401) {
-      login.handleRefresh(updateProfile);
+      handleRefresh(updateProfile);
     }
   }
+
+  //Change password
 
   //Log out
   function logOut() {
@@ -232,6 +241,8 @@ export const useLogin = defineStore("Login", () => {
     // confirmPopup,
     successfulPopup,
     leavePopup,
+    updateFailed,
+    updateFailedError,
     getProfile,
     updateProfile,
     handleLogin,

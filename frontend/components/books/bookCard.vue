@@ -51,11 +51,11 @@ function bookCoverPath(filePath) {
                     <div class="web-text-detail tw-col-span-7 tw-py-14">
                         <div class="tw-flex tw-gap-x-2 tw-py-2 tw-items-center">
                             <p class="tw-font-bold">Book Type : </p>
-                            <v-btn color="#1D419F" v-show="book.bookType != null">{{ book.bookType }}</v-btn>
+                            <v-btn color="#1D419F">{{ book.booktype.booktypeName }}</v-btn>
                         </div>
                         <div class="tw-flex tw-gap-x-4 tw-py-2 tw-items-center">
-                            <p class="tw-font-bold">Genre : </p>
-                            <v-btn color="#1D419F" v-show="book.bookGenre != null">{{ book.bookGenre }}</v-btn>
+                            <p class="tw-font-bold">Tags : </p>
+                            <v-chip color="#1D419F" v-show="book.bookTagList[0] != ''" v-for="tag in book.bookTagList">{{ tag }}</v-chip>
                     </div>
                 </div>
                 </v-col>

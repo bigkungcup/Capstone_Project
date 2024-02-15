@@ -56,6 +56,7 @@ function handleCheckPassword() {
 }
 
 onBeforeMount(() => {
+  user.updateFailed = false;
   user.leavePopup = true;
   setSelectedImage();
 });
@@ -169,6 +170,7 @@ user.setEditUser();
           <v-col cols="9">
             <div class="tw-mx-8 tw-my-6">
               <div class="web-text-detail">
+                <v-card :text="`${user.updateFailedError}`" variant="tonal" class="my-5" color="red-lighten-1" v-show="user.updateFailed"></v-card>
                 <div>
                   <p>Username</p>
                   <v-text-field
@@ -193,6 +195,7 @@ user.setEditUser();
                   <v-text-field
                     label="Password"
                     variant="solo"
+                    :rules="[rules.limitedPass]"
                     @input="handleCheckPassword()"
                     v-model="user.editUser.password"
                   ></v-text-field>

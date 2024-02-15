@@ -25,6 +25,7 @@ loginStatus.value = accessToken.value == undefined ? false : true;
       <NuxtLink to="">Ranking</NuxtLink>
       <NuxtLink to="/library/">Library</NuxtLink>
       <NuxtLink to="/history/">History</NuxtLink>
+      <NuxtLink to="/user/">User</NuxtLink>
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
       <span class="d-flex align-center justify-center"><v-icon icon="mdi-bell" style="font-size: 40px"></v-icon></span>
@@ -38,13 +39,13 @@ loginStatus.value = accessToken.value == undefined ? false : true;
             ></v-icon>
           </template>
           <v-list>
-            <v-list-item to="../login" >
+            <v-list-item to="/login/" >
               <v-list-item-title class="web-text-detail tw-space-x-2 px-3"
                 ><v-icon icon="mdi mdi-login"></v-icon
                 ><span>Log-in</span></v-list-item-title
               >
             </v-list-item>
-            <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" to="../register">
+            <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" to="/register/">
               <v-list-item-title class="web-text-detail">
                 <v-list-item-title
                   class="web-text-detail tw-space-x-2 px-3"
@@ -68,7 +69,7 @@ loginStatus.value = accessToken.value == undefined ? false : true;
           </template>
 
           <v-list>
-            <v-list-item :to="`../profile`" >
+            <v-list-item :to="`/profile/`" >
               <v-list-item-title class="web-text-detail tw-space-x-2 px-3"
                 ><v-icon icon="mdi mdi-account"></v-icon
                 ><span>Profile</span></v-list-item-title

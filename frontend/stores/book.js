@@ -17,7 +17,8 @@ export const useBooks = defineStore("Books", () => {
   const newBook = ref({
     bookName: "",
     author: "",
-    bookGenre: "",
+    booktypeId: null,
+    bookTag: null,
     bookDetail: "",
   });
   const editBook = ref();
@@ -28,6 +29,7 @@ export const useBooks = defineStore("Books", () => {
   const successfulPopup = ref(false);
   const failPopup = ref(false);
   const leavePopup = ref(true);
+  const bookType = ref();
   const runtimeConfig = useRuntimeConfig();
 
   //Get Library
@@ -97,7 +99,8 @@ export const useBooks = defineStore("Books", () => {
     const book = {
       bookName: newBook.value.bookName,
       author: newBook.value.author,
-      bookGenre: newBook.value.bookGenre,
+      booktypeId: newBook.value.booktypeId,
+      bookTag: newBook.value.bookTag,
       bookDetail: newBook.value.bookDetail,
     };
 
@@ -141,7 +144,8 @@ export const useBooks = defineStore("Books", () => {
       book = {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
-        bookGenre: editBook.value.bookGenre,
+        booktypeId: editBook.value.booktypeId,
+        bookTag: editBook.value.bookTag,
         bookDetail: editBook.value.bookDetail,
       };
     } else {
@@ -223,6 +227,38 @@ export const useBooks = defineStore("Books", () => {
     }
   }
 
+  //Get book type
+  async function getBookType() {
+    let status = 0;
+    let content = [];
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/booktype`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        };
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+      },
+    });
+    if (status == 200) {
+      if (data.value) {
+        // bookType.value = data.value
+        // console.log(bookType.value.data[0].booktypeId);
+        content = data.value
+        bookType.value = content.data
+      }
+      console.log("get library completed");
+    } else if (status == 400) {
+      clearBookList();
+      console.log("get library uncompleted");
+    } else if (status == 401) {
+      login.handleRefresh(getLibrary);
+    }
+  }
+
   // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds) {
     let interval = Math.floor(seconds / 31536000);
@@ -278,7 +314,8 @@ export const useBooks = defineStore("Books", () => {
     (newBook.value = {
       bookName: "",
       author: "",
-      bookGenre: "",
+      bookTypeId: null,
+      bookTag: null,
       bookDetail: "",
     }),
       (newBookFile.value = null);
@@ -301,7 +338,8 @@ export const useBooks = defineStore("Books", () => {
     (editBook.value = {
       bookName: bookDetail.value.data.bookName,
       author: bookDetail.value.data.author,
-      bookGenre: bookDetail.value.data.bookGenre,
+      bookTypeId: bookDetail.value.data.bookTypeId,
+      bookTag: bookDetail.value.data.bookTag,
       bookDetail: bookDetail.value.data.bookDetail,
       file: bookDetail.value.data.file,
     }),
@@ -320,6 +358,7 @@ export const useBooks = defineStore("Books", () => {
     newBookFile,
     editBook,
     editBookFile,
+    bookType,
     bookPage,
     successfulPopup,
     failPopup,
@@ -331,6 +370,7 @@ export const useBooks = defineStore("Books", () => {
     deleteBook,
     changeLibraryPage,
     getStarRating,
+    getBookType,
     countUpdateTime,
     clearNewBook,
     setEditBook,

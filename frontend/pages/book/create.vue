@@ -61,9 +61,12 @@ onBeforeRouteLeave(() => {
 
 onBeforeMount(() => {
   book.clearNewBook();
+  book.getBookType();
   book.leavePopup = true;
   book.newBookFile = null;
+  console.log(book.bookType);
 });
+
 
 </script>
 
@@ -125,13 +128,23 @@ onBeforeMount(() => {
                   Image size should be less than 64 MB!
                 </p>
               </v-responsive>
-              <div class="d-flex justify-center">
-                <v-btn>
+              <div class="d-flex justify-center px-8">
+                <v-select
+                class="tw-font-bold tw-text-[#1D419F] tw-text-xs "
+                v-model="book.newBook.booktypeId"
+                :items="book.bookType"
+                item-title="booktypeName"
+                item-value="booktypeId"
+                label="Select Book type"
+                variant="solo-filled"
+                :color="white"
+                ></v-select>
+                <!-- <v-btn>
                   <p class="tw-font-bold tw-text-[#1D419F] tw-text-xs">
                     Select Book type
                   </p>
                   <span class="mdi mdi-chevron-right"></span>
-                </v-btn>
+                </v-btn> -->
               </div>
             </div>
           </v-col>
@@ -162,13 +175,22 @@ onBeforeMount(() => {
                 <span class="tw-font-bold tw-text-[#1D419F] tw-text-lg"
                   >Genre:</span
                 >
-                <v-text-field
+                <!-- <v-text-field
                   label="Genre"
                   variant="solo"
                   class="inline-field"
                   v-model="book.newBook.bookGenre"
                   :rules="[rules.required]"
-                ></v-text-field>
+                ></v-text-field> -->
+                <v-combobox
+          v-model="book.newBook.bookTag"
+          label="Enter your tag"
+          variant="solo-filled"
+          :color="white"
+          multiple
+          chips
+          clearable
+        ></v-combobox>
               </div>
             </div>
           </v-col>

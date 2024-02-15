@@ -33,7 +33,7 @@ const rules = {
 
 function setSelectedImage() {
     // book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
-    selectedImage.value = login.editProfile.file == null ? null : `../../ej2/_nuxt/@fs/${login.editProfile.file}`;
+    selectedImage.value = login.editProfile.file == null ? null : `../../_nuxt/@fs/${login.editProfile.file}`;
     login.editProfileFile = undefined;
 }
 
@@ -64,7 +64,7 @@ onBeforeRouteLeave(() => {
     }
 });
 
-await login.getProfile(route.params.id);
+await login.getProfile();
 login.setEditProfile();
 
 </script>
@@ -137,6 +137,7 @@ login.setEditProfile();
                     <v-col cols="9">
                         <div class="tw-mx-8 tw-my-6">
                             <div class="">
+                                <v-card :text="`${login.updateFailedError}`" variant="tonal" class="my-5" color="red-lighten-1" v-show="login.updateFailed"></v-card>
                                 <p class="web-text-sub">Username</p>
                                 <v-text-field 
                                 label="Username" 

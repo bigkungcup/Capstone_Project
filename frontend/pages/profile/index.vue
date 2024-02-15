@@ -95,7 +95,7 @@ onBeforeMount( async () => {
                   </v-tooltip>
                 </template>
                 <v-list>
-                  <v-list-item :to="`/profile/update_${login.profile.userId}/`">
+                  <v-list-item :to="`/profile/update/`">
                     <v-list-item-title class="web-text-detail tw-space-x-2"
                       ><v-icon icon="mdi mdi-pencil-outline"></v-icon
                       ><span>Edit profile</span></v-list-item-title
