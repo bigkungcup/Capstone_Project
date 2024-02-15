@@ -63,7 +63,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = " CALL createBookAndBookId(:bookTypeId, :bookName, :author, :bookTag, :bookDetail, @lastInsertId); ", nativeQuery = true)
+        @Query(value = " CALL createBookAndBookId(:booktypeId, :bookName, :author, :bookTag, :bookDetail, @lastInsertId); ", nativeQuery = true)
 
         // @Query(value = "INSERT INTO Book (bookName,author,bookTag,bookDetail,
         // bookTotalView, bookRating)" +
@@ -74,7 +74,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         // bookTotalView, bookRating) " +
         // "VALUES (:bookName, :author, :bookTag, :bookDetail, 0, 0);", nativeQuery =
         // true)
-        Integer insertBook(@Param("bookTypeId") Integer bookTypeId, @Param("bookName") String bookName, @Param("author") String author,
+        Integer insertBook(@Param("booktypeId") Integer booktypeId, @Param("bookName") String bookName, @Param("author") String author,
                         @Param("bookTag") String bookTag, @Param("bookDetail") String bookDetail);
 
         @Query(value = "SELECT @lastInsertId as id", nativeQuery = true)
@@ -82,10 +82,10 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE Book SET bb_booktypeId =:bookTypeId, bookName = :bookName, author = :author, bookTag = :bookTag, bookDetail = :bookDetail "
+        @Query(value = "UPDATE Book SET bb_booktypeId =:booktypeId, bookName = :bookName, author = :author, bookTag = :bookTag, bookDetail = :bookDetail "
                         +
                         " WHERE bookId = :bookId", nativeQuery = true)
-        void updateBook(@Param("bookTypeId") Integer bookTypeId, @Param("bookName") String bookName, @Param("author") String author,
+        void updateBook(@Param("booktypeId") Integer booktypeId, @Param("bookName") String bookName, @Param("author") String author,
                         @Param("bookTag") String bookTag, @Param("bookDetail") String bookDetail,
                         @Param("bookId") Integer bookId);
 

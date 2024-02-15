@@ -79,11 +79,11 @@ DROP TABLE IF EXISTS `bannarug`.`Booktype` ;
 
 CREATE TABLE IF NOT EXISTS `bannarug`.`Booktype` (
   `booktypeId` INT NOT NULL AUTO_INCREMENT,
-  `bookTypeName` VARCHAR(255) NOT NULL,
+  `booktypeName` VARCHAR(255) NOT NULL,
   `booktypeCreateDateTime` DATETIME NULL default current_timestamp,
   `booktypeUpdateDateTme` DATETIME NULL default current_timestamp on update current_timestamp,
   PRIMARY KEY (`booktypeId`),
-  UNIQUE INDEX `bookTypeName_UNIQUE` (`bookTypeName` ASC) VISIBLE)
+  UNIQUE INDEX `booktypeName_UNIQUE` (`booktypeName` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 
@@ -285,7 +285,7 @@ DROP procedure IF EXISTS `bannarug`.`createBookAndBookId`;
 DELIMITER $$
 USE `bannarug`$$
 CREATE DEFINER=`root`@`%` PROCEDURE `createBookAndBookId`(
-    IN bookTypeId INT,
+    IN booktypeId INT,
     IN bookName varchar(255),
     IN author varchar(255),
     IN bookTag varchar(255),
@@ -302,31 +302,31 @@ DELIMITER ;
 ;
 
 USE `bannarug`
-INSERT INTO Booktype (bookTypeName) VALUES ('Adventure');
-INSERT INTO Booktype (bookTypeName) VALUES ('Classic');
-INSERT INTO Booktype (bookTypeName) VALUES ('Crime');
-INSERT INTO Booktype (bookTypeName) VALUES ('Fairy tale');
-INSERT INTO Booktype (bookTypeName) VALUES ('Fantasy');
-INSERT INTO Booktype (bookTypeName) VALUES ('History');
-INSERT INTO Booktype (bookTypeName) VALUES ('Horror');
-INSERT INTO Booktype (bookTypeName) VALUES ('Textbooks');
-INSERT INTO Booktype (bookTypeName) VALUES ('Literature');
-INSERT INTO Booktype (bookTypeName) VALUES ('Mystery');
-INSERT INTO Booktype (bookTypeName) VALUES ('Poetry');
-INSERT INTO Booktype (bookTypeName) VALUES ('Plays');
-INSERT INTO Booktype (bookTypeName) VALUES ('Romance');
-INSERT INTO Booktype (bookTypeName) VALUES ('Science');
-INSERT INTO Booktype (bookTypeName) VALUES ('Journalism');
-INSERT INTO Booktype (bookTypeName) VALUES ('Thriller');
-INSERT INTO Booktype (bookTypeName) VALUES ('War');
-INSERT INTO Booktype (bookTypeName) VALUES ('Philosophy');
-INSERT INTO Booktype (bookTypeName) VALUES ('Health and Wellness');
-INSERT INTO Booktype (bookTypeName) VALUES ('Education');
-INSERT INTO Booktype (bookTypeName) VALUES ('Cookbook');
-INSERT INTO Booktype (bookTypeName) VALUES ('Arts');
-INSERT INTO Booktype (bookTypeName) VALUES ('Religion');
-INSERT INTO Booktype (bookTypeName) VALUES ('Business and Economics');
-INSERT INTO Booktype (bookTypeName) VALUES ('Hobby');
+INSERT INTO Booktype (booktypeName) VALUES ('Adventure');
+INSERT INTO Booktype (booktypeName) VALUES ('Classic');
+INSERT INTO Booktype (booktypeName) VALUES ('Crime');
+INSERT INTO Booktype (booktypeName) VALUES ('Fairy tale');
+INSERT INTO Booktype (booktypeName) VALUES ('Fantasy');
+INSERT INTO Booktype (booktypeName) VALUES ('History');
+INSERT INTO Booktype (booktypeName) VALUES ('Horror');
+INSERT INTO Booktype (booktypeName) VALUES ('Textbooks');
+INSERT INTO Booktype (booktypeName) VALUES ('Literature');
+INSERT INTO Booktype (booktypeName) VALUES ('Mystery');
+INSERT INTO Booktype (booktypeName) VALUES ('Poetry');
+INSERT INTO Booktype (booktypeName) VALUES ('Plays');
+INSERT INTO Booktype (booktypeName) VALUES ('Romance');
+INSERT INTO Booktype (booktypeName) VALUES ('Science');
+INSERT INTO Booktype (booktypeName) VALUES ('Journalism');
+INSERT INTO Booktype (booktypeName) VALUES ('Thriller');
+INSERT INTO Booktype (booktypeName) VALUES ('War');
+INSERT INTO Booktype (booktypeName) VALUES ('Philosophy');
+INSERT INTO Booktype (booktypeName) VALUES ('Health and Wellness');
+INSERT INTO Booktype (booktypeName) VALUES ('Education');
+INSERT INTO Booktype (booktypeName) VALUES ('Cookbook');
+INSERT INTO Booktype (booktypeName) VALUES ('Arts');
+INSERT INTO Booktype (booktypeName) VALUES ('Religion');
+INSERT INTO Booktype (booktypeName) VALUES ('Business and Economics');
+INSERT INTO Booktype (booktypeName) VALUES ('Hobby');
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

@@ -14,7 +14,7 @@ public class UpdateBookDTO {
     // private Integer bookId;
 
     @NotNull(message = "Book Type Id shouldn't be blank or null")
-    private Integer bookTypeId;
+    private Integer booktypeId;
     
     @NotBlank(message = "Book Name shouldn't be blank or null")
     @Size(max = 255, min = 1, message = "Book Name shouldn't be more than 255 characters and less than 1 characters")

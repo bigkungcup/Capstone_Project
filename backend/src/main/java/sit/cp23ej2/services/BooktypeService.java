@@ -35,7 +35,7 @@ public class BooktypeService extends CommonController{
 
     public DataResponse insertBooktype(CreateBooktypeDTO booktype){
         DataResponse response = new DataResponse();
-        booktypeRepository.insertBooktype(booktype.getBookTypeName());
+        booktypeRepository.insertBooktype(booktype.getBooktypeName());
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Booktype Created");

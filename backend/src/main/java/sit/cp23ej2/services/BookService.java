@@ -158,7 +158,7 @@ public class BookService extends CommonController {
         Boolean existsByAuthorAndBookName = repository.existsByAuthorAndBookName(book.getAuthor(), book.getBookName());
         System.out.println("existsByAuthorAndBookName: " + existsByAuthorAndBookName);
         if (!existsByAuthorAndBookName) {
-            repository.insertBook(book.getBookTypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail());
+            repository.insertBook(book.getBooktypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail());
             Integer lastInsertId = repository.getLastInsertId();
             System.out.println("insertBook: " + lastInsertId);
             if (file != null) {
@@ -182,7 +182,7 @@ public class BookService extends CommonController {
 
         if (dataBook.getAuthor().equals(book.getAuthor()) && dataBook.getBookName().equals(book.getBookName())) {
 
-            repository.updateBook(book.getBookTypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail(),
+            repository.updateBook(book.getBooktypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail(),
                      bookId);
 
             
@@ -198,7 +198,7 @@ public class BookService extends CommonController {
             newDataBook.setBookDetail(book.getBookDetail());
             BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
 
-            bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBookTypeId()));
+            bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBooktypeId()));
             bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(","))));
 
             try {
@@ -224,7 +224,7 @@ public class BookService extends CommonController {
 
             if (!existsByAuthorAndBookName) {
 
-                repository.updateBook(book.getBookTypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail(),
+                repository.updateBook(book.getBooktypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(), book.getBookDetail(),
                          bookId);
 
                 if (file != null) {
@@ -240,7 +240,7 @@ public class BookService extends CommonController {
          
                 BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
 
-                bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBookTypeId()));
+                bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBooktypeId()));
                 bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(","))));
 
                 try {

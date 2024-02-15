@@ -92,7 +92,7 @@ public class ApplicationExceptionHandler extends RuntimeException {
         Map<String, String> error = new HashMap<>();
         if(ex.getMessage().contains("'user.displayName_UNIQUE'")){
             error.put("Error:", "Display name already exists");
-        }else if(ex.getMessage().contains("'booktype.bookTypeName_UNIQUE'")){
+        }else if(ex.getMessage().contains("'booktype.booktypeName_UNIQUE'")){
             error.put("Error:", "Booktype already exists");
         }else{
             error.put("Error:", ex.getMessage());

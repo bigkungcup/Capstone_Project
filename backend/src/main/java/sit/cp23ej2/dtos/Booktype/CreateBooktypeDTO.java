@@ -11,6 +11,6 @@ import lombok.ToString;
 @ToString
 public class CreateBooktypeDTO {
     
-    private String bookTypeName;
+    private String booktypeName;
     
 }
