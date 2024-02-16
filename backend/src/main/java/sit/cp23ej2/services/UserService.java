@@ -77,6 +77,9 @@ public class UserService extends CommonController {
     public DataResponse getUserById(int userId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         User user = repository.getUserById(userId);
+        if(user == null){
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         if (userDTO != null) {
             try {
@@ -346,7 +349,7 @@ public class UserService extends CommonController {
         String currentPrincipalName = authentication.getName();
         User user = repository.getUserByEmail(currentPrincipalName);
 
-        if (new BCryptPasswordEncoder().matches(user.getPassword(), resetPassword.getPassword())) {
+        if (!new BCryptPasswordEncoder().matches(resetPassword.getPassword(), user.getPassword())) {
             throw new HandleExceptionBadRequest("Password is incorrect");
         }
 

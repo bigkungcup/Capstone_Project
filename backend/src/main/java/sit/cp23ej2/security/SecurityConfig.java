@@ -52,7 +52,11 @@ public class SecurityConfig {
         http.cors(withDefaults()).authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
-                .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.PUT,"/api/user/resetPassword").hasAnyAuthority( "ROLE_USER","ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET,"/api/user/**").hasAnyAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.DELETE,"/api/user/**").hasAnyAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.PUT,"/api/user/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.PUT,"/api/user/**").hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
                 .requestMatchers(HttpMethod.GET,"/api/book/guest").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/book/guest/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/book").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")

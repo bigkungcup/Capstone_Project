@@ -120,6 +120,12 @@ public class BookService extends CommonController {
         String currentPrincipalName = authentication.getName();
         System.out.println("currentPrincipalName: " + currentPrincipalName);
 
+        Book book = repository.getBookById(bookId);
+
+        if(book == null){
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+
         if(!currentPrincipalName.equals("anonymousUser")){
             User user = userRepository.getUserByEmail(currentPrincipalName);
             Integer existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
@@ -132,7 +138,7 @@ public class BookService extends CommonController {
 
         repository.increaseBookTotalView(bookId);
 
-        Book book = repository.getBookById(bookId);
+       
         if (book != null) {
             BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
             bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
@@ -149,9 +155,8 @@ public class BookService extends CommonController {
             response.setResponse_message("Book Detail");
             response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(bookDTO);
-        } else {
-            throw new HandleExceptionNotFound("Book Not Found", "Book");
         }
+
         return response;
     }
 
@@ -167,7 +172,7 @@ public class BookService extends CommonController {
                 fileStorageService.store(file, lastInsertId);
             }
         } else {
-            throw new HandleExceptionBadRequest("Book Already Exists");
+            throw new HandleExceptionNotFound("Book Already Exists");
         }
         response.setResponse_code(201);
         response.setResponse_status("Created");

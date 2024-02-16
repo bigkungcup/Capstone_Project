@@ -24,13 +24,13 @@ public class ApplicationExceptionHandler extends RuntimeException {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = { HandleExceptionNotFound.class })
     public ExceptionResponse handleException(Exception e, HandleExceptionNotFound ex, ServletWebRequest request) {
         Map<String, String> error = new HashMap<>();
         error.put(ex.getKey(), ex.getMessage());
-        response.setResponse_code(HttpStatus.BAD_REQUEST.value());
-        response.setResponse_status(HttpStatus.BAD_REQUEST.name());
+        response.setResponse_code(HttpStatus.NOT_FOUND.value());
+        response.setResponse_status(HttpStatus.NOT_FOUND.name());
         response.setResponse_message(e.getMessage());
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         response.setFiledErrors(error);
