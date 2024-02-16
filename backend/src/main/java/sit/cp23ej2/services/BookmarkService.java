@@ -59,6 +59,7 @@ public class BookmarkService extends CommonController {
                     bookmark.getBook().setFile(pathFile.toString());
 
                 }
+                bookmark.getBook().setBookTag(bookmark.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(bookmark.getBook().getBookTag().split(","))) );
             });
             response.setResponse_code(200);

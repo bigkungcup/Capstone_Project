@@ -88,7 +88,8 @@ public class BookService extends CommonController {
               
                 Duration duration = Duration.between(LocalDateTime.now(), bookDTO.getBookUpdateDateTime());
                 bookDTO.setCountDateTime(Math.abs(duration.toSeconds()));
-                ArrayList<String> bookTag = new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(",")));
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                ArrayList<String> bookTag = new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", ")));
                 bookDTO.setBookTagList(bookTag);
                 try {
                    
@@ -134,7 +135,8 @@ public class BookService extends CommonController {
         Book book = repository.getBookById(bookId);
         if (book != null) {
             BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-            bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(","))));
+            bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+            bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
             try {
 
                 Path pathFile = fileStorageService.load(bookDTO);
@@ -199,7 +201,8 @@ public class BookService extends CommonController {
             BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
 
             bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBooktypeId()));
-            bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(","))));
+            bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+            bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
 
             try {
                 if (book.getStatus() != null) {
@@ -241,7 +244,8 @@ public class BookService extends CommonController {
                 BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
 
                 bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBooktypeId()));
-                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(","))));
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
 
                 try {
                     if (book.getStatus() != null) {

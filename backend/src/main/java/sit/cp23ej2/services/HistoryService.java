@@ -62,6 +62,7 @@ public class HistoryService extends CommonController {
             if (pathFile != null) {
                 // history.setFile(pathFile.toString());
                 book.setFile(pathFile.toString());
+                history.getBook().setBookTag(history.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(history.getBook().getBookTag().split(","))));
                 history.setBookData(book);
             }
