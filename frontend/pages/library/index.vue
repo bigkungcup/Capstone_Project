@@ -10,6 +10,7 @@ const result = ref(library.bookList.data.totalElements ? library.bookList.data.t
 
 onBeforeMount( async () => {
   await library.getLibrary();
+
 });
 
 
@@ -45,7 +46,7 @@ onBeforeMount( async () => {
     </v-container>
     <BookNotFound v-show="library.bookList.data.content.length == 0" />
     <div v-show="library.bookList.data.content.length !== 0" >
-      <BookCard :bookList="library.bookList.data.content" />
+      <BookCard :bookList="library.bookList.data.content" @count="library.countUpdateTime(time)"/>
     </div>
 
     </div>

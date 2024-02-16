@@ -1,8 +1,7 @@
 <script setup>
-import { ref } from "vue";
-// import { useBooks } from '~/stores/book'
+import { useBooks } from '~/stores/book'
 
-// const library = useBooks();
+const library = useBooks();
 defineProps({
     bookList: {
         type: Array,
@@ -10,14 +9,9 @@ defineProps({
     }
 })
 
-const dateTime = ref('');
-// function countDateTime(time) {
-//    dateTime.value = library.countUpdateTime(time)
-// }
-
-// function bookCoverPath(filePath) {
-//    return filePath = (`../_nuxt/@fs/${filePath}`)
-// }
+function bookCoverPath(filePath) {
+   return filePath = (`../_nuxt/@fs/${filePath}`)
+}
 
 </script>
  
@@ -26,14 +20,14 @@ const dateTime = ref('');
         <v-card v-for="book in bookList" color="rgb(217, 217, 217, 0.6)" class="tw-min-h-[19rem] tw-max-h-[19rem]" :to="`/book/${book.bookId}/`">
             <v-row no-gutters>
                 <v-col cols="3" class="my-3 " align="center">
-                    <!-- <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="180" height="280" cover v-show="book.file == null"/>
-                    <v-img class="tw-drop-shadow-lg" :src="bookCoverPath(book.file)" width="180" height="280" cover v-show="book.file != null" /> -->
+                    <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="180" height="280" cover v-show="book.file == null"/>
+                    <v-img class="tw-drop-shadow-lg" :src="bookCoverPath(book.file)" width="180" height="280" cover v-show="book.file != null" />
                     <!-- <v-img src="~\Files\Uploads\TEST1\foryou2.jpg" width="180" v-show="book.file !== null"/> -->
                 </v-col>
                 <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
                     <div>
                         <p class="web-text-title">{{ book.bookName }}</p>
-                        <!-- <p class="tw-opacity-60" :onload="countDateTime(book.countDateTime)">Update about {{ dateTime }}</p> -->
+                        <p class="tw-opacity-60">Update about {{ library.countUpdateTime(book.countDateTime) }}</p>
                     </div>
                     <div class="tw-min-h-[9rem] tw-max-h-[9rem] tw-py-2 tw-overflow-clip">
                         <p class="tw-indent-8">{{ book.bookDetail }}</p>

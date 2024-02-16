@@ -93,6 +93,8 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 401) {
       if(refreshToken.value !== null && refreshToken.value !== undefined){
         login.handleRefresh(getBookDetail(bookId));
+      }else if (status == 404) {
+        router.push("/PageNotFound/");
       }
     }
   }
