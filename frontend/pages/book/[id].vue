@@ -118,16 +118,12 @@ await reviews.getReview(route.params.id, 0);
                 </p>
                 <p>
                   Booktype:
-                  <v-btn
-                    color="#1D419F"
-                    v-show="library.bookDetail.bookType != null"
-                    >{{ library.bookDetail.data.bookType }}</v-btn
-                  >
+                  <v-btn color="#1D419F">{{ library.bookDetail.data.booktype.booktypeName }}</v-btn>
                 </p>
-                <p>Genre:</p>
-                <v-btn color="#1D419F">{{
-                  library.bookDetail.data.bookGenre
-                }}</v-btn>
+                <p>Tags:</p>
+                <div class="tw-flex tw-gap-x-2">
+                <v-chip variant="elevated" color="#1D419F" v-show="library.bookDetail.data.bookTagList[0] != ''" v-for="tag in library.bookDetail.data.bookTagList">{{ tag }}</v-chip>
+              </div>
               </div>
 
               <div class="tw-flex tw-justify-center tw-gap-x-12">

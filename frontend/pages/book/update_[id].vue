@@ -46,7 +46,8 @@ onBeforeRouteLeave(() => {
   if (
     book.editBook.bookName !== book.bookDetail.data.bookName ||
     book.editBook.author !== book.bookDetail.data.author ||
-    book.editBook.bookGenre !== book.bookDetail.data.bookGenre || 
+    book.editBook.booktypeId !== book.bookDetail.data.booktypeId || 
+    book.editBook.bookTag !== book.bookDetail.data.bookTag || 
     book.editBook.bookDetail !== book.bookDetail.data.bookDetail ||
     coverCheck
   ) {
@@ -63,6 +64,7 @@ onBeforeRouteLeave(() => {
 
 await book.getBookDetail(route.params.id);
 book.setEditBook();
+book.getBookType();
 </script>
 
 <template>
@@ -125,12 +127,16 @@ book.setEditBook();
                 </p>
               </v-responsive>
               <div class="d-flex justify-center">
-                <v-btn>
-                  <p class="tw-font-bold tw-text-[#1D419F] tw-text-xs">
-                    Select Book type
-                  </p>
-                  <span class="mdi mdi-chevron-right"></span>
-                </v-btn>
+                <v-select
+                class="tw-font-bold tw-text-[#1D419F] tw-text-xs px-8"
+                v-model="book.editBook.booktypeId"
+                :items="book.bookType"
+                item-title="booktypeName"
+                item-value="booktypeId"
+                label="Select Book type"
+                variant="solo-filled"
+                :color="white"
+                ></v-select>{{book.editBook.booktypeId}}
               </div>
             </div>
           </v-col>
@@ -159,15 +165,24 @@ book.setEditBook();
               ></v-textarea>
               <div class="tw-space-x-2 tw-flex tw-items-center">
                 <span class="tw-font-bold tw-text-[#1D419F] tw-text-lg"
-                  >Genre:</span
+                  >Tags:</span
                 >
-                <v-text-field
+                <!-- <v-text-field
                   label="Genre"
                   variant="solo"
                   class="inline-field"
                   v-model="book.editBook.bookGenre"
                   :rules="[rules.required]"
-                ></v-text-field>
+                ></v-text-field> -->
+                <v-combobox
+          v-model="book.editBook.bookTag"
+          label="Enter your tag"
+          variant="solo-filled"
+          :color="white"
+          multiple
+          chips
+          clearable
+        ></v-combobox>
               </div>
             </div>
           </v-col>
@@ -186,11 +201,10 @@ book.setEditBook();
         :disabled="
           book.editBook.bookName == '' ||
           book.editBook.author == '' ||
-          book.editBook.bookGenre == '' ||
-          book.editBook.bookDetail == '' ||
+          book.editBook.booktypeId == null ||
           book.editBook.bookName.length > 255 ||
           book.editBook.author.length > 255 ||
-          book.editBookFile == null ? false : book.editBookFile[0].size > 64000000
+          (book.editBookFile == null ? false : book.editBookFile[0].size > 64000000)
         "
         >submit</v-btn
       >

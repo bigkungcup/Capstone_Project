@@ -100,7 +100,7 @@ export const useBooks = defineStore("Books", () => {
       bookName: newBook.value.bookName,
       author: newBook.value.author,
       booktypeId: newBook.value.booktypeId,
-      bookTag: newBook.value.bookTag,
+      bookTag: newBook.value.bookTag.join(','),
       bookDetail: newBook.value.bookDetail,
     };
 
@@ -145,14 +145,15 @@ export const useBooks = defineStore("Books", () => {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
         booktypeId: editBook.value.booktypeId,
-        bookTag: editBook.value.bookTag,
+        bookTag: editBook.value.bookTag.join(','),
         bookDetail: editBook.value.bookDetail,
       };
     } else {
       book = {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
-        bookGenre: editBook.value.bookGenre,
+        booktypeId: editBook.value.booktypeId,
+        bookTag: editBook.value.bookTag.join(','),
         bookDetail: editBook.value.bookDetail,
         status: "edit",
       };
@@ -338,8 +339,8 @@ export const useBooks = defineStore("Books", () => {
     (editBook.value = {
       bookName: bookDetail.value.data.bookName,
       author: bookDetail.value.data.author,
-      bookTypeId: bookDetail.value.data.bookTypeId,
-      bookTag: bookDetail.value.data.bookTag,
+      booktypeId: bookDetail.value.data.booktype.booktypeId,
+      bookTag: bookDetail.value.data.bookTagList,
       bookDetail: bookDetail.value.data.bookDetail,
       file: bookDetail.value.data.file,
     }),

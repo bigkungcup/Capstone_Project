@@ -34,6 +34,7 @@ const rules = {
   required: (value) => !!value || "Field is required",
   limited: (value) => value.length <= 255 || "Max 255 characters",
   size: (value) => !value || value[0].size <= 64000000 || showValidateSize(),
+  selected: (value) => value != null || 'Please select type'
 };
 
 // function toggleLeavePopup() {
@@ -45,7 +46,8 @@ onBeforeRouteLeave(() => {
     book.newBook.bookName !== "" ||
     book.newBook.author !== "" ||
     book.newBook.bookDetail !== "" ||
-    book.newBook.bookGenre !== "" ||
+    book.newBook.booktypeId !== null ||
+    book.newBook.bookTag !== null ||
     book.newBookFile !== null 
   ) {
     if(book.leavePopup){
@@ -64,9 +66,7 @@ onBeforeMount(() => {
   book.getBookType();
   book.leavePopup = true;
   book.newBookFile = null;
-  console.log(book.bookType);
 });
-
 
 </script>
 
@@ -137,6 +137,7 @@ onBeforeMount(() => {
                 item-value="booktypeId"
                 label="Select Book type"
                 variant="solo-filled"
+                :rules="[rules.selected]"
                 :color="white"
                 ></v-select>
                 <!-- <v-btn>
@@ -173,7 +174,7 @@ onBeforeMount(() => {
               ></v-textarea>
               <div class="tw-space-x-2 tw-flex tw-items-center">
                 <span class="tw-font-bold tw-text-[#1D419F] tw-text-lg"
-                  >Genre:</span
+                  >Tags:</span
                 >
                 <!-- <v-text-field
                   label="Genre"
@@ -209,11 +210,10 @@ onBeforeMount(() => {
         :disabled="
           book.newBook.bookName == '' ||
           book.newBook.author == '' ||
-          book.newBook.bookGenre == '' ||
-          book.newBook.bookDetail == '' ||
           book.newBook.bookName.length > 255 ||
           book.newBook.author.length > 255 ||
-          book.newBookFile == null ? false : book.newBookFile[0].size > 64000000
+          book.newBook.booktypeId == null ||
+          (book.newBookFile == null ? false : book.newBookFile[0].size > 64000000)
         "
         >submit</v-btn
       >

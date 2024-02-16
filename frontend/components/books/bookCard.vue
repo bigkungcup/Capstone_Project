@@ -15,9 +15,9 @@ function countDateTime(time) {
    dateTime.value = library.countUpdateTime(time)
 }
 
-function bookCoverPath(filePath) {
-   return filePath = (`../_nuxt/@fs/${filePath}`)
-}
+// function bookCoverPath(filePath) {
+//    return filePath = (`../_nuxt/@fs/${filePath}`)
+// }
 
 </script>
  
@@ -27,7 +27,7 @@ function bookCoverPath(filePath) {
             <v-row no-gutters>
                 <v-col cols="3" class="my-3 " align="center">
                     <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="180" height="280" cover v-show="book.file == null"/>
-                    <v-img class="tw-drop-shadow-lg" :src="bookCoverPath(book.file)" width="180" height="280" cover v-show="book.file != null" />
+                    <!-- <v-img class="tw-drop-shadow-lg" :src="bookCoverPath(book.file)" width="180" height="280" cover v-show="book.file != null" /> -->
                     <!-- <v-img src="~\Files\Uploads\TEST1\foryou2.jpg" width="180" v-show="book.file !== null"/> -->
                 </v-col>
                 <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
@@ -53,9 +53,9 @@ function bookCoverPath(filePath) {
                             <p class="tw-font-bold">Book Type : </p>
                             <v-btn color="#1D419F">{{ book.booktype.booktypeName }}</v-btn>
                         </div>
-                        <div class="tw-flex tw-gap-x-4 tw-py-2 tw-items-center">
+                        <div class="tw-flex tw-gap-x-2 tw-py-2 tw-items-center">
                             <p class="tw-font-bold">Tags : </p>
-                            <v-chip color="#1D419F" v-show="book.bookTagList[0] != ''" v-for="tag in book.bookTagList">{{ tag }}</v-chip>
+                            <v-chip variant="elevated" color="#1D419F" v-show="book.bookTagList[0] != ''" v-for="tag in book.bookTagList">{{ tag }}</v-chip>
                     </div>
                 </div>
                 </v-col>
