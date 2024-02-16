@@ -1,10 +1,12 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
+import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { useLogin } from "./login";
 
 export const useBooks = defineStore("Books", () => {
   const accessToken = useCookie("accessToken");
   const refreshToken = useCookie("refreshToken");
+  const router = useRouter();
   const login = useLogin();
   const bookList = ref({
     data: {
@@ -60,6 +62,8 @@ export const useBooks = defineStore("Books", () => {
       console.log("get library uncompleted");
     } else if (status == 401) {
       login.handleRefresh(getLibrary);
+    } else if (status == 404) {
+      router.push("/PageNotFound/");
     }
   }
 

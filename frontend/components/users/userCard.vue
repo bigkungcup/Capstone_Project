@@ -19,7 +19,7 @@ function bookCoverPath(filePath) {
     <v-card
       v-for="user in userList"
       class="border-md rounded-pill"
-      :to="`/user/${user.userId}/`"
+      :to="`/user/${user.userId}`+'/'"
     >
       <v-row no-gutters class="my-5">
         <v-col cols="2" align="center">
