@@ -27,7 +27,7 @@ onBeforeMount( async () => {
           <v-icon icon="mdi mdi-filter-variant"></v-icon>
           </v-btn></v-col>
           <v-col cols="1"> 
-            <NuxtLink to="/book/create"><v-btn size="auto" class="tw-mx-7 pa-5" color="#082266" rounded="lg"> 
+            <NuxtLink to="/book/create/"><v-btn size="auto" class="tw-mx-7 pa-5" color="#082266" rounded="lg"> 
           <v-icon icon="mdi mdi-plus"></v-icon>
           </v-btn></NuxtLink></v-col>
       </v-row>

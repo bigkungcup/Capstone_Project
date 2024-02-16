@@ -129,7 +129,7 @@ onBeforeMount(() => {
                 </p>
               </v-responsive>
               <div class="d-flex justify-center px-8">
-                <v-select
+                <v-autocomplete
                 class="tw-font-bold tw-text-[#1D419F] tw-text-xs "
                 v-model="book.newBook.booktypeId"
                 :items="book.bookType"
@@ -139,13 +139,7 @@ onBeforeMount(() => {
                 variant="solo-filled"
                 :rules="[rules.selected]"
                 :color="white"
-                ></v-select>
-                <!-- <v-btn>
-                  <p class="tw-font-bold tw-text-[#1D419F] tw-text-xs">
-                    Select Book type
-                  </p>
-                  <span class="mdi mdi-chevron-right"></span>
-                </v-btn> -->
+                ></v-autocomplete>
               </div>
             </div>
           </v-col>

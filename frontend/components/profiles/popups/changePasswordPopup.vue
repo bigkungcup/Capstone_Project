@@ -49,15 +49,15 @@ const rules = {
 <template>
     <div v-show="dialog" class="tw-grid tw-h-100% tw-min-h-screen tw-w-screen tw-absolute tw-inset-0 tw--top-[5.5rem] tw-bg-black/50">
         <v-card style="height: 25rem; width: 50rem;" class="rounded-xl tw-place-self-center">
-        <v-card-title style="height: 5rem; width: 50rem;">
-          <p class="action-popUp-header tw-flex tw-justify-center tw-my-4">Change Password</p>
-          <div class="popup-horizontal-line"></div>
+        <v-card-title class="tw-bg-[#1D419F]" style="height: 5rem; width: 50rem;">
+          <p class="action-popUp-header !tw-text-white tw-flex tw-justify-center tw-my-4 ">Change Password</p>
+          <!-- <div class="popup-horizontal-line"></div> -->
         </v-card-title>
-        <v-card-text class="py-8" style="height: 15rem; width: 50rem;">
+        <v-card-text class="py-8 " style="height: 15rem; width: 50rem;">
                             <div class="tw-space-y-1">
                                 <v-row class="tw-flex tw-items-center tw-space-x-6" no-gutters>
                                     <v-col cols="4" class="d-flex tw-place-content-end">
-                                        <span class="web-text-sub ">Old password</span>
+                                        <span class="web-text-detail">Old password</span>
                                     </v-col>
                                     <v-col cols="7">
                                         <v-text-field 
@@ -73,7 +73,7 @@ const rules = {
                                 </v-row>
                                 <v-row no-gutters class="tw-flex tw-items-center tw-space-x-6">
                                     <v-col cols="4" class="d-flex tw-place-content-end">
-                                        <span class="web-text-sub">New password</span>
+                                        <span class="web-text-detail">New password</span>
                                     </v-col>
                                     <v-col cols="7">
                                         <v-text-field 
@@ -90,7 +90,7 @@ const rules = {
                                 </v-row>
                                 <v-row no-gutters class="tw-flex tw-items-center tw-space-x-6">
                                     <v-col cols="4" class="d-flex tw-place-content-end">
-                                        <span class="web-text-sub">Confirm new password</span>
+                                        <span class="web-text-detail">Confirm new password</span>
                                     </v-col>
                                     <v-col cols="7">
                                         <v-text-field 

@@ -127,7 +127,7 @@ book.getBookType();
                 </p>
               </v-responsive>
               <div class="d-flex justify-center">
-                <v-select
+                <v-autocomplete
                 class="tw-font-bold tw-text-[#1D419F] tw-text-xs px-8"
                 v-model="book.editBook.booktypeId"
                 :items="book.bookType"
@@ -136,7 +136,7 @@ book.getBookType();
                 label="Select Book type"
                 variant="solo-filled"
                 :color="white"
-                ></v-select>{{book.editBook.booktypeId}}
+                ></v-autocomplete>
               </div>
             </div>
           </v-col>

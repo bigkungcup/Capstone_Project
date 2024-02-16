@@ -115,8 +115,6 @@ export const useLogin = defineStore("Login", () => {
       user = {
         displayName: editProfile.value.displayName,
         email: editProfile.value.email,
-        // newPassword: editProfile.value.newPassword,
-        // oldPassword: editProfile.value.oldPassword,
         bio: editProfile.value.bio,
         role: editProfile.value.role,
       };
@@ -124,8 +122,6 @@ export const useLogin = defineStore("Login", () => {
       user = {
         displayName: editProfile.value.displayName,
         email: editProfile.value.email,
-        // newPassword: editProfile.value.newPassword,
-        // oldPassword: editProfile.value.oldPassword,
         bio: editProfile.value.bio,
         role: editProfile.value.role,
         status: "edit",
@@ -178,6 +174,31 @@ export const useLogin = defineStore("Login", () => {
   }
 
   //Change password
+  async function changePassword() {
+    let status = 0;
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/user/resetPassword`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+      body: formData,
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          updateFailed.value = true;
+          updateFailedError.value = Object.values(response._data.filedErrors);
+          console.log("update user uncompleted");
+        }
+      },
+    });
+    if (status == 200) {
+      updateFailed.value = false;
+      successfulPopup.value = true;
+      console.log("update user completed");
+    } else if (status == 401) {
+      handleRefresh(updateProfile);
+    }
+  }
 
   //Log out
   function logOut() {

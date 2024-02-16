@@ -101,7 +101,7 @@ onBeforeMount(async () => {
                   </v-tooltip>
                 </template>
                 <v-list>
-                  <v-list-item :to="`/user/update_${route.params.id}`">
+                  <v-list-item :to="`/user/update_${route.params.id}`/">
                     <v-list-item-title class="web-text-detail tw-space-x-2"
                       ><v-icon icon="mdi mdi-pencil-outline"></v-icon
                       ><span>Edit this user</span></v-list-item-title
