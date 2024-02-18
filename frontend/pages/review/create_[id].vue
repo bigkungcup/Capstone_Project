@@ -2,7 +2,7 @@
 import { useReviews } from "~/stores/review";
 import { useBooks } from "~/stores/book";
 import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import leaveConfirmPopup from "~/components/popups/leaveConfirmPopup.vue";
 import CreateReviewSuccessPopup from "~/components/reviews/popups/createReviewSuccessPopup.vue";
 
@@ -10,7 +10,7 @@ const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
 const confirmLeavePopup = ref(false);
-const profileToken = ref(useCookie("profileToken"))
+const profileToken = ref(useCookie("profileToken"));
 const router = useRouter();
 
 function toggleLeavePopup() {
@@ -50,21 +50,21 @@ onBeforeRouteLeave(() => {
 }});
 
 onBeforeMount(() => {
-if (profileToken.value.role == 'GUEST') {
-    reviews.clearNewReview();
-    reviews.leavePopup = true;
-    router.push(`/UnauthenPage/`)
-}else{
+if (profileToken.value.role == 'USER') {
   reviews.clearNewReview();
   reviews.leavePopup = true;
   setBookId();
+}else{
+  reviews.clearNewReview();
+  reviews.leavePopup = true;
+  router.push(`/UnauthenPage/`)
 }
 });
 
-if (profileToken.value.role == 'GUEST') {
-  await book.getBookDetailByGuest(route.params.id);
-}else{
+if (profileToken.value.role == 'USER') {
   await book.getBookDetail(route.params.id);
+}else{
+  await book.getBookDetailByGuest(route.params.id);
 }
 
 
@@ -72,7 +72,7 @@ if (profileToken.value.role == 'GUEST') {
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role !== 'GUEST'">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role == 'USER'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

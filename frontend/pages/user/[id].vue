@@ -2,12 +2,15 @@
 import Bookmarks from "~/components/profiles/bookmark.vue";
 // import Reviews from '~/components/profiles/reviews.vue';
 import { useUsers } from "~/stores/user";
+import { useRoute, useRouter } from "vue-router";
 import { mergeProps } from "vue";
 import deleteUserConfirmPopup from "~/components/users/popups/deleteUserConfirmPopup.vue";
 import deleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessPopup.vue";
 
 const user = useUsers();
+const router = useRouter();
 const route = useRoute();
+const profileToken = ref(useCookie("profileToken"));
 
 function toggleUserConfirmPopup() {
   user.confirmPopup = !user.confirmPopup;
@@ -23,12 +26,16 @@ function bookCoverPath(filePath) {
 }
 
 onBeforeMount(async () => {
+  if (profileToken.value.role == 'ADMIN') {
   await user.getUserDetail(route.params.id);
+}else{
+  router.push(`/UnauthenPage/`)
+}
 });
 </script>
 
 <template>
-  <div class="tw-bg-[#D9D9D9] tw-h-full">
+  <div class="tw-bg-[#D9D9D9] tw-h-full" v-show="profileToken.role == 'ADMIN'">
     <div class="tw-flex tw-place-content-center">
       <div class="tw-w-[70rem] tw-max-h-[16rem]">
         <v-img src="/image/profile_banner.jpg" v-show="user.userDetail.data.file == null" cover></v-img>

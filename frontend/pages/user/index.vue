@@ -3,13 +3,20 @@ import { ref } from "vue";
 import userCard from "~/components/users/userCard.vue";
 // import BookNotFound from "~/components/books/bookNotFound.vue";
 import { useUsers } from "~/stores/user";
+import { useRouter } from "vue-router";
 
 const user = useUsers();
 const page = ref(1);
+const router = useRouter();
+const profileToken = ref(useCookie("profileToken"));
 
 onBeforeMount(async () => {
+  if (profileToken.value.role == 'ADMIN') {
   user.clearUserList();
   await user.getUserList();
+}else{
+  router.push(`/UnauthenPage/`)
+}
 });
 </script>
 

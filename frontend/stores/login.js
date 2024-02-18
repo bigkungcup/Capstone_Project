@@ -16,6 +16,9 @@ export const useLogin = defineStore("Login", () => {
   const accessToken = ref(useCookie("accessToken", cookieOptions));
   const refreshToken = ref(useCookie("refreshToken", cookieOptions));
   const profileToken = ref(useCookie("profileToken", cookieOptions));
+  const channel1 = new BroadcastChannel("accessToken");
+  const channel2 = new BroadcastChannel("refreshToken");  
+  const channel3 = new BroadcastChannel("profileToken");  
   const profile = ref({
     data: {},
   });
@@ -215,19 +218,14 @@ export const useLogin = defineStore("Login", () => {
 
   //Log out
   function logOut() {
-    const channel1 = new BroadcastChannel("accessToken");
-    const channel2 = new BroadcastChannel("refreshToken");  
-    const channel3 = new BroadcastChannel("profileToken");  
-
     accessToken.value = null;
+    channel1.close();
     refreshToken.value = null;
+    channel2.close();
     profileToken.value = null;
     channel3.close();
     resetProfileData();
     profileToken.value = profileData.value;
-
-    channel1.close();
-    channel2.close();
     router.push("/login");
   }
 

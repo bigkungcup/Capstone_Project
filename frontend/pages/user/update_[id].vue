@@ -1,15 +1,18 @@
 <script setup>
 import { ref } from "vue";
 import { useUsers } from "../../stores/user";
+import { useRoute, useRouter } from "vue-router";
 import updateUserSuccessPopup from "../../components/users/popups/updateUserSuccessPopup.vue";
 
 const user = useUsers();
 const route = useRoute();
+const router = useRouter();
 const selectedImage = ref();
 const validateSize = ref(false);
 const validatePassword = ref(false);
 const validEmail =
   /^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const profileToken = ref(useCookie("profileToken"));
 
 function showValidateSize() {
   validateSize.value = true;
@@ -56,12 +59,22 @@ function handleCheckPassword() {
 }
 
 onBeforeMount(() => {
+  if (profileToken.value.role == 'ADMIN') {
   user.updateFailed = false;
   user.leavePopup = true;
   setSelectedImage();
+}else{
+  router.push(`/UnauthenPage/`)
+}
 });
 
+if (profileToken.value.role == 'ADMIN') {
+  await user.getUserDetail(route.params.id);
+  user.setEditUser();
+}
+
 onBeforeRouteLeave(() => {
+  if (profileToken.value.role == 'ADMIN') {
   const coverCheck =
     selectedImage.value == null
       ? selectedImage.value != user.userDetail.data.file
@@ -83,14 +96,13 @@ onBeforeRouteLeave(() => {
       }
     }
   }
+}
 });
 
-await user.getUserDetail(route.params.id);
-user.setEditUser();
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-5 tw-drop-shadow-lg tw-space-y-1">
+  <div class="tw-pt-1 tw-pb-5 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role == 'ADMIN'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

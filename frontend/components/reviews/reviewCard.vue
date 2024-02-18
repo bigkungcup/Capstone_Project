@@ -13,6 +13,8 @@ defineProps({
     },
 })
 
+const profileToken = ref(useCookie("profileToken"));
+
 </script>
  
 <template>
@@ -67,6 +69,12 @@ defineProps({
                                         <v-list-item-title class="web-text-detail">
                                             <v-list-item-title class="web-text-detail tw-space-x-2" @click="$emit('toggle'),$emit('set',review.reviewId)"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
                                         </v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item v-show="profileToken.role == 'USER'">
+                                        <v-list-item-title class="web-text-detail tw-space-x-2"
+                                            ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
+                                            ><span>Report this book</span></v-list-item-title
+                                        >
                                     </v-list-item>
                                 </v-list>
                             </v-menu>

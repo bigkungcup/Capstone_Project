@@ -3,17 +3,19 @@ import HistoryCard from '~/components/history/historyCard.vue';
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const profileToken = ref(useCookie("profileToken"))
+const profileToken = ref(useCookie("profileToken"));
 
 onBeforeMount(() => {
-  if (profileToken.value.role == 'GUEST') {
+  if (profileToken.value.role == 'USER') {
+    // router.push(`/UnauthenPage/`)
+  }else{
     router.push(`/UnauthenPage/`)
   }
 });
 </script>
  
 <template>
-    <div v-show="profileToken.role !== 'GUEST'">
+    <div v-show="profileToken.role == 'USER'">
         <v-container>
             <v-row>
                 <v-col cols="12" align="right">
