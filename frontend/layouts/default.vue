@@ -3,10 +3,17 @@ import { mergeProps } from "vue";
 import { useLogin } from "../stores/login";
 
 const accessToken = ref(useCookie("accessToken"))
+const profileToken = ref(useCookie("profileToken"))
 const loginStatus = ref(false);
 const login = useLogin();
 
 loginStatus.value = accessToken.value == undefined ? false : true;
+
+function bookCoverPath(filePath) {
+  return (filePath = `../../ej2/_nuxt/@fs/${filePath}`);
+}
+
+console.log(profileToken.value.role);
 
 </script>
 
@@ -24,8 +31,8 @@ loginStatus.value = accessToken.value == undefined ? false : true;
       <NuxtLink to="/">Home</NuxtLink>
       <NuxtLink to="">Ranking</NuxtLink>
       <NuxtLink to="/library/">Library</NuxtLink>
-      <NuxtLink to="/history/">History</NuxtLink>
-      <NuxtLink to="/user/">User</NuxtLink>
+      <NuxtLink to="/history/" v-show="profileToken.role === 'USER'">History</NuxtLink>
+      <NuxtLink to="/user/" v-show="profileToken.role == 'ADMIN'">User</NuxtLink>
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
       <span class="d-flex align-center justify-center"><v-icon icon="mdi-bell" style="font-size: 40px"></v-icon></span>
@@ -62,10 +69,20 @@ loginStatus.value = accessToken.value == undefined ? false : true;
         <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props: menu }">
             <v-icon
+              v-if="profileToken.file == null"
               v-bind="mergeProps(menu)"
               icon="mdi-account-circle"
               style="font-size: 50px"
             ></v-icon>
+            <v-img
+              class="tw-rounded-full tw-border-[#082266] tw-border-2 tw-cursor-pointer"
+              :src="bookCoverPath(profileToken.file)"
+              v-if="profileToken.file !== null"
+              height="40"
+              width="40"
+              cover
+              v-bind="mergeProps(menu)"
+            ></v-img>
           </template>
 
           <v-list>

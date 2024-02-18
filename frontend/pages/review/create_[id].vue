@@ -10,6 +10,8 @@ const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
 const confirmLeavePopup = ref(false);
+const profileToken = ref(useCookie("profileToken"))
+const router = useRouter();
 
 function toggleLeavePopup() {
   confirmLeavePopup.value = !confirmLeavePopup.value;
@@ -48,17 +50,29 @@ onBeforeRouteLeave(() => {
 }});
 
 onBeforeMount(() => {
+if (profileToken.value.role == 'GUEST') {
+    reviews.clearNewReview();
+    reviews.leavePopup = true;
+    router.push(`/UnauthenPage/`)
+}else{
   reviews.clearNewReview();
   reviews.leavePopup = true;
   setBookId();
+}
 });
 
-await book.getBookDetail(route.params.id);
+if (profileToken.value.role == 'GUEST') {
+  await book.getBookDetailByGuest(route.params.id);
+}else{
+  await book.getBookDetail(route.params.id);
+}
+
+
 
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role !== 'GUEST'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

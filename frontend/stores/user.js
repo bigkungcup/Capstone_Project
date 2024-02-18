@@ -65,6 +65,8 @@ export const useUsers = defineStore("Users", () => {
       console.log("get user list uncompleted");
     } else if (status == 401) {
       login.handleRefresh(getUserList);
+    } else if (status == 404) {
+      router.push("/PageNotFound/");
     }
   }
 
@@ -94,6 +96,8 @@ export const useUsers = defineStore("Users", () => {
     } else if (status == 401) {
       if(refreshToken.value !== null && refreshToken.value !== undefined){
         login.handleRefresh(getUserDetail(userId));
+      } else if (status == 404) {
+        router.push("/PageNotFound/");
       }
     }
   }
@@ -181,6 +185,8 @@ export const useUsers = defineStore("Users", () => {
           updateFailed.value = true;
           updateFailedError.value = Object.values(response._data.filedErrors);
           console.log("update user uncompleted");
+        } else if (status == 404) {
+          router.push("/PageNotFound/");
         }
       },
     });
@@ -217,7 +223,7 @@ export const useUsers = defineStore("Users", () => {
         // getReview(bookId);
         console.log("delete user completed");
       } else if (status == 404) {
-        console.log("delete user uncompleted");
+        router.push("/PageNotFound/");
       } else if (status == 401) {
         login.handleRefresh(deleteUser(userId));
       }

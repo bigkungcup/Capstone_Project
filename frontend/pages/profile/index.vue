@@ -148,7 +148,7 @@ onBeforeMount( async () => {
             </div>
         </div>
         <!-- Popup -->
-        <changePasswordPopup :dialog="changePassword" @toggle="handleChangePassword()"/>
+        <changePasswordPopup :dialog="changePassword" @toggle="handleChangePassword()" @update="login.changePassword()"/>
     </div>
 </template>
  

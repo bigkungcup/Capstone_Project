@@ -1,4 +1,5 @@
 <script setup>
+import { useRouter } from "vue-router";
 import { useBooks } from "~/stores/book";
 import { ref } from "vue";
 // import LeaveConfirmPopup from "~/components//popups/leaveConfirmPopup.vue";
@@ -7,6 +8,8 @@ import DuplicateBookPopup from "~/components/books/popups/duplicateBookPopup.vue
 
 const book = useBooks();
 const selectedImage = ref(null);
+const router = useRouter();
+const profileToken = ref(useCookie("profileToken"))
 // const confirmLeavePopup = ref(false);
 
 function handleFileChange(event) {
@@ -62,16 +65,22 @@ onBeforeRouteLeave(() => {
 });
 
 onBeforeMount(() => {
-  book.clearNewBook();
-  book.getBookType();
-  book.leavePopup = true;
-  book.newBookFile = null;
+  if (profileToken.value.role == 'GUEST') {
+    book.leavePopup = true;
+    book.newBookFile = null;
+    router.push(`/UnauthenPage/`)
+  }else{
+    book.clearNewBook();
+    book.getBookType();
+    book.leavePopup = true;
+    book.newBookFile = null;
+}
 });
 
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role !== 'GUEST'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

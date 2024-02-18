@@ -18,6 +18,7 @@ const page = ref(1);
 const deleteId = ref(0);
 const bookConfirmPopup = ref(false);
 const reviewConfirmPopup = ref(false);
+const profileToken = ref(useCookie("profileToken"))
 
 function setDeleteId(id) {
   deleteId.value = id;
@@ -43,8 +44,13 @@ function bookCoverPath(filePath) {
   return (filePath = `../../_nuxt/@fs/${filePath}`);
 }
 
-await library.getBookDetail(route.params.id);
-await reviews.getReview(route.params.id, 0);
+if (profileToken.value.role == 'GUEST') {
+    await library.getBookDetailByGuest(route.params.id);
+    await reviews.getReviewByGuest(route.params.id, 0);
+  }else{
+    await library.getBookDetail(route.params.id);
+    await reviews.getReview(route.params.id, 0);
+}
 
 </script>
 
@@ -126,7 +132,7 @@ await reviews.getReview(route.params.id, 0);
               </div>
               </div>
 
-              <div class="tw-flex tw-justify-center tw-gap-x-12">
+              <div class="tw-flex tw-justify-center tw-gap-x-12" v-show="profileToken.role !== 'GUEST'">
                 <v-btn class="text-none" color="#1D419F"
                   ><v-icon start icon="mdi mdi-bookmark"></v-icon
                   >Bookmark</v-btn
@@ -141,7 +147,7 @@ await reviews.getReview(route.params.id, 0);
               </div>
             </v-col>
             <v-col cols="1" class="tw-flex tw-justify-center my-2">
-              <span class="text-center">
+              <span class="text-center" v-show="profileToken.role !== 'GUEST'">
                 <v-menu>
                   <template v-slot:activator="{ props: menu }">
                     <v-tooltip location="top">

@@ -1,13 +1,16 @@
 <script setup>
 import { useReviews } from "~/stores/review";
 import { useBooks } from "~/stores/book";
+import { useRouter } from "vue-router";
 import { ref } from "vue";
-import leaveConfirmPopup from "~/components/popups/leaveConfirmPopup.vue";
+// import leaveConfirmPopup from "~/components/popups/leaveConfirmPopup.vue";
 import UpdateReviewSuccessPopup from "~/components/reviews/popups/updateReviewSuccessPopup.vue";
 
 const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
+const router = useRouter();
+const profileToken = ref(useCookie("profileToken"))
 // const confirmLeavePopup = ref(false);
 
 // function toggleLeavePopup() {
@@ -28,6 +31,7 @@ function bookCoverPath(filePath) {
 }
 
 onBeforeRouteLeave(() => {
+  if (profileToken.value.role !== 'GUEST') {
   const spoileFlag = reviews.reviewDetail.data.spoileFlag == 0 ? false : true;
   if (
     reviews.editReview.title !== reviews.reviewDetail.data.reviewTitle ||
@@ -43,21 +47,33 @@ onBeforeRouteLeave(() => {
       next(false); // Prevent leaving the page
     }
   }
-}
+}}
 });
 
 onBeforeMount(() => {
-  reviews.leavePopup = true;
+  if (profileToken.value.role == 'GUEST') {
+    reviews.leavePopup = true;
+    router.push(`/UnauthenPage/`)
+  }else{
+    reviews.leavePopup = true;
+}
 });
 
-// await reviews.setEditReview(route.params.id);
-await reviews.getReviewDetail(route.params.id);
-reviews.setEditReview();
-await book.getBookDetail(reviews.editReview.bookId);
+if (profileToken.value.role == 'GUEST') {
+  await reviews.getReviewDetailByGuest(route.params.id);
+  reviews.setEditReview();
+  await book.getBookDetailByGuest(reviews.editReview.bookId);
+  }else{
+  // await reviews.setEditReview(route.params.id);
+  await reviews.getReviewDetail(route.params.id);
+  reviews.setEditReview();
+  await book.getBookDetail(reviews.editReview.bookId);
+}
+
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-if="profileToken.role !== 'GUEST'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

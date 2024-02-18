@@ -5,12 +5,16 @@ import BookNotFound from "~/components/books/bookNotFound.vue";
 import { useBooks } from '~/stores/book'
 
 const library = useBooks();
+const profileToken = ref(useCookie("profileToken"))
 const page = ref(1)
 const result = ref(library.bookList.data.totalElements ? library.bookList.data.totalElements : 0);
 
 onBeforeMount( async () => {
-  await library.getLibrary();
-
+  if (profileToken.value.role == 'GUEST') {
+    await library.getLibraryByGuest();
+  }else{
+    await library.getLibrary();
+  }
 });
 
 
@@ -28,9 +32,10 @@ onBeforeMount( async () => {
           <v-icon icon="mdi mdi-filter-variant"></v-icon>
           </v-btn></v-col>
           <v-col cols="1"> 
-            <NuxtLink to="/book/create/"><v-btn size="auto" class="tw-mx-7 pa-5" color="#082266" rounded="lg"> 
+          <NuxtLink to="/book/create/" v-show="profileToken.role !== 'GUEST'"><v-btn size="auto" class="tw-mx-7 pa-5" color="#082266" rounded="lg"> 
           <v-icon icon="mdi mdi-plus"></v-icon>
-          </v-btn></NuxtLink></v-col>
+          </v-btn></NuxtLink>
+        </v-col>
       </v-row>
 
       <v-row no-gutters>

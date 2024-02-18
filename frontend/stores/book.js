@@ -57,19 +57,48 @@ export const useBooks = defineStore("Books", () => {
         bookList.value = data.value;
       }
       console.log("get library completed");
-    } else if (status == 400) {
+    } else if (status == 404) {
       clearBookList();
       console.log("get library uncompleted");
     } else if (status == 401) {
-      login.handleRefresh(getLibrary);
-    } else if (status == 404) {
-      router.push("/PageNotFound/");
+      await login.handleRefresh(getLibrary());
     }
   }
 
+    //Get Library by guest
+    async function getLibraryByGuest() {
+      let status = 0;
+      const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/guest`, {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+          };
+          options.params = {
+            page: bookPage.value,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      });
+      if (status == 200) {
+        if (data.value) {
+          bookList.value = data.value;
+        }
+        console.log("get library completed");
+      } else if (status == 404) {
+        clearBookList();
+        console.log("get library uncompleted");
+      } else if (status == 401) {
+        await login.handleRefresh(getLibraryByGuest());
+      }
+    }  
+
+
   //Get Book Detail
-  let status = 0;
   async function getBookDetail(bookId) {
+    let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
       {
@@ -93,11 +122,39 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 401) {
       if(refreshToken.value !== null && refreshToken.value !== undefined){
         login.handleRefresh(getBookDetail(bookId));
-      }else if (status == 404) {
-        router.push("/PageNotFound/");
       }
+    }else if (status == 404) {
+      router.push("/PageNotFound/");
     }
   }
+
+    //Get Book Detail by guest
+    async function getBookDetailByGuest(bookId) {
+      let status = 0;
+      const { data } = await useFetch(
+        `${import.meta.env.VITE_BASE_URL}/book/guest/${bookId}`,
+        {
+          onRequest({ request, options }) {
+            options.method = "GET";
+            options.headers = {
+              "Content-Type": "application/json",
+            };
+          },
+          onResponse({ request, response, options }) {
+            status = response._data.response_code;
+          },
+        }
+      );
+      if (status == 200) {
+        bookDetail.value = data.value;
+        console.log("get book detail  completed");
+      } else if (status == 400) {
+        console.log("get book detail uncompleted");
+      } else if (status == 404) {
+          router.push("/PageNotFound/");
+      }
+    }
+  
 
   //Create Book
   async function createBook() {
@@ -106,7 +163,7 @@ export const useBooks = defineStore("Books", () => {
       bookName: newBook.value.bookName,
       author: newBook.value.author,
       booktypeId: newBook.value.booktypeId,
-      bookTag: newBook.value.bookTag.join(','),
+      bookTag: newBook.value.bookTag == null ? null : newBook.value.bookTag.join(','),
       bookDetail: newBook.value.bookDetail,
     };
 
@@ -131,6 +188,8 @@ export const useBooks = defineStore("Books", () => {
         if (status == 400) {
           failPopup.value = true;
           console.log("upload book uncompleted");
+        }else if (status == 404) {
+          router.push("/PageNotFound/");
         }
       },
     });
@@ -151,7 +210,7 @@ export const useBooks = defineStore("Books", () => {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
         booktypeId: editBook.value.booktypeId,
-        bookTag: editBook.value.bookTag.join(','),
+        bookTag: editBook.value.bookTag == null ? null : editBook.value.bookTag.join(','),
         bookDetail: editBook.value.bookDetail,
       };
     } else {
@@ -192,6 +251,8 @@ export const useBooks = defineStore("Books", () => {
         status = response._data.response_code;
         if (status == 400) {
           console.log("update book uncompleted");
+        }else if (status == 404) {
+          router.push("/PageNotFound/");
         }
       },
     });
@@ -228,7 +289,7 @@ export const useBooks = defineStore("Books", () => {
       failPopup.value = true;
       console.log("delete book uncompleted");
     } else if (status == 404) {
-      console.log("delete book uncompleted");
+      router.push("/PageNotFound/");
     } else if (status == 401) {
       login.handleRefresh(deleteBook(bookId));
     }
@@ -263,6 +324,8 @@ export const useBooks = defineStore("Books", () => {
       console.log("get library uncompleted");
     } else if (status == 401) {
       login.handleRefresh(getLibrary);
+    }else if (status == 404) {
+      router.push("/PageNotFound/");
     }
   }
 
@@ -371,7 +434,9 @@ export const useBooks = defineStore("Books", () => {
     failPopup,
     leavePopup,
     getLibrary,
+    getLibraryByGuest,
     getBookDetail,
+    getBookDetailByGuest,
     createBook,
     updateBook,
     deleteBook,

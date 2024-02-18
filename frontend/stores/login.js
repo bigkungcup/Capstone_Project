@@ -15,6 +15,7 @@ export const useLogin = defineStore("Login", () => {
 
   const accessToken = ref(useCookie("accessToken", cookieOptions));
   const refreshToken = ref(useCookie("refreshToken", cookieOptions));
+  const profileToken = ref(useCookie("profileToken", cookieOptions));
   const profile = ref({
     data: {},
   });
@@ -26,6 +27,11 @@ export const useLogin = defineStore("Login", () => {
   const leavePopup = ref(true);
   const updateFailed = ref(false);
   const updateFailedError = ref()
+  const profileData = ref({
+    role: 'GUEST',
+    file: null
+  }
+  );
 
   //Login
   async function handleLogin() {
@@ -51,15 +57,15 @@ export const useLogin = defineStore("Login", () => {
       loginFailed.value = false;
       accessToken.value = data.access_token;
       refreshToken.value = data.refresh_token;
+      getProfile();
       router.push("/");
       console.log("login completed");
     }
   }
 
   //Refresh token
-  async function handleRefresh(event) {
+  async function handleRefresh(event=null ) {
     let status = 0;
-    console.log(refreshToken.value);
     const { data } = await $fetch(
       `${import.meta.env.VITE_BASE_URL}/auth/refresh`,
       {
@@ -104,6 +110,8 @@ export const useLogin = defineStore("Login", () => {
     );
     if (status == 200) {
       profile.value = data;
+      setProfileData();
+      profileToken.value = profileData.value;
     }
   }
 
@@ -167,6 +175,7 @@ export const useLogin = defineStore("Login", () => {
     if (status == 200) {
       updateFailed.value = false;
       successfulPopup.value = true;
+      getProfile();
       console.log("update user completed");
     } else if (status == 401) {
       handleRefresh(updateProfile);
@@ -174,39 +183,48 @@ export const useLogin = defineStore("Login", () => {
   }
 
   //Change password
-  async function changePassword() {
+  async function changePassword(oldPassword,newPassword) {
+    console.log(oldPassword,newPassword);
     let status = 0;
     await $fetch(`${import.meta.env.VITE_BASE_URL}/user/resetPassword`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${accessToken.value}`,
       },
-      body: formData,
+      body: {
+        password: oldPassword,
+        newPassword: newPassword
+      },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
           updateFailed.value = true;
           updateFailedError.value = Object.values(response._data.filedErrors);
-          console.log("update user uncompleted");
+          console.log("change password uncompleted");
         }
       },
     });
     if (status == 200) {
       updateFailed.value = false;
       successfulPopup.value = true;
-      console.log("update user completed");
+      console.log("change password completed");
     } else if (status == 401) {
-      handleRefresh(updateProfile);
+      handleRefresh(changePassword());
     }
   }
 
   //Log out
   function logOut() {
     const channel1 = new BroadcastChannel("accessToken");
-    const channel2 = new BroadcastChannel("refreshToken");
+    const channel2 = new BroadcastChannel("refreshToken");  
+    const channel3 = new BroadcastChannel("profileToken");  
 
     accessToken.value = null;
     refreshToken.value = null;
+    profileToken.value = null;
+    channel3.close();
+    resetProfileData();
+    profileToken.value = profileData.value;
 
     channel1.close();
     channel2.close();
@@ -237,6 +255,22 @@ export const useLogin = defineStore("Login", () => {
         file: profile.value.file,
       }),
         (editProfileFile.value = profile.value.file);
+    }
+
+    //Set profile data
+    function setProfileData() {
+      profileData.value = {
+        role: profile.value.role,
+        file: profile.value.file
+      }
+    }
+
+    //Resset profile data
+    function resetProfileData() {
+      profileData.value = {
+        role: 'GUEST',
+        file: null
+      }
     }
 
   //Close successful popup
@@ -273,6 +307,7 @@ export const useLogin = defineStore("Login", () => {
     toggleProfileFailPopup,
     setEditProfile,
     closeSuccessfulPopup,
+    changePassword,
   };
 });
 

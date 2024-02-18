@@ -1,9 +1,12 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useLogin } from "./login";
 
 export const useReviews = defineStore("Reviews", () => {
   const accessToken = useCookie("accessToken");
+  const refreshToken = useCookie("refreshToken");
+  const router = useRouter();
   const login = useLogin();
   const reviewList = ref({
     data: {
@@ -30,7 +33,7 @@ export const useReviews = defineStore("Reviews", () => {
   //Get reviews
   async function getReview(bookId) {
     let status = 0;
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review`, {
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/me`, {
       onRequest({ request, options }) {
         options.method = "GET";
         options.headers = {
@@ -62,9 +65,47 @@ export const useReviews = defineStore("Reviews", () => {
       reviewList.value = data.value;
       console.log("get review list completed");
     } else if (status == 401) {
-      login.handleRefresh(getReview(bookId));
+      if(refreshToken.value !== null && refreshToken.value !== undefined){
+        login.handleRefresh(getReview(bookId));
+      }
     }
   }
+
+    //Get reviews by guest
+    async function getReviewByGuest(bookId) {
+      let status = 0;
+      const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/guest`, {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+          };
+          options.params = {
+            bookId: bookId,
+            page: reviewPage.value,
+            size: 10,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+          if (status == 400) {
+            reviewList.value = {
+              data: {
+                content: [],
+                pageable: {
+                  totalPages: 1,
+                },
+              },
+            };
+            console.log("get review list uncompleted");
+          }
+        },
+      });
+      if (status == 200) {
+        reviewList.value = data.value;
+        console.log("get review list completed");
+      }
+    }
 
   //Get review detail
   async function getReviewDetail(reviewId) {
@@ -91,8 +132,37 @@ export const useReviews = defineStore("Reviews", () => {
       console.log("get review detail uncompleted");
     } else if (status == 401) {
       login.handleRefresh(getReviewDetail(reviewId));
+    } else if (status == 404) {
+      router.push("/PageNotFound/");
     }
   }
+
+    //Get review detail
+    async function getReviewDetailByGuest(reviewId) {
+      let status = 0;
+      const { data } = await useFetch(
+        `${import.meta.env.VITE_BASE_URL}/review/guest/${reviewId}`,
+        {
+          onRequest({ request, options }) {
+            options.method = "GET";
+            options.headers = {
+              "Content-Type": "application/json",
+            };
+          },
+          onResponse({ request, response, options }) {
+            status = response._data.response_code;
+          },
+        }
+      );
+      if (status == 200) {
+        reviewDetail.value = data.value;
+        console.log("get review detail completed");
+      } else if (status == 400) {
+        console.log("get review detail uncompleted");
+      } else if (status == 404) {
+        router.push("/PageNotFound/");
+      }
+    }
 
   //Create review
   async function createReview() {
@@ -121,7 +191,9 @@ export const useReviews = defineStore("Reviews", () => {
       successfulPopup.value = true;
       console.log("upload review completed");
     } else if (status == 401) {
-      login.handleRefresh(createReview());
+      login.handleRefresh(createReview);
+    } else if (status == 404) {
+      router.push("/PageNotFound/");
     }
   }
 
@@ -152,6 +224,8 @@ export const useReviews = defineStore("Reviews", () => {
       console.log("update review completed");
     } else if (status == 401) {
       login.handleRefresh(updateReview(reviewId));
+    } else if (status == 404) {
+      router.push("/PageNotFound/");
     }
   }
 
@@ -182,6 +256,8 @@ export const useReviews = defineStore("Reviews", () => {
       console.log("delete review uncompleted");
     } else if (status == 401) {
       login.handleRefresh(deleteReview(reviewId, bookId));
+    } else if (status == 404) {
+      router.push("/PageNotFound/");
     }
   }
 
@@ -238,7 +314,9 @@ export const useReviews = defineStore("Reviews", () => {
     successfulPopup,
     leavePopup,
     getReview,
+    getReviewByGuest,
     getReviewDetail,
+    getReviewDetailByGuest,
     createReview,
     updateReview,
     deleteReview,

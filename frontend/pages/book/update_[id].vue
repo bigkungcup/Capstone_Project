@@ -1,4 +1,5 @@
 <script setup>
+import { useRouter } from "vue-router";
 import { useBooks } from "~/stores/book";
 import { ref } from "vue";
 import UpdateBookSuccessPopup from "~/components/books/popups/updateBookSuccessPopup.vue";
@@ -8,6 +9,8 @@ const route = useRoute();
 const selectedImage = ref();
 const validateSize = ref(false);
 const notEditBook = ref();
+const profileToken = ref(useCookie("profileToken"))
+const router = useRouter();
 
 function showValidateSize() {
   validateSize.value = true;
@@ -36,12 +39,8 @@ function setSelectedImage() {
   book.editBookFile = undefined;
 }
 
-onBeforeMount(() => {
-  book.leavePopup = true;
-  setSelectedImage();
-});
-
 onBeforeRouteLeave(() => {
+  if (profileToken.value.role !== 'GUEST') {
   const coverCheck = selectedImage.value == null ? selectedImage.value != book.bookDetail.data.file : selectedImage.value != `../../_nuxt/@fs/${book.bookDetail.data.file}`;
   if (
     book.editBook.bookName !== book.bookDetail.data.bookName ||
@@ -59,16 +58,34 @@ onBeforeRouteLeave(() => {
       next(false); // Prevent leaving the page
     }
   }
+}  }
+});
+
+
+if (profileToken.value.role == 'GUEST') {
+  await book.getBookDetailByGuest(route.params.id);
+  book.setEditBook();
+}else{
+  await book.getBookDetail(route.params.id);
+  book.setEditBook();
+  book.getBookType();
+}
+
+onBeforeMount(() => {
+  if (profileToken.value.role == 'GUEST') {
+    book.leavePopup = true;
+    setSelectedImage();
+    router.push(`/UnauthenPage/`)
+  }else{
+    book.leavePopup = true;
+    setSelectedImage();
 }
 });
 
-await book.getBookDetail(route.params.id);
-book.setEditBook();
-book.getBookType();
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role !== 'GUEST'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"
