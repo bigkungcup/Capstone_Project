@@ -16,9 +16,9 @@ export const useLogin = defineStore("Login", () => {
   const accessToken = ref(useCookie("accessToken", cookieOptions));
   const refreshToken = ref(useCookie("refreshToken", cookieOptions));
   const profileToken = ref(useCookie("profileToken", cookieOptions));
-  const channel1 = new BroadcastChannel("accessToken");
-  const channel2 = new BroadcastChannel("refreshToken");  
-  const channel3 = new BroadcastChannel("profileToken");  
+  // const channel1 = new BroadcastChannel("accessToken");
+  // const channel2 = new BroadcastChannel("refreshToken");  
+  // const channel3 = new BroadcastChannel("profileToken");  
   const profile = ref({
     data: {},
   });
@@ -36,6 +36,7 @@ export const useLogin = defineStore("Login", () => {
     file: null
   }
   );
+  profileToken.value = profileData.value;
 
   //Login
   async function handleLogin() {
@@ -107,15 +108,17 @@ export const useLogin = defineStore("Login", () => {
           if (status == 400) {
             console.log("get ptofile uncompleted");
           }else if (status == 401) {
-            handleRefresh(getProfile);
+            handleRefresh(getProfile());
           }
         },
       }
     );
     if (status == 200) {
       profile.value = data;
-      setProfileData();
-      profileToken.value = profileData.value;
+      if(profileToken.value.role == 'GUEST'){
+        setProfileData();
+        profileToken.value = profileData.value;
+      }
     }
   }
 
@@ -179,7 +182,7 @@ export const useLogin = defineStore("Login", () => {
     if (status == 200) {
       updateFailed.value = false;
       successfulPopup.value = true;
-      getProfile();
+      profileToken.value = profileData.value;
       console.log("update user completed");
     } else if (status == 401) {
       handleRefresh(updateProfile);
@@ -220,13 +223,9 @@ export const useLogin = defineStore("Login", () => {
   //Log out
   function logOut() {
     accessToken.value = null;
-    channel1.close();
     refreshToken.value = null;
-    channel2.close();
-    profileToken.value = null;
-    channel3.close();
-    resetProfileData();
-    profileToken.value = profileData.value;
+    // resetProfileData();
+    // profileToken.value = profileData.value;
     router.push("/login");
   }
 

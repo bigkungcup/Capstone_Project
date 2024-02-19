@@ -45,6 +45,7 @@ const rules = {
 // }
 
 onBeforeRouteLeave(() => {
+  if (profileToken.value.role !== 'GUEST') {
   if (
     book.newBook.bookName !== "" ||
     book.newBook.author !== "" ||
@@ -61,7 +62,7 @@ onBeforeRouteLeave(() => {
       next(false); // Prevent leaving the page
     }
   }
-}
+}}
 });
 
 onBeforeMount(() => {

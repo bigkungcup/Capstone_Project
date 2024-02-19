@@ -143,13 +143,13 @@ login.setEditProfile();
                                 label="Username" 
                                 variant="solo" 
                                 :rules="[rules.required,rules.limited]"
-                                v-model="login.editProfile.displayName"></v-text-field>
+                                v-model="login.editProfile.displayName" disabled></v-text-field>
                                 <p class="web-text-sub">Email</p>
                                 <v-text-field 
                                 label="Email" 
                                 variant="solo" 
                                 :rules="[rules.required,rules.limited,rules.email]"
-                                v-model="login.editProfile.email"></v-text-field>
+                                v-model="login.editProfile.email" disabled></v-text-field>
                                 <p class="web-text-sub">Bio</p>
                                 <v-textarea label="Bio" 
                                 variant="solo" rows="3" 

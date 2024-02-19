@@ -9,7 +9,6 @@ const profileToken = ref(useCookie("profileToken"))
 const page = ref(1)
 const result = ref(0);
 const dialog = ref(false);
-const dialogm1 = ref(false);
 const sortList = [
   {
     id: 1,

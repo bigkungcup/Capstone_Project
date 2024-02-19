@@ -16,7 +16,8 @@ function bookCoverPath(filePath) {
   return (filePath = `../../ej2/_nuxt/@fs/${filePath}`);
 }
 
-onBeforeMount( async () => {
+
+onBeforeMount(async () => { 
   await login.getProfile();
 });
 
