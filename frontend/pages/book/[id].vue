@@ -18,7 +18,7 @@ const page = ref(1);
 const deleteId = ref(0);
 const bookConfirmPopup = ref(false);
 const reviewConfirmPopup = ref(false);
-const profileToken = ref(useCookie("profileToken"));
+const roleToken = ref(localStorage.getItem('role'));
 
 function setDeleteId(id) {
   deleteId.value = id;
@@ -44,7 +44,7 @@ function bookCoverPath(filePath) {
   return (filePath = `../../_nuxt/@fs/${filePath}`);
 }
 
-if (profileToken.value.role == 'GUEST') {
+if (roleToken.value == 'GUEST') {
     await library.getBookDetailByGuest(route.params.id);
     reviews.clearReviewList();
     await reviews.getReviewByGuest(route.params.id);
@@ -134,7 +134,7 @@ if (profileToken.value.role == 'GUEST') {
               </div>
               </div>
 
-              <div class="tw-flex tw-justify-center tw-gap-x-12" v-show="profileToken.role == 'USER'">
+              <div class="tw-flex tw-justify-center tw-gap-x-12" v-show="roleToken == 'USER'">
                 <v-btn class="text-none" color="#1D419F"
                   ><v-icon start icon="mdi mdi-bookmark"></v-icon
                   >Bookmark</v-btn
@@ -149,7 +149,7 @@ if (profileToken.value.role == 'GUEST') {
               </div>
             </v-col>
             <v-col cols="1" class="tw-flex tw-justify-center my-2">
-              <span class="text-center" v-show="profileToken.role !== 'GUEST'">
+              <span class="text-center" v-show="roleToken !== 'GUEST'">
                 <v-menu>
                   <template v-slot:activator="{ props: menu }">
                     <v-tooltip location="top">
@@ -165,7 +165,7 @@ if (profileToken.value.role == 'GUEST') {
                   </template>
                   <v-list>
                     <v-list-item
-                      :to="`../../book/update_${library.bookDetail.data.bookId}/`" v-show="profileToken.role == 'ADMIN'"
+                      :to="`../../book/update_${library.bookDetail.data.bookId}/`" v-show="roleToken == 'ADMIN'"
                     >
                       <v-list-item-title class="web-text-detail tw-space-x-2"
                         ><v-icon icon="mdi mdi-pencil-outline"></v-icon
@@ -173,7 +173,7 @@ if (profileToken.value.role == 'GUEST') {
                       >
                     </v-list-item>
                     <v-list-item
-                      class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" v-show="profileToken.role == 'ADMIN'"
+                      class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" v-show="roleToken == 'ADMIN'"
                     >
                       <v-list-item-title
                         class="web-text-detail"

@@ -9,7 +9,7 @@ import DuplicateBookPopup from "~/components/books/popups/duplicateBookPopup.vue
 const book = useBooks();
 const selectedImage = ref(null);
 const router = useRouter();
-const profileToken = ref(useCookie("profileToken"))
+const roleToken = ref(localStorage.getItem('role'));
 // const confirmLeavePopup = ref(false);
 
 function handleFileChange(event) {
@@ -45,7 +45,7 @@ const rules = {
 // }
 
 onBeforeRouteLeave(() => {
-  if (profileToken.value.role !== 'GUEST') {
+  if (roleToken.value !== 'GUEST') {
   if (
     book.newBook.bookName !== "" ||
     book.newBook.author !== "" ||
@@ -66,7 +66,7 @@ onBeforeRouteLeave(() => {
 });
 
 onBeforeMount(() => {
-  if (profileToken.value.role == 'GUEST') {
+  if (roleToken.value == 'GUEST') {
     book.leavePopup = true;
     book.newBookFile = null;
     router.push(`/UnauthenPage/`)
@@ -81,7 +81,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role !== 'GUEST'">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="roleToken !== 'GUEST'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

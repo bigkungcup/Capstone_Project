@@ -1,5 +1,4 @@
 <script setup>
-const profileToken = ref(useCookie("profileToken"))
 </script>
  
 <template>

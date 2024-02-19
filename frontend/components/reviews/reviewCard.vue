@@ -13,7 +13,8 @@ defineProps({
     },
 })
 
-const profileToken = ref(useCookie("profileToken"));
+const roleToken = ref(localStorage.getItem('role'));
+const idToken = ref(localStorage.getItem('id'));
 
 function userCoverPath(filePath) {
    return filePath = (`../../_nuxt/@fs/${filePath}`)
@@ -67,15 +68,15 @@ function userCoverPath(filePath) {
                                     </v-tooltip>
                                 </template>
                                 <v-list>
-                                    <v-list-item :to="`../../review/update_${review.reviewId}/`" v-show="profileToken.role == 'ADMIN' || profileToken.id == review.user.userId">
+                                    <v-list-item :to="`../../review/update_${review.reviewId}/`" v-show="roleToken == 'ADMIN' || idToken == review.userDetail.userId">
                                         <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-pencil-outline"></v-icon><span>Edit this review</span></v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" v-show="profileToken.role == 'ADMIN' || profileToken.id == review.user.userId">
+                                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" v-show="roleToken == 'ADMIN' || idToken == review.userDetail.userId">
                                         <v-list-item-title class="web-text-detail">
                                             <v-list-item-title class="web-text-detail tw-space-x-2" @click="$emit('toggle'),$emit('set',review.reviewId)"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
                                         </v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item v-show="profileToken.role == 'USER'">
+                                    <v-list-item v-show="roleToken == 'USER'">
                                         <v-list-item-title class="web-text-detail tw-space-x-2"
                                             ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
                                             ><span>Report this book</span></v-list-item-title

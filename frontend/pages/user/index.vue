@@ -8,10 +8,10 @@ import { useRouter } from "vue-router";
 const user = useUsers();
 const page = ref(1);
 const router = useRouter();
-const profileToken = ref(useCookie("profileToken"));
+const roleToken = ref(localStorage.getItem('role'));
 
 onBeforeMount(async () => {
-  if (profileToken.value.role == 'ADMIN') {
+  if (roleToken.value == 'ADMIN') {
   user.clearUserList();
   await user.getUserList();
 }else{

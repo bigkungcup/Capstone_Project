@@ -10,7 +10,7 @@ const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
 const router = useRouter();
-const profileToken = ref(useCookie("profileToken"))
+const roleToken = ref(localStorage.getItem('role'));
 // const confirmLeavePopup = ref(false);
 
 // function toggleLeavePopup() {
@@ -31,7 +31,7 @@ function bookCoverPath(filePath) {
 }
 
 onBeforeRouteLeave(() => {
-  if (profileToken.value.role !== 'GUEST') {
+  if (roleToken.value !== 'GUEST') {
   const spoileFlag = reviews.reviewDetail.data.spoileFlag == 0 ? false : true;
   if (
     reviews.editReview.title !== reviews.reviewDetail.data.reviewTitle ||
@@ -51,7 +51,7 @@ onBeforeRouteLeave(() => {
 });
 
 onBeforeMount(() => {
-  if (profileToken.value.role == 'GUEST') {
+  if (roleToken.value == 'GUEST') {
     reviews.leavePopup = true;
     router.push(`/UnauthenPage/`)
   }else{
@@ -59,7 +59,7 @@ onBeforeMount(() => {
 }
 });
 
-if (profileToken.value.role == 'GUEST') {
+if (roleToken.value == 'GUEST') {
   await reviews.getReviewDetailByGuest(route.params.id);
   reviews.setEditReview();
   await book.getBookDetailByGuest(reviews.editReview.bookId);
@@ -73,7 +73,7 @@ if (profileToken.value.role == 'GUEST') {
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-if="profileToken.role !== 'GUEST'">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-if="roleToken !== 'GUEST'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

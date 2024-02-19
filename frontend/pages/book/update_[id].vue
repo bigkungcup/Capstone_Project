@@ -9,7 +9,7 @@ const route = useRoute();
 const selectedImage = ref();
 const validateSize = ref(false);
 const notEditBook = ref();
-const profileToken = ref(useCookie("profileToken"));
+const roleToken = ref(localStorage.getItem('role'));
 const router = useRouter();
 
 function showValidateSize() {
@@ -40,7 +40,7 @@ function setSelectedImage() {
 }
 
 onBeforeRouteLeave(() => {
-  if (profileToken.value.role == 'ADMIN') {
+  if (roleToken.value == 'ADMIN') {
   const coverCheck = selectedImage.value == null ? selectedImage.value != book.bookDetail.data.file : selectedImage.value != `../../_nuxt/@fs/${book.bookDetail.data.file}`;
   if (
     book.editBook.bookName !== book.bookDetail.data.bookName ||
@@ -62,7 +62,7 @@ onBeforeRouteLeave(() => {
 });
 
 
-if (profileToken.value.role == 'ADMIN') {
+if (roleToken.value == 'ADMIN') {
   await book.getBookDetail(route.params.id);
   book.setEditBook();
   book.getBookType();
@@ -72,7 +72,7 @@ if (profileToken.value.role == 'ADMIN') {
 }
 
 onBeforeMount(() => {
-  if (profileToken.value.role == 'ADMIN') {
+  if (roleToken.value == 'ADMIN') {
     book.leavePopup = true;
     setSelectedImage();
   }else{
@@ -85,7 +85,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role == 'ADMIN'">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="roleToken == 'ADMIN'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

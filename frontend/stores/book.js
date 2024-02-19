@@ -6,7 +6,7 @@ import { useLogin } from "./login";
 export const useBooks = defineStore("Books", () => {
   const accessToken = useCookie("accessToken");
   const refreshToken = useCookie("refreshToken");
-  const profileToken = ref(useCookie("profileToken"));
+  const roleToken = ref(localStorage.getItem('role'));
   const router = useRouter();
   const login = useLogin();
   const bookList = ref({
@@ -499,7 +499,7 @@ export const useBooks = defineStore("Books", () => {
 
   function changeLibraryPage(page) {
     bookPage.value = page - 1;
-    if(profileToken == 'GUEST'){
+    if(roleToken.value == 'GUEST'){
       getLibraryByGuest();
     }else{
       getLibrary();

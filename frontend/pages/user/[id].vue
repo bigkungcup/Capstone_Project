@@ -10,7 +10,7 @@ import deleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessP
 const user = useUsers();
 const router = useRouter();
 const route = useRoute();
-const profileToken = ref(useCookie("profileToken"));
+const roleToken = ref(localStorage.getItem('role'));
 
 function toggleUserConfirmPopup() {
   user.confirmPopup = !user.confirmPopup;
@@ -26,7 +26,7 @@ function bookCoverPath(filePath) {
 }
 
 onBeforeMount(async () => {
-  if (profileToken.value.role == 'ADMIN') {
+  if (roleToken.value == 'ADMIN') {
   await user.getUserDetail(route.params.id);
 }else{
   router.push(`/UnauthenPage/`)
@@ -35,7 +35,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="tw-bg-[#D9D9D9] tw-h-full" v-show="profileToken.role == 'ADMIN'">
+  <div class="tw-bg-[#D9D9D9] tw-h-full" v-show="roleToken == 'ADMIN'">
     <div class="tw-flex tw-place-content-center">
       <div class="tw-w-[70rem] tw-max-h-[16rem]">
         <v-img src="/image/profile_banner.jpg" v-show="user.userDetail.data.file == null" cover></v-img>

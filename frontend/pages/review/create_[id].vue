@@ -10,7 +10,7 @@ const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
 const confirmLeavePopup = ref(false);
-const profileToken = ref(useCookie("profileToken"));
+const roleToken = ref(localStorage.getItem('role'));
 const router = useRouter();
 
 function toggleLeavePopup() {
@@ -50,7 +50,7 @@ onBeforeRouteLeave(() => {
 }});
 
 onBeforeMount(() => {
-if (profileToken.value.role == 'USER') {
+if (roleToken.value == 'USER') {
   reviews.clearNewReview();
   reviews.leavePopup = true;
   setBookId();
@@ -61,7 +61,7 @@ if (profileToken.value.role == 'USER') {
 }
 });
 
-if (profileToken.value.role == 'USER') {
+if (roleToken.value == 'USER') {
   await book.getBookDetail(route.params.id);
 }else{
   await book.getBookDetailByGuest(route.params.id);
@@ -72,7 +72,7 @@ if (profileToken.value.role == 'USER') {
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="profileToken.role == 'USER'">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="roleToken == 'USER'">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"

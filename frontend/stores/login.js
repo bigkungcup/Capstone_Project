@@ -15,13 +15,28 @@ export const useLogin = defineStore("Login", () => {
 
   const accessToken = ref(useCookie("accessToken", cookieOptions));
   const refreshToken = ref(useCookie("refreshToken", cookieOptions));
-  const profileToken = ref(useCookie("profileToken", cookieOptions));
-  // const channel1 = new BroadcastChannel("accessToken");
-  // const channel2 = new BroadcastChannel("refreshToken");  
-  // const channel3 = new BroadcastChannel("profileToken");  
+
+  const setToken = (token) => {
+    localStorage.setItem("id", token.userId);
+    localStorage.setItem("role", token.role);
+    localStorage.setItem("file", token.file);
+  };
+
+  const resetToken = () => {
+    localStorage.removeItem("id");
+    localStorage.removeItem("file");
+    localStorage.setItem("role", 'GUEST');
+  };
+
+  const delete_cookie = (name) => {
+    document.cookie =
+      name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+  };
+  
   const profile = ref({
     data: {},
   });
+  
   const editProfile = ref();
   const editProfileFile = ref();
   const failPopup = ref(false);
@@ -30,13 +45,6 @@ export const useLogin = defineStore("Login", () => {
   const leavePopup = ref(true);
   const updateFailed = ref(false);
   const updateFailedError = ref()
-  const profileData = ref({
-    id: 0,
-    role: 'GUEST',
-    file: null
-  }
-  );
-  profileToken.value = profileData.value;
 
   //Login
   async function handleLogin() {
@@ -115,10 +123,7 @@ export const useLogin = defineStore("Login", () => {
     );
     if (status == 200) {
       profile.value = data;
-      if(profileToken.value.role == 'GUEST'){
-        setProfileData();
-        profileToken.value = profileData.value;
-      }
+      setToken(profile.value)
     }
   }
 
@@ -182,7 +187,6 @@ export const useLogin = defineStore("Login", () => {
     if (status == 200) {
       updateFailed.value = false;
       successfulPopup.value = true;
-      profileToken.value = profileData.value;
       console.log("update user completed");
     } else if (status == 401) {
       handleRefresh(updateProfile);
@@ -224,8 +228,9 @@ export const useLogin = defineStore("Login", () => {
   function logOut() {
     accessToken.value = null;
     refreshToken.value = null;
-    // resetProfileData();
-    // profileToken.value = profileData.value;
+    delete_cookie("refreshToken");
+    delete_cookie("accessToken");
+    resetToken();
     router.push("/login");
   }
 
@@ -253,24 +258,6 @@ export const useLogin = defineStore("Login", () => {
         file: profile.value.file,
       }),
         (editProfileFile.value = profile.value.file);
-    }
-
-    //Set profile data
-    function setProfileData() {
-      profileData.value = {
-        id: profile.value.userId,
-        role: profile.value.role,
-        file: profile.value.file
-      }
-    }
-
-    //Resset profile data
-    function resetProfileData() {
-      profileData.value = {
-        userId: 0,
-        role: 'GUEST',
-        file: null
-      }
     }
 
   //Close successful popup

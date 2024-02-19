@@ -5,7 +5,7 @@ import BookNotFound from "~/components/books/bookNotFound.vue";
 import { useBooks } from '~/stores/book'
 
 const library = useBooks();
-const profileToken = ref(useCookie("profileToken"))
+const roleToken = ref(localStorage.getItem('role'));
 const page = ref(1)
 const result = ref(0);
 const dialog = ref(false);
@@ -33,7 +33,7 @@ const sortList = [
 ];
 
 function handleSelectionChange() {
-  if (profileToken.value.role == 'GUEST') {
+  if (roleToken == 'GUEST') {
     library.getLibraryByGuest();
     result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
   }else{
@@ -43,7 +43,7 @@ function handleSelectionChange() {
 }
 
 onBeforeMount( async () => {
-  if (profileToken.value.role == 'GUEST') {
+  if (roleToken == 'GUEST') {
     await library.getLibraryByGuest();
     library.getBookType();
     result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
@@ -69,7 +69,7 @@ onBeforeMount( async () => {
           <v-icon icon="mdi mdi-filter-variant"></v-icon>
           </v-btn></v-col>
           <v-col cols="1"> 
-          <NuxtLink to="/book/create/" v-show="profileToken.role !== 'GUEST'"><v-btn size="auto" class="tw-mx-7 pa-5" color="#082266" rounded="lg"> 
+          <NuxtLink to="/book/create/" v-show="roleToken !== 'GUEST'"><v-btn size="auto" class="tw-mx-7 pa-5" color="#082266" rounded="lg"> 
           <v-icon icon="mdi mdi-plus"></v-icon>
           </v-btn></NuxtLink>
         </v-col>

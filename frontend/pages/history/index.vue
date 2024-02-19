@@ -7,12 +7,11 @@ import { useRouter } from "vue-router";
 const book = useBooks();
 const page = ref(1);
 const router = useRouter();
-const profileToken = ref(useCookie("profileToken"));
+const roleToken = ref(localStorage.getItem('role'));
 
 onBeforeMount(async () => {
-  if (profileToken.value.role == 'USER') {
+  if (roleToken.value == 'USER') {
     await book.getHistoryList();
-    console.log(book.historyList);
   }else{
     router.push(`/UnauthenPage/`)
   }
@@ -20,7 +19,7 @@ onBeforeMount(async () => {
 </script>
  
 <template>
-    <div class="tw-min-h-[80%]" v-show="profileToken.role == 'USER'">
+    <div class="tw-min-h-[80%]" v-show="roleToken == 'USER'">
         <v-container>
             <v-row>
                 <v-col cols="12" align="right">
