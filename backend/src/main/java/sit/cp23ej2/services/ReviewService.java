@@ -117,26 +117,45 @@ public class ReviewService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
         Review reviewData = repository.getReviewById(reviewId);
-        if (reviewData.getUser().getUserId() != user.getUserId() && user.getRole().equals("ROLE_ADMIN")) {
+
+        if (reviewData == null) {
+            throw new HandleExceptionNotFound("Review Not Found", "Review");
+        }
+
+        // System.out.println(reviewData.getUser().getUserId() + " " + user.getUserId() + " " + user.getRole());
+
+        if (reviewData.getUser().getUserId() != user.getUserId() && !user.getRole().equals("ADMIN")) {
+            throw new HandleExceptionForbidden("Can not update review for user: ");
+        } else if (reviewData.getUser().getUserId() == user.getUserId() && user.getRole().equals("USER")) {
             repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
                     reviewId);
             Review dataReview = repository.getReviewById(reviewId);
+
+            dataReview.setReviewTitle(review.getTitle());
+            dataReview.setReviewDetail(review.getDetail());
+            dataReview.setReviewRating(review.getRating());
+            dataReview.setSpoileFlag(review.getSpoileFlag());
+    
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Review Updated");
             response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(dataReview);
-        }else if(reviewData.getUser().getUserId() == user.getUserId() && user.getRole().equals("ROLE_USER")) {
+        } else if (user.getRole().equals("ADMIN")) {
             repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
                     reviewId);
             Review dataReview = repository.getReviewById(reviewId);
+
+            dataReview.setReviewTitle(review.getTitle());
+            dataReview.setReviewDetail(review.getDetail());
+            dataReview.setReviewRating(review.getRating());
+            dataReview.setSpoileFlag(review.getSpoileFlag());
+            
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Review Updated");
             response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
             response.setData(dataReview);
-        }else{
-            throw new HandleExceptionForbidden("Access denied for user: ");
         }
 
         return response;
@@ -159,17 +178,44 @@ public class ReviewService extends CommonController {
 
     public DataResponse deleteReviewByBookId(int reviewId) {
         DataResponse response = new DataResponse();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
         Review review = repository.getReviewById(reviewId);
-        bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
-        userRepository.decreaseTotalReview(review.getUser().getUserId());
-        Integer deleteStatus = repository.deleteReview(reviewId);
-        if (deleteStatus == 0) {
+
+        if (review == null) {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Review Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+
+        // System.out.println(review.getUser().getUserId() + " " + user.getUserId() + " " + user.getRole());
+
+        if (review.getUser().getUserId() != user.getUserId() && !user.getRole().equals("ADMIN")) {
+            throw new HandleExceptionForbidden("Can not delete review for user: ");
+        } else if (review.getUser().getUserId() == user.getUserId() && user.getRole().equals("USER")) {
+            bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
+            userRepository.decreaseTotalReview(review.getUser().getUserId());
+            Integer deleteStatus = repository.deleteReview(reviewId);
+            if (deleteStatus == 0) {
+                throw new HandleExceptionNotFound("Review Not Found", "Review");
+            }
+            response.setResponse_code(200);
+            response.setResponse_status("OK");
+            response.setResponse_message("Review Deleted");
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+        } else if (user.getRole().equals("ADMIN")) {
+            bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
+            userRepository.decreaseTotalReview(review.getUser().getUserId());
+            Integer deleteStatus = repository.deleteReview(reviewId);
+            if (deleteStatus == 0) {
+                throw new HandleExceptionNotFound("Review Not Found", "Review");
+            }
+            response.setResponse_code(200);
+            response.setResponse_status("OK");
+            response.setResponse_message("Review Deleted");
+            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+        }
+
         return response;
     }
 
