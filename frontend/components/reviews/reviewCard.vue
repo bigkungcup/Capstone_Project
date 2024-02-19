@@ -15,6 +15,10 @@ defineProps({
 
 const profileToken = ref(useCookie("profileToken"));
 
+function userCoverPath(filePath) {
+   return filePath = (`../../_nuxt/@fs/${filePath}`)
+}
+
 </script>
  
 <template>
@@ -22,10 +26,11 @@ const profileToken = ref(useCookie("profileToken"));
         <v-card v-for="review in reviewList" width="100%">
             <v-row>
                 <v-col cols="3" class="web-text-detail tw-my-5 tw-space-x-5 tw-space-y-2" align="left">
-                    <v-img src="/image/guest_icon.png" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover />
-                    <p class="tw-font-bold">Guest</p>
-                    <p class="web-text-sub">0 reviews</p>
-                    <p class="web-text-sub">0 followers</p>
+                    <v-img src="/image/guest_icon.png" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover  v-show="review.userDetail.file == null"/>
+                    <v-img :src="userCoverPath(review.userDetail.file)" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover v-show="review.userDetail.file !== null"/>
+                    <p class="tw-font-bold">{{review.userDetail.displayName}}</p>
+                    <p class="web-text-sub">{{review.userDetail.totalReview}} reviews</p>
+                    <p class="web-text-sub">{{review.userDetail.followers}} followers</p>
                 </v-col>
                 <v-col cols="9" class="web-text-detail tw-my-5 tw-space-y-3">
                     <v-rating :model-value="review.reviewRating" color="#FFB703" density="compact" size="meduim"
@@ -62,10 +67,10 @@ const profileToken = ref(useCookie("profileToken"));
                                     </v-tooltip>
                                 </template>
                                 <v-list>
-                                    <v-list-item :to="`../../review/update_${review.reviewId}/`">
+                                    <v-list-item :to="`../../review/update_${review.reviewId}/`" v-show="profileToken.role == 'ADMIN' || profileToken.id == review.user.userId">
                                         <v-list-item-title class="web-text-detail tw-space-x-2"><v-icon icon="mdi mdi-pencil-outline"></v-icon><span>Edit this review</span></v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
+                                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" v-show="profileToken.role == 'ADMIN' || profileToken.id == review.user.userId">
                                         <v-list-item-title class="web-text-detail">
                                             <v-list-item-title class="web-text-detail tw-space-x-2" @click="$emit('toggle'),$emit('set',review.reviewId)"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
                                         </v-list-item-title>

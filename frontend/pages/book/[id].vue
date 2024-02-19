@@ -46,10 +46,12 @@ function bookCoverPath(filePath) {
 
 if (profileToken.value.role == 'GUEST') {
     await library.getBookDetailByGuest(route.params.id);
-    await reviews.getReviewByGuest(route.params.id, 0);
+    reviews.clearReviewList();
+    await reviews.getReviewByGuest(route.params.id);
   }else{
     await library.getBookDetail(route.params.id);
-    await reviews.getReview(route.params.id, 0);
+    reviews.clearReviewList();
+    await reviews.getReview(route.params.id);
 }
 
 </script>

@@ -6,6 +6,7 @@ import { useLogin } from "./login";
 export const useBooks = defineStore("Books", () => {
   const accessToken = useCookie("accessToken");
   const refreshToken = useCookie("refreshToken");
+  const profileToken = ref(useCookie("profileToken"));
   const router = useRouter();
   const login = useLogin();
   const bookList = ref({
@@ -20,7 +21,7 @@ export const useBooks = defineStore("Books", () => {
     bookName: "",
     author: "",
     booktypeId: null,
-    bookTag: null,
+    bookTag: "",
     bookDetail: "",
   });
   const editBook = ref();
@@ -28,15 +29,36 @@ export const useBooks = defineStore("Books", () => {
   const editBookFile = ref();
   const bookDetail = ref();
   const bookPage = ref(0);
+  const historyList = ref({
+    data: {
+      content: [],
+      pageable: {
+        totalPages: 1,
+      },
+    },
+  });
+  const historyPage = ref(0);
   const successfulPopup = ref(false);
   const failPopup = ref(false);
   const leavePopup = ref(true);
   const bookType = ref();
+  const sortBook = ref('desc')
+  const filterBook = ref(0)
   const runtimeConfig = useRuntimeConfig();
 
   //Get Library
   async function getLibrary() {
     let status = 0;
+    let sortBybook = ''
+    let sortTypebook = ''
+      if(sortBook.value == 'desc' || sortBook.value == 'asc' ){
+          sortBybook = sortBook.value;
+      }
+      else{
+          sortBybook = 'desc';
+          sortTypebook = sortBook.value;
+      }
+
     const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book`, {
       onRequest({ request, options }) {
         options.method = "GET";
@@ -46,7 +68,11 @@ export const useBooks = defineStore("Books", () => {
         };
         options.params = {
           page: bookPage.value,
-        };
+          size: 10,
+          sortType: sortBybook,
+          sortBy: sortTypebook,
+          booktypeId: filterBook.value == 0 ? '' : filterBook.value 
+        }
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -68,6 +94,16 @@ export const useBooks = defineStore("Books", () => {
     //Get Library by guest
     async function getLibraryByGuest() {
       let status = 0;
+      let sortBybook = ''
+    let sortTypebook = ''
+      if(sortBook.value == 'desc' || sortBook.value == 'asc' ){
+          sortBybook = sortBook.value;
+      }
+      else{
+          sortBybook = 'desc';
+          sortTypebook = sortBook.value;
+      }
+
       const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/guest`, {
         onRequest({ request, options }) {
           options.method = "GET";
@@ -76,6 +112,10 @@ export const useBooks = defineStore("Books", () => {
           };
           options.params = {
             page: bookPage.value,
+            size: 10,
+            sortType: sortBybook,
+            sortBy: sortTypebook,
+            booktypeId: filterBook.value
           };
         },
         onResponse({ request, response, options }) {
@@ -163,7 +203,7 @@ export const useBooks = defineStore("Books", () => {
       bookName: newBook.value.bookName,
       author: newBook.value.author,
       booktypeId: newBook.value.booktypeId,
-      bookTag: newBook.value.bookTag == null ? null : newBook.value.bookTag.join(','),
+      bookTag: newBook.value.bookTag == null ? "" : newBook.value.bookTag.join(','),
       bookDetail: newBook.value.bookDetail,
     };
 
@@ -210,7 +250,7 @@ export const useBooks = defineStore("Books", () => {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
         booktypeId: editBook.value.booktypeId,
-        bookTag: editBook.value.bookTag == null ? null : editBook.value.bookTag.join(','),
+        bookTag: editBook.value.bookTag == null ? "" : editBook.value.bookTag.join(','),
         bookDetail: editBook.value.bookDetail,
       };
     } else {
@@ -218,7 +258,7 @@ export const useBooks = defineStore("Books", () => {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
         booktypeId: editBook.value.booktypeId,
-        bookTag: editBook.value.bookTag.join(','),
+        bookTag: editBook.value.bookTag == null ? "" : editBook.value.bookTag.join(','),
         bookDetail: editBook.value.bookDetail,
         status: "edit",
       };
@@ -329,6 +369,102 @@ export const useBooks = defineStore("Books", () => {
     }
   }
 
+  //Get History
+  async function getHistoryList() {
+    let status = 0;
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/history`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        };
+        options.params = {
+          page: historyPage.value,
+          size: 10
+        };
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+      },
+    });
+    if (status == 200) {
+      if (data.value) {
+        historyList.value = data.value;
+      }
+      console.log("get library completed");
+    } else if (status == 404) {
+      clearHistoryList();
+      console.log("get library uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh(getHistoryList());
+    }
+  }
+
+  //Delete history by ID
+  async function deleteHistoryById(bookId) {
+    let status = 0;
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/history/${bookId}`,
+      {
+        onRequest({ request, options }) {
+          options.method = "Delete";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      getHistoryList();
+      // successfulPopup.value = true;
+      // console.log("delete book completed");
+    } else if (status == 400) {
+      failPopup.value = true;
+      // console.log("delete book uncompleted");
+    } else if (status == 404) {
+      // router.push("/PageNotFound/");
+    } else if (status == 401) {
+      login.handleRefresh(deleteHistoryById(bookId));
+    }
+  }
+
+  //Delete history all
+  async function deleteHistoryAll() {
+    let status = 0;
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/history/all`,
+      {
+        onRequest({ request, options }) {
+          options.method = "Delete";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      getHistoryList()
+      // successfulPopup.value = true;
+      // console.log("delete book completed");
+    } else if (status == 400) {
+      failPopup.value = true;
+      // console.log("delete book uncompleted");
+    } else if (status == 404) {
+      // router.push("/PageNotFound/");
+    } else if (status == 401) {
+      login.handleRefresh(deleteHistoryAll());
+    }
+  }
+
   // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds) {
     let interval = Math.floor(seconds / 31536000);
@@ -363,7 +499,16 @@ export const useBooks = defineStore("Books", () => {
 
   function changeLibraryPage(page) {
     bookPage.value = page - 1;
-    getLibrary();
+    if(profileToken == 'GUEST'){
+      getLibraryByGuest();
+    }else{
+      getLibrary();
+    }
+  }
+
+  function changeHistoryPage(page) {
+    historyPage.value = page - 1;
+    getHistoryList();
   }
 
   function getStarRating(number) {
@@ -403,6 +548,18 @@ export const useBooks = defineStore("Books", () => {
     };
   }
 
+    //Clear history list
+    function clearHistoryList() {
+      historyList.value = {
+        data: {
+          content: [],
+          pageable: {
+            totalPages: 1,
+          },
+        },
+      };
+    }
+
   //set edit book
   async function setEditBook() {
     (editBook.value = {
@@ -429,6 +586,9 @@ export const useBooks = defineStore("Books", () => {
     editBook,
     editBookFile,
     bookType,
+    historyList,
+    sortBook,
+    filterBook,
     bookPage,
     successfulPopup,
     failPopup,
@@ -437,14 +597,19 @@ export const useBooks = defineStore("Books", () => {
     getLibraryByGuest,
     getBookDetail,
     getBookDetailByGuest,
+    getHistoryList,
+    deleteHistoryAll,
+    deleteHistoryById,
     createBook,
     updateBook,
     deleteBook,
     changeLibraryPage,
+    changeHistoryPage,
     getStarRating,
     getBookType,
     countUpdateTime,
     clearNewBook,
+    clearHistoryList,
     setEditBook,
     closeSuccessfulPopup,
   };

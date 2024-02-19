@@ -9,8 +9,8 @@ const login = useLogin();
 
 loginStatus.value = accessToken.value == undefined ? false : true;
 
-function bookCoverPath(filePath) {
-  return (filePath = `../../ej2/_nuxt/@fs/${filePath}`);
+function profileCoverPath(filePath) {
+  return (filePath = `/ej2/_nuxt/@fs/${filePath}`);
 }
 
 console.log(profileToken.value.role);
@@ -76,7 +76,7 @@ console.log(profileToken.value.role);
             ></v-icon>
             <v-img
               class="tw-rounded-full tw-border-[#082266] tw-border-2 tw-cursor-pointer"
-              :src="bookCoverPath(profileToken.file)"
+              :src="profileCoverPath(profileToken.file)"
               v-if="profileToken.file !== null"
               height="40"
               width="40"

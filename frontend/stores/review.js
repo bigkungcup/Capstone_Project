@@ -33,7 +33,7 @@ export const useReviews = defineStore("Reviews", () => {
   //Get reviews
   async function getReview(bookId) {
     let status = 0;
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/me`, {
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review`, {
       onRequest({ request, options }) {
         options.method = "GET";
         options.headers = {
@@ -284,6 +284,18 @@ export const useReviews = defineStore("Reviews", () => {
     });
   }
 
+  //Clear review list
+    function clearReviewList() {
+      reviewList.value = {
+        data: {
+          content: [],
+          pageable: {
+            totalPages: 1,
+          },
+        },
+      };
+    }
+
   //Clear new review
   function clearNewReview() {
     newReview.value = {
@@ -322,6 +334,7 @@ export const useReviews = defineStore("Reviews", () => {
     deleteReview,
     changeReviewPage,
     setEditReview,
+    clearReviewList,
     clearNewReview,
     closeSuccessfulPopup,
   };

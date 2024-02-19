@@ -31,6 +31,7 @@ export const useLogin = defineStore("Login", () => {
   const updateFailed = ref(false);
   const updateFailedError = ref()
   const profileData = ref({
+    id: 0,
     role: 'GUEST',
     file: null
   }
@@ -258,6 +259,7 @@ export const useLogin = defineStore("Login", () => {
     //Set profile data
     function setProfileData() {
       profileData.value = {
+        id: profile.value.userId,
         role: profile.value.role,
         file: profile.value.file
       }
@@ -266,6 +268,7 @@ export const useLogin = defineStore("Login", () => {
     //Resset profile data
     function resetProfileData() {
       profileData.value = {
+        userId: 0,
         role: 'GUEST',
         file: null
       }
