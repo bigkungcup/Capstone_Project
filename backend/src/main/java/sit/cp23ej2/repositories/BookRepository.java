@@ -20,7 +20,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         " FROM Book b" +
                         // "INNER JOIN bookTag bg ON b.bookTag = bg.bookTag " +
                         // " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
-                        " WHERE (:bookRating IS NULL OR b.bookRating = :bookRating)" 
+                        " WHERE (:bookRating IS NULL OR b.bookRating = :bookRating) " +
+                        " AND (:booktypeId IS NULL OR b.bb_booktypeId = :booktypeId)" 
                         // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
         // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END ASC, " +
         // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END DESC, " +
@@ -45,7 +46,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         // " CASE WHEN :sortBy IS NULL THEN b.bookId END DESC "
         // " ELSE b.bookName "
                         , nativeQuery = true)
-        Page<Book> getAllBooks(Pageable pageable, @Param("bookRating") Long bookRating);
+        Page<Book> getAllBooks(Pageable pageable, @Param("bookRating") Long bookRating, @Param("booktypeId") Long booktypeId);
 
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +

@@ -58,7 +58,7 @@ public class BookService extends CommonController {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public DataResponse getBook(int page, int size, Long bookRatng, String sortBy, String sortType)
+    public DataResponse getBook(int page, int size, Long bookRatng, Long booktypeId, String sortBy, String sortType)
             throws HandleExceptionNotFound {
 
         DataResponse response = new DataResponse();
@@ -80,7 +80,7 @@ public class BookService extends CommonController {
             pageable = PageRequest.of(page, size, Sort.by(sortBy));
         }
 
-        PageBookDTO books = modelMapper.map(repository.getAllBooks(pageable, bookRatng), PageBookDTO.class);
+        PageBookDTO books = modelMapper.map(repository.getAllBooks(pageable, bookRatng, booktypeId), PageBookDTO.class);
 
         if (books.getContent().size() > 0) {
             List<BookDTO> bookDTOs = books.getContent();
@@ -172,7 +172,7 @@ public class BookService extends CommonController {
                 fileStorageService.store(file, lastInsertId);
             }
         } else {
-            throw new HandleExceptionNotFound("Book Already Exists");
+            throw new HandleExceptionBadRequest("Book Already Exists");
         }
         response.setResponse_code(201);
         response.setResponse_status("Created");

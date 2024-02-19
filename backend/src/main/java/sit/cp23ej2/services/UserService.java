@@ -77,7 +77,7 @@ public class UserService extends CommonController {
     public DataResponse getUserById(int userId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         User user = repository.getUserById(userId);
-        if(user == null){
+        if (user == null) {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
@@ -153,9 +153,10 @@ public class UserService extends CommonController {
     public DataResponse updateUser(UpdateUserDTO user, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
-        
-        // if (new BCryptPasswordEncoder().matches(userById.getPassword(), user.getPassword())) {
-        //     throw new HandleExceptionBadRequest("Password is incorrect");
+
+        // if (new BCryptPasswordEncoder().matches(userById.getPassword(),
+        // user.getPassword())) {
+        // throw new HandleExceptionBadRequest("Password is incorrect");
         // }
 
         if (userById != null) {
@@ -224,7 +225,7 @@ public class UserService extends CommonController {
                     throw new HandleExceptionBadRequest("Email or DisplayName already exists");
                 }
             }
-        } 
+        }
         // else {
         // throw new HandleExceptionNotFound("User Not Found", "User");
         // }
@@ -329,6 +330,37 @@ public class UserService extends CommonController {
                     response.setResponse_message("User Updated");
                     response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
                     response.setData(userDTO);
+                } else if (existsByEmailOrDisplayName && userById.getEmail().equals(user.getEmail())
+                        && userById.getDisplayName().equals(user.getDisplayName())
+                        && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                    repository.updateUserDetailByAdmin(user.getPassword(), user.getBio(), user.getRole(), userId);
+                    
+                    if (file != null) {
+                        fileStorageService.deleteUserFile(userId);
+                        fileStorageService.storeUserProfile(file, userId);
+                    }
+                    User dataUser = repository.getUserById(userId);
+                    UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+                    try {
+                        if (user.getStatus() != null) {
+                            Path pathFile = fileStorageService.loadUserFile(userId);
+                            userDTO.setFile(pathFile.toString());
+                        } else {
+                            fileStorageService.deleteUserFile(userId);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                    userDTO.setBio(user.getBio());
+                    userDTO.setRole(user.getRole());
+                    response.setResponse_code(200);
+                    response.setResponse_status("OK");
+                    response.setResponse_message("User Updated");
+                    response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+                    response.setData(userDTO);
                 } else {
                     throw new HandleExceptionBadRequest("Email or DisplayName already exists");
                 }
@@ -341,8 +373,7 @@ public class UserService extends CommonController {
         return response;
     }
 
-
-    public DataResponse resetPassword(ResetPasswordDTO resetPassword){
+    public DataResponse resetPassword(ResetPasswordDTO resetPassword) {
         DataResponse response = new DataResponse();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -353,7 +384,8 @@ public class UserService extends CommonController {
             throw new HandleExceptionBadRequest("Password is incorrect");
         }
 
-        repository.resetPassword(currentPrincipalName,new BCryptPasswordEncoder().encode(resetPassword.getNewPassword()));
+        repository.resetPassword(currentPrincipalName,
+                new BCryptPasswordEncoder().encode(resetPassword.getNewPassword()));
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Password Reset");

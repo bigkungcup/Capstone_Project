@@ -46,15 +46,15 @@ public class BookController {
 
     @RequestMapping("")
     public DataResponse getAllBook(@RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size, @RequestParam(required =  false) Long  bookRating, @RequestParam(required =  false) String  sortBy, @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
-        return bookService.getBook(page, size, bookRating, sortBy, sortType);
+            @RequestParam(defaultValue = "10") Integer size, @RequestParam(required =  false) Long  bookRating, @RequestParam(required =  false) Long  booktypeId, @RequestParam(required =  false) String  sortBy, @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
+        return bookService.getBook(page, size, bookRating, booktypeId, sortBy, sortType);
 
     }
 
     @RequestMapping("/guest")
     public DataResponse getAllBookByGuest(@RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size, @RequestParam(required =  false) Long  bookRating, @RequestParam(required =  false) String  sortBy, @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
-        return bookService.getBook(page, size, bookRating, sortBy, sortType);
+            @RequestParam(defaultValue = "10") Integer size, @RequestParam(required =  false) Long  bookRating, @RequestParam(required =  false) Long  booktypeId,  @RequestParam(required =  false) String  sortBy, @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
+        return bookService.getBook(page, size, bookRating, booktypeId, sortBy, sortType);
 
     }
 

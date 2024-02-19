@@ -3,6 +3,8 @@ package sit.cp23ej2.services;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -61,6 +63,9 @@ public class HistoryService extends CommonController {
             Path pathFile = fileStorageService.load(book);
             if (pathFile != null) {
                 // history.setFile(pathFile.toString());
+                
+                Duration duration = Duration.between(LocalDateTime.now(), book.getBookUpdateDateTime());
+                book.setCountDateTime(Math.abs(duration.toSeconds()));
                 book.setFile(pathFile.toString());
                 history.getBook().setBookTag(history.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(history.getBook().getBookTag().split(","))));

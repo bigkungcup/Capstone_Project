@@ -1,5 +1,6 @@
 package sit.cp23ej2.services;
 
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -16,6 +17,7 @@ import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
+import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionForbidden;
@@ -37,6 +39,9 @@ public class ReviewService extends CommonController {
     private UserRepository userRepository;
 
     @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -45,8 +50,21 @@ public class ReviewService extends CommonController {
         DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
         PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(bookId, pageable), PageReviewDTO.class);
-
         if (reviews.getContent().size() > 0) {
+
+            reviews.getContent().forEach(review -> {
+                UserDTO user = modelMapper.map(review.getUser(), UserDTO.class);
+                try {
+                    Path pathFile = fileStorageService.loadUserFile(review.getUser().getUserId());
+                    System.out.println(pathFile.toString());
+                    user.setFile(pathFile.toString());
+                  
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                review.setUserDetail(user);
+            });
+
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("All Reviews");
@@ -122,7 +140,8 @@ public class ReviewService extends CommonController {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
 
-        // System.out.println(reviewData.getUser().getUserId() + " " + user.getUserId() + " " + user.getRole());
+        // System.out.println(reviewData.getUser().getUserId() + " " + user.getUserId()
+        // + " " + user.getRole());
 
         if (reviewData.getUser().getUserId() != user.getUserId() && !user.getRole().equals("ADMIN")) {
             throw new HandleExceptionForbidden("Can not update review for user: ");
@@ -135,7 +154,7 @@ public class ReviewService extends CommonController {
             dataReview.setReviewDetail(review.getDetail());
             dataReview.setReviewRating(review.getRating());
             dataReview.setSpoileFlag(review.getSpoileFlag());
-    
+
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Review Updated");
@@ -150,7 +169,7 @@ public class ReviewService extends CommonController {
             dataReview.setReviewDetail(review.getDetail());
             dataReview.setReviewRating(review.getRating());
             dataReview.setSpoileFlag(review.getSpoileFlag());
-            
+
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Review Updated");
@@ -188,7 +207,8 @@ public class ReviewService extends CommonController {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
 
-        // System.out.println(review.getUser().getUserId() + " " + user.getUserId() + " " + user.getRole());
+        // System.out.println(review.getUser().getUserId() + " " + user.getUserId() + "
+        // " + user.getRole());
 
         if (review.getUser().getUserId() != user.getUserId() && !user.getRole().equals("ADMIN")) {
             throw new HandleExceptionForbidden("Can not delete review for user: ");
