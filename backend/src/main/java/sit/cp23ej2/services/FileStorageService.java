@@ -18,6 +18,7 @@ import sit.cp23ej2.properties.FileStorageProperties;
 
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.util.StringUtils;
 
@@ -217,5 +218,25 @@ public class FileStorageService {
 	// 		throw new HandleExceptionFile("Could not initialize storage", e);
 	// 	}
 	// }
+
+	public byte[] downlioadImageFromFileSysteBook(int filename){
+		try {
+			Path path = rootLocation.resolve("Book_Cover").resolve("Book_Cover" + "_" + filename);
+			if(path.toFile().exists()) {
+				Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
+				if(pathFile.toFile().exists()){
+					return Files.readAllBytes(pathFile);
+				}else{
+					return null;
+				}
+			}else{
+				return null;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
 
 }
