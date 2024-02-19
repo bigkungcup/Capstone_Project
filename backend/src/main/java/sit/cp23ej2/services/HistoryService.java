@@ -66,7 +66,9 @@ public class HistoryService extends CommonController {
                 
                 Duration duration = Duration.between(LocalDateTime.now(), book.getBookUpdateDateTime());
                 book.setCountDateTime(Math.abs(duration.toSeconds()));
-                book.setFile(pathFile.toString());
+                // book.setFile(pathFile.toString());
+                // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
+                book.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + book.getBookId());
                 history.getBook().setBookTag(history.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(history.getBook().getBookTag().split(","))));
                 history.setBookData(book);

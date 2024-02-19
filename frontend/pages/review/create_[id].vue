@@ -90,7 +90,7 @@ if (profileToken.value.role == 'USER') {
           <v-col cols="2">
             <div class="d-flex px-8 my-4" rounded="0">
               <v-img src="/image/cover_not_available.jpg" v-show="book.bookDetail.data.file == null" height="150" width="100"></v-img>
-              <v-img class="tw-drop-shadow-xl mb-2" :src="bookCoverPath(book.bookDetail.data.file)" v-show="book.bookDetail.data.file != null" height="150" width="100" cover></v-img>
+              <v-img class="tw-drop-shadow-xl mb-2" :src="book.bookDetail.data.file" v-show="book.bookDetail.data.file != null" height="150" width="100" cover></v-img>
             </div>
           </v-col>
           <v-col cols="10">

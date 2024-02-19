@@ -76,7 +76,7 @@ console.log(profileToken.value.role);
             ></v-icon>
             <v-img
               class="tw-rounded-full tw-border-[#082266] tw-border-2 tw-cursor-pointer"
-              :src="profileCoverPath(profileToken.file)"
+              :src="profileToken.file"
               v-if="profileToken.file !== null"
               height="40"
               width="40"

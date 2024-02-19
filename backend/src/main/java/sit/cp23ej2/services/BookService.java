@@ -95,7 +95,8 @@ public class BookService extends CommonController {
 
                     Path pathFile = fileStorageService.load(bookDTO);
                     if (pathFile != null) {
-                        bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
+                        // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
+                        bookDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + bookDTO.getBookId());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -145,7 +146,11 @@ public class BookService extends CommonController {
             try {
 
                 Path pathFile = fileStorageService.load(bookDTO);
-                bookDTO.setFile(pathFile.toString());
+                if(pathFile != null){
+                    // bookDTO.setFile(pathFile.toString());
+                    // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
+                    bookDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + bookDTO.getBookId());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -212,7 +217,11 @@ public class BookService extends CommonController {
             try {
                 if (book.getStatus() != null) {
                     Path pathFile = fileStorageService.load(bookDTO);
-                    bookDTO.setFile(pathFile.toString());
+                    if(pathFile != null){
+                        // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
+                        // bookDTO.setFile(pathFile.toString());
+                        bookDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + bookDTO.getBookId());
+                    }
                 } else {
                     fileStorageService.deleteFile(newDataBook);
                 }
@@ -256,7 +265,11 @@ public class BookService extends CommonController {
                 try {
                     if (book.getStatus() != null) {
                         Path pathFile = fileStorageService.load(bookDTO);
-                        bookDTO.setFile(pathFile.toString());
+                        if(pathFile != null){
+                            // bookDTO.setFile(pathFile.toString());
+                            // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
+                            bookDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + bookDTO.getBookId());
+                        }
                     } else {
                         fileStorageService.deleteFile(newDataBook);
                     }

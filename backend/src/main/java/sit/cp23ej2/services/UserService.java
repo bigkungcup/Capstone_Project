@@ -55,7 +55,9 @@ public class UserService extends CommonController {
                 try {
                     Path pathFile = fileStorageService.loadUserFile(user.getUserId());
                     if (pathFile != null) {
-                        user.setFile(pathFile.toString());
+                        // user.setFile(pathFile.toString());
+                        // user.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                        user.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + user.getUserId());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -85,7 +87,9 @@ public class UserService extends CommonController {
             try {
                 Path pathFile = fileStorageService.loadUserFile(userId);
                 if (pathFile != null) {
-                    userDTO.setFile(pathFile.toString());
+                    // userDTO.setFile(pathFile.toString());
+                    // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                    userDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + user.getUserId());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -112,7 +116,9 @@ public class UserService extends CommonController {
         try {
             Path pathFile = fileStorageService.loadUserFile(user.getUserId());
             if (pathFile != null) {
-                userDTO.setFile(pathFile.toString());
+                // userDTO.setFile(pathFile.toString());
+                  // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                  userDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + user.getUserId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -174,7 +180,11 @@ public class UserService extends CommonController {
                 try {
                     if (user.getStatus() != null) {
                         Path pathFile = fileStorageService.loadUserFile(userId);
-                        userDTO.setFile(pathFile.toString());
+                        if(pathFile != null){
+                            // userDTO.setFile(pathFile.toString());
+                            // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                            userDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + userId);
+                        }
                     } else {
                         fileStorageService.deleteUserFile(userId);
                     }
@@ -205,7 +215,11 @@ public class UserService extends CommonController {
                     try {
                         if (user.getStatus() != null) {
                             Path pathFile = fileStorageService.loadUserFile(userId);
-                            userDTO.setFile(pathFile.toString());
+                            if(pathFile != null){
+                                // userDTO.setFile(pathFile.toString());
+                                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                                userDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + userId);
+                            }
                         } else {
                             fileStorageService.deleteUserFile(userId);
                         }
@@ -251,7 +265,11 @@ public class UserService extends CommonController {
                 try {
                     if (user.getStatus() != null) {
                         Path pathFile = fileStorageService.loadUserFile(userId);
-                        userDTO.setFile(pathFile.toString());
+                        if(pathFile != null){
+                            // userDTO.setFile(pathFile.toString());
+                            // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                            userDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + userId);
+                        }
                     } else {
                         fileStorageService.deleteUserFile(userId);
                     }
@@ -285,7 +303,11 @@ public class UserService extends CommonController {
                     try {
                         if (user.getStatus() != null) {
                             Path pathFile = fileStorageService.loadUserFile(userId);
-                            userDTO.setFile(pathFile.toString());
+                            if(pathFile != null){
+                                // userDTO.setFile(pathFile.toString());
+                                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                                userDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + userId);
+                            }
                         } else {
                             fileStorageService.deleteUserFile(userId);
                         }
@@ -315,7 +337,11 @@ public class UserService extends CommonController {
                     try {
                         if (user.getStatus() != null) {
                             Path pathFile = fileStorageService.loadUserFile(userId);
-                            userDTO.setFile(pathFile.toString());
+                            if(pathFile != null){
+                                // userDTO.setFile(pathFile.toString());
+                                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                                userDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + userId);
+                            }
                         } else {
                             fileStorageService.deleteUserFile(userId);
                         }
@@ -346,7 +372,13 @@ public class UserService extends CommonController {
                     try {
                         if (user.getStatus() != null) {
                             Path pathFile = fileStorageService.loadUserFile(userId);
-                            userDTO.setFile(pathFile.toString());
+                            if(pathFile != null){
+                                // userDTO.setFile(pathFile.toString());
+                                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                                userDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + userId);
+
+                            }
+                            // userDTO.setFile(pathFile.toString());
                         } else {
                             fileStorageService.deleteUserFile(userId);
                         }

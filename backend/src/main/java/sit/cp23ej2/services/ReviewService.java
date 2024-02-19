@@ -57,7 +57,9 @@ public class ReviewService extends CommonController {
                 try {
                     Path pathFile = fileStorageService.loadUserFile(review.getUser().getUserId());
                     System.out.println(pathFile.toString());
-                    user.setFile(pathFile.toString());
+                    // user.setFile(pathFile.toString());
+                    // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                    user.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + user.getUserId());
                   
                 } catch (Exception e) {
                     e.printStackTrace();

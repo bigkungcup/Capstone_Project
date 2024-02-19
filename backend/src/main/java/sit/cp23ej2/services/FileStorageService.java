@@ -18,7 +18,6 @@ import sit.cp23ej2.properties.FileStorageProperties;
 
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.util.StringUtils;
 
@@ -219,9 +218,9 @@ public class FileStorageService {
 	// 	}
 	// }
 
-	public byte[] downlioadImageFromFileSysteBook(int filename){
+	public byte[] downlioadImageFromFileSysteBook(int bookId){
 		try {
-			Path path = rootLocation.resolve("Book_Cover").resolve("Book_Cover" + "_" + filename);
+			Path path = rootLocation.resolve("Book_Cover").resolve("Book_Cover" + "_" + bookId);
 			if(path.toFile().exists()) {
 				Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
 				if(pathFile.toFile().exists()){
@@ -236,7 +235,25 @@ public class FileStorageService {
 			e.printStackTrace();
 		}
 		return null;
+	}
 
+	public byte[] downlioadImageFromFileSysteUser(int userId){
+		try {
+			Path path = rootLocation.resolve("User_Profile").resolve("User_Profile" + "_" + userId);
+			if(path.toFile().exists()) {
+				Path pathFile = Files.list(path).collect(Collectors.toList()).get(0);
+				if(pathFile.toFile().exists()){
+					return Files.readAllBytes(pathFile);
+				}else{
+					return null;
+				}
+			}else{
+				return null;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

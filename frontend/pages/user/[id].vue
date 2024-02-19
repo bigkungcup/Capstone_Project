@@ -42,7 +42,7 @@ onBeforeMount(async () => {
         <v-img
           class="tw-blur-[2px]"
           v-show="user.userDetail.data.file != null"  
-          :src="bookCoverPath(user.userDetail.data.file)"
+          :src="user.userDetail.data.file"
           cover
         ></v-img>
         <!-- <v-img src="/image/cat.jpg" width="120" height="120"
@@ -64,7 +64,7 @@ onBeforeMount(async () => {
             />
             <v-img
               class="tw-rounded-full tw-border-white tw-border-8 tw-my-[-4rem] tw-mx-6"
-              :src="bookCoverPath(user.userDetail.data.file)"
+              :src="user.userDetail.data.file"
               v-show="user.userDetail.data.file != null"
               height="140"
               width="140"

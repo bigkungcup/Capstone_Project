@@ -73,5 +73,17 @@ public class FileController {
 			return ResponseEntity.notFound().build();
 		}
 	}
+
+	@GetMapping("/filesUser/{userId}")
+	public ResponseEntity<?> getFileUser(HttpServletRequest request, HttpServletResponse response, @PathVariable Integer userId) {
+		
+		byte[] fileDate = new byte[0];
+		try{
+			fileDate = fileStorageService.downlioadImageFromFileSysteUser(userId);
+			return ResponseEntity.ok().contentType(MediaType.valueOf("image/jpeg")).body(fileDate);
+		}catch (Exception e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
 }
 // src/main/java/sit/cp23ej2/services/FileStorageService.java src/main/java/sit/cp23ej2/controllers/HistoryController.java

@@ -24,7 +24,7 @@ function bookCoverPath(filePath) {
             <v-col cols="4" class="tw-my-4" align="center">
                 <!-- <v-img class="tw-drop-shadow-lg " src="/image/foryou1.png" width="100" height="160" cover /> -->
                 <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="100" height="160" cover  v-show="book.bookData.file == null"/>
-                <v-img class="tw-drop-shadow-lg" :src="bookCoverPath(book.bookData.file)" width="100" height="160" cover v-show="book.bookData.file != null" />
+                <v-img class="tw-drop-shadow-lg" :src="book.bookData.file" width="100" height="160" cover v-show="book.bookData.file != null" />
             </v-col>
             <v-col cols="8" class="tw-my-4">
                 <div class="">
