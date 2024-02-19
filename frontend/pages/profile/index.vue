@@ -31,7 +31,7 @@ onBeforeMount(async () => {
         <v-img
           class="tw-blur-[2px]"
           v-show="login.profile.file != null"  
-          :src="bookCoverPath(login.profile.file)"
+          :src="login.profile.file"
           cover
         ></v-img>
                 <!-- <v-img src="/image/cat.jpg" width="120" height="120"
@@ -54,7 +54,7 @@ onBeforeMount(async () => {
             />
             <v-img
               class="tw-rounded-full tw-border-white tw-border-8 tw-my-[-4rem] tw-mx-6"
-              :src="bookCoverPath(login.profile.file)"
+              :src="login.profile.file"
               v-show="login.profile.file != null"
               height="140"
               width="140"

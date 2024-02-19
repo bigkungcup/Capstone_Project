@@ -23,6 +23,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         boolean existsByEmailOrDisplayName(String email, String displayName);
 
+        boolean existsByEmail(String email);
+
+        boolean existsByDisplayName(String displayName);
+
+
         @Modifying
         @Transactional
         @Query(value = "INSERT INTO  User (displayName, email, password, role, followers, follows, totalReview, totalFavoriteReview, totalLike, bio)"

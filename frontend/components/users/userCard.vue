@@ -25,7 +25,7 @@ function bookCoverPath(filePath) {
         <v-col cols="2" align="center">
           <v-avatar size="80px" class="border-md">
             <v-img alt="Avatar" src="/image/guest_icon.png" v-show="user.file == null" ></v-img>
-            <v-img alt="Avatar" :src="bookCoverPath(user.file)" cover v-show="user.file != null" />
+            <v-img alt="Avatar" :src="user.file" cover v-show="user.file != null" />
           </v-avatar>
         </v-col>
         <v-col

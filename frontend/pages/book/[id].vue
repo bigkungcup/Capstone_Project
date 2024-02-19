@@ -84,7 +84,7 @@ if (profileToken.value.role == 'GUEST') {
               ></v-img>
               <v-img
                 class="tw-drop-shadow-xl mb-2"
-                :src="bookCoverPath(library.bookDetail.data.file)"
+                :src="library.bookDetail.data.file"
                 v-show="library.bookDetail.data.file != null"
                 height="360"
                 width="240"

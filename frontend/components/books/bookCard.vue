@@ -21,7 +21,7 @@ function bookCoverPath(filePath) {
             <v-row no-gutters>
                 <v-col cols="3" class="my-3 " align="center">
                     <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="180" height="280" cover v-show="book.file == null"/>
-                    <v-img class="tw-drop-shadow-lg" :src="bookCoverPath(book.file)" width="180" height="280" cover v-show="book.file != null" />
+                    <v-img class="tw-drop-shadow-lg" :src="book.file" width="180" height="280" cover v-show="book.file != null" />
                     <!-- <v-img class="tw-drop-shadow-lg" :src="book.file" width="180" height="280" cover v-show="book.file != null" /> -->
                     <!-- <v-img src="~\Files\Uploads\TEST1\foryou2.jpg" width="180" v-show="book.file !== null"/> -->
                 </v-col>

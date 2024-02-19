@@ -56,8 +56,7 @@ public class BookmarkService extends CommonController {
                 BookDTO book = modelMapper.map(bookmark.getBook(), BookDTO.class);
                 Path pathFile = fileStorageService.load(book);
                 if (pathFile != null) {
-                    bookmark.getBook().setFile(pathFile.toString());
-
+                    bookmark.getBook().setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + book.getBookId());
                 }
                 bookmark.getBook().setBookTag(bookmark.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(bookmark.getBook().getBookTag().split(","))) );
