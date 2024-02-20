@@ -22,6 +22,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         // " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
                         " WHERE (:bookRating IS NULL OR b.bookRating = :bookRating) " +
                         " AND (:booktypeId IS NULL OR b.bb_booktypeId = :booktypeId)" 
+                        // " AND (:search IS NULL OR b.bookName LIKE %:search% OR b.author LIKE %:search%)"
                         // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
         // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END ASC, " +
         // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END DESC, " +

@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -44,6 +45,9 @@ public class ReviewService extends CommonController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Value("${base_url}")
+    private String baseUrl;
+
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DataResponse getReviewByBookId(int bookId, int page, int size) throws HandleExceptionNotFound {
@@ -59,7 +63,7 @@ public class ReviewService extends CommonController {
                     System.out.println(pathFile.toString());
                     // user.setFile(pathFile.toString());
                     // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
-                    user.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesUser/" + user.getUserId());
+                    user.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
                   
                 } catch (Exception e) {
                     e.printStackTrace();

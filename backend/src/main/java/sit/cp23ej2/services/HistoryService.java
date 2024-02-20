@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -38,6 +39,9 @@ public class HistoryService extends CommonController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Value("${base_url}")
+    private String baseUrl;
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -68,7 +72,7 @@ public class HistoryService extends CommonController {
                 book.setCountDateTime(Math.abs(duration.toSeconds()));
                 // book.setFile(pathFile.toString());
                 // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
-                book.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + book.getBookId());
+                book.setFile(baseUrl + "/api/files/filesBook/" + book.getBookId());
                 history.getBook().setBookTag(history.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(history.getBook().getBookTag().split(","))));
                 history.setBookData(book);

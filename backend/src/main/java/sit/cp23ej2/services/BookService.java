@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -56,6 +57,9 @@ public class BookService extends CommonController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Value("${base_url}")
+    private String baseUrl;
+
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DataResponse getBook(int page, int size, Long bookRatng, Long booktypeId, String sortBy, String sortType)
@@ -96,7 +100,7 @@ public class BookService extends CommonController {
                     Path pathFile = fileStorageService.load(bookDTO);
                     if (pathFile != null) {
                         // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
-                        bookDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + bookDTO.getBookId());
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -149,7 +153,7 @@ public class BookService extends CommonController {
                 if(pathFile != null){
                     // bookDTO.setFile(pathFile.toString());
                     // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
-                    bookDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + bookDTO.getBookId());
+                    bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -220,7 +224,7 @@ public class BookService extends CommonController {
                     if(pathFile != null){
                         // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
                         // bookDTO.setFile(pathFile.toString());
-                        bookDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + bookDTO.getBookId());
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
                     }
                 } else {
                     fileStorageService.deleteFile(newDataBook);
@@ -268,7 +272,7 @@ public class BookService extends CommonController {
                         if(pathFile != null){
                             // bookDTO.setFile(pathFile.toString());
                             // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
-                            bookDTO.setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + bookDTO.getBookId());
+                            bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
                         }
                     } else {
                         fileStorageService.deleteFile(newDataBook);

@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -38,6 +39,9 @@ public class BookmarkService extends CommonController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Value("${base_url}")
+    private String baseUrl;
+
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DataResponse getBookmarkByUserId(Integer page, Integer size) throws HandleExceptionNotFound{
@@ -56,7 +60,7 @@ public class BookmarkService extends CommonController {
                 BookDTO book = modelMapper.map(bookmark.getBook(), BookDTO.class);
                 Path pathFile = fileStorageService.load(book);
                 if (pathFile != null) {
-                    bookmark.getBook().setFile("https://capstone23.sit.kmutt.ac.th/ej2/api/files/filesBook/" + book.getBookId());
+                    bookmark.getBook().setFile(baseUrl + "/api/files/filesBook/" + book.getBookId());
                 }
                 bookmark.getBook().setBookTag(bookmark.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(bookmark.getBook().getBookTag().split(","))) );
