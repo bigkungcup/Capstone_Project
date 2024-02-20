@@ -68,6 +68,8 @@ export const useLogin = defineStore("Login", () => {
     );
     if (status == 200) {
       loginFailed.value = false;
+      accessToken.value = useCookie("accessToken", cookieOptions);
+      refreshToken.value = useCookie("refreshToken", cookieOptions);
       accessToken.value = data.access_token;
       refreshToken.value = data.refresh_token;
       getProfile();
@@ -77,7 +79,7 @@ export const useLogin = defineStore("Login", () => {
   }
 
   //Refresh token
-  async function handleRefresh(event=null ) {
+  async function handleRefresh() {
     let status = 0;
     const { data } = await $fetch(
       `${import.meta.env.VITE_BASE_URL}/auth/refresh`,
@@ -90,14 +92,13 @@ export const useLogin = defineStore("Login", () => {
           status = response._data.response_code;
           if (status == 401) {
             logOut();
-          }
+          };
         },
       }
     );
     if (status == 200) {
+      accessToken.value = null;
       accessToken.value = data.access_token;
-      refreshToken.value = data.refresh_token;
-      event;
     }
   }
 
@@ -116,14 +117,15 @@ export const useLogin = defineStore("Login", () => {
           if (status == 400) {
             console.log("get ptofile uncompleted");
           }else if (status == 401) {
-            handleRefresh(getProfile());
+            handleRefresh();
+            getProfile();
           }
         },
       }
     );
     if (status == 200) {
       profile.value = data;
-      setToken(profile.value)
+      setToken(profile.value);
     }
   }
 
@@ -189,13 +191,13 @@ export const useLogin = defineStore("Login", () => {
       successfulPopup.value = true;
       console.log("update user completed");
     } else if (status == 401) {
-      handleRefresh(updateProfile);
+      await handleRefresh();
+      await updateProfile();
     }
   }
 
   //Change password
   async function changePassword(oldPassword,newPassword) {
-    console.log(oldPassword,newPassword);
     let status = 0;
     await $fetch(`${import.meta.env.VITE_BASE_URL}/user/resetPassword`, {
       method: "PUT",
@@ -220,14 +222,15 @@ export const useLogin = defineStore("Login", () => {
       successfulPopup.value = true;
       console.log("change password completed");
     } else if (status == 401) {
-      handleRefresh(changePassword());
+      await handleRefresh();
+      await changePassword();
     }
   }
 
   //Log out
   function logOut() {
-    accessToken.value = null;
-    refreshToken.value = null;
+    // accessToken.value = null;
+    // refreshToken.value = null;
     delete_cookie("refreshToken");
     delete_cookie("accessToken");
     resetToken();
@@ -295,6 +298,7 @@ export const useLogin = defineStore("Login", () => {
     setEditProfile,
     closeSuccessfulPopup,
     changePassword,
+    resetToken,
   };
 });
 

@@ -79,7 +79,7 @@ function userCoverPath(filePath) {
                                     <v-list-item v-show="roleToken == 'USER'">
                                         <v-list-item-title class="web-text-detail tw-space-x-2"
                                             ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
-                                            ><span>Report this book</span></v-list-item-title
+                                            ><span>Report this review</span></v-list-item-title
                                         >
                                     </v-list-item>
                                 </v-list>

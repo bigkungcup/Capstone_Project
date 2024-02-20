@@ -33,7 +33,8 @@ const rules = {
 
 function setSelectedImage() {
     // book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
-    selectedImage.value = login.editProfile.file == null ? null : `../../_nuxt/@fs/${login.editProfile.file}`;
+    // selectedImage.value = login.editProfile.file == null ? null : `../../_nuxt/@fs/${login.editProfile.file}`;
+    selectedImage.value = login.editProfile.file == null ? null : login.editProfile.file;
     login.editProfileFile = undefined;
 }
 
@@ -43,10 +44,14 @@ onBeforeMount(() => {
 });
 
 onBeforeRouteLeave(() => {
+    // const coverCheck =
+    //     selectedImage.value == null
+    //         ? selectedImage.value != login.profile.file
+    //         : selectedImage.value != `../../_nuxt/@fs/${login.profile.file}`;
     const coverCheck =
         selectedImage.value == null
             ? selectedImage.value != login.profile.file
-            : selectedImage.value != `../../_nuxt/@fs/${login.profile.file}`;
+            : selectedImage.value != login.profile.file;
     if (
         login.editProfile.displayName !== login.profile.displayName ||
         login.editProfile.email !== login.profile.email ||
@@ -143,7 +148,7 @@ login.setEditProfile();
                                 label="Username" 
                                 variant="solo" 
                                 :rules="[rules.required,rules.limited]"
-                                v-model="login.editProfile.displayName" disabled></v-text-field>
+                                v-model="login.editProfile.displayName"></v-text-field>
                                 <p class="web-text-sub">Email</p>
                                 <v-text-field 
                                 label="Email" 

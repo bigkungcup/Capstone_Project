@@ -3,6 +3,7 @@ import { useRouter } from "vue-router";
 import { useBooks } from "~/stores/book";
 import { ref } from "vue";
 import UpdateBookSuccessPopup from "~/components/books/popups/updateBookSuccessPopup.vue";
+import DuplicateBookPopup from "~/components/books/popups/duplicateBookPopup.vue";
 
 const book = useBooks();
 const route = useRoute();
@@ -14,6 +15,10 @@ const router = useRouter();
 
 function showValidateSize() {
   validateSize.value = true;
+}
+
+function toggleBookFailPopup() {
+  book.failPopup = !book.failPopup;
 }
 
 function handleFileChange(event) {
@@ -229,6 +234,10 @@ onBeforeMount(() => {
     <UpdateBookSuccessPopup
       :dialog="book.successfulPopup"
       @close="book.closeSuccessfulPopup()"
+    />
+    <DuplicateBookPopup 
+      :dialog="book.failPopup"
+      @close="toggleBookFailPopup()"
     />
   </div>
 </template>

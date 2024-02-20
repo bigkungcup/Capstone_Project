@@ -39,7 +39,8 @@ const rules = {
 
 function setSelectedImage() {
   // book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
-  selectedImage.value = user.editUser.file == null ? null : `../../ej2/_nuxt/@fs/${user.editUser.file}`;
+  // selectedImage.value = user.editUser.file == null ? null : `../../ej2/_nuxt/@fs/${user.editUser.file}`;
+  selectedImage.value = user.editUser.file == null ? null : user.editUser.file;
   user.editUserFile = undefined;
 }
 
@@ -59,7 +60,7 @@ function handleCheckPassword() {
 }
 
 onBeforeMount(() => {
-  if (roleToken == 'ADMIN') {
+  if (roleToken.value == 'ADMIN') {
   user.updateFailed = false;
   user.leavePopup = true;
   setSelectedImage();
@@ -75,10 +76,14 @@ if (roleToken.value == 'ADMIN') {
 
 onBeforeRouteLeave(() => {
   if (roleToken.value == 'ADMIN') {
+  // const coverCheck =
+  //   selectedImage.value == null
+  //     ? selectedImage.value != user.userDetail.data.file
+  //     : selectedImage.value != `../../ej2/_nuxt/@fs/${user.userDetail.data.file}`;
   const coverCheck =
     selectedImage.value == null
       ? selectedImage.value != user.userDetail.data.file
-      : selectedImage.value != `../../_nuxt/@fs/${user.userDetail.data.file}`;
+      : selectedImage.value != user.userDetail.data.file;
   if (
     user.editUser.displayName !== user.userDetail.data.displayName ||
     user.editUser.email !== user.userDetail.data.email ||
@@ -188,7 +193,6 @@ onBeforeRouteLeave(() => {
                   <v-text-field
                     label="Username"
                     variant="solo"
-                    
                     :rules="[rules.required,rules.limited]"
                     v-model="user.editUser.displayName"
                   ></v-text-field>
@@ -200,6 +204,7 @@ onBeforeRouteLeave(() => {
                     variant="solo"
                     :rules="[rules.required,rules.limited,rules.email]"
                     v-model="user.editUser.email"
+                    disabled
                   ></v-text-field>
                 </div>
                 <div>

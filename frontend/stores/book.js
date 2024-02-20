@@ -4,7 +4,6 @@ import { ref } from "vue";
 import { useLogin } from "./login";
 
 export const useBooks = defineStore("Books", () => {
-  const accessToken = useCookie("accessToken");
   const refreshToken = useCookie("refreshToken");
   const roleToken = ref(localStorage.getItem('role'));
   const router = useRouter();
@@ -48,6 +47,7 @@ export const useBooks = defineStore("Books", () => {
 
   //Get Library
   async function getLibrary() {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     let sortBybook = ''
     let sortTypebook = ''
@@ -87,7 +87,8 @@ export const useBooks = defineStore("Books", () => {
       clearBookList();
       console.log("get library uncompleted");
     } else if (status == 401) {
-      await login.handleRefresh(getLibrary());
+      await login.handleRefresh();
+      await getLibrary();
     }
   }
 
@@ -130,15 +131,14 @@ export const useBooks = defineStore("Books", () => {
       } else if (status == 404) {
         clearBookList();
         console.log("get library uncompleted");
-      } else if (status == 401) {
-        await login.handleRefresh(getLibraryByGuest());
-      }
+      } 
     }  
 
 
   //Get Book Detail
   async function getBookDetail(bookId) {
     let status = 0;
+    let accessToken = useCookie("accessToken");
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
       {
@@ -160,9 +160,8 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 400) {
       console.log("get book detail uncompleted");
     } else if (status == 401) {
-      if(refreshToken.value !== null && refreshToken.value !== undefined){
-        login.handleRefresh(getBookDetail(bookId));
-      }
+        await login.handleRefresh();
+        await getBookDetail(bookId);
     }else if (status == 404) {
       router.push("/PageNotFound/");
     }
@@ -198,6 +197,7 @@ export const useBooks = defineStore("Books", () => {
 
   //Create Book
   async function createBook() {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     const book = {
       bookName: newBook.value.bookName,
@@ -230,20 +230,22 @@ export const useBooks = defineStore("Books", () => {
           console.log("upload book uncompleted");
         }else if (status == 404) {
           router.push("/PageNotFound/");
+        }else if (status == 401) {
+          login.handleRefresh();
+          createBook();
         }
       },
     });
     if (status == 201) {
       successfulPopup.value = true;
       console.log("upload book completed");
-    } else if (status == 401) {
-      login.handleRefresh(createBook);
-    }
+    } 
   }
 
   //Update Book
   async function updateBook(bookId) {
     let status = 0;
+    let accessToken = useCookie("accessToken");
     let book = {};
     if (editBookFile.value === null && bookDetail.value.data.file !== null) {
       book = {
@@ -290,6 +292,7 @@ export const useBooks = defineStore("Books", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          failPopup.value = true;
           console.log("update book uncompleted");
         }else if (status == 404) {
           router.push("/PageNotFound/");
@@ -300,12 +303,14 @@ export const useBooks = defineStore("Books", () => {
       successfulPopup.value = true;
       console.log("update book completed");
     } else if (status == 401) {
-      login.handleRefresh(updateBook(bookId));
+      await login.handleRefresh();
+      await updateBook(bookId);
     }
   }
 
   //Delete book
   async function deleteBook(bookId) {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
@@ -331,7 +336,8 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 404) {
       router.push("/PageNotFound/");
     } else if (status == 401) {
-      login.handleRefresh(deleteBook(bookId));
+      await login.handleRefresh();
+      await deleteBook(bookId);
     }
   }
 
@@ -344,7 +350,6 @@ export const useBooks = defineStore("Books", () => {
         options.method = "GET";
         options.headers = {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
         };
       },
       onResponse({ request, response, options }) {
@@ -363,7 +368,8 @@ export const useBooks = defineStore("Books", () => {
       clearBookList();
       console.log("get library uncompleted");
     } else if (status == 401) {
-      login.handleRefresh(getLibrary);
+      await login.handleRefresh();
+      await getBookType();
     }else if (status == 404) {
       router.push("/PageNotFound/");
     }
@@ -371,6 +377,7 @@ export const useBooks = defineStore("Books", () => {
 
   //Get History
   async function getHistoryList() {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/history`, {
       onRequest({ request, options }) {
@@ -397,12 +404,14 @@ export const useBooks = defineStore("Books", () => {
       clearHistoryList();
       console.log("get library uncompleted");
     } else if (status == 401) {
-      await login.handleRefresh(getHistoryList());
+      await login.handleRefresh();
+      await getHistoryList();
     }
   }
 
   //Delete history by ID
   async function deleteHistoryById(bookId) {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/history/${bookId}`,
@@ -429,12 +438,14 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 404) {
       // router.push("/PageNotFound/");
     } else if (status == 401) {
-      login.handleRefresh(deleteHistoryById(bookId));
+      await login.handleRefresh();
+      await deleteHistoryById(bookId);
     }
   }
 
   //Delete history all
   async function deleteHistoryAll() {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/history/all`,
@@ -461,7 +472,8 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 404) {
       // router.push("/PageNotFound/");
     } else if (status == 401) {
-      login.handleRefresh(deleteHistoryAll());
+      await login.handleRefresh();
+      await deleteHistoryAll();
     }
   }
 

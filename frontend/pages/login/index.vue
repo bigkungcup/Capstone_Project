@@ -19,6 +19,8 @@ definePageMeta({
 onBeforeMount(() => {
   login.loginFailed = false;
   login.clearLoginAccount();
+  login.resetToken();
+  login.logOut();
 });
 </script>
 

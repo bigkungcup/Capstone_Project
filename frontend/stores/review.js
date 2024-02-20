@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import { useLogin } from "./login";
 
 export const useReviews = defineStore("Reviews", () => {
-  const accessToken = useCookie("accessToken");
+  // const accessToken = ref(useCookie("accessToken"));
   const refreshToken = useCookie("refreshToken");
   const router = useRouter();
   const login = useLogin();
@@ -32,6 +32,7 @@ export const useReviews = defineStore("Reviews", () => {
 
   //Get reviews
   async function getReview(bookId) {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review`, {
       onRequest({ request, options }) {
@@ -57,7 +58,6 @@ export const useReviews = defineStore("Reviews", () => {
               },
             },
           };
-          console.log("get review list uncompleted");
         }
       },
     });
@@ -66,7 +66,8 @@ export const useReviews = defineStore("Reviews", () => {
       console.log("get review list completed");
     } else if (status == 401) {
       if(refreshToken.value !== null && refreshToken.value !== undefined){
-        login.handleRefresh(getReview(bookId));
+        await login.handleRefresh();
+        await getReview(bookId)
       }
     }
   }
@@ -110,6 +111,7 @@ export const useReviews = defineStore("Reviews", () => {
   //Get review detail
   async function getReviewDetail(reviewId) {
     let status = 0;
+    let accessToken = useCookie("accessToken")
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/review/${reviewId}`,
       {
@@ -131,7 +133,8 @@ export const useReviews = defineStore("Reviews", () => {
     } else if (status == 400) {
       console.log("get review detail uncompleted");
     } else if (status == 401) {
-      login.handleRefresh(getReviewDetail(reviewId));
+      await login.handleRefresh();
+      await getReviewDetail(reviewId);
     } else if (status == 404) {
       router.push("/PageNotFound/");
     }
@@ -166,6 +169,7 @@ export const useReviews = defineStore("Reviews", () => {
 
   //Create review
   async function createReview() {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     await $fetch(`${import.meta.env.VITE_BASE_URL}/review`, {
       method: "POST",
@@ -176,7 +180,7 @@ export const useReviews = defineStore("Reviews", () => {
         rating: newReview.value.rating,
         detail: newReview.value.detail,
         title: newReview.value.title,
-        userId: "1",
+        userId: localStorage.getItem('id'),
         bookId: newReview.value.bookId,
         spoileFlag: newReview.value.spoileFlag == false ? 0 : 1,
       },
@@ -191,7 +195,8 @@ export const useReviews = defineStore("Reviews", () => {
       successfulPopup.value = true;
       console.log("upload review completed");
     } else if (status == 401) {
-      login.handleRefresh(createReview);
+      await login.handleRefresh();
+      await createReview();
     } else if (status == 404) {
       router.push("/PageNotFound/");
     }
@@ -199,6 +204,7 @@ export const useReviews = defineStore("Reviews", () => {
 
   //Update review
   async function updateReview(reviewId) {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     await $fetch(`${import.meta.env.VITE_BASE_URL}/review/${reviewId}`, {
       method: "PUT",
@@ -223,7 +229,8 @@ export const useReviews = defineStore("Reviews", () => {
       successfulPopup.value = true;
       console.log("update review completed");
     } else if (status == 401) {
-      login.handleRefresh(updateReview(reviewId));
+      await login.handleRefresh();
+      await updateReview(reviewId);
     } else if (status == 404) {
       router.push("/PageNotFound/");
     }
@@ -231,6 +238,7 @@ export const useReviews = defineStore("Reviews", () => {
 
   //Delete review
   async function deleteReview(reviewId, bookId) {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/review/${reviewId}`,
@@ -255,7 +263,8 @@ export const useReviews = defineStore("Reviews", () => {
     } else if (status == 404) {
       console.log("delete review uncompleted");
     } else if (status == 401) {
-      login.handleRefresh(deleteReview(reviewId, bookId));
+      await login.handleRefresh();
+      await deleteReview(reviewId, bookId);
     } else if (status == 404) {
       router.push("/PageNotFound/");
     }

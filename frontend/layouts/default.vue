@@ -68,7 +68,7 @@ function profileCoverPath(filePath) {
         <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props: menu }">
             <v-icon
-              v-if="profileToken == null"
+              v-if="profileToken == 'null'"
               v-bind="mergeProps(menu)"
               icon="mdi-account-circle"
               style="font-size: 50px"
@@ -76,7 +76,7 @@ function profileCoverPath(filePath) {
             <v-img
               class="tw-rounded-full tw-border-[#082266] tw-border-2 tw-cursor-pointer"
               :src="profileToken"
-              v-if="profileToken !== null"
+              v-if="profileToken !== 'null'"
               height="40"
               width="40"
               cover

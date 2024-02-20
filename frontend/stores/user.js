@@ -4,7 +4,7 @@ import { ref } from "vue";
 import { useLogin } from "./login";
 
 export const useUsers = defineStore("Users", () => {
-  const accessToken = useCookie("accessToken");
+  // const accessToken = useCookie("accessToken");
   const refreshToken = useCookie("refreshToken");
   const login = useLogin();
   const router = useRouter();
@@ -38,6 +38,7 @@ export const useUsers = defineStore("Users", () => {
 
   //Get user list
   async function getUserList() {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/user/all`, {
       onRequest({ request, options }) {
@@ -64,7 +65,8 @@ export const useUsers = defineStore("Users", () => {
       clearUserList();
       console.log("get user list uncompleted");
     } else if (status == 401) {
-      login.handleRefresh(getUserList);
+      await login.handleRefresh();
+      await getUserList();
     } else if (status == 404) {
       router.push("/PageNotFound/");
     }
@@ -73,6 +75,7 @@ export const useUsers = defineStore("Users", () => {
   //Get User Detail
   let status = 0;
   async function getUserDetail(userId) {
+    let accessToken = useCookie("accessToken");
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/user/${userId}`,
       {
@@ -94,13 +97,12 @@ export const useUsers = defineStore("Users", () => {
     } else if (status == 400) {
       console.log("get user detail uncompleted");
     } else if (status == 401) {
-      if(refreshToken.value !== null && refreshToken.value !== undefined){
-        login.handleRefresh(getUserDetail(userId));
-      } else if (status == 404) {
+        await login.handleRefresh();
+        await getUserDetail(userId);
+    } else if (status == 404) {
         router.push("/PageNotFound/");
       }
     }
-  }
 
   //Register user
   async function registerUser() {
@@ -135,6 +137,7 @@ export const useUsers = defineStore("Users", () => {
 
   //Update User by Admin
   async function updateUser(userId) {
+    let accessToken = useCookie("accessToken");
     let status = 0;
     let user = {};
     if (editUserFile.value === null && userDetail.value.data.file !== null) {
@@ -195,12 +198,14 @@ export const useUsers = defineStore("Users", () => {
       updateFailed.value = false;
       console.log("update user completed");
     } else if (status == 401) {
-      login.handleRefresh(updateUser(userId));
+      await login.handleRefresh();
+      await updateUser(userId);
     }
   }
 
   //Delete User by Admin
     async function deleteUser(userId) {
+      let accessToken = useCookie("accessToken");
       let status = 0;
       const { data } = await useFetch(
         `${import.meta.env.VITE_BASE_URL}/user/${userId}`,
@@ -225,7 +230,8 @@ export const useUsers = defineStore("Users", () => {
       } else if (status == 404) {
         router.push("/PageNotFound/");
       } else if (status == 401) {
-        login.handleRefresh(deleteUser(userId));
+        await login.handleRefresh();
+        await deleteUser(userId);
       }
     }
 

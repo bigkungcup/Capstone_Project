@@ -33,7 +33,7 @@ const sortList = [
 ];
 
 function handleSelectionChange() {
-  if (roleToken == 'GUEST') {
+  if (roleToken.value == 'GUEST') {
     library.getLibraryByGuest();
     result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
   }else{
@@ -43,7 +43,7 @@ function handleSelectionChange() {
 }
 
 onBeforeMount( async () => {
-  if (roleToken == 'GUEST') {
+  if (roleToken.value == 'GUEST') {
     await library.getLibraryByGuest();
     library.getBookType();
     result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
