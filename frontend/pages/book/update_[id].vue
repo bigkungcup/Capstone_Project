@@ -35,7 +35,7 @@ function handleFileChange(event) {
 const rules = {
   required: (value) => !!value || "Field is required",
   limited: (value) => value.length <= 255 || "Max 255 characters",
-  size: (value) => !!value || value[0].size <= 64000000 || showValidateSize(),
+  size: (value) => !!value || value[0].size <= 50000000 || showValidateSize(),
 };
 
 function setSelectedImage() {
@@ -145,7 +145,7 @@ onBeforeMount(() => {
                 >
                 </v-file-input>
                 <p v-show="validateSize" class="validate-text">
-                  Image size should be less than 64 MB!
+                  Image size should be less than 50 MB!
                 </p>
               </v-responsive>
               <div class="d-flex justify-center">
@@ -226,7 +226,7 @@ onBeforeMount(() => {
           book.editBook.booktypeId == null ||
           book.editBook.bookName.length > 255 ||
           book.editBook.author.length > 255 ||
-          (book.editBookFile == null ? false : book.editBookFile[0].size > 64000000)
+          (book.editBookFile == null ? false : book.editBookFile[0].size > 50000000)
         "
         >submit</v-btn
       >

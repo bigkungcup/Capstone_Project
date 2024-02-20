@@ -36,7 +36,7 @@ function toggleBookFailPopup() {
 const rules = {
   required: (value) => !!value || "Field is required",
   limited: (value) => value.length <= 255 || "Max 255 characters",
-  size: (value) => !value || value[0].size <= 64000000 || showValidateSize(),
+  size: (value) => !value || value[0].size <= 50000000 || showValidateSize(),
   selected: (value) => value != null || 'Please select type'
 };
 
@@ -135,7 +135,7 @@ onBeforeMount(() => {
                 >
                 </v-file-input>
                 <p v-show="validateSize" class="validate-text">
-                  Image size should be less than 64 MB!
+                  Image size should be less than 50 MB!
                 </p>
               </v-responsive>
               <div class="d-flex justify-center px-8">
@@ -217,7 +217,7 @@ onBeforeMount(() => {
           book.newBook.bookName.length > 255 ||
           book.newBook.author.length > 255 ||
           book.newBook.booktypeId == null ||
-          (book.newBookFile == null ? false : book.newBookFile[0].size > 64000000)
+          (book.newBookFile == null ? false : book.newBookFile[0].size > 50000000)
         "
         >submit</v-btn
       >

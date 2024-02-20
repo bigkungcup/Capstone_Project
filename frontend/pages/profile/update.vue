@@ -28,7 +28,7 @@ const rules = {
     required: (value) => !!value || "Field is required",
     email: (value) => value.match(validEmail) || "Please enter a valid email address",
     limited: (value) => value.length <= 255 || "Max 255 characters",
-    size: (value) => !!value || value[0].size <= 64000000 || showValidateSize(),
+    size: (value) => !!value || value[0].size <= 50000000 || showValidateSize(),
 };
 
 function setSelectedImage() {
@@ -126,7 +126,7 @@ login.setEditProfile();
                 >
                 </v-file-input>
                 <p v-show="validateSize" class="validate-text">
-                  Image size should be less than 64 MB!
+                  Image size should be less than 50 MB!
                 </p>
               </v-responsive>
             </div>
@@ -148,7 +148,7 @@ login.setEditProfile();
                                 label="Username" 
                                 variant="solo" 
                                 :rules="[rules.required,rules.limited]"
-                                v-model="login.editProfile.displayName"></v-text-field>
+                                v-model="login.editProfile.displayName" disabled></v-text-field>
                                 <p class="web-text-sub">Email</p>
                                 <v-text-field 
                                 label="Email" 
@@ -160,40 +160,7 @@ login.setEditProfile();
                                 variant="solo" rows="3" 
                                 :rules="[rules.limited]"
                                 v-model="login.editProfile.bio"></v-textarea>
-                                <!-- <div>
-                                    <span class="tw-text-cyan-500 tw-underline tw-mx-4" @click="">Change password</span>
-                                </div> -->
                             </div>
-
-                            <!-- <div class="tw-space-y-4">
-                                <v-row class="tw-flex tw-items-center" no-gutters>
-                                    <v-col cols="1"></v-col>
-                                    <v-col cols="2" class="d-flex align-center justify-center">
-                                        <span class="web-text-sub ">Old password</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <v-text-field label="Enter old password" variant="solo" hide-details></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters class="tw-flex tw-items-center">
-                                    <v-col cols="1"></v-col>
-                                    <v-col cols="2" class="d-flex align-center justify-center">
-                                        <span class="web-text-sub">New password</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <v-text-field label="Enter new password" variant="solo" hide-details></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-col cols="3" class="d-flex align-center justify-center">
-                                        <span class="web-text-sub">Confirm new password</span>
-                                    </v-col>
-                                    <v-col cols="8">
-                                        <v-text-field label="Enter confirm password" variant="solo"
-                                            hide-details></v-text-field>
-                                    </v-col>
-                                </v-row>
-                            </div> -->
                         </div>
 
                     </v-col>
@@ -209,6 +176,7 @@ login.setEditProfile();
             login.editProfile.email == '' ||
             !login.editProfile.email.match(validEmail) ||
             login.editProfile.displayName.length > 255 ||
+            (login.editProfileFile == null ? false : login.editProfileFile[0].size > 50000000) ||
             login.editProfile.email.length > 255">submit</v-btn>
         </div>
         <updateProfileSuccessPopup

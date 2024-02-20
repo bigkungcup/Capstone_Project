@@ -45,6 +45,7 @@ export const useLogin = defineStore("Login", () => {
   const leavePopup = ref(true);
   const updateFailed = ref(false);
   const updateFailedError = ref()
+  const profilePic = ref(localStorage.getItem('file'))
 
   //Login
   async function handleLogin() {
@@ -288,6 +289,7 @@ export const useLogin = defineStore("Login", () => {
     leavePopup,
     updateFailed,
     updateFailedError,
+    profilePic,
     getProfile,
     updateProfile,
     handleLogin,

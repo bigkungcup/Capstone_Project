@@ -69,7 +69,10 @@ export const useReviews = defineStore("Reviews", () => {
         await login.handleRefresh();
         await getReview(bookId)
       }
-    }
+    } else if (status == 404) {
+      clearReviewList();
+      console.log("get review list uncompleted");
+    } 
   }
 
     //Get reviews by guest

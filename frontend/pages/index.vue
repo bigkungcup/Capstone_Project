@@ -1,4 +1,8 @@
 <script setup>
+import { useLogin } from "../stores/login";
+
+const accessToken = ref(useCookie("accessToken"));
+const login = useLogin();
 
 const colors = [
         'green',
@@ -28,6 +32,13 @@ const bookcovers = [
 const path = '/ej2'
 
 const bookPath = ref('_nuxt/@fs\\Files\\Uploads\\TEST\\foryou2.jpg')
+
+if(accessToken.value == undefined){
+  login.resetToken();
+}else{
+  login.getProfile();
+}
+
 </script>
 
 <template>

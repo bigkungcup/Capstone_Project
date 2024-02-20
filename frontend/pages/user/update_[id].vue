@@ -34,7 +34,7 @@ const rules = {
   email: (value) => value.match(validEmail) || "Please enter a valid email address",
   limitedPass: (value) => value.length <= 16 && value.length >= 8 || "Password must be 8-16 characters",
   limited: (value) => value.length <= 255 || "Max 255 characters",
-  size: (value) => !!value || value[0].size <= 64000000 || showValidateSize(),
+  size: (value) => !!value || value[0].size <= 50000000 || showValidateSize(),
 };
 
 function setSelectedImage() {
@@ -164,7 +164,7 @@ onBeforeRouteLeave(() => {
                 >
                 </v-file-input>
                 <p v-show="validateSize" class="validate-text">
-                  Image size should be less than 64 MB!
+                  Image size should be less than 50 MB!
                 </p>
               </v-responsive>
             </div>
@@ -195,6 +195,7 @@ onBeforeRouteLeave(() => {
                     variant="solo"
                     :rules="[rules.required,rules.limited]"
                     v-model="user.editUser.displayName"
+                    disabled
                   ></v-text-field>
                 </div>
                 <div>
@@ -253,6 +254,7 @@ onBeforeRouteLeave(() => {
           !user.editUser.email.match(validEmail) ||
           user.editUser.displayName.length > 255 ||
           user.editUser.email.length > 255 ||
+          (user.editUserFile == null ? false : user.editUserFile[0].size > 50000000) ||
           validatePassword 
           // user.editUserFile == null
           //   ? false
