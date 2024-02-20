@@ -67,17 +67,17 @@ public class HistoryService extends CommonController {
             Path pathFile = fileStorageService.load(book);
             if (pathFile != null) {
                 // history.setFile(pathFile.toString());
-                
-                Duration duration = Duration.between(LocalDateTime.now(), book.getBookUpdateDateTime());
-                book.setCountDateTime(Math.abs(duration.toSeconds()));
                 // book.setFile(pathFile.toString());
                 // bookDTO.setFile("http://localhost:8080/api/files/filesBook/" + bookDTO.getBookId());
                 book.setFile(baseUrl + "/api/files/filesBook/" + book.getBookId());
-                history.getBook().setBookTag(history.getBook().getBookTag().replaceAll(",", ", "));
-                book.setBookTagList(new ArrayList<String>(Arrays.asList(history.getBook().getBookTag().split(","))));
-                history.setBookData(book);
+              
             }
 
+            Duration duration = Duration.between(LocalDateTime.now(), book.getBookUpdateDateTime());
+            book.setCountDateTime(Math.abs(duration.toSeconds()));
+            history.getBook().setBookTag(history.getBook().getBookTag().replaceAll(",", ", "));
+            book.setBookTagList(new ArrayList<String>(Arrays.asList(history.getBook().getBookTag().split(","))));
+            history.setBookData(book);
         });
 
         // bookHistory.forEach((history) -> {
@@ -94,7 +94,7 @@ public class HistoryService extends CommonController {
         // user.getUserId()), PageBookDTO.class);
         response.setResponse_code(200);
         response.setResponse_status("OK");
-        response.setResponse_message("All Books");
+        response.setResponse_message("All History");
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         response.setData(bookHistory);
 
