@@ -73,8 +73,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/history").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/bookmark").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/bookmark/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                .requestMatchers("/api/booktype").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                .requestMatchers("/api/booktype/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/booktype").permitAll()
+                .requestMatchers("/api/booktype/**").permitAll()
                 .anyRequest().authenticated());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

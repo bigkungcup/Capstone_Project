@@ -43,7 +43,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         if (request.getServletPath().equals("/api/auth/login") || request.getServletPath().equals("/api/auth/refresh")
                 || request.getServletPath().equals("/api/user")  || request.getServletPath().equals("/api/book/guest/**")  || request.getServletPath().equals("/api/book/guest")  
-                || request.getServletPath().equals("/api/review/guest/**") || request.getServletPath().equals("/api/review/guest") || request.getServletPath().equals("/api/files/**")) {
+                || request.getServletPath().equals("/api/review/guest/**") || request.getServletPath().equals("/api/review/guest") || request.getServletPath().equals("/api/files/**")
+                || request.getServletPath().equals("/api/booktype") || request.getServletPath().equals("/api/booktype/**")) {
             filterChain.doFilter(request, response);
         } else {
             // Cookie access_token = WebUtils.getCookie(request, "access_token");
