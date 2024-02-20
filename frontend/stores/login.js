@@ -230,10 +230,10 @@ export const useLogin = defineStore("Login", () => {
 
   //Log out
   function logOut() {
-    // accessToken.value = null;
-    // refreshToken.value = null;
-    delete_cookie("refreshToken");
+    accessToken.value = null;
     delete_cookie("accessToken");
+    refreshToken.value = null;
+    delete_cookie("refreshToken");
     resetToken();
     router.push("/login");
   }

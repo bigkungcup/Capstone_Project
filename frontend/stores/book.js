@@ -116,7 +116,7 @@ export const useBooks = defineStore("Books", () => {
             size: 10,
             sortType: sortBybook,
             sortBy: sortTypebook,
-            booktypeId: filterBook.value
+            booktypeId: filterBook.value == 0 ? '' : filterBook.value 
           };
         },
         onResponse({ request, response, options }) {
