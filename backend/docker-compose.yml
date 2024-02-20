@@ -11,7 +11,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ../Files:/Files
+      - ../../Files:/Files
     restart: always
 
 networks:
