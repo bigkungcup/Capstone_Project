@@ -60,7 +60,8 @@ public class UserService extends CommonController {
                     Path pathFile = fileStorageService.loadUserFile(user.getUserId());
                     if (pathFile != null) {
                         // user.setFile(pathFile.toString());
-                        // user.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                        // user.setFile("http://localhost:8080/api/files/filesUser/" +
+                        // user.getUserId());
                         user.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
                     }
                 } catch (Exception e) {
@@ -92,7 +93,8 @@ public class UserService extends CommonController {
                 Path pathFile = fileStorageService.loadUserFile(userId);
                 if (pathFile != null) {
                     // userDTO.setFile(pathFile.toString());
-                    // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                    // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
+                    // user.getUserId());
                     userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
                 }
             } catch (Exception e) {
@@ -121,8 +123,9 @@ public class UserService extends CommonController {
             Path pathFile = fileStorageService.loadUserFile(user.getUserId());
             if (pathFile != null) {
                 // userDTO.setFile(pathFile.toString());
-                  // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
-                  userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
+                // user.getUserId());
+                userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -160,33 +163,28 @@ public class UserService extends CommonController {
         return response;
     }
 
-    public DataResponse updateUser(UpdateUserDTO user, Integer userId, MultipartFile file) {
+    public DataResponse updateUser(UpdateUserDTO updateUser, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
 
-        // if (new BCryptPasswordEncoder().matches(userById.getPassword(),
-        // user.getPassword())) {
-        // throw new HandleExceptionBadRequest("Password is incorrect");
-        // }
-
         if (userById != null) {
-            if (userById.getEmail().equals(user.getEmail())
-                    && userById.getDisplayName().equals(user.getDisplayName())) {
-
-                repository.updateUserDetailByUser(user.getBio(), userId);
+            if (userById.getDisplayName().equals(updateUser.getDisplayName())
+                    && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_USER"))) {
+                // Display name is not changed
+                repository.updateUserDetailByUser(updateUser.getBio(), userId);
                 if (file != null) {
                     fileStorageService.deleteUserFile(userId);
                     fileStorageService.storeUserProfile(file, userId);
                 }
+
                 User dataUser = repository.getUserById(userId);
                 UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
 
                 try {
-                    if (user.getStatus() != null) {
+                    if (updateUser.getStatus() != null) {
                         Path pathFile = fileStorageService.loadUserFile(userId);
-                        if(pathFile != null){
-                            // userDTO.setFile(pathFile.toString());
-                            // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                        if (pathFile != null) {
                             userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
                         }
                     } else {
@@ -195,19 +193,20 @@ public class UserService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                // userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-                userDTO.setBio(user.getBio());
+
+                userDTO.setPassword(new BCryptPasswordEncoder().encode(dataUser.getPassword()));
+                userDTO.setBio(updateUser.getBio());
+
                 response.setResponse_code(200);
                 response.setResponse_status("OK");
                 response.setResponse_message("User Updated");
                 response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
                 response.setData(userDTO);
-
             } else {
-                boolean existsByEmailOrDisplayName = repository.existsByEmailOrDisplayName(user.getEmail(),
-                        user.getDisplayName());
+                // Display name is changed
+                boolean existsByEmailOrDisplayName = repository.existsByDisplayName(updateUser.getDisplayName());
                 if (!existsByEmailOrDisplayName) {
-                    repository.updateUser(user.getDisplayName(), user.getEmail(), user.getBio(),
+                    repository.updateUser(updateUser.getDisplayName(), userById.getEmail(), updateUser.getBio(),
                             userId);
                     if (file != null) {
                         fileStorageService.deleteUserFile(userId);
@@ -217,11 +216,9 @@ public class UserService extends CommonController {
                     UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
 
                     try {
-                        if (user.getStatus() != null) {
+                        if (updateUser.getStatus() != null) {
                             Path pathFile = fileStorageService.loadUserFile(userId);
-                            if(pathFile != null){
-                                // userDTO.setFile(pathFile.toString());
-                                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                            if (pathFile != null) {
                                 userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
                             }
                         } else {
@@ -230,48 +227,50 @@ public class UserService extends CommonController {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    // userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-                    userDTO.setBio(user.getBio());
-                    userDTO.setDisplayName(user.getDisplayName());
-                    userDTO.setEmail(user.getEmail());
+
+                    userDTO.setPassword(new BCryptPasswordEncoder().encode(dataUser.getPassword()));
+                    userDTO.setBio(updateUser.getBio());
+                    userDTO.setDisplayName(updateUser.getDisplayName());
+
                     response.setResponse_code(200);
                     response.setResponse_status("OK");
                     response.setResponse_message("User Updated");
                     response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
                     response.setData(userDTO);
                 } else {
-                    throw new HandleExceptionBadRequest("Email or DisplayName already exists");
+                    throw new HandleExceptionBadRequest("DisplayName already exists");
                 }
             }
+        } else {
+            throw new HandleExceptionNotFound("User Not Found", "User");
         }
-        // else {
-        // throw new HandleExceptionNotFound("User Not Found", "User");
-        // }
 
         return response;
     }
 
-    public DataResponse updateUserByAdmin(UpdateUserByAdminDTO user, Integer userId, MultipartFile file) {
+    public DataResponse updateUserByAdmin(UpdateUserByAdminDTO updateUser, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
+
         if (userById != null) {
-            if (userById.getEmail().equals(user.getEmail())
-                    && userById.getDisplayName().equals(user.getDisplayName())) {
-                repository.updateUserByAdmin(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getBio(),
-                        user.getRole(), userId);
+            if (userById.getDisplayName().equals(updateUser.getDisplayName())
+                    && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                // Display name is not changed
+                repository.updateUserDetailByAdmin(updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(),
+                        userId);
                 if (file != null) {
                     fileStorageService.deleteUserFile(userId);
                     fileStorageService.storeUserProfile(file, userId);
                 }
+
                 User dataUser = repository.getUserById(userId);
                 UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
 
                 try {
-                    if (user.getStatus() != null) {
+                    if (updateUser.getStatus() != null) {
                         Path pathFile = fileStorageService.loadUserFile(userId);
-                        if(pathFile != null){
-                            // userDTO.setFile(pathFile.toString());
-                            // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                        if (pathFile != null) {
                             userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
                         }
                     } else {
@@ -280,23 +279,22 @@ public class UserService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-                userDTO.setBio(user.getBio());
-                userDTO.setDisplayName(user.getDisplayName());
-                userDTO.setEmail(user.getEmail());
-                userDTO.setRole(user.getRole());
+
+                userDTO.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword()));
+                userDTO.setBio(updateUser.getBio());
+                userDTO.setRole(updateUser.getRole());
+
                 response.setResponse_code(200);
                 response.setResponse_status("OK");
                 response.setResponse_message("User Updated");
                 response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
                 response.setData(userDTO);
             } else {
-                boolean existsByEmailOrDisplayName = repository.existsByEmailOrDisplayName(user.getEmail(),
-                        user.getDisplayName());
+                // Display name is changed
+                boolean existsByEmailOrDisplayName = repository.existsByDisplayName(updateUser.getDisplayName());
                 if (!existsByEmailOrDisplayName) {
-                    repository.updateUserByAdmin(user.getDisplayName(), user.getEmail(), user.getPassword(),
-                            user.getBio(),
-                            user.getRole(), userId);
+                    repository.updateUserByAdmin(updateUser.getDisplayName(), userById.getEmail(),
+                            updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(), userId);
                     if (file != null) {
                         fileStorageService.deleteUserFile(userId);
                         fileStorageService.storeUserProfile(file, userId);
@@ -305,11 +303,9 @@ public class UserService extends CommonController {
                     UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
 
                     try {
-                        if (user.getStatus() != null) {
+                        if (updateUser.getStatus() != null) {
                             Path pathFile = fileStorageService.loadUserFile(userId);
-                            if(pathFile != null){
-                                // userDTO.setFile(pathFile.toString());
-                                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
+                            if (pathFile != null) {
                                 userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
                             }
                         } else {
@@ -318,89 +314,183 @@ public class UserService extends CommonController {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-                    userDTO.setBio(user.getBio());
-                    userDTO.setDisplayName(user.getDisplayName());
-                    userDTO.setEmail(user.getEmail());
-                    userDTO.setRole(user.getRole());
-                    response.setResponse_code(200);
-                    response.setResponse_status("OK");
-                    response.setResponse_message("User Updated");
-                    response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-                    response.setData(userDTO);
-                } else if (existsByEmailOrDisplayName && userById.getEmail().equals(user.getEmail())
-                        && userById.getDisplayName().equals(user.getDisplayName())) {
-                    repository.updateUserDetailByAdmin(user.getPassword(), user.getBio(), user.getRole(), userId);
-                    if (file != null) {
-                        fileStorageService.deleteUserFile(userId);
-                        fileStorageService.storeUserProfile(file, userId);
-                    }
-                    User dataUser = repository.getUserById(userId);
-                    UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
 
-                    try {
-                        if (user.getStatus() != null) {
-                            Path pathFile = fileStorageService.loadUserFile(userId);
-                            if(pathFile != null){
-                                // userDTO.setFile(pathFile.toString());
-                                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
-                                userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
-                            }
-                        } else {
-                            fileStorageService.deleteUserFile(userId);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-                    userDTO.setBio(user.getBio());
-                    userDTO.setRole(user.getRole());
-                    response.setResponse_code(200);
-                    response.setResponse_status("OK");
-                    response.setResponse_message("User Updated");
-                    response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-                    response.setData(userDTO);
-                } else if (existsByEmailOrDisplayName && userById.getEmail().equals(user.getEmail())
-                        && userById.getDisplayName().equals(user.getDisplayName())
-                        && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                    repository.updateUserDetailByAdmin(user.getPassword(), user.getBio(), user.getRole(), userId);
-                    
-                    if (file != null) {
-                        fileStorageService.deleteUserFile(userId);
-                        fileStorageService.storeUserProfile(file, userId);
-                    }
-                    User dataUser = repository.getUserById(userId);
-                    UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+                    userDTO.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword()));
+                    userDTO.setBio(updateUser.getBio());
+                    userDTO.setRole(updateUser.getRole());
+                    userDTO.setDisplayName(updateUser.getDisplayName());
 
-                    try {
-                        if (user.getStatus() != null) {
-                            Path pathFile = fileStorageService.loadUserFile(userId);
-                            if(pathFile != null){
-                                // userDTO.setFile(pathFile.toString());
-                                // userDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
-                                userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
-
-                            }
-                            // userDTO.setFile(pathFile.toString());
-                        } else {
-                            fileStorageService.deleteUserFile(userId);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-                    userDTO.setBio(user.getBio());
-                    userDTO.setRole(user.getRole());
                     response.setResponse_code(200);
                     response.setResponse_status("OK");
                     response.setResponse_message("User Updated");
                     response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
                     response.setData(userDTO);
                 } else {
-                    throw new HandleExceptionBadRequest("Email or DisplayName already exists");
+                    throw new HandleExceptionBadRequest("DisplayName already exists");
                 }
             }
+            // if (userById.getEmail().equals(user.getEmail())
+            // && userById.getDisplayName().equals(user.getDisplayName())) {
+            // repository.updateUserByAdmin(user.getDisplayName(), user.getEmail(),
+            // user.getPassword(), user.getBio(),
+            // user.getRole(), userId);
+            // if (file != null) {
+            // fileStorageService.deleteUserFile(userId);
+            // fileStorageService.storeUserProfile(file, userId);
+            // }
+            // User dataUser = repository.getUserById(userId);
+            // UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+            // try {
+            // if (user.getStatus() != null) {
+            // Path pathFile = fileStorageService.loadUserFile(userId);
+            // if (pathFile != null) {
+            // // userDTO.setFile(pathFile.toString());
+            // // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
+            // // user.getUserId());
+            // userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
+            // }
+            // } else {
+            // fileStorageService.deleteUserFile(userId);
+            // }
+            // } catch (Exception e) {
+            // e.printStackTrace();
+            // }
+            // userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            // userDTO.setBio(user.getBio());
+            // userDTO.setDisplayName(user.getDisplayName());
+            // userDTO.setEmail(user.getEmail());
+            // userDTO.setRole(user.getRole());
+            // response.setResponse_code(200);
+            // response.setResponse_status("OK");
+            // response.setResponse_message("User Updated");
+            // response.setResponse_datetime(sdf3.format(new
+            // Timestamp(System.currentTimeMillis())));
+            // response.setData(userDTO);
+            // } else {
+            // boolean existsByEmailOrDisplayName =
+            // repository.existsByEmailOrDisplayName(user.getEmail(),
+            // user.getDisplayName());
+            // if (!existsByEmailOrDisplayName) {
+            // repository.updateUserByAdmin(user.getDisplayName(), user.getEmail(),
+            // user.getPassword(),
+            // user.getBio(),
+            // user.getRole(), userId);
+            // if (file != null) {
+            // fileStorageService.deleteUserFile(userId);
+            // fileStorageService.storeUserProfile(file, userId);
+            // }
+            // User dataUser = repository.getUserById(userId);
+            // UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+            // try {
+            // if (user.getStatus() != null) {
+            // Path pathFile = fileStorageService.loadUserFile(userId);
+            // if (pathFile != null) {
+            // // userDTO.setFile(pathFile.toString());
+            // // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
+            // // user.getUserId());
+            // userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
+            // }
+            // } else {
+            // fileStorageService.deleteUserFile(userId);
+            // }
+            // } catch (Exception e) {
+            // e.printStackTrace();
+            // }
+            // userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            // userDTO.setBio(user.getBio());
+            // userDTO.setDisplayName(user.getDisplayName());
+            // userDTO.setEmail(user.getEmail());
+            // userDTO.setRole(user.getRole());
+            // response.setResponse_code(200);
+            // response.setResponse_status("OK");
+            // response.setResponse_message("User Updated");
+            // response.setResponse_datetime(sdf3.format(new
+            // Timestamp(System.currentTimeMillis())));
+            // response.setData(userDTO);
+            // } else if (existsByEmailOrDisplayName &&
+            // userById.getEmail().equals(user.getEmail())
+            // && userById.getDisplayName().equals(user.getDisplayName())) {
+            // repository.updateUserDetailByAdmin(user.getPassword(), user.getBio(),
+            // user.getRole(), userId);
+            // if (file != null) {
+            // fileStorageService.deleteUserFile(userId);
+            // fileStorageService.storeUserProfile(file, userId);
+            // }
+            // User dataUser = repository.getUserById(userId);
+            // UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+            // try {
+            // if (user.getStatus() != null) {
+            // Path pathFile = fileStorageService.loadUserFile(userId);
+            // if (pathFile != null) {
+            // // userDTO.setFile(pathFile.toString());
+            // // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
+            // // user.getUserId());
+            // userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
+            // }
+            // } else {
+            // fileStorageService.deleteUserFile(userId);
+            // }
+            // } catch (Exception e) {
+            // e.printStackTrace();
+            // }
+            // userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            // userDTO.setBio(user.getBio());
+            // userDTO.setRole(user.getRole());
+            // response.setResponse_code(200);
+            // response.setResponse_status("OK");
+            // response.setResponse_message("User Updated");
+            // response.setResponse_datetime(sdf3.format(new
+            // Timestamp(System.currentTimeMillis())));
+            // response.setData(userDTO);
+            // } else if (existsByEmailOrDisplayName &&
+            // userById.getEmail().equals(user.getEmail())
+            // && userById.getDisplayName().equals(user.getDisplayName())
+            // &&
+            // SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+            // .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            // repository.updateUserDetailByAdmin(user.getPassword(), user.getBio(),
+            // user.getRole(), userId);
+
+            // if (file != null) {
+            // fileStorageService.deleteUserFile(userId);
+            // fileStorageService.storeUserProfile(file, userId);
+            // }
+            // User dataUser = repository.getUserById(userId);
+            // UserDTO userDTO = modelMapper.map(dataUser, UserDTO.class);
+
+            // try {
+            // if (user.getStatus() != null) {
+            // Path pathFile = fileStorageService.loadUserFile(userId);
+            // if (pathFile != null) {
+            // // userDTO.setFile(pathFile.toString());
+            // // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
+            // // user.getUserId());
+            // userDTO.setFile(baseUrl + "/api/files/filesUser/" + userId);
+
+            // }
+            // // userDTO.setFile(pathFile.toString());
+            // } else {
+            // fileStorageService.deleteUserFile(userId);
+            // }
+            // } catch (Exception e) {
+            // e.printStackTrace();
+            // }
+            // userDTO.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            // userDTO.setBio(user.getBio());
+            // userDTO.setRole(user.getRole());
+            // response.setResponse_code(200);
+            // response.setResponse_status("OK");
+            // response.setResponse_message("User Updated");
+            // response.setResponse_datetime(sdf3.format(new
+            // Timestamp(System.currentTimeMillis())));
+            // response.setData(userDTO);
+            // } else {
+            // throw new HandleExceptionBadRequest("Email or DisplayName already exists");
+            // }
+            // }
 
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");

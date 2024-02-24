@@ -196,6 +196,10 @@ public class BookService extends CommonController {
 
         Book dataBook = repository.getBookById(bookId);
 
+        if (dataBook == null) {
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+
         if (dataBook.getAuthor().equals(book.getAuthor()) && dataBook.getBookName().equals(book.getBookName())) {
 
             repository.updateBook(book.getBooktypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(),
@@ -298,6 +302,11 @@ public class BookService extends CommonController {
         DataResponse response = new DataResponse();
         // try {
         Book dataBook = repository.getBookById(bookId);
+
+        if (dataBook == null) {
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+
         Integer deleteStatus = repository.deleteBook(bookId);
         System.out.println("deleteBook: " + deleteStatus);
         if (deleteStatus == 1) {
