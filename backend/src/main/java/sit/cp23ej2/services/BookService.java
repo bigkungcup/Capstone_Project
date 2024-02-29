@@ -62,7 +62,7 @@ public class BookService extends CommonController {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public DataResponse getBook(int page, int size, Long bookRatng, Long booktypeId, String sortBy, String sortType)
+    public DataResponse getBook(int page, int size, Long bookRatng, Long booktypeId, String search, String sortBy, String sortType)
             throws HandleExceptionNotFound {
 
         DataResponse response = new DataResponse();
@@ -84,7 +84,7 @@ public class BookService extends CommonController {
             pageable = PageRequest.of(page, size, Sort.by(sortBy));
         }
 
-        PageBookDTO books = modelMapper.map(repository.getAllBooks(pageable, bookRatng, booktypeId), PageBookDTO.class);
+        PageBookDTO books = modelMapper.map(repository.getAllBooks(pageable, bookRatng, booktypeId, search), PageBookDTO.class);
 
         if (books.getContent().size() > 0) {
             List<BookDTO> bookDTOs = books.getContent();
@@ -203,7 +203,7 @@ public class BookService extends CommonController {
         if (dataBook.getAuthor().equals(book.getAuthor()) && dataBook.getBookName().equals(book.getBookName())) {
 
             repository.updateBook(book.getBooktypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(),
-                    book.getBookDetail(),
+                    book.getBookDetail(), new Timestamp(System.currentTimeMillis()).toString(),
                     bookId);
 
             if (file != null) {
@@ -221,7 +221,8 @@ public class BookService extends CommonController {
             bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBooktypeId()));
             bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
             bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
-
+            bookDTO.setBookUpdateDateTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+            
             try {
                 if (book.getStatus() != null) {
                     Path pathFile = fileStorageService.load(bookDTO);
@@ -250,7 +251,7 @@ public class BookService extends CommonController {
             if (!existsByAuthorAndBookName) {
 
                 repository.updateBook(book.getBooktypeId(), book.getBookName(), book.getAuthor(), book.getBookTag(),
-                        book.getBookDetail(),
+                        book.getBookDetail(), new Timestamp(System.currentTimeMillis()).toString(),
                         bookId);
 
                 if (file != null) {
@@ -263,12 +264,13 @@ public class BookService extends CommonController {
                 newDataBook.setBookName(book.getBookName());
                 newDataBook.setBookTag(book.getBookTag());
                 newDataBook.setBookDetail(book.getBookDetail());
-
+                
                 BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
-
+                
                 bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBooktypeId()));
                 bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
                 bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                bookDTO.setBookUpdateDateTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
 
                 try {
                     if (book.getStatus() != null) {

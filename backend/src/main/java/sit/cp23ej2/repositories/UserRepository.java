@@ -88,6 +88,30 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         @Modifying
         @Transactional
+        @Query(value = "UPDATE User SET follows = follows + 1" +
+                        " WHERE userId = :userId", nativeQuery = true)
+        void increaseFollows(@Param("userId") Integer userId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE User SET follows = follows - 1" +
+                        " WHERE userId = :userId", nativeQuery = true)
+        void decreaseFollows(@Param("userId") Integer userId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE User SET followers = followers + 1" +
+                        " WHERE userId = :userId", nativeQuery = true)
+        void increaseFollowers(@Param("userId") Integer userId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE User SET followers = followers - 1" +
+                        " WHERE userId = :userId", nativeQuery = true)
+        void decreaseFollowers(@Param("userId") Integer userId);
+
+        @Modifying
+        @Transactional
         @Query(value = "DELETE FROM User WHERE userId = :userId", nativeQuery = true)
         Integer deleteUser(@Param("userId") Integer userId);
 

@@ -57,4 +57,24 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
         Integer deleteReview(@Param("reviewId") Integer reviewId);
 
         List<Review> findAll();
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Review SET reviewTotalLike = reviewTotalLike + 1  WHERE reviewId = :reviewId", nativeQuery = true)
+        void increaseReviewTotalLike(@Param("reviewId") Integer reviewId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Review SET reviewTotalLike = reviewTotalLike - 1  WHERE reviewId = :reviewId", nativeQuery = true)
+        void decreaseReviewTotalLike(@Param("reviewId") Integer reviewId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Review SET reviewTotalDisLike = reviewTotalDisLike + 1  WHERE reviewId = :reviewId", nativeQuery = true)
+        void increaseReviewTotalDisLike(@Param("reviewId") Integer reviewId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Review SET reviewTotalDisLike = reviewTotalDisLike - 1  WHERE reviewId = :reviewId", nativeQuery = true)
+        void decreaseReviewTotalDisLike(@Param("reviewId") Integer reviewId);
 }

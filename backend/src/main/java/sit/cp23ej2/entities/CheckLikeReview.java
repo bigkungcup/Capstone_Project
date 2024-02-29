@@ -19,17 +19,21 @@ import lombok.ToString;
 @ToString
 @Entity
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-@Table(name = "Booktype", schema = "bannarug")
-public class Booktype {
+@Table(name = "CheckLikeReview", schema = "bannarug")
+public class CheckLikeReview {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "booktypeId")
-    private Integer booktypeId;
-    
-    private String booktypeName;
-    
-    private LocalDateTime booktypeCreateDateTime;
+    @Column(name = "checkLikeReviewId")
+    private Integer checkLikeReviewId;
 
-    private LocalDateTime  booktypeUpdateDateTme;
+    private Integer clr_reviewId; 
+    
+    private Integer clu_userId; 
+
+    private Integer likeStatus;
+    
+    private LocalDateTime checkLikeReviewCreateDateTime;
+
+    private LocalDateTime checkLikeReviewUpdateDateTime;
 }

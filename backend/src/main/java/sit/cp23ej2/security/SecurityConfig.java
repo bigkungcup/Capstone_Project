@@ -75,6 +75,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/bookmark/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/booktype").permitAll()
                 .requestMatchers("/api/booktype/**").permitAll()
+                .requestMatchers("/api/follower").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/checkLikeReview/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .anyRequest().authenticated());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

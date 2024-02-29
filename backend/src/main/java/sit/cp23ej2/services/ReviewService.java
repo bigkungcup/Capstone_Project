@@ -3,6 +3,7 @@ package sit.cp23ej2.services;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,13 @@ import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
+import sit.cp23ej2.entities.CheckLikeReview;
 import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
+import sit.cp23ej2.repositories.CheckLikeReviewRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
@@ -43,6 +46,9 @@ public class ReviewService extends CommonController {
     private FileStorageService fileStorageService;
 
     @Autowired
+    private CheckLikeReviewRepository checkLikeReviewRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Value("${base_url}")
@@ -53,22 +59,38 @@ public class ReviewService extends CommonController {
     public DataResponse getReviewByBookId(int bookId, int page, int size) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+
         PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(bookId, pageable), PageReviewDTO.class);
         if (reviews.getContent().size() > 0) {
 
             reviews.getContent().forEach(review -> {
-                UserDTO user = modelMapper.map(review.getUser(), UserDTO.class);
+                UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
                 try {
                     Path pathFile = fileStorageService.loadUserFile(review.getUser().getUserId());
                     System.out.println(pathFile.toString());
                     // user.setFile(pathFile.toString());
                     // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
-                    user.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
                   
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                review.setUserDetail(user);
+                review.setUserDetail(userDTO);
+            });
+
+            List<CheckLikeReview> likeStatus = checkLikeReviewRepository.getLikeStatus(user.getUserId());;
+
+            reviews.getContent().forEach(review -> {
+                likeStatus.forEach(like -> {
+                    if (review.getReviewId() == like.getClr_reviewId()) {
+                        review.setLikeStatus(like.getLikeStatus());
+                    }
+                });
             });
 
             response.setResponse_code(200);
@@ -127,6 +149,7 @@ public class ReviewService extends CommonController {
                 review.getBookId(), review.getSpoileFlag());
         bookRepository.increaseBookTotalReview(review.getBookId());
         userRepository.increaseTotalReview(review.getUserId());
+        bookRepository.updateBookReting(review.getBookId());
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Review Created");
