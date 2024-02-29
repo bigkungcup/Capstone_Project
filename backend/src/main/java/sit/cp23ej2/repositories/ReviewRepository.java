@@ -13,14 +13,23 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
-        @Query(value = "SELECT * FROM Review WHERE rvb_bookId = :bookId", nativeQuery = true)
-        Page<Review> getReviewByBookId(@Param("bookId") int bookId, Pageable pageable);
+        @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime"
+                        +
+                        " FROM Review r " +
+                        " WHERE r.rvb_bookId = :bookId AND (:reviewRating IS NULL OR r.reviewRating = :reviewRating)" , nativeQuery = true)
+        Page<Review> getReviewByBookId(Pageable pageable, @Param("bookId") Integer bookId,
+                        @Param("reviewRating") Long reviewRating);
 
-        @Query(value = "SELECT * FROM Review WHERE reviewId = :reviewId", nativeQuery = true)
-        Review getReviewById(@Param("reviewId") int reviewId);
+        @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
+                        +
+                        " FROM Review r " +
+                        " WHERE r.reviewId = :reviewId" , nativeQuery = true)
+        Review getReviewById(@Param("reviewId") Integer reviewId);
 
-        @Query(value = "SELECT * FROM Review WHERE rvu_userId = :userId", nativeQuery = true)
-        Page<Review> getReviewByUserId(@Param("userId") int userId, Pageable pageable);
+        @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
+                        +
+                        " FROM Review r WHERE r.rvu_userId = :userId", nativeQuery = true)
+        Page<Review> getReviewByUserId(Pageable pageable, @Param("userId") Integer userId);
 
         @Modifying
         @Transactional
@@ -57,4 +66,24 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
         Integer deleteReview(@Param("reviewId") Integer reviewId);
 
         List<Review> findAll();
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Review SET reviewTotalLike = reviewTotalLike + 1  WHERE reviewId = :reviewId", nativeQuery = true)
+        void increaseReviewTotalLike(@Param("reviewId") Integer reviewId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Review SET reviewTotalLike = reviewTotalLike - 1  WHERE reviewId = :reviewId", nativeQuery = true)
+        void decreaseReviewTotalLike(@Param("reviewId") Integer reviewId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Review SET reviewTotalDisLike = reviewTotalDisLike + 1  WHERE reviewId = :reviewId", nativeQuery = true)
+        void increaseReviewTotalDisLike(@Param("reviewId") Integer reviewId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Review SET reviewTotalDisLike = reviewTotalDisLike - 1  WHERE reviewId = :reviewId", nativeQuery = true)
+        void decreaseReviewTotalDisLike(@Param("reviewId") Integer reviewId);
 }
