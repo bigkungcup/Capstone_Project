@@ -1,13 +1,15 @@
-package sit.cp23ej2.dtos.Review;
+package sit.cp23ej2.dtos.LikeStatus;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class CreateReviewLikeStatus {
 
     @NotNull(message = "userId shouldn't be null")

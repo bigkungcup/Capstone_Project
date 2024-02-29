@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,13 @@ import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
-import sit.cp23ej2.entities.CheckLikeReview;
+import sit.cp23ej2.entities.LikeStatus;
 import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
-import sit.cp23ej2.repositories.CheckLikeReviewRepository;
+import sit.cp23ej2.repositories.LikeStatusRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
@@ -46,7 +47,7 @@ public class ReviewService extends CommonController {
     private FileStorageService fileStorageService;
 
     @Autowired
-    private CheckLikeReviewRepository checkLikeReviewRepository;
+    private LikeStatusRepository likeStatusRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -56,26 +57,42 @@ public class ReviewService extends CommonController {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public DataResponse getReviewByBookId(int bookId, int page, int size) throws HandleExceptionNotFound {
+    public DataResponse getReviewByBookId(Integer bookId, int page, int size, Long reviewRating, String sortBy, String sortType) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
-        Pageable pageable = PageRequest.of(page, size);
+        // Pageable pageable = PageRequest.of(page, size);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(bookId, pageable), PageReviewDTO.class);
+        Pageable pageable;
+
+        if (sortBy == null || sortBy.equals("")) {
+            sortBy = "reviewId";
+        }
+
+          if ("DESC".equalsIgnoreCase(sortType)) {
+            pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        } else if ("ASC".equalsIgnoreCase(sortType)) {
+            pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        } else {
+            pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        }
+
+        PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(pageable, bookId, reviewRating), PageReviewDTO.class);
         if (reviews.getContent().size() > 0) {
 
             reviews.getContent().forEach(review -> {
                 UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
                 try {
-                    Path pathFile = fileStorageService.loadUserFile(review.getUser().getUserId());
-                    System.out.println(pathFile.toString());
+                    // Path pathFile = fileStorageService.loadUserFile(review.getUser().getUserId());
+                    // System.out.println(pathFile.toString());
                     // user.setFile(pathFile.toString());
                     // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
-                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    if(user != null){
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    }
                   
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -83,15 +100,16 @@ public class ReviewService extends CommonController {
                 review.setUserDetail(userDTO);
             });
 
-            List<CheckLikeReview> likeStatus = checkLikeReviewRepository.getLikeStatus(user.getUserId());;
-
-            reviews.getContent().forEach(review -> {
-                likeStatus.forEach(like -> {
-                    if (review.getReviewId() == like.getClr_reviewId()) {
-                        review.setLikeStatus(like.getLikeStatus());
-                    }
+            if(user != null){
+                List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
+                reviews.getContent().forEach(review -> {
+                    likeStatus.forEach(like -> {
+                        if (review.getReviewId() == like.getLsr_reviewId()) {
+                            review.setLikeStatus(like.getLikeStatus());
+                        }
+                    });
                 });
-            });
+            }
 
             response.setResponse_code(200);
             response.setResponse_status("OK");
@@ -105,7 +123,7 @@ public class ReviewService extends CommonController {
         return response;
     }
 
-    public DataResponse getReviewById(int reviewId) throws HandleExceptionNotFound {
+    public DataResponse getReviewById(Integer reviewId) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         Review review = repository.getReviewById(reviewId);
         if (review != null) {
@@ -128,7 +146,7 @@ public class ReviewService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        PageReviewDTO review = modelMapper.map(repository.getReviewByUserId(user.getUserId(), pageable),
+        PageReviewDTO review = modelMapper.map(repository.getReviewByUserId(pageable, user.getUserId()),
                 PageReviewDTO.class);
 
         if (review != null) {

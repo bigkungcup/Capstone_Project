@@ -62,7 +62,7 @@ public class BookService extends CommonController {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public DataResponse getBook(int page, int size, Long bookRatng, Long booktypeId, String search, String sortBy, String sortType)
+    public DataResponse getBook(int page, int size, Long bookRating, Long booktypeId, String search, String sortBy, String sortType)
             throws HandleExceptionNotFound {
 
         DataResponse response = new DataResponse();
@@ -84,7 +84,7 @@ public class BookService extends CommonController {
             pageable = PageRequest.of(page, size, Sort.by(sortBy));
         }
 
-        PageBookDTO books = modelMapper.map(repository.getAllBooks(pageable, bookRatng, booktypeId, search), PageBookDTO.class);
+        PageBookDTO books = modelMapper.map(repository.getAllBooks(pageable, bookRating, booktypeId, search), PageBookDTO.class);
 
         if (books.getContent().size() > 0) {
             List<BookDTO> bookDTOs = books.getContent();

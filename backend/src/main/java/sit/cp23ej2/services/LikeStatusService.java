@@ -5,36 +5,44 @@ import org.springframework.stereotype.Service;
 
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
-import sit.cp23ej2.dtos.Review.CreateReviewLikeStatus;
-import sit.cp23ej2.dtos.Review.UpdateReviewLikeStatus;
+import sit.cp23ej2.dtos.LikeStatus.CreateReviewLikeStatus;
+import sit.cp23ej2.dtos.LikeStatus.UpdateReviewLikeStatus;
 import sit.cp23ej2.entities.Review;
+import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
-import sit.cp23ej2.repositories.CheckLikeReviewRepository;
+import sit.cp23ej2.repositories.LikeStatusRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 
 @Service
-public class CheckLikeReviewService extends CommonController {
+public class LikeStatusService extends CommonController {
 
     @Autowired
-    private CheckLikeReviewRepository repository;
+    private LikeStatusRepository repository;
 
     @Autowired
     private ReviewRepository reviewRepository;
 
     public DataResponse createLikeStatus(CreateReviewLikeStatus param) {
+
+        repository.getLikeStatus(param.getUserId()).forEach(likeStatus -> {
+            if (likeStatus.getLsr_reviewId() == param.getReviewId() ) {
+                throw new HandleExceptionBadRequest("You already like this review");
+            }
+        });
+
         Review review = reviewRepository.getReviewById(param.getReviewId());
 
         if (review == null) {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         } else {
-            repository.insertCheckLikeReview(param.getReviewId(), param.getUserId(), param.getLikeStatus());
+            repository.insertLikeStatus(param.getReviewId(), param.getUserId(), param.getLikeStatus());
             reviewRepository.increaseReviewTotalLike(param.getReviewId());
             review.setReviewTotalLike(review.getReviewTotalLike() + 1);
             return responseWithData(review, 201, "Created", "Review TotalLike Updated");
         }
     }
 
-    public DataResponse updateLikeStatus(UpdateReviewLikeStatus param) {
+    public DataResponse updateLikeStatus(Integer likeStatusId, UpdateReviewLikeStatus param) {
         Review review = reviewRepository.getReviewById(param.getReviewId());
 
         if (review == null) {
@@ -42,17 +50,17 @@ public class CheckLikeReviewService extends CommonController {
         }
 
         if (param.getLikeStatus() == 1) {
-            repository.updateCheckLikeReview(param.getLikeStatus(), param.getCheckLikeReviewId());
+            repository.updateLikeStatu(param.getLikeStatus(), likeStatusId);
             reviewRepository.increaseReviewTotalLike(param.getReviewId());
             review.setReviewTotalLike(review.getReviewTotalLike() + 1);
             return responseWithData(review, 200, "OK", "Review TotalLike Updated");
         } else if (param.getLikeStatus() == 2) {
-            repository.updateCheckLikeReview(param.getLikeStatus(), param.getCheckLikeReviewId());
+            repository.updateLikeStatu(param.getLikeStatus(), likeStatusId);
             reviewRepository.decreaseReviewTotalLike(param.getReviewId());
             review.setReviewTotalLike(review.getReviewTotalLike() - 1);
             return responseWithData(review, 200, "OK", "Review TotalLike Updated");
         } else {
-            repository.deleteCheckLikeReview(param.getCheckLikeReviewId());
+            repository.deleteLikeStatus(likeStatusId);
             reviewRepository.decreaseReviewTotalLike(param.getReviewId());
             review.setReviewTotalLike(review.getReviewTotalLike() - 1);
             return responseWithData(review, 200, "OK", "Review TotalLike Updated");

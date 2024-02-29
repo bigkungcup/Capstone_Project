@@ -20,4 +20,8 @@ public interface FollowerReposiroty extends JpaRepository<Follower, Integer>{
     @Transactional
     @Query(value = "DELETE FROM Follower WHERE fu_userId = :fu_userId AND userFollowerId = :userFollowerId", nativeQuery = true)
     void deleteFollower(@Param("fu_userId") Integer fu_userId, @Param("userFollowerId") Integer userFollowerId);
+
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " + 
+                  "FROM Follower WHERE fu_userId = :fu_userId AND userFollowerId = :userFollowerId", nativeQuery = true)
+    Long checkExists(Integer fu_userId, Integer userFollowerId);
 }
