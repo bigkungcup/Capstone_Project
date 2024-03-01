@@ -22,6 +22,7 @@ import sit.cp23ej2.dtos.Bookmark.PageBookmarkDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookmarkRepository;
+import sit.cp23ej2.repositories.BookmarkStatusRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
 @Service
@@ -35,6 +36,9 @@ public class BookmarkService extends CommonController {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private BookmarkStatusRepository bookmarkStatusRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -64,6 +68,12 @@ public class BookmarkService extends CommonController {
                 }
                 bookmark.getBook().setBookTag(bookmark.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(bookmark.getBook().getBookTag().split(","))) );
+
+                bookmarkStatusRepository.getBookmarkStatus(user.getUserId()).forEach(bookmarkStatus -> {
+                    if(bookmark.getBook().getBookId() == bookmarkStatus.getBsb_bookmarkId()){
+                        book.setBookmarkStatus(bookmarkStatus.getBsb_bookmarkId());
+                    }
+                });
             });
             response.setResponse_code(200);
             response.setResponse_status("OK");

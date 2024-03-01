@@ -43,6 +43,11 @@ public class LikeStatusService extends CommonController {
     }
 
     public DataResponse updateLikeStatus(Integer likeStatusId, UpdateReviewLikeStatus param) {
+
+        if(!repository.existsByLikeStatusId(likeStatusId)){
+            throw new HandleExceptionNotFound("LikeStatus Not Found", "LikeStatus");
+        }
+
         Review review = reviewRepository.getReviewById(param.getReviewId());
 
         if (review == null) {
@@ -50,12 +55,12 @@ public class LikeStatusService extends CommonController {
         }
 
         if (param.getLikeStatus() == 1) {
-            repository.updateLikeStatu(param.getLikeStatus(), likeStatusId);
+            repository.updateLikeStatus(param.getLikeStatus(), likeStatusId);
             reviewRepository.increaseReviewTotalLike(param.getReviewId());
             review.setReviewTotalLike(review.getReviewTotalLike() + 1);
             return responseWithData(review, 200, "OK", "Review TotalLike Updated");
         } else if (param.getLikeStatus() == 2) {
-            repository.updateLikeStatu(param.getLikeStatus(), likeStatusId);
+            repository.updateLikeStatus(param.getLikeStatus(), likeStatusId);
             reviewRepository.decreaseReviewTotalLike(param.getReviewId());
             review.setReviewTotalLike(review.getReviewTotalLike() - 1);
             return responseWithData(review, 200, "OK", "Review TotalLike Updated");

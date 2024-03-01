@@ -35,11 +35,11 @@ public class CommonController {
         return response;
     }
 
-    public DataResponse response(Paginate paginate) {
+    public DataResponse response(Integer code, String status, String message) {
         DataResponse response = new DataResponse();
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Review Deleted");
+        response.setResponse_code(code);
+        response.setResponse_status(status);
+        response.setResponse_message(message);
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
     
         return response;

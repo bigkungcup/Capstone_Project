@@ -21,6 +21,5 @@ public class BookmarkDTO {
 
     private BookDTO book;
 
-    // private User user;
-    
+    // private User user;    
 }

@@ -31,6 +31,8 @@ public class BookmarkStatus {
 
     private Integer bsu_userId;
 
+    private Integer bookmarkStatus;
+
     private LocalDateTime bookmarkStatusCreateDateTime;
 
     private LocalDateTime bookmarkStatusUpdateDateTime;

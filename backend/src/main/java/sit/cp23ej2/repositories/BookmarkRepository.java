@@ -31,4 +31,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
     @Transactional
     @Query(value = "DELETE FROM Bookmark WHERE bookmarkId = :bookmarkId", nativeQuery = true)
     void deleteBookmarkById(@Param("bookmarkId") Integer bb_bookId);
+
+    boolean existsByBookmarkId(Integer bookmarkId);
 }

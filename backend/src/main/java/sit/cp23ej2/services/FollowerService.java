@@ -3,12 +3,19 @@ package sit.cp23ej2.services;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
+import sit.cp23ej2.dtos.Follow.PageFollowDTO;
+import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
@@ -16,7 +23,7 @@ import sit.cp23ej2.repositories.FollowerReposiroty;
 import sit.cp23ej2.repositories.UserRepository;
 
 @Service
-public class FollowerService {
+public class FollowerService extends CommonController{
     
     @Autowired
     private FollowerReposiroty reposiroty;
@@ -24,7 +31,76 @@ public class FollowerService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Value("${base_url}")
+    private String baseUrl;
+
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public DataResponse getFollowers(Integer page, Integer size) {
+       
+        Pageable pageable = PageRequest.of(page, size);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+        PageFollowDTO follower = modelMapper.map(reposiroty.getFollowers(pageable, user.getUserId()), PageFollowDTO.class);
+
+        if(follower.getContent().size() > 0){
+            follower.getContent().forEach(follow -> {
+               UserDTO userDTO = modelMapper.map(follow.getUser(), UserDTO.class);
+               try {
+                if (user != null) {
+                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+                follow.setUserFollowers(userDTO);
+            });
+
+        }else{
+            throw new HandleExceptionNotFound("Followers Not Found", "Followers");
+        }
+
+        return responseWithData(follower, 200, "OK", "Get Followers Success");
+    }
+
+    public DataResponse getFollowing(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+        PageFollowDTO follow = modelMapper.map(reposiroty.getFollowings(pageable, user.getUserId()), PageFollowDTO.class);
+
+        if(follow.getContent().size() > 0){
+            follow.getContent().forEach(follows -> {
+               UserDTO userDTO = modelMapper.map(follows.getUser(), UserDTO.class);
+               try {
+                if (user != null) {
+                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+                follows.setUserFollowing(userDTO);
+            });
+
+        }else{
+            throw new HandleExceptionNotFound("Follows Not Found", "Follows");
+        }
+
+        return responseWithData(follow, 200, "OK", "Get Follows Success");
+    }
+
+
 
     public DataResponse insertFollower(Integer userFollowerId) {
         DataResponse response = new DataResponse();

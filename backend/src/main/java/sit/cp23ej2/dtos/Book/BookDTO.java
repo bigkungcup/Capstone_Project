@@ -29,4 +29,5 @@ public class BookDTO {
     private String file;
     private Integer bookTotalReview;
     private Booktype booktype;
+    private Integer bookmarkStatus;
 }

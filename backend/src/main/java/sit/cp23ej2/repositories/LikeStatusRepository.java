@@ -27,7 +27,7 @@ public interface LikeStatusRepository extends JpaRepository<LikeStatus, Integer>
     @Modifying
     @Transactional
     @Query(value = "UPDATE LikeStatus SET likeStatus = :likeStatus WHERE likeStatusId = :likeStatusId", nativeQuery = true)
-    void updateLikeStatu(@Param("likeStatus") Integer likeStatus,
+    void updateLikeStatus(@Param("likeStatus") Integer likeStatus,
             @Param("likeStatusId") Integer likeStatusId);
 
     @Modifying

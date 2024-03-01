@@ -1,5 +1,7 @@
 package sit.cp23ej2.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 import sit.cp23ej2.entities.Follower;
 
 public interface FollowerReposiroty extends JpaRepository<Follower, Integer>{
+
+
+    @Query(value = "SELECT f.followerId, f.fu_userId, f.userFollowerId, f.followerCreateDateTime, f.followerUpdateDateTime " +
+                    " FROM Follower f " +
+                    " WHERE f.fu_userId = :userId", nativeQuery = true)
+    Page<Follower> getFollowings(Pageable pageable, @Param("userId") Integer userId);
+
+    @Query(value = "SELECT f.followerId, f.fu_userId, f.userFollowerId, f.followerCreateDateTime, f.followerUpdateDateTime " +
+                    " FROM Follower f " +
+                    " WHERE f.userFollowerId = :userId", nativeQuery = true)
+    Page<Follower> getFollowers(Pageable pageable, @Param("userId") Integer userId);
     
     @Modifying
     @Transactional

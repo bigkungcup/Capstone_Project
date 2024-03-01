@@ -79,6 +79,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/follower/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/likeStatus").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/likeStatus/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/bookmarkStatus").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/bookmarkStatus/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .anyRequest().authenticated());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
