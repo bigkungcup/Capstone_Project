@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
+import sit.cp23ej2.dtos.Follow.FollowerReviewDTO;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewMeDTO;
@@ -28,6 +29,7 @@ import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
+import sit.cp23ej2.repositories.FollowerReposiroty;
 import sit.cp23ej2.repositories.LikeStatusRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
@@ -46,6 +48,9 @@ public class ReviewService extends CommonController {
 
     @Autowired
     private LikeStatusRepository likeStatusRepository;
+    
+    @Autowired
+    private FollowerReposiroty followerReposiroty;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -99,6 +104,12 @@ public class ReviewService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
+                    FollowerReviewDTO followerReview = modelMapper.map(following, FollowerReviewDTO.class);
+                    if (review.getUser().getUserId() == following.getFollowerId()) {
+                        userDTO.setFollowerReview(followerReview);
+                    }
+                });
                 review.setUserDetail(userDTO);
             });
 
@@ -107,7 +118,7 @@ public class ReviewService extends CommonController {
                 reviews.getContent().forEach(review -> {
                     likeStatus.forEach(like -> {
                         if (review.getReviewId() == like.getLsr_reviewId()) {
-                            review.setLikeStatus(like.getLikeStatus());
+                            review.setLikeStatus(like);
                         }
                     });
                 });

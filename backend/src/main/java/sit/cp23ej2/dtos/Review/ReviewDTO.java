@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.Book;
+import sit.cp23ej2.entities.LikeStatus;
 import sit.cp23ej2.entities.User;
 
 @Getter
@@ -43,5 +44,5 @@ public class ReviewDTO {
 
     private UserDTO userDetail;
 
-    private Integer likeStatus;
+    private LikeStatus likeStatus;
 }

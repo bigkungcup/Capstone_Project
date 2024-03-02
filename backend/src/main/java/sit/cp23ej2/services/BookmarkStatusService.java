@@ -35,8 +35,8 @@ public class BookmarkStatusService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        repository.getBookmarkStatus(user.getUserId()).forEach(bookmarkStatus1 -> {
-            if (bookmarkStatus1.getBsb_bookmarkId() == param.getBookmarkId()) {
+        repository.getBookmarkStatus(user.getUserId()).forEach(bookmarkStatus -> {
+            if (bookmarkStatus.getBsb_bookmarkId() == param.getBookmarkId()) {
                 throw new HandleExceptionBadRequest("Bookmark Status Already Exists");
             }
         });
@@ -54,21 +54,21 @@ public class BookmarkStatusService extends CommonController {
 
     public DataResponse updateBookmarkStatus(Integer bookmarkStatusId, UpdateBookmarkStatus param) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
+        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // String currentPrincipalName = authentication.getName();
 
-        User user = userRepository.getUserByEmail(currentPrincipalName);
+        // User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        repository.getBookmarkStatus(user.getUserId()).forEach(bookmarkStatus1 -> {
-            if (bookmarkStatus1.getBsb_bookmarkId() == param.getBookmarkId()) {
-                throw new HandleExceptionNotFound("Bookmark Status Not Found", "Bookmark Status");
-            }
-        });
+        // repository.getBookmarkStatus(user.getUserId()).forEach(bookmarkStatus -> {
+        //     if (bookmarkStatus.getBsb_bookmarkId() == param.getBookmarkId()) {
+        //         throw new HandleExceptionNotFound("Bookmark Status Not Found", "Bookmark Status");
+        //     }
+        // });
 
         boolean existsByBookmarkId = bookmarkRepository.existsByBookmarkId(param.getBookmarkId()); // ตรวจสอบว่ามี bookmarkId นี้หรือไม่
 
         if (!existsByBookmarkId) {
-            throw new HandleExceptionNotFound("Bookmark Not Found", "Bookmark");
+            throw new HandleExceptionNotFound("Bookmark Status Not Found", "Bookmark Status");
         }
 
         if(param.getBookmarkStatus() == 1){

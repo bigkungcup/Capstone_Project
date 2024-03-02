@@ -21,12 +21,14 @@ import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.dtos.Book.CreateBookDTO;
 import sit.cp23ej2.dtos.Book.PageBookDTO;
 import sit.cp23ej2.dtos.Book.UpdateBookDTO;
+import sit.cp23ej2.dtos.Bookmark.BookmarkBookDTO;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.entities.Book;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
+import sit.cp23ej2.repositories.BookmarkRepository;
 import sit.cp23ej2.repositories.BooktypeRepository;
 import sit.cp23ej2.repositories.HistoryRepository;
 import sit.cp23ej2.repositories.UserRepository;
@@ -53,6 +55,9 @@ public class BookService extends CommonController {
 
     @Autowired
     private BooktypeRepository booktypeRepository;
+
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -105,6 +110,13 @@ public class BookService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                bookmarkRepository.getBookmarkListByUserId(userRepository.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).getUserId()).forEach(bookmark -> {
+                    BookmarkBookDTO bookmarks = modelMapper.map(bookmark, BookmarkBookDTO.class);
+                    if (bookmark.getBook().getBookId() == bookDTO.getBookId()) {
+                        bookDTO.setBookmark(bookmarks);
+                    }
+                });
             });
             response.setResponse_code(200);
             response.setResponse_status("OK");
@@ -158,6 +170,14 @@ public class BookService extends CommonController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            bookmarkRepository.getBookmarkListByUserId(userRepository.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).getUserId()).forEach(bookmark -> {
+                BookmarkBookDTO bookmarks = modelMapper.map(bookmark, BookmarkBookDTO.class);
+                if (bookmark.getBook().getBookId() == bookDTO.getBookId()) {
+                    bookDTO.setBookmark(bookmarks);
+                }
+            });
+            
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Book Detail");

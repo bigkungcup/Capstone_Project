@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import sit.cp23ej2.dtos.Bookmark.BookmarkBookDTO;
 import sit.cp23ej2.entities.Booktype;
 
 @Getter
@@ -29,5 +30,5 @@ public class BookDTO {
     private String file;
     private Integer bookTotalReview;
     private Booktype booktype;
-    private Integer bookmarkStatus;
+    private BookmarkBookDTO bookmark;
 }

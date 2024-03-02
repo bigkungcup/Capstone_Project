@@ -20,25 +20,22 @@ import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.dtos.Bookmark.PageBookmarkDTO;
 import sit.cp23ej2.entities.User;
+import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookmarkRepository;
-import sit.cp23ej2.repositories.BookmarkStatusRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
 @Service
 public class BookmarkService extends CommonController {
     
     @Autowired
-    private BookmarkRepository bookmarkRepository;
+    private BookmarkRepository repository;
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private FileStorageService fileStorageService;
-
-    @Autowired
-    private BookmarkStatusRepository bookmarkStatusRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -57,7 +54,7 @@ public class BookmarkService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        PageBookmarkDTO pageBookmarkDTO = modelMapper.map(bookmarkRepository.getBookmarkByUserId(user.getUserId(), pageable), PageBookmarkDTO.class);
+        PageBookmarkDTO pageBookmarkDTO = modelMapper.map(repository.getBookmarkByUserId(user.getUserId(), pageable), PageBookmarkDTO.class);
        
         if(pageBookmarkDTO.getContent().size() > 0){
             pageBookmarkDTO.getContent().forEach(bookmark -> {
@@ -69,11 +66,11 @@ public class BookmarkService extends CommonController {
                 bookmark.getBook().setBookTag(bookmark.getBook().getBookTag().replaceAll(",", ", "));
                 book.setBookTagList(new ArrayList<String>(Arrays.asList(bookmark.getBook().getBookTag().split(","))) );
 
-                bookmarkStatusRepository.getBookmarkStatus(user.getUserId()).forEach(bookmarkStatus -> {
-                    if(bookmark.getBook().getBookId() == bookmarkStatus.getBsb_bookmarkId()){
-                        book.setBookmarkStatus(bookmarkStatus.getBsb_bookmarkId());
-                    }
-                });
+                // bookmarkStatusRepository.getBookmarkStatus(user.getUserId()).forEach(bookmarkStatus -> {
+                //     if(bookmark.getBook().getBookId() == bookmarkStatus.getBsb_bookmarkId()){
+                //         book.setBookmarkStatus(bookmarkStatus);
+                //     }
+                // });
             });
             response.setResponse_code(200);
             response.setResponse_status("OK");
@@ -95,10 +92,14 @@ public class BookmarkService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        bookmarkRepository.insertBookmark(bb_bookId, user.getUserId());
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Bookmark Inserted");
+        if(repository.checkExistsByBookIdAndUserId(bb_bookId, user.getUserId()) != 0){
+            throw new HandleExceptionBadRequest(currentPrincipalName + " already bookmarked this book");
+        }
+
+        repository.insertBookmark(bb_bookId, user.getUserId(), 1);
+        response.setResponse_code(201);
+        response.setResponse_status("Created");
+        response.setResponse_message("Bookmark Created");
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
@@ -111,7 +112,11 @@ public class BookmarkService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        bookmarkRepository.deleteBookmark(bb_bookId, user.getUserId());
+        if(repository.checkExistsByBookIdAndUserId(bb_bookId, user.getUserId()) == 0){
+            throw new HandleExceptionNotFound("Bookmark Not Found", "Bookmark");
+        }
+
+        repository.deleteBookmark(bb_bookId, user.getUserId());
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Bookmark Deleted");
@@ -121,7 +126,12 @@ public class BookmarkService extends CommonController {
 
     public DataResponse deleteBookmarkById(Integer bookmarkId) {
         DataResponse response = new DataResponse();
-        bookmarkRepository.deleteBookmarkById(bookmarkId);
+
+        if(!repository.existsByBookmarkId(bookmarkId)){
+            throw new HandleExceptionNotFound("Bookmark Not Found", "Bookmark");
+        }
+
+        repository.deleteBookmarkById(bookmarkId);
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Bookmark Deleted");

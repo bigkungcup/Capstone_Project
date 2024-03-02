@@ -1,4 +1,4 @@
-package sit.cp23ej2.dtos.LikeStatus;
+package sit.cp23ej2.dtos.FollowerStatus;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -10,14 +10,14 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class UpdateReviewLikeStatus {
+public class CreateFollowerStatus {
 
     // @NotNull(message = "userId shouldn't be null")
     // private Integer userId;
 
-    @NotNull(message = "reviewId shouldn't be null")
-    private Integer reviewId;
+    @NotNull(message = "followerId shouldn't be null")
+    private Integer followerId;
 
-    @NotNull(message = "likeStatus shouldn't be null")
-    private Integer likeStatus;
+    @NotNull(message = "followerStatus shouldn't be null")
+    private Integer followerStatus;
 }

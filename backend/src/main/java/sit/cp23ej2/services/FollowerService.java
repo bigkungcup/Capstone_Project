@@ -100,8 +100,6 @@ public class FollowerService extends CommonController{
         return responseWithData(follow, 200, "OK", "Get Follows Success");
     }
 
-
-
     public DataResponse insertFollower(Integer userFollowerId) {
         DataResponse response = new DataResponse();
 
@@ -122,7 +120,7 @@ public class FollowerService extends CommonController{
             throw new HandleExceptionBadRequest(currentPrincipalName + " can't follow yourself");
         }
 
-        reposiroty.insertFollower(user.getUserId(), userFollowerId);
+        reposiroty.insertFollower(user.getUserId(), userFollowerId, 1);
         userRepository.increaseFollows(user.getUserId());
         userRepository.increaseFollowers(userFollowerId);
         response.setResponse_code(201);

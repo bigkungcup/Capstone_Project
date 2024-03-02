@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import sit.cp23ej2.dtos.Follow.FollowerReviewDTO;
 
 @Getter
 @Setter
@@ -33,4 +34,6 @@ public class UserDTO {
     private String bio;
 
     private String file;
+
+    private FollowerReviewDTO followerReview;
 }

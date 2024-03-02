@@ -51,7 +51,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             String access_token = this.recoverToken(request);
             
-            System.out.println("Access Token :" + access_token);
+            // System.out.println("Access Token :" + access_token);
             if (access_token != null) {
                 try {
                     Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());

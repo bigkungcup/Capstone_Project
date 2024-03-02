@@ -33,6 +33,8 @@ public class Follower {
 
     // private Integer userFollowerId;
 
+    private Integer followerStatus;
+
     private LocalDateTime followerCreateDateTime;
 
     private LocalDateTime followerUpdateDateTime;

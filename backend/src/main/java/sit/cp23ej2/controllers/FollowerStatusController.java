@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import sit.cp23ej2.dtos.DataResponse;
-import sit.cp23ej2.dtos.LikeStatus.CreateReviewLikeStatus;
-import sit.cp23ej2.dtos.LikeStatus.UpdateReviewLikeStatus;
-import sit.cp23ej2.services.LikeStatusService;
+import sit.cp23ej2.dtos.FollowerStatus.CreateFollowerStatus;
+import sit.cp23ej2.dtos.FollowerStatus.UpdateFollowerStatus;
+import sit.cp23ej2.services.FollowerStatusService;
 
 @CrossOrigin(origins = {
     "http://localhost:3000",
@@ -28,20 +28,20 @@ import sit.cp23ej2.services.LikeStatusService;
 }, allowedHeaders = "*")
 @RestController
 @Validated
-@RequestMapping("/api/likeStatus")
-public class LikeStatusController {
+@RequestMapping("/api/followerStatus")
+public class FollowerStatusController {
 
     @Autowired
-    private LikeStatusService checkLikeReviewService;
+    private FollowerStatusService followerStatusService;
 
     @PostMapping("")
-    public DataResponse createLikeStatus(@RequestBody CreateReviewLikeStatus param) {
-        return checkLikeReviewService.createLikeStatus(param);
+    public DataResponse createFollowerStatus(@RequestBody CreateFollowerStatus param) {
+        return followerStatusService.insertFollowerStatus(param);
     }
 
-    @PutMapping("/{likeStatusId}")
-    public DataResponse deleteLikeStatus(@PathVariable Integer likeStatusId, @RequestBody UpdateReviewLikeStatus param) {
-        return checkLikeReviewService.updateLikeStatus(likeStatusId, param);
+    @PutMapping("/{followerStatusId}")
+    public DataResponse updateFollowerStatus(@PathVariable Integer followerStatusId,@RequestBody UpdateFollowerStatus param) {
+        return followerStatusService.updateFollowerStatus(followerStatusId, param);
     }
     
 }
