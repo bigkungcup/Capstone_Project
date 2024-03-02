@@ -37,12 +37,22 @@ export const useBooks = defineStore("Books", () => {
     },
   });
   const historyPage = ref(0);
+  const bookmarkList = ref({
+    data: {
+      content: [],
+      pageable: {
+        totalPages: 1,
+      },
+    },
+  });
+  const bookmarkPage = ref(0);
   const successfulPopup = ref(false);
   const failPopup = ref(false);
   const leavePopup = ref(true);
   const bookType = ref();
   const sortBook = ref('desc')
   const filterBook = ref(0)
+  const bookmarkedStatus = ref(0); // 0 = unbookmarked, 1 = bookmarked
   const runtimeConfig = useRuntimeConfig();
 
   //Get Library
@@ -341,6 +351,136 @@ export const useBooks = defineStore("Books", () => {
     }
   }
 
+
+  //Get Bookmark
+  async function getBookmarkList() {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/bookmark`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        };
+        options.params = {
+          page: bookmarkPage.value,
+          size: 8,
+        }
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+      },
+    });
+    if (status == 200) {
+      if (data.value) {
+        bookmarkList.value = data.value;
+      }
+      console.log("get bookmark list completed");
+    } else if (status == 404) {
+      clearBookmarkList();
+      console.log("get library uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await getBookmarkList();
+    }
+  }
+
+
+  //Create Bookmark
+    async function createBookmark(bookId) {
+      let accessToken = useCookie("accessToken");
+      let status = 0;
+
+      await $fetch(`${import.meta.env.VITE_BASE_URL}/bookmark`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+        params: {
+          bookId: bookId
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+          if (status == 400) {
+            console.log("bookmark uncompleted");
+          } else if (status == 401) {
+            login.handleRefresh();
+            createBookmark(bookId);
+          }
+        },
+      });
+      if (status == 201) {
+        console.log("bookmark completed");
+      } 
+    }
+
+  //Delete bookmark by bookId
+  async function deleteBookmarkByBookId(bookId) {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/bookmark`,
+      {
+        onRequest({ request, options }) {
+          options.method = "Delete";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+          options.params = {
+            bookId: bookId
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      console.log("delete bookmark completed");
+    } else if (status == 400) {
+      console.log("delete bookmark uncompleted");
+    } else if (status == 404) {
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await deleteBookmarkByBookId(bookId);
+    }
+  }
+
+    //Delete bookmark by bookmarkId
+    async function deleteBookmark(bookmarkId) {
+      let accessToken = useCookie("accessToken");
+      let status = 0;
+      const { data } = await useFetch(
+        `${import.meta.env.VITE_BASE_URL}/bookmark/${bookId}`,
+        {
+          onRequest({ request, options }) {
+            options.method = "Delete";
+            options.headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken.value}`,
+            };
+          },
+          onResponse({ request, response, options }) {
+            status = response._data.response_code;
+          },
+        }
+      );
+      if (status == 200) {
+        console.log("delete bookmark completed");
+      } else if (status == 400) {
+        failPopup.value = true;
+        console.log("delete bookmark uncompleted");
+      } else if (status == 404) {
+      } else if (status == 401) {
+        await login.handleRefresh();
+        await deleteBookmark(bookmarkId);
+      }
+    }
+  
+
   //Get book type
   async function getBookType() {
     let status = 0;
@@ -523,6 +663,11 @@ export const useBooks = defineStore("Books", () => {
     getHistoryList();
   }
 
+  function changeBookmarkPage(page) {
+    bookmarkPage.value = page - 1;
+    getBookmark();
+  }
+
   function getStarRating(number) {
     return (number = 0.5 * Math.floor(2 * number));
   }
@@ -572,6 +717,18 @@ export const useBooks = defineStore("Books", () => {
       };
     }
 
+    //Clear bookmark list
+    function clearBookmarkList() {
+      bookmarkList.value = {
+        data: {
+          content: [],
+          pageable: {
+            totalPages: 1,
+          },
+        },
+      };
+    }    
+
   //set edit book
   async function setEditBook() {
     (editBook.value = {
@@ -599,12 +756,16 @@ export const useBooks = defineStore("Books", () => {
     editBookFile,
     bookType,
     historyList,
+    bookmarkList,
     sortBook,
     filterBook,
     bookPage,
+    historyPage,
+    bookmarkPage,
     successfulPopup,
     failPopup,
     leavePopup,
+    bookmarkedStatus,
     getLibrary,
     getLibraryByGuest,
     getBookDetail,
@@ -617,7 +778,12 @@ export const useBooks = defineStore("Books", () => {
     deleteBook,
     changeLibraryPage,
     changeHistoryPage,
+    changeBookmarkPage,
     getStarRating,
+    getBookmarkList,
+    createBookmark,
+    deleteBookmark,
+    deleteBookmarkByBookId,
     getBookType,
     countUpdateTime,
     clearNewBook,

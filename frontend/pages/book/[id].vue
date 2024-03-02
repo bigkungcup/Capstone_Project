@@ -3,6 +3,7 @@ import deleteReviewConfirmPopup from "~/components/reviews/popups/deleteReviewCo
 import deleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmPopup.vue";
 import reviewCard from "~/components/reviews/reviewCard.vue";
 import { useBooks } from "~/stores/book";
+import { useUsers } from "~/stores/user";
 import { useReviews } from "~/stores/review";
 import { ref } from "vue";
 import similarBook from "~/components/similarBook.vue";
@@ -13,12 +14,15 @@ import deleteBookFailPopup from "~/components/books/popups/deleteBookFailPopup.v
 
 const library = useBooks();
 const reviews = useReviews();
+const user = useUsers();
 const route = useRoute();
 const page = ref(1);
 const deleteId = ref(0);
 const bookConfirmPopup = ref(false);
 const reviewConfirmPopup = ref(false);
+
 const roleToken = ref(localStorage.getItem('role'));
+const bookmarked = ref(false);
 
 function setDeleteId(id) {
   deleteId.value = id;
@@ -135,10 +139,14 @@ if (roleToken.value == 'GUEST') {
               </div>
 
               <div class="tw-flex tw-justify-center tw-gap-x-12" v-show="roleToken == 'USER'">
-                <v-btn class="text-none" color="#1D419F"
-                  ><v-icon start icon="mdi mdi-bookmark"></v-icon
-                  >Bookmark</v-btn
-                >
+                <v-btn class="text-none" color="#1D419F" v-if="library.bookmarkedStatus == 0" @click="library.bookmarkedStatus = 1">
+                  <v-icon start icon="mdi mdi-bookmark-outline"></v-icon>
+                  Bookmark
+                </v-btn>
+                <v-btn class="text-none" color="#3157BB" v-if="library.bookmarkedStatus == 1" @click="library.bookmarkedStatus = 0">
+                  <v-icon start icon="mdi mdi-bookmark-check"></v-icon>
+                  Bookmarked
+                </v-btn>
                 <NuxtLink
                   :to="`../../review/create_${library.bookDetail.data.bookId}/`"
                   ><v-btn class="text-none" color="#1D419F"
@@ -269,6 +277,7 @@ if (roleToken.value == 'GUEST') {
                 <reviewCard
                   :reviewList="reviews.reviewList.data.content"
                   :bookId="library.bookDetail.data.bookId"
+                  :like="like"
                   @toggle="toggleReviewConfirmPopup()"
                   @set="setDeleteId($event)"
                 />

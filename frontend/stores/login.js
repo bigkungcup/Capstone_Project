@@ -15,6 +15,8 @@ export const useLogin = defineStore("Login", () => {
 
   const accessToken = ref(useCookie("accessToken", cookieOptions));
   const refreshToken = ref(useCookie("refreshToken", cookieOptions));
+  const roleToken = ref(localStorage.getItem("role"));
+  const fileToken = ref(localStorage.getItem("file"));
 
   const setToken = (token) => {
     localStorage.setItem("id", token.userId);
@@ -26,6 +28,18 @@ export const useLogin = defineStore("Login", () => {
     localStorage.removeItem("id");
     localStorage.removeItem("file");
     localStorage.setItem("role", 'GUEST');
+  };
+
+  const getIdToken = () => {
+    return localStorage.getItem("id");
+  };
+
+  const getRoleToken = () => {
+    return localStorage.getItem("role");
+  };
+
+  const getFileToken = () => {
+    return localStorage.getItem("file");
   };
 
   const delete_cookie = (name) => {
@@ -126,7 +140,10 @@ export const useLogin = defineStore("Login", () => {
     );
     if (status == 200) {
       profile.value = data;
+      resetToken();
       setToken(profile.value);
+      roleToken.value = getRoleToken();
+      fileToken.value = getFileToken();
     }
   }
 
@@ -190,6 +207,7 @@ export const useLogin = defineStore("Login", () => {
     if (status == 200) {
       updateFailed.value = false;
       successfulPopup.value = true;
+      fileToken.value = editProfileFile.value[0]
       console.log("update user completed");
     } else if (status == 401) {
       await handleRefresh();
@@ -290,6 +308,8 @@ export const useLogin = defineStore("Login", () => {
     updateFailed,
     updateFailedError,
     profilePic,
+    roleToken,
+    fileToken,
     getProfile,
     updateProfile,
     handleLogin,
@@ -301,6 +321,9 @@ export const useLogin = defineStore("Login", () => {
     closeSuccessfulPopup,
     changePassword,
     resetToken,
+    getIdToken,
+    getRoleToken,
+    getFileToken
   };
 });
 

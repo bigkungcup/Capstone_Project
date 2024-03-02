@@ -1,12 +1,17 @@
 <script setup>
 import Bookmarks from '~/components/profiles/bookmark.vue';
+import Reviews from '~/components/profiles/reviews.vue';
 import changePasswordPopup from "~/components/profiles/popups/changePasswordPopup.vue";
 // import Reviews from '~/components/profiles/reviews.vue';
 import { useLogin } from '~/stores/login'
+import { useBooks } from '~/stores/book'
 import { mergeProps } from "vue";
 
 const login = useLogin();
+const book = useBooks();
 const changePassword = ref(false);
+const profileSection = ref('bookmark');
+const result = ref(0);
 
 function handleChangePassword() {
     changePassword.value = !changePassword.value;
@@ -16,8 +21,23 @@ function bookCoverPath(filePath) {
   return (filePath = `../../ej2/_nuxt/@fs/${filePath}`);
 }
 
+function setResult() {
+  if(profileSection.value == 'bookmark'){
+    result.value = book.bookmarkList.data.totalElements ? book.bookmarkList.data.totalElements : 0
+  }
+  // }else if(profileSection.value == 'reviews'){
+
+  // }
+}
+
+function selectBookmark() {
+  book.getBookmarkList();
+  setResult();
+}
+
 onBeforeMount(async () => { 
   await login.getProfile();
+  await book.getBookmarkList();
 });
 
 
@@ -126,26 +146,50 @@ onBeforeMount(async () => {
         <div class="tw-flex tw-place-content-center tw-my-6">
             <div class="tw-bg-white tw-w-[70rem] tw-h-full">
                 <div class="tw-border-y-4">
-                    <v-row class="tw-py-3">
-                        <v-col cols="2">
-                            <div class="tw-flex tw-justify-center web-text-sub-pf"> Bookmarks </div>
+                    <v-row class="">
+                        <v-col cols="3" class="tw-grid tw-content-center ">   
+                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'bookmark'" @click="profileSection = 'bookmark', selectBookmark()"> Bookmarks </div>
+                            <div class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3" v-if="profileSection == 'bookmark'"> 
+                              <p class="tw-flex tw-justify-center">Bookmarks</p> 
+                              <p class="tw-flex tw-justify-center">({{ result }})</p> 
+                            </div>
                         </v-col>
-                        <v-col cols="2">
-                            <div class="tw-flex tw-justify-center web-text-sub-pf"> My reviews </div>
+                        <v-col cols="3" class="tw-grid tw-content-center">
+                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'review'" @click="profileSection = 'review'"> My reviews </div>
+                            <div class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3" v-if="profileSection == 'review'"> 
+                              <p class="tw-flex tw-justify-center"> My reviews </p> 
+                              <p class="tw-flex tw-justify-center">({{ result }})</p> 
+                            </div>
                         </v-col>
-                        <v-col cols="2">
-                            <div class="tw-flex tw-justify-center web-text-sub-pf"> Followings </div>
+                        <v-col cols="3" class="tw-grid tw-content-center">
+                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'following'" @click="profileSection = 'following'"> Followings </div>
+                            <div class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3" v-if="profileSection == 'following'"> 
+                              <p class="tw-flex tw-justify-center"> Followings </p> 
+                              <p class="tw-flex tw-justify-center">({{ result }})</p> 
+                            </div>
                         </v-col>
-                        <v-col cols="2">
-                            <div class="tw-flex tw-justify-center web-text-sub-pf"> Followers </div>
+                        <v-col cols="3" class="tw-grid tw-content-center">
+                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'follower'" @click="profileSection = 'follower'"> Followers </div>
+                            <div class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3" v-if="profileSection == 'follower'"> 
+                              <p class="tw-flex tw-justify-center"> Followers </p> 
+                              <p class="tw-flex tw-justify-center">({{ result }})</p> 
+                            </div>
                         </v-col>
                     </v-row>
                 </div>
 
                 <!-------- insert component here ---------->
-                <Bookmarks />
+                <!-- Bookmark /> -->
+                <div v-if="profileSection == 'bookmark'">
+                <Bookmarks :bookmarkList="book.bookmarkList.data.content"/>
+                <div v-show="book.bookmarkList.data.content.length !== 0" class="py-1">
+                <v-pagination v-model="page" :length="book.bookmarkList.data.totalPages" :total-visible="7"
+                  rounded="20" @update:model-value="book.changeBookmarkPage(page)">
+                </v-pagination></div></div>
                 <!-- <Reviews /> -->
-
+                <div v-if="profileSection == 'review'">
+                <Reviews />
+              </div>
             </div>
         </div>
         <!-- Popup -->

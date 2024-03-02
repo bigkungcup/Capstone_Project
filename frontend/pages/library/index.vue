@@ -62,7 +62,12 @@ onBeforeMount( async () => {
     <v-container>
       <v-row no-gutters>
         <v-col cols="9">
-          <v-text-field label="Search" variant="solo-filled"> </v-text-field>
+          <v-text-field
+          placeholder="Search your book or auther name"
+          prepend-inner-icon="mdi-magnify"
+          clearable
+          >
+        </v-text-field>
         </v-col>
         <v-col cols="1"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Search </v-btn></v-col>
         <v-col cols="1"><v-btn size="auto" class="tw-mx-8 pa-5" color="#082266" rounded="lg" @click="dialog = true"> 

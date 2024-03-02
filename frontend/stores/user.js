@@ -15,10 +15,10 @@ export const useUsers = defineStore("Users", () => {
       content: [],
       pageable: {},
       totalPages: 1,
-    }
+    },
   });
   const userDetail = ref({
-    data: {}
+    data: {},
   });
   const newUser = ref({
     displayName: "",
@@ -35,27 +35,31 @@ export const useUsers = defineStore("Users", () => {
   const leavePopup = ref(true);
   const updateFailed = ref(false);
   const updateFailedError = ref();
+  const followStatus = ref(0); //0 = unfollow, 1 = follow
 
   //Get user list
   async function getUserList() {
     let accessToken = useCookie("accessToken");
     let status = 0;
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/user/all`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
-        };
-        options.params = {
-          page: userPage.value,
-          size: 10,
-        };
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/user/all`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+          options.params = {
+            page: userPage.value,
+            size: 10,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
     if (status == 200) {
       if (data.value) {
         userList.value = data.value;
@@ -97,12 +101,12 @@ export const useUsers = defineStore("Users", () => {
     } else if (status == 400) {
       console.log("get user detail uncompleted");
     } else if (status == 401) {
-        await login.handleRefresh();
-        await getUserDetail(userId);
+      await login.handleRefresh();
+      await getUserDetail(userId);
     } else if (status == 404) {
-        router.push("/PageNotFound/");
-      }
+      router.push("/PageNotFound/");
     }
+  }
 
   //Register user
   async function registerUser() {
@@ -123,7 +127,7 @@ export const useUsers = defineStore("Users", () => {
           registerFailed.value = true;
           registerFailedError.value = Object.values(response._data.filedErrors);
           console.log("register user uncompleted");
-        } else if(status == 500) {
+        } else if (status == 500) {
           failPopup.value = true;
           console.log("register user uncompleted");
         }
@@ -146,7 +150,7 @@ export const useUsers = defineStore("Users", () => {
         email: editUser.value.email,
         password: editUser.value.password,
         bio: editUser.value.bio,
-        role: editUser.value.role
+        role: editUser.value.role,
       };
     } else {
       user = {
@@ -155,7 +159,7 @@ export const useUsers = defineStore("Users", () => {
         password: editUser.value.password,
         bio: editUser.value.bio,
         role: editUser.value.role,
-        status: "edit"
+        status: "edit",
       };
     }
 
@@ -164,7 +168,11 @@ export const useUsers = defineStore("Users", () => {
       "user",
       new Blob([JSON.stringify(user)], { type: "application/json" })
     );
-    if (userDetail.value.data.file === null && editUserFile.value !== null && editUserFile.value !== undefined ) {
+    if (
+      userDetail.value.data.file === null &&
+      editUserFile.value !== null &&
+      editUserFile.value !== undefined
+    ) {
       //Add cover case
       formData.append("file", editUserFile.value[0]);
     } else if (
@@ -204,36 +212,94 @@ export const useUsers = defineStore("Users", () => {
   }
 
   //Delete User by Admin
-    async function deleteUser(userId) {
-      let accessToken = useCookie("accessToken");
-      let status = 0;
-      const { data } = await useFetch(
-        `${import.meta.env.VITE_BASE_URL}/user/${userId}`,
-        {
-          onRequest({ request, options }) {
-            options.method = "Delete";
-            options.headers = {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken.value}`,
-            };
-          },
-          onResponse({ request, response, options }) {
-            status = response._data.response_code;
-          },
-        }
-      );
-      if (status == 200) {
-        successfulPopup.value = true;
-        userPage.value = 0;
-        // getReview(bookId);
-        console.log("delete user completed");
-      } else if (status == 404) {
-        router.push("/PageNotFound/");
-      } else if (status == 401) {
-        await login.handleRefresh();
-        await deleteUser(userId);
+  async function deleteUser(userId) {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/user/${userId}`,
+      {
+        onRequest({ request, options }) {
+          options.method = "Delete";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
       }
+    );
+    if (status == 200) {
+      successfulPopup.value = true;
+      userPage.value = 0;
+      // getReview(bookId);
+      console.log("delete user completed");
+    } else if (status == 404) {
+      router.push("/PageNotFound/");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await deleteUser(userId);
     }
+  }
+
+  //Create Follow
+  async function createFollow(userId) {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/follower`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+      params: {
+        userFollowerId: userId,
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          console.log("follow uncompleted");
+        } else if (status == 401) {
+          login.handleRefresh();
+          createFollow(userId)
+        }
+      },
+    });
+    if (status == 201) {
+      console.log("follow completed");
+    }
+  }
+
+  //Delete Follow
+  async function deleteFollow(userId) {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/follower/${userId}`,
+      {
+        onRequest({ request, options }) {
+          options.method = "Delete";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          }
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      console.log("unfollow completed");
+    } else if (status == 400) {
+      console.log("unfollow uncompleted");
+    } else if (status == 404) {
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await deleteFollow(userId);
+    }
+  }
 
   //Clear user list
   function clearUserList() {
@@ -241,7 +307,7 @@ export const useUsers = defineStore("Users", () => {
       data: {
         content: [],
         pageable: {},
-        totalPages: 1
+        totalPages: 1,
       },
     };
   }
@@ -249,11 +315,11 @@ export const useUsers = defineStore("Users", () => {
   //Clear new book
   function clearNewUser() {
     newUser.value = {
-        displayName: "",
-        email: "",
-        password: "",
-        role: "USER",
-    }
+      displayName: "",
+      email: "",
+      password: "",
+      role: "USER",
+    };
   }
 
   function toggleUserFailPopup() {
@@ -265,24 +331,24 @@ export const useUsers = defineStore("Users", () => {
     getUserList();
   }
 
-    //set edit user
-    async function setEditUser() {
-      (editUser.value = {
-        displayName: userDetail.value.data.displayName,
-        email: userDetail.value.data.email,
-        password: '',
-        bio: userDetail.value.data.bio,
-        role: userDetail.value.data.role,
-        file: userDetail.value.data.file,
-      }),
-        (editUserFile.value = userDetail.value.data.file);
-    }
+  //set edit user
+  async function setEditUser() {
+    (editUser.value = {
+      displayName: userDetail.value.data.displayName,
+      email: userDetail.value.data.email,
+      password: "",
+      bio: userDetail.value.data.bio,
+      role: userDetail.value.data.role,
+      file: userDetail.value.data.file,
+    }),
+      (editUserFile.value = userDetail.value.data.file);
+  }
 
   //Close successful popup
   function closeSuccessfulPopup() {
     successfulPopup.value = false;
     leavePopup.value = false;
-    backPage()
+    backPage();
   }
 
   //Back Page
@@ -305,17 +371,20 @@ export const useUsers = defineStore("Users", () => {
     registerFailedError,
     updateFailed,
     updateFailedError,
+    followStatus,
     getUserList,
     getUserDetail,
     updateUser,
     deleteUser,
     registerUser,
+    createFollow,
+    deleteFollow,
     clearUserList,
     clearNewUser,
     toggleUserFailPopup,
     changeUserPage,
     setEditUser,
-    closeSuccessfulPopup
+    closeSuccessfulPopup,
   };
 });
 

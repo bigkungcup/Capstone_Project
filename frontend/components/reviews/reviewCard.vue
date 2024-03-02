@@ -26,12 +26,20 @@ function userCoverPath(filePath) {
     <div class="tw-flex tw-flex-col tw-justify-center tw-space-y-5 tw-min-w-full tw-min-h-[16rem]">
         <v-card v-for="review in reviewList" width="100%">
             <v-row>
-                <v-col cols="3" class="web-text-detail tw-my-5 tw-space-x-5 tw-space-y-2" align="left">
+                <v-col cols="3" class="web-text-detail tw-my-5 tw-space-x-5 tw-space-y-1" align="left">
                     <v-img src="/image/guest_icon.png" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover  v-show="review.userDetail.file == null"/>
                     <v-img :src="review.userDetail.file" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover v-show="review.userDetail.file !== null"/>
                     <p class="tw-font-bold">{{review.userDetail.displayName}}</p>
                     <p class="web-text-sub">{{review.userDetail.totalReview}} reviews</p>
                     <p class="web-text-sub">{{review.userDetail.followers}} followers</p>
+                <div v-if="review.userDetail.userId != idToken">    
+                <v-btn
+                  height="auto"
+                  class="px-5 py-2"
+                  color="#3157BB"
+                  rounded="lg"
+                ><p class="">Follow</p></v-btn>
+                </div>
                 </v-col>
                 <v-col cols="9" class="web-text-detail tw-my-5 tw-space-y-3">
                     <v-rating :model-value="review.reviewRating" color="#FFB703" density="compact" size="meduim"
@@ -55,8 +63,11 @@ function userCoverPath(filePath) {
                     <div class="web-text-sub"><span> {{ review.reviewTotalLike }} likes </span> <span> {{ review.reviewTotalDisLike }} dislikes</span>
                     </div>
                     <div class="tw-space-x-3">
+                        <!-- <v-btn prepend-icon="mdi mdi-thumb-up-outline" stacked variant="text">0</v-btn><span>Likes</span> -->
                         <v-icon icon="mdi mdi-thumb-up-outline"></v-icon><span>Likes</span>
+                        <!-- <v-icon icon="mdi mdi-thumb-up"></v-icon><span>Likes</span> -->
                         <v-icon icon="mdi mdi-thumb-down-outline"></v-icon><span>Dislikes</span>
+                        <!-- <v-icon icon="mdi mdi-thumb-down"></v-icon><span>Dislikes</span> -->
                         <span class="text-center">
                             <v-menu>
                                 <template v-slot:activator="{ props: menu }">

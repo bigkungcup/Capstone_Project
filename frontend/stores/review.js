@@ -29,6 +29,7 @@ export const useReviews = defineStore("Reviews", () => {
   const editReview = ref();
   const successfulPopup = ref(false);
   const leavePopup = ref(true);
+  const likeStatus = ref(0); //0 = clear, 1 = like, 2 = dislike
 
   //Get reviews
   async function getReview(bookId) {
@@ -273,6 +274,56 @@ export const useReviews = defineStore("Reviews", () => {
     }
   }
 
+    //Create Like
+    async function createLike() {
+      let accessToken = useCookie("accessToken");
+      let status = 0;
+
+      await $fetch(`${import.meta.env.VITE_BASE_URL}/likeStatus/${likeStatus.value}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+          if (status == 400) {
+            console.log("like this review uncompleted");
+          } else if (status == 401) {
+            login.handleRefresh();
+            createLike();
+          }
+        },
+      });
+      if (status == 201) {
+        console.log("like this review completed");
+      } 
+    }
+
+    //Update Like
+        async function updateLike() {
+          let accessToken = useCookie("accessToken");
+          let status = 0;
+    
+          await $fetch(`${import.meta.env.VITE_BASE_URL}/likeStatus/${likeStatus.value}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${accessToken.value}`,
+            },
+            onResponse({ request, response, options }) {
+              status = response._data.response_code;
+              if (status == 400) {
+                console.log("like this review uncompleted");
+              } else if (status == 401) {
+                login.handleRefresh();
+                updateLike()
+              }
+            },
+          });
+          if (status == 201) {
+            console.log("like this review completed");
+          } 
+        }
+
   //Set edit review
   function setEditReview(bookId) {
     // await getReviewDetail(bookId);
@@ -337,6 +388,7 @@ export const useReviews = defineStore("Reviews", () => {
     reviewPage,
     successfulPopup,
     leavePopup,
+    likeStatus,
     getReview,
     getReviewByGuest,
     getReviewDetail,
@@ -344,6 +396,8 @@ export const useReviews = defineStore("Reviews", () => {
     createReview,
     updateReview,
     deleteReview,
+    createLike,
+    updateLike,
     changeReviewPage,
     setEditReview,
     clearReviewList,
