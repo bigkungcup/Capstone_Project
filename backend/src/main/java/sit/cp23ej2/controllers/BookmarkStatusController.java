@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import sit.cp23ej2.dtos.DataResponse;
-import sit.cp23ej2.dtos.LikeStatus.CreateReviewLikeStatus;
-import sit.cp23ej2.dtos.LikeStatus.UpdateReviewLikeStatus;
-import sit.cp23ej2.services.LikeStatusService;
+import sit.cp23ej2.dtos.BookmarkStatus.CreateBookmarkStatus;
+import sit.cp23ej2.dtos.BookmarkStatus.UpdateBookmarkStatus;
+import sit.cp23ej2.services.BookmarkStatusService;
 
 @CrossOrigin(origins = {
     "http://localhost:3000",
@@ -28,20 +28,20 @@ import sit.cp23ej2.services.LikeStatusService;
 }, allowedHeaders = "*")
 @RestController
 @Validated
-@RequestMapping("/api/likeStatus")
-public class LikeStatusController {
+@RequestMapping("/api/bookmarkStatus")
+public class BookmarkStatusController {
 
     @Autowired
-    private LikeStatusService checkLikeReviewService;
+    private BookmarkStatusService bookmarkStatusService;
 
     @PostMapping("")
-    public DataResponse createLikeStatus(@RequestBody CreateReviewLikeStatus param) {
-        return checkLikeReviewService.createLikeStatus(param);
+    public DataResponse createBookmarkStatus(@RequestBody CreateBookmarkStatus param) {
+        return bookmarkStatusService.insertBookmarkStatus(param);
     }
 
-    @PutMapping("/{likeStatusId}")
-    public DataResponse deleteLikeStatus(@PathVariable Integer likeStatusId, @RequestBody UpdateReviewLikeStatus param) {
-        return checkLikeReviewService.updateLikeStatus(likeStatusId, param);
+    @PutMapping("/{bookmarkStatusId}")
+    public DataResponse updateBookmarkStatus(@PathVariable Integer bookmarkStatusId, @RequestBody UpdateBookmarkStatus param) {
+        return bookmarkStatusService.updateBookmarkStatus(bookmarkStatusId, param);
     }
     
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,18 @@ public class FollowerController {
 
     @Autowired
     private FollowerService followerService;
+
+    @GetMapping("/follower")
+    public DataResponse getFollowers(@RequestParam(defaultValue = "0", required = false) Integer page,
+            @RequestParam(defaultValue = "10", required = false) Integer size) {
+        return followerService.getFollowers(page, size);
+    }
+
+    @GetMapping("/following")
+    public DataResponse getFollowersByGuest(@RequestParam(defaultValue = "0", required = false) Integer page,
+            @RequestParam(defaultValue = "10", required = false) Integer size) {
+        return followerService.getFollowing(page, size);
+    }
 
     @PostMapping("")
     public DataResponse insertFollower(@RequestParam(name = "userFollowerId") Integer userFollowerId) {

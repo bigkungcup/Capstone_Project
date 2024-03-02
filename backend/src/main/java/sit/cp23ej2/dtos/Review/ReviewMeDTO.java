@@ -8,17 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.Book;
-import sit.cp23ej2.entities.LikeStatus;
 import sit.cp23ej2.entities.User;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class ReviewDTO {
-    private Integer reviewId;
+public class ReviewMeDTO {
+     private Integer reviewId;
    
     private String reviewTitle;
 
@@ -44,5 +44,7 @@ public class ReviewDTO {
 
     private UserDTO userDetail;
 
-    private LikeStatus likeStatus;
+    private BookDTO bookDetail;
+
+    private Integer likeStatus;
 }

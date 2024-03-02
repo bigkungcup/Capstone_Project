@@ -1,6 +1,5 @@
 package sit.cp23ej2.services;
 
-import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -17,8 +16,11 @@ import org.springframework.stereotype.Service;
 
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
+import sit.cp23ej2.dtos.Book.BookDTO;
+import sit.cp23ej2.dtos.Follow.FollowerReviewDTO;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
+import sit.cp23ej2.dtos.Review.PageReviewMeDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.LikeStatus;
@@ -27,6 +29,7 @@ import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
+import sit.cp23ej2.repositories.FollowerReposiroty;
 import sit.cp23ej2.repositories.LikeStatusRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
@@ -44,10 +47,10 @@ public class ReviewService extends CommonController {
     private UserRepository userRepository;
 
     @Autowired
-    private FileStorageService fileStorageService;
-
-    @Autowired
     private LikeStatusRepository likeStatusRepository;
+    
+    @Autowired
+    private FollowerReposiroty followerReposiroty;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -57,7 +60,8 @@ public class ReviewService extends CommonController {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public DataResponse getReviewByBookId(Integer bookId, int page, int size, Long reviewRating, String sortBy, String sortType) throws HandleExceptionNotFound {
+    public DataResponse getReviewByBookId(Integer bookId, int page, int size, Long reviewRating, String sortBy,
+            String sortType) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
         // Pageable pageable = PageRequest.of(page, size);
 
@@ -72,7 +76,7 @@ public class ReviewService extends CommonController {
             sortBy = "reviewId";
         }
 
-          if ("DESC".equalsIgnoreCase(sortType)) {
+        if ("DESC".equalsIgnoreCase(sortType)) {
             pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
         } else if ("ASC".equalsIgnoreCase(sortType)) {
             pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
@@ -80,32 +84,41 @@ public class ReviewService extends CommonController {
             pageable = PageRequest.of(page, size, Sort.by(sortBy));
         }
 
-        PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(pageable, bookId, reviewRating), PageReviewDTO.class);
+        PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(pageable, bookId, reviewRating),
+                PageReviewDTO.class);
         if (reviews.getContent().size() > 0) {
 
             reviews.getContent().forEach(review -> {
                 UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
                 try {
-                    // Path pathFile = fileStorageService.loadUserFile(review.getUser().getUserId());
+                    // Path pathFile =
+                    // fileStorageService.loadUserFile(review.getUser().getUserId());
                     // System.out.println(pathFile.toString());
                     // user.setFile(pathFile.toString());
-                    // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" + user.getUserId());
-                    if(user != null){
+                    // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" +
+                    // user.getUserId());
+                    if (user != null) {
                         userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
                     }
-                  
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
+                    FollowerReviewDTO followerReview = modelMapper.map(following, FollowerReviewDTO.class);
+                    if (review.getUser().getUserId() == following.getFollowerId()) {
+                        userDTO.setFollowerReview(followerReview);
+                    }
+                });
                 review.setUserDetail(userDTO);
             });
 
-            if(user != null){
+            if (user != null) {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
                 reviews.getContent().forEach(review -> {
                     likeStatus.forEach(like -> {
                         if (review.getReviewId() == like.getLsr_reviewId()) {
-                            review.setLikeStatus(like.getLikeStatus());
+                            review.setLikeStatus(like);
                         }
                     });
                 });
@@ -140,21 +153,58 @@ public class ReviewService extends CommonController {
 
     public DataResponse getReviewByUserId(int page, int size) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
+
         Pageable pageable = PageRequest.of(page, size);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        PageReviewDTO review = modelMapper.map(repository.getReviewByUserId(pageable, user.getUserId()),
-                PageReviewDTO.class);
+        PageReviewMeDTO reviews = modelMapper.map(repository.getReviewByUserId(pageable, user.getUserId()),
+                PageReviewMeDTO.class);
 
-        if (review != null) {
+        if (reviews.getContent().size() > 0) {
+
+            reviews.getContent().forEach(review -> {
+                UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
+                try {
+                    if (user != null) {
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                review.setUserDetail(userDTO);
+
+                BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
+                try {
+                    if (user != null) {
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + review.getBook().getBookId());
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                review.setBookDetail(bookDTO);
+            });
+
+            if (user != null) {
+                List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
+                reviews.getContent().forEach(review -> {
+                    likeStatus.forEach(like -> {
+                        if (review.getReviewId() == like.getLsr_reviewId()) {
+                            review.setLikeStatus(like.getLikeStatus());
+                        }
+                    });
+                });
+            }
+
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Review");
             response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(review);
+            response.setData(reviews);
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }

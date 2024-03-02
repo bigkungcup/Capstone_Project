@@ -31,6 +31,8 @@ public class Bookmark {
     @Column(name = "bookmarkId")
     private Integer bookmarkId;
 
+    private Integer bookmarkStatus;
+
     private LocalDateTime bookmarkCreateDateTime;
 
     private LocalDateTime bookmarkUpdateDateTime;

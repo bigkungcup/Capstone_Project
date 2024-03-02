@@ -16,6 +16,11 @@ public interface LikeStatusRepository extends JpaRepository<LikeStatus, Integer>
                     " FROM LikeStatus ls WHERE ls.lsu_userId = :lsu_userId", nativeQuery = true)
     List<LikeStatus> getLikeStatus(@Param("lsu_userId") Integer userId);
 
+    @Query(value = "SELECT ls.likeStatusId, ls.lsr_reviewId, ls.lsu_userId, ls.likeStatus, ls.likeStatusCreateDateTime, ls.likeStatusUpdateDateTime " +
+                    " FROM LikeStatus ls WHERE ls.likeStatusId = :likeStatusId", nativeQuery = true)
+    LikeStatus getLikeStatusById(@Param("likeStatusId") Integer likeStatusId);
+
+
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO LikeStatus (lsr_reviewId, lsu_userId, likeStatus)" +
@@ -27,7 +32,7 @@ public interface LikeStatusRepository extends JpaRepository<LikeStatus, Integer>
     @Modifying
     @Transactional
     @Query(value = "UPDATE LikeStatus SET likeStatus = :likeStatus WHERE likeStatusId = :likeStatusId", nativeQuery = true)
-    void updateLikeStatu(@Param("likeStatus") Integer likeStatus,
+    void updateLikeStatus(@Param("likeStatus") Integer likeStatus,
             @Param("likeStatusId") Integer likeStatusId);
 
     @Modifying
