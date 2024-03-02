@@ -46,21 +46,27 @@ public class ReviewController {
    @GetMapping("")
    public DataResponse getAllBook(@NotNull @RequestParam(required = false) Integer bookId,
          @NotNull @RequestParam(defaultValue = "0", required = false) Integer page,
-         @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
+         @RequestParam(defaultValue = "10", required = false) Integer size,
+         @RequestParam(required = false) Long reviewRating,
+         @RequestParam(required =  false) String  sortBy, 
+         @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
       if (bookId == 0 || bookId == null) {
          throw new HandleExceptionBadRequest("Book Id is required");
       }
-      return reviewService.getReviewByBookId(bookId, page, size);
+      return reviewService.getReviewByBookId(bookId, page, size, reviewRating, sortBy, sortType);
    }
 
    @GetMapping("/guest")
    public DataResponse getAllBookByGuest(@NotNull @RequestParam(required = false) Integer bookId,
          @NotNull @RequestParam(defaultValue = "0", required = false) Integer page,
-         @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
+         @RequestParam(defaultValue = "10", required = false) Integer size,
+         @RequestParam(required = false) Long reviewRating,
+         @RequestParam(required =  false) String  sortBy, 
+         @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
       if (bookId == 0 || bookId == null) {
          throw new HandleExceptionBadRequest("Book Id is required");
       }
-      return reviewService.getReviewByBookId(bookId, page, size);
+      return reviewService.getReviewByBookId(bookId, page, size, reviewRating, sortBy, sortType);
    }
 
    @GetMapping("/{reviewId}")

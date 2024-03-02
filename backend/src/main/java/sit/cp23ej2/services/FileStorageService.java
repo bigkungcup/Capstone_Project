@@ -74,7 +74,7 @@ public class FileStorageService {
 				FileSystemUtils.deleteRecursively(destinationFile.toFile());
 			}
 			Path filePath = Files.createDirectories(destinationFile).resolve(fileName);
-			System.out.println("File PAth" + filePath);
+			// System.out.println("File PAth" + filePath);
 
 			// if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath()))
 			// {
@@ -106,7 +106,7 @@ public class FileStorageService {
 				FileSystemUtils.deleteRecursively(destinationFile.toFile());
 			}
 			Path filePath = Files.createDirectories(destinationFile).resolve(fileName);
-			System.out.println("File PAth" + filePath);
+			// System.out.println("File PAth" + filePath);
 			try (InputStream inputStream = file.getInputStream()) {
 				Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 			}

@@ -42,4 +42,6 @@ public class ReviewDTO {
     private User user;
 
     private UserDTO userDetail;
+
+    private Integer likeStatus;
 }

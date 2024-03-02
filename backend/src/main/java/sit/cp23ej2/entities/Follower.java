@@ -9,27 +9,28 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import jakarta.persistence.Table;
 
 @Getter
 @Setter
 @ToString
 @Entity
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-@Table(name = "Booktype", schema = "bannarug")
-public class Booktype {
-    
+@Table(name = "Follower", schema = "bannarug")
+public class Follower {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "booktypeId")
-    private Integer booktypeId;
-    
-    private String booktypeName;
-    
-    private LocalDateTime booktypeCreateDateTime;
+    @Column(name = "followerId")
+    private Integer followerId; 
 
-    private LocalDateTime  booktypeUpdateDateTme;
+    private Integer fu_userId;
+
+    private Integer userFollowerId;
+
+    private LocalDateTime followerCreateDateTime;
+
+    private LocalDateTime followerUpdateDateTime;
 }
