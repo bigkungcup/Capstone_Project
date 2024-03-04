@@ -37,9 +37,17 @@ public class LikeStatusService extends CommonController {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         } else {
             repository.insertLikeStatus(param.getReviewId(), param.getUserId(), param.getLikeStatus());
-            reviewRepository.increaseReviewTotalLike(param.getReviewId());
-            review.setReviewTotalLike(review.getReviewTotalLike() + 1);
-            return responseWithData(review, 201, "Created", "Review TotalLike Updated");
+            if(param.getLikeStatus() == 1){
+                reviewRepository.increaseReviewTotalLike(param.getReviewId());
+                review.setReviewTotalLike(review.getReviewTotalLike() + 1);
+                return responseWithData(review, 201, "Created", "Review TotalLike Updated");
+            }else if(param.getLikeStatus() == 2){
+                reviewRepository.increaseReviewTotalDisLike(param.getReviewId());
+                review.setReviewTotalDisLike(review.getReviewTotalDisLike() + 1);
+                return responseWithData(review, 201, "Created", "Review TotalDisLike Updated");
+            }else{
+                throw new HandleExceptionBadRequest("Invalid LikeStatus");
+            }
         }
     }
 
@@ -71,11 +79,13 @@ public class LikeStatusService extends CommonController {
             reviewRepository.increaseReviewTotalDisLike(param.getReviewId());
             review.setReviewTotalDisLike(review.getReviewTotalDisLike() + 1);
             return responseWithData(review, 200, "OK", "Review TotalLike Updated");
-        } else {
+        } else if( param.getLikeStatus() == 3){
             repository.deleteLikeStatus(likeStatusId);
             reviewRepository.decreaseReviewTotalLike(param.getReviewId());
             review.setReviewTotalLike(review.getReviewTotalLike() - 1);
             return responseWithData(review, 200, "OK", "Review TotalLike Updated");
+        }else{
+            throw new HandleExceptionBadRequest("Invalid LikeStatus");
         }
     }
 }

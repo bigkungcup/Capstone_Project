@@ -128,6 +128,10 @@ public class ReviewService extends CommonController {
                     likeStatus.forEach(like -> {
                         if (review.getReviewId() == like.getLsr_reviewId()) {
                             review.setLikeStatus(like);
+                        }else{
+                            LikeStatus likestatus = new LikeStatus();
+                            likestatus.setLikeStatus(0);
+                            review.setLikeStatus(likestatus);
                         }
                     });
                 });
