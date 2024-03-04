@@ -124,16 +124,23 @@ public class ReviewService extends CommonController {
 
             if (user != null) {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
+                System.out.println(likeStatus);
                 reviews.getContent().forEach(review -> {
-                    likeStatus.forEach(like -> {
-                        if (review.getReviewId() == like.getLsr_reviewId()) {
-                            review.setLikeStatus(like);
-                        }else{
-                            LikeStatus likestatus = new LikeStatus();
-                            likestatus.setLikeStatus(0);
-                            review.setLikeStatus(likestatus);
-                        }
-                    });
+                    if(likeStatus.size() == 0){
+                        LikeStatus likestatus = new LikeStatus();
+                        likestatus.setLikeStatus(0);
+                        review.setLikeStatus(likestatus);
+                    }else{
+                        likeStatus.forEach(like -> {
+                            if (review.getReviewId() == like.getLsr_reviewId()) {
+                                review.setLikeStatus(like);
+                            }else{
+                                LikeStatus likestatus = new LikeStatus();
+                                likestatus.setLikeStatus(0);
+                                review.setLikeStatus(likestatus);
+                            }
+                        });
+                    }
                 });
             }
 
