@@ -97,8 +97,8 @@ public class ReviewService extends CommonController {
                     // user.setFile(pathFile.toString());
                     // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" +
                     // user.getUserId());
-                    if (user != null) {
-                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    if (review.getUser() != null) {
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + review.getUser().getUserId());
                     }
 
                 } catch (Exception e) {
