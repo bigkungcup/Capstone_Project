@@ -79,7 +79,7 @@ public class LikeStatusService extends CommonController {
             reviewRepository.increaseReviewTotalDisLike(param.getReviewId());
             review.setReviewTotalDisLike(review.getReviewTotalDisLike() + 1);
             return responseWithData(review, 200, "OK", "Review TotalLike Updated");
-        } else if( param.getLikeStatus() == 0){
+        } else if( param.getLikeStatus() == 3){
             repository.deleteLikeStatus(likeStatusId);
             reviewRepository.decreaseReviewTotalLike(param.getReviewId());
             review.setReviewTotalLike(review.getReviewTotalLike() - 1);
