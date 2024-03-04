@@ -124,7 +124,6 @@ public class ReviewService extends CommonController {
 
             if (user != null) {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
-                System.out.println(likeStatus);
                 reviews.getContent().forEach(review -> {
                     if(likeStatus.size() == 0){
                         LikeStatus likestatus = new LikeStatus();
