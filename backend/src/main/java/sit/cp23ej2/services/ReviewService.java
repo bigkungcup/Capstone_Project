@@ -104,12 +104,21 @@ public class ReviewService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
-                    FollowerReviewDTO followerReview = modelMapper.map(following, FollowerReviewDTO.class);
-                    if (review.getUser().getUserId() == following.getFollowerId()) {
-                        userDTO.setFollowerReview(followerReview);
-                    }
-                });
+                if(user != null){
+                    followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
+                        FollowerReviewDTO followerReview = modelMapper.map(following, FollowerReviewDTO.class);
+                        if (review.getUser().getUserId() == following.getFollowerId()) {
+                            userDTO.setFollowerReview(followerReview);
+                        }
+                    });
+
+                }
+                // followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
+                //     FollowerReviewDTO followerReview = modelMapper.map(following, FollowerReviewDTO.class);
+                //     if (review.getUser().getUserId() == following.getFollowerId()) {
+                //         userDTO.setFollowerReview(followerReview);
+                //     }
+                // });
                 review.setUserDetail(userDTO);
             });
 
@@ -303,9 +312,6 @@ public class ReviewService extends CommonController {
         if (review == null) {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
-
-        // System.out.println(review.getUser().getUserId() + " " + user.getUserId() + "
-        // " + user.getRole());
 
         if (review.getUser().getUserId() != user.getUserId() && !user.getRole().equals("ADMIN")) {
             throw new HandleExceptionForbidden("Can not delete review for user: ");

@@ -70,6 +70,9 @@ public class BookService extends CommonController {
     public DataResponse getBook(int page, int size, Long bookRating, Long booktypeId, String search, String sortBy, String sortType)
             throws HandleExceptionNotFound {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
         DataResponse response = new DataResponse();
 
         Pageable pageable;
@@ -77,9 +80,6 @@ public class BookService extends CommonController {
         if (sortBy == null || sortBy.equals("")) {
             sortBy = "bookId";
         }
-
-        System.out.println("sortBy: " + sortBy);
-        System.out.println("sortType: " + sortType);
 
         if ("DESC".equalsIgnoreCase(sortType)) {
             pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
@@ -111,12 +111,16 @@ public class BookService extends CommonController {
                     e.printStackTrace();
                 }
 
-                bookmarkRepository.getBookmarkListByUserId(userRepository.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).getUserId()).forEach(bookmark -> {
-                    BookmarkBookDTO bookmarks = modelMapper.map(bookmark, BookmarkBookDTO.class);
-                    if (bookmark.getBook().getBookId() == bookDTO.getBookId()) {
-                        bookDTO.setBookmark(bookmarks);
-                    }
-                });
+                if (!currentPrincipalName.equals("anonymousUser")) {
+                    bookmarkRepository.getBookmarkListByUserId(userRepository.getUserByEmail(currentPrincipalName).getUserId()).forEach(bookmark -> {
+                        BookmarkBookDTO bookmarks = modelMapper.map(bookmark, BookmarkBookDTO.class);
+                        if (bookmark.getBook().getBookId() == bookDTO.getBookId()) {
+                            bookDTO.setBookmark(bookmarks);
+                        }
+                    });
+                }
+
+              
             });
             response.setResponse_code(200);
             response.setResponse_status("OK");
@@ -171,12 +175,14 @@ public class BookService extends CommonController {
                 e.printStackTrace();
             }
 
-            bookmarkRepository.getBookmarkListByUserId(userRepository.getUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).getUserId()).forEach(bookmark -> {
-                BookmarkBookDTO bookmarks = modelMapper.map(bookmark, BookmarkBookDTO.class);
-                if (bookmark.getBook().getBookId() == bookDTO.getBookId()) {
-                    bookDTO.setBookmark(bookmarks);
-                }
-            });
+            if (!currentPrincipalName.equals("anonymousUser")) {
+                bookmarkRepository.getBookmarkListByUserId(userRepository.getUserByEmail(currentPrincipalName).getUserId()).forEach(bookmark -> {
+                    BookmarkBookDTO bookmarks = modelMapper.map(bookmark, BookmarkBookDTO.class);
+                    if (bookmark.getBook().getBookId() == bookDTO.getBookId()) {
+                        bookDTO.setBookmark(bookmarks);
+                    }
+                });
+            }
             
             response.setResponse_code(200);
             response.setResponse_status("OK");
