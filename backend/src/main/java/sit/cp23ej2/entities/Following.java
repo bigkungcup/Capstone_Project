@@ -45,5 +45,5 @@ public class Following {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userFollowingId", nullable = true)
-    private User cc;
+    private User userFollowing;
 }

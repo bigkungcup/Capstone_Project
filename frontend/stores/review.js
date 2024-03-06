@@ -29,7 +29,15 @@ export const useReviews = defineStore("Reviews", () => {
   const editReview = ref();
   const successfulPopup = ref(false);
   const leavePopup = ref(true);
-  const likeStatus = ref(0); //0 = clear, 1 = like, 2 = dislike
+  const myReviewList = ref({
+    data: {
+      content: [],
+      pageable: {
+        totalPages: 1,
+      },
+    },
+  });
+  // const likeStatus = ref(0); //0 = clear, 1 = like, 2 = dislike
 
   //Get reviews
   async function getReview(bookId) {
@@ -111,6 +119,43 @@ export const useReviews = defineStore("Reviews", () => {
         console.log("get review list completed");
       }
     }
+
+    //Get my reviews
+    async function getMyReview() {
+      let accessToken = useCookie("accessToken");
+      let status = 0;
+      const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/me`, {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+          options.params = {
+            page: reviewPage.value,
+            size: 10,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+          if (status == 400) {
+            reviewList.value = {
+              data: {
+                content: [],
+                pageable: {
+                  totalPages: 1,
+                },
+              },
+            };
+            console.log("get my review list uncompleted");
+          }
+        },
+      });
+      if (status == 200) {
+        reviewList.value = data.value;
+        console.log("get my review list completed");
+      }
+    }    
 
   //Get review detail
   async function getReviewDetail(reviewId) {
@@ -275,14 +320,19 @@ export const useReviews = defineStore("Reviews", () => {
   }
 
     //Create Like
-    async function createLike() {
+    async function createLike(statusDetail) {
       let accessToken = useCookie("accessToken");
       let status = 0;
 
-      await $fetch(`${import.meta.env.VITE_BASE_URL}/likeStatus/${likeStatus.value}`, {
+      await $fetch(`${import.meta.env.VITE_BASE_URL}/likeStatus`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken.value}`,
+        },
+        body: {
+          userId: statusDetail.userId,
+          reviewId: statusDetail.reviewId,
+          likeStatus: statusDetail.likeStatus
         },
         onResponse({ request, response, options }) {
           status = response._data.response_code;
@@ -300,14 +350,19 @@ export const useReviews = defineStore("Reviews", () => {
     }
 
     //Update Like
-        async function updateLike() {
+        async function updateLike(statusDetail) {
           let accessToken = useCookie("accessToken");
           let status = 0;
     
-          await $fetch(`${import.meta.env.VITE_BASE_URL}/likeStatus/${likeStatus.value}`, {
+          await $fetch(`${import.meta.env.VITE_BASE_URL}/likeStatus/${statusDetail.likeStatusId}`, {
             method: "PUT",
             headers: {
               Authorization: `Bearer ${accessToken.value}`,
+            },
+            body: {
+              userId: statusDetail.userId,
+              reviewId: statusDetail.reviewId,
+              likeStatus: statusDetail.likeStatus
             },
             onResponse({ request, response, options }) {
               status = response._data.response_code;
@@ -388,9 +443,9 @@ export const useReviews = defineStore("Reviews", () => {
     reviewPage,
     successfulPopup,
     leavePopup,
-    likeStatus,
     getReview,
     getReviewByGuest,
+    getMyReview,
     getReviewDetail,
     getReviewDetailByGuest,
     createReview,

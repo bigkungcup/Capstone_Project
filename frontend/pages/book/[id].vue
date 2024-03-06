@@ -22,6 +22,7 @@ const bookConfirmPopup = ref(false);
 const reviewConfirmPopup = ref(false);
 
 const roleToken = ref(localStorage.getItem('role'));
+const idToken = ref(localStorage.getItem('id'));
 const bookmarked = ref(false);
 
 function setDeleteId(id) {
@@ -46,6 +47,27 @@ function toggleReviewConfirmPopup() {
 
 function bookCoverPath(filePath) {
   return (filePath = `../../_nuxt/@fs/${filePath}`);
+}
+
+async function likeReviews(reviewId,likeStatus) {
+  let status = {
+    userId: idToken.value,
+    reviewId: reviewId,
+    likeStatus: likeStatus,
+  }
+  await reviews.createLike(status);
+  await reviews.getReview(route.params.id);
+}
+
+async function updatelikeReviews(reviewId,likeStatus,likeStatusId){
+  let status = {
+    userId: idToken.value,
+    reviewId: reviewId,
+    likeStatusId: likeStatusId,
+    likeStatus: likeStatus,
+  }
+  await reviews.updateLike(status);
+  await reviews.getReview(route.params.id);
 }
 
 if (roleToken.value == 'GUEST') {
@@ -139,11 +161,11 @@ if (roleToken.value == 'GUEST') {
               </div>
 
               <div class="tw-flex tw-justify-center tw-gap-x-12" v-show="roleToken == 'USER'">
-                <v-btn class="text-none" color="#1D419F" v-if="library.bookmarkedStatus == 0" @click="library.bookmarkedStatus = 1">
+                <v-btn class="text-none" color="#1D419F" v-if="library.bookmarkedStatus == null" @click="library.createBookmark(library.bookDetail.data.bookId), library.bookmarkedStatus = 1">
                   <v-icon start icon="mdi mdi-bookmark-outline"></v-icon>
                   Bookmark
                 </v-btn>
-                <v-btn class="text-none" color="#3157BB" v-if="library.bookmarkedStatus == 1" @click="library.bookmarkedStatus = 0">
+                <v-btn class="text-none" color="#3157BB" v-if="library.bookmarkedStatus != null" @click="library.deleteBookmarkByBookId(library.bookDetail.data.bookId), library.bookmarkedStatus = null">
                   <v-icon start icon="mdi mdi-bookmark-check"></v-icon>
                   Bookmarked
                 </v-btn>
@@ -277,9 +299,10 @@ if (roleToken.value == 'GUEST') {
                 <reviewCard
                   :reviewList="reviews.reviewList.data.content"
                   :bookId="library.bookDetail.data.bookId"
-                  :like="like"
                   @toggle="toggleReviewConfirmPopup()"
                   @set="setDeleteId($event)"
+                  @like="likeReviews($event.reviewId, $event.likeStatus)"
+                  @update="updatelikeReviews($event.reviewId, $event.likeStatus, $event.likeStatusId)"
                 />
               </v-virtual-scroll>
             </v-row>

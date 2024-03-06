@@ -5,12 +5,16 @@ import changePasswordPopup from "~/components/profiles/popups/changePasswordPopu
 // import Reviews from '~/components/profiles/reviews.vue';
 import { useLogin } from '~/stores/login'
 import { useBooks } from '~/stores/book'
+import { useReviews } from '~/stores/review'
 import { mergeProps } from "vue";
 
 const login = useLogin();
 const book = useBooks();
+const review = useReviews();
 const changePassword = ref(false);
 const profileSection = ref('bookmark');
+const bookmarkPage = ref(0);
+const reviewPage = ref(0);
 const result = ref(0);
 
 function handleChangePassword() {
@@ -30,6 +34,19 @@ function setResult() {
   // }
 }
 
+async function selectSection(section) {
+  if(section == 'bookmark'){
+    profileSection.value = 'bookmark';
+    await book.getBookmarkList();
+    result.value = book.bookmarkList.data.totalElements ? book.bookmarkList.data.totalElements : 0
+  }else if(section == 'review'){
+    profileSection.value = 'review';
+    review.clearReviewList();
+    await review.getMyReview();
+    result.value = review.reviewList.data.totalElements ? review.reviewList.data.totalElements : 0
+  }
+}
+
 function selectBookmark() {
   book.getBookmarkList();
   setResult();
@@ -38,6 +55,7 @@ function selectBookmark() {
 onBeforeMount(async () => { 
   await login.getProfile();
   await book.getBookmarkList();
+  await selectSection(profileSection.value);
 });
 
 
@@ -148,14 +166,14 @@ onBeforeMount(async () => {
                 <div class="tw-border-y-4">
                     <v-row class="">
                         <v-col cols="3" class="tw-grid tw-content-center ">   
-                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'bookmark'" @click="profileSection = 'bookmark', selectBookmark()"> Bookmarks </div>
+                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'bookmark'" @click="profileSection = 'bookmark', selectBookmark(profileSection)"> Bookmarks </div>
                             <div class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3" v-if="profileSection == 'bookmark'"> 
                               <p class="tw-flex tw-justify-center">Bookmarks</p> 
                               <p class="tw-flex tw-justify-center">({{ result }})</p> 
                             </div>
                         </v-col>
                         <v-col cols="3" class="tw-grid tw-content-center">
-                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'review'" @click="profileSection = 'review'"> My reviews </div>
+                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'review'" @click="profileSection = 'review', selectSection(profileSection)"> My reviews </div>
                             <div class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3" v-if="profileSection == 'review'"> 
                               <p class="tw-flex tw-justify-center"> My reviews </p> 
                               <p class="tw-flex tw-justify-center">({{ result }})</p> 
@@ -182,14 +200,17 @@ onBeforeMount(async () => {
                 <!-- Bookmark /> -->
                 <div v-if="profileSection == 'bookmark'">
                 <Bookmarks :bookmarkList="book.bookmarkList.data.content"/>
-                <div v-show="book.bookmarkList.data.content.length !== 0" class="py-1">
-                <v-pagination v-model="page" :length="book.bookmarkList.data.totalPages" :total-visible="7"
-                  rounded="20" @update:model-value="book.changeBookmarkPage(page)">
+                <div v-if="book.bookmarkList.data.content.length !== 0" class="py-1">
+                <v-pagination v-model="bookmarkPage" :length="book.bookmarkList.data.totalPages" :total-visible="7"
+                  rounded="20" @update:model-value="book.changeBookmarkPage(bookmarkPage)">
                 </v-pagination></div></div>
                 <!-- <Reviews /> -->
                 <div v-if="profileSection == 'review'">
-                <Reviews />
-              </div>
+                <Reviews :reviewList="review.reviewList.data.content"/>
+                <div v-if="review.reviewList.data.content.length !== 0" class="py-1">
+                <v-pagination v-model="reviewPage" :length="review.reviewList.data.totalPages" :total-visible="7"
+                  rounded="20" @update:model-value="review.changeReviewPage(reviewPage)">
+                </v-pagination></div></div>
             </div>
         </div>
         <!-- Popup -->

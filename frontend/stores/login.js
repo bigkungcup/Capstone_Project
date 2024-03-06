@@ -15,6 +15,7 @@ export const useLogin = defineStore("Login", () => {
 
   const accessToken = ref(useCookie("accessToken", cookieOptions));
   const refreshToken = ref(useCookie("refreshToken", cookieOptions));
+  const idToken = ref(localStorage.getItem("id"));
   const roleToken = ref(localStorage.getItem("role"));
   const fileToken = ref(localStorage.getItem("file"));
 
@@ -248,11 +249,15 @@ export const useLogin = defineStore("Login", () => {
 
   //Log out
   function logOut() {
+    // const myBroadcastChannel1 = new BroadcastChannel('accessToken');
+    // const myBroadcastChannel2 = new BroadcastChannel('refreshToken');
     accessToken.value = null;
     delete_cookie("accessToken");
     refreshToken.value = null;
     delete_cookie("refreshToken");
     resetToken();
+    // myBroadcastChannel1.close();
+    // myBroadcastChannel2.close();
     router.push("/login");
   }
 
@@ -308,6 +313,7 @@ export const useLogin = defineStore("Login", () => {
     updateFailed,
     updateFailedError,
     profilePic,
+    idToken,
     roleToken,
     fileToken,
     getProfile,

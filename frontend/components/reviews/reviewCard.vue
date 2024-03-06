@@ -1,6 +1,6 @@
 <script setup>
 import { mergeProps } from 'vue'
-defineEmits(["toggle","set"]);
+defineEmits(["toggle","set","like","update"]);
 
 defineProps({
     reviewList: {
@@ -20,6 +20,8 @@ function userCoverPath(filePath) {
    return filePath = (`../../_nuxt/@fs/${filePath}`)
 }
 
+const follow = ref(true)
+
 </script>
  
 <template>
@@ -27,18 +29,30 @@ function userCoverPath(filePath) {
         <v-card v-for="review in reviewList" width="100%">
             <v-row>
                 <v-col cols="3" class="web-text-detail tw-my-5 tw-space-x-5 tw-space-y-1" align="left">
-                    <v-img src="/image/guest_icon.png" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover  v-show="review.userDetail.file == null"/>
+                    <v-img src="/image/guest_icon.png" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2 tw-mx-5" cover  v-show="review.userDetail.file == null"/>
                     <v-img :src="review.userDetail.file" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover v-show="review.userDetail.file !== null"/>
                     <p class="tw-font-bold">{{review.userDetail.displayName}}</p>
                     <p class="web-text-sub">{{review.userDetail.totalReview}} reviews</p>
                     <p class="web-text-sub">{{review.userDetail.followers}} followers</p>
-                <div v-if="review.userDetail.userId != idToken">    
+                <div v-if="review.userDetail.userId != idToken && roleToken == 'USER'">    
+                <v-btn
+                  height="auto"
+                  variant="outlined"
+                  color="#3157BB"
+                  class="px-8 py-2"
+                  rounded="lg"
+                  v-if="follow == false"
+                  @click="follow = true"
+                >Follow</v-btn>
                 <v-btn
                   height="auto"
                   class="px-5 py-2"
                   color="#3157BB"
                   rounded="lg"
-                ><p class="">Follow</p></v-btn>
+                  v-if="follow == true"
+                  @click="follow = false"
+                >Following</v-btn>
+
                 </div>
                 </v-col>
                 <v-col cols="9" class="web-text-detail tw-my-5 tw-space-y-3">
@@ -62,12 +76,15 @@ function userCoverPath(filePath) {
                     </v-expansion-panels></div>
                     <div class="web-text-sub"><span> {{ review.reviewTotalLike }} likes </span> <span> {{ review.reviewTotalDisLike }} dislikes</span>
                     </div>
-                    <div class="tw-space-x-3">
-                        <!-- <v-btn prepend-icon="mdi mdi-thumb-up-outline" stacked variant="text">0</v-btn><span>Likes</span> -->
-                        <v-icon icon="mdi mdi-thumb-up-outline"></v-icon><span>Likes</span>
-                        <!-- <v-icon icon="mdi mdi-thumb-up"></v-icon><span>Likes</span> -->
-                        <v-icon icon="mdi mdi-thumb-down-outline"></v-icon><span>Dislikes</span>
-                        <!-- <v-icon icon="mdi mdi-thumb-down"></v-icon><span>Dislikes</span> -->
+                    <div class="tw-space-x-3" v-if="roleToken == 'USER'">
+                        <!-- Start (create) -->
+                        <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus.likeStatus == 0" @click="review.likeStatus.likeStatus = 1, $emit('like', { reviewId: review.reviewId, likeStatus: 1 })">Likes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus.likeStatus == 0" @click="review.likeStatus.likeStatus = 2, $emit('like', { reviewId: review.reviewId, likeStatus: 2 })">Dislikes</v-btn>
+                        <!-- Like/Dislike (update) -->
+                        <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus.likeStatus != 1 && review.likeStatus.likeStatus != 0" @click="review.likeStatus.likeStatus = 1, $emit('update', { reviewId: review.reviewId, likeStatus: 1, likeStatusId: review.likeStatus.likeStatusId })">Likes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-up" variant="text" v-show="review.likeStatus.likeStatus == 1" @click="review.likeStatus.likeStatus = 0, $emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">Likes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-down-outline" variant="text" v-show="review.likeStatus.likeStatus != 2 && review.likeStatus.likeStatus != 0" @click="review.likeStatus.likeStatus = 2, $emit('update', { reviewId: review.reviewId, likeStatus: 2, likeStatusId: review.likeStatus.likeStatusId })">Dislikes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-down" variant="text" v-show="review.likeStatus.likeStatus == 2" @click="review.likeStatus.likeStatus = 0, $emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">Dislikes</v-btn>
                         <span class="text-center">
                             <v-menu>
                                 <template v-slot:activator="{ props: menu }">

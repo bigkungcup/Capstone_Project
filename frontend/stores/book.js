@@ -166,6 +166,7 @@ export const useBooks = defineStore("Books", () => {
     );
     if (status == 200) {
       bookDetail.value = data.value;
+      bookmarkedStatus.value = bookDetail.value.data.bookmark;
       console.log("get book detail  completed");
     } else if (status == 400) {
       console.log("get book detail uncompleted");
@@ -196,6 +197,7 @@ export const useBooks = defineStore("Books", () => {
       );
       if (status == 200) {
         bookDetail.value = data.value;
+        bookmarkedStatus.value = bookDetail.value.data.bookmark;
         console.log("get book detail  completed");
       } else if (status == 400) {
         console.log("get book detail uncompleted");

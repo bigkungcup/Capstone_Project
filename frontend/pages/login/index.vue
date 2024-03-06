@@ -21,6 +21,7 @@ onBeforeMount(() => {
   login.clearLoginAccount();
   login.resetToken();
   login.logOut();
+  login.roleToken = 'GUEST';
 });
 </script>
 

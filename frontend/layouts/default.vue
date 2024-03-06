@@ -32,7 +32,7 @@ function profileCoverPath(filePath) {
       <NuxtLink to="/user/" v-show="login.roleToken == 'ADMIN'">User</NuxtLink>
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
-      <span class="d-flex align-center justify-center"><v-icon icon="mdi-bell" style="font-size: 40px"></v-icon></span>
+      <span class="d-flex align-center justify-center"><v-icon icon="mdi-bell" style="font-size: 40px" v-if="login.roleToken != 'GUEST'"></v-icon></span>
       <span class="text-center" v-show="!loginStatus">
         <v-menu transition="slide-y-transition">
           <template v-slot:activator="{ props: menu }">
