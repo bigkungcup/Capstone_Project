@@ -22,28 +22,28 @@ import jakarta.persistence.Table;
 @ToString
 @Entity
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-@Table(name = "Follower", schema = "bannarug")
-public class Follower {
+@Table(name = "Following", schema = "bannarug")
+public class Following {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "followerId")
-    private Integer followerId; 
+    @Column(name = "followingId")
+    private Integer followingId; 
 
     // private Integer fu_userId;
 
-    // private Integer userFollowerId;
+    // private Integer userfollowingId;
 
-    private Integer followerStatus;
+    private Integer followingStatus;
 
-    private LocalDateTime followerCreateDateTime;
+    private LocalDateTime followingCreateDateTime;
 
-    private LocalDateTime followerUpdateDateTime;
+    private LocalDateTime followingUpdateDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fu_userId", nullable = true)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userFollowerId", nullable = true)
-    private User userFollower;
+    @JoinColumn(name = "userFollowingId", nullable = true)
+    private User cc;
 }

@@ -12,13 +12,13 @@ import sit.cp23ej2.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.follows, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u", nativeQuery = true)
+        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u", nativeQuery = true)
         Page<User> getAllUsers(Pageable pageable);
 
-        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.follows, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u WHERE userId = :userId", nativeQuery = true)
+        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u WHERE userId = :userId", nativeQuery = true)
         User getUserById(@Param("userId") int userId);
 
-        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.follows, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u WHERE email = :email", nativeQuery = true)
+        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u WHERE email = :email", nativeQuery = true)
         User getUserByEmail(@Param("email") String email);
 
         boolean existsByEmailOrDisplayName(String email, String displayName);
@@ -30,7 +30,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = "INSERT INTO  User (displayName, email, password, role, followers, follows, totalReview, totalFavoriteReview, totalLike, bio)"
+        @Query(value = "INSERT INTO  User (displayName, email, password, role, followers, followings, totalReview, totalFavoriteReview, totalLike, bio)"
                         +
                         "values (:displayName, :email, :password, :role, 0, 0, 0, 0, 0, :bio);", nativeQuery = true)
         Integer insertUser(@Param("displayName") String displayName, @Param("email") String email,
@@ -88,15 +88,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE User SET follows = follows + 1" +
+        @Query(value = "UPDATE User SET followings = followings + 1" +
                         " WHERE userId = :userId", nativeQuery = true)
-        void increaseFollows(@Param("userId") Integer userId);
+        void increaseFollowings(@Param("userId") Integer userId);
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE User SET follows = follows - 1" +
+        @Query(value = "UPDATE User SET followings = followings - 1" +
                         " WHERE userId = :userId", nativeQuery = true)
-        void decreaseFollows(@Param("userId") Integer userId);
+        void decreaseFollowings(@Param("userId") Integer userId);
 
         @Modifying
         @Transactional

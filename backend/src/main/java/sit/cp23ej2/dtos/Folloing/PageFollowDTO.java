@@ -1,4 +1,4 @@
-package sit.cp23ej2.dtos.Follow;
+package sit.cp23ej2.dtos.Folloing;
 
 import java.util.List;
 

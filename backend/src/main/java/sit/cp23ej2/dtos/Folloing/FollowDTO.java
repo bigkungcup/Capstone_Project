@@ -1,4 +1,4 @@
-package sit.cp23ej2.dtos.Follow;
+package sit.cp23ej2.dtos.Folloing;
 
 import java.time.LocalDateTime;
 
@@ -16,21 +16,21 @@ import sit.cp23ej2.entities.User;
 @NoArgsConstructor
 @ToString
 public class FollowDTO {
-    private Integer followerId; 
+    private Integer followingId; 
     
     @JsonIgnore
     private User user;
 
     @JsonIgnore
-    private User userFollower;
+    private User userfollowing;
 
-    private UserDTO userFollowing;
+    private UserDTO userFollowings;
 
     private UserDTO userFollowers;
 
-    private Integer followerStatus;
+    private Integer followingStatus;
 
-    private LocalDateTime followerCreateDateTime;
+    private LocalDateTime followingCreateDateTime;
 
-    private LocalDateTime followerUpdateDateTime;
+    private LocalDateTime followingUpdateDateTime;
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import sit.cp23ej2.dtos.DataResponse;
-import sit.cp23ej2.services.FollowerService;
+import sit.cp23ej2.services.FollowingService;
 
 @CrossOrigin(origins = {
     "http://localhost:3000",
@@ -27,11 +27,11 @@ import sit.cp23ej2.services.FollowerService;
 }, allowedHeaders = "*")
 @RestController
 @Validated
-@RequestMapping("/api/follower")
-public class FollowerController {
+@RequestMapping("/api/follow")
+public class FollowingController {
 
     @Autowired
-    private FollowerService followerService;
+    private FollowingService followerService;
 
     @GetMapping("/follower")
     public DataResponse getFollowers(@RequestParam(defaultValue = "0", required = false) Integer page,
@@ -46,13 +46,13 @@ public class FollowerController {
     }
 
     @PostMapping("")
-    public DataResponse insertFollower(@RequestParam(name = "userFollowerId") Integer userFollowerId) {
-        return followerService.insertFollower(userFollowerId);
+    public DataResponse insertFollower(@RequestParam(name = "userFollowingId") Integer userFollowingId) {
+        return followerService.insertFollowing(userFollowingId);
     }
 
-    @DeleteMapping("{userFollowerId}")
-    public DataResponse deleteFollower(@PathVariable Integer userFollowerId) {
-        return followerService.deleteFollower(userFollowerId);
+    @DeleteMapping("{userFollowingId}")
+    public DataResponse deleteFollower(@PathVariable Integer userFollowingId) {
+        return followerService.deleteFollowing(userFollowingId);
     }
     
 }

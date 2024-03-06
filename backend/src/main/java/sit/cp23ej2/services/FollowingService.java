@@ -14,19 +14,19 @@ import org.springframework.stereotype.Service;
 
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
-import sit.cp23ej2.dtos.Follow.PageFollowDTO;
+import sit.cp23ej2.dtos.Folloing.PageFollowDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
-import sit.cp23ej2.repositories.FollowerReposiroty;
+import sit.cp23ej2.repositories.FollowingReposiroty;
 import sit.cp23ej2.repositories.UserRepository;
 
 @Service
-public class FollowerService extends CommonController{
+public class FollowingService extends CommonController{
     
     @Autowired
-    private FollowerReposiroty reposiroty;
+    private FollowingReposiroty reposiroty;
 
     @Autowired
     private UserRepository userRepository;
@@ -90,17 +90,17 @@ public class FollowerService extends CommonController{
             } catch (Exception e) {
                 e.printStackTrace();
             }
-                follows.setUserFollowing(userDTO);
+                follows.setUserFollowings(userDTO);
             });
 
         }else{
-            throw new HandleExceptionNotFound("Follows Not Found", "Follows");
+            throw new HandleExceptionNotFound("Followings Not Found", "Followings");
         }
 
-        return responseWithData(follow, 200, "OK", "Get Follows Success");
+        return responseWithData(follow, 200, "OK", "Get Followings Success");
     }
 
-    public DataResponse insertFollower(Integer userFollowerId) {
+    public DataResponse insertFollowing(Integer userFollowingId) {
         DataResponse response = new DataResponse();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -108,29 +108,29 @@ public class FollowerService extends CommonController{
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        if(userRepository.getUserById(userFollowerId) == null){
+        if(userRepository.getUserById(userFollowingId) == null){
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
 
-        if(reposiroty.checkExists(user.getUserId(), userFollowerId) != 0){
-            throw new HandleExceptionBadRequest(currentPrincipalName + " already follow this user");
+        if(reposiroty.checkExists(user.getUserId(), userFollowingId) != 0){
+            throw new HandleExceptionBadRequest(currentPrincipalName + " already following this user");
         }
 
-        if(userFollowerId == user.getUserId()){
-            throw new HandleExceptionBadRequest(currentPrincipalName + " can't follow yourself");
+        if(userFollowingId == user.getUserId()){
+            throw new HandleExceptionBadRequest(currentPrincipalName + " can't following yourself");
         }
 
-        reposiroty.insertFollower(user.getUserId(), userFollowerId, 1);
-        userRepository.increaseFollows(user.getUserId());
-        userRepository.increaseFollowers(userFollowerId);
+        reposiroty.insertfollowing(user.getUserId(), userFollowingId, 1);
+        userRepository.increaseFollowings(user.getUserId());
+        userRepository.increaseFollowers(userFollowingId);
         response.setResponse_code(201);
         response.setResponse_status("Created");        
-        response.setResponse_message("Insert Follower Success");
+        response.setResponse_message("Insert Following Success");
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
 
-    public DataResponse deleteFollower(Integer userFollowerId) {
+    public DataResponse deleteFollowing(Integer userFollowingId) {
         DataResponse response = new DataResponse();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -138,24 +138,24 @@ public class FollowerService extends CommonController{
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        if(userRepository.getUserById(userFollowerId) == null){
+        if(userRepository.getUserById(userFollowingId) == null){
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
 
-        if(reposiroty.checkExists(user.getUserId(), userFollowerId) == 0){
-            throw new HandleExceptionBadRequest(currentPrincipalName + " not follow this user");
+        if(reposiroty.checkExists(user.getUserId(), userFollowingId) == 0){
+            throw new HandleExceptionBadRequest(currentPrincipalName + " not following this user");
         }
 
-        if(userFollowerId == user.getUserId()){
-            throw new HandleExceptionBadRequest(currentPrincipalName + " can't unfollow yourself");
+        if(userFollowingId == user.getUserId()){
+            throw new HandleExceptionBadRequest(currentPrincipalName + " can't unfollowing yourself");
         }
 
-        reposiroty.deleteFollower(user.getUserId(), userFollowerId);
-        userRepository.decreaseFollows(user.getUserId());
-        userRepository.decreaseFollowers(userFollowerId);
+        reposiroty.deletefollowing(user.getUserId(), userFollowingId);
+        userRepository.decreaseFollowings(user.getUserId());
+        userRepository.decreaseFollowers(userFollowingId);
         response.setResponse_code(200);
         response.setResponse_status("OK");        
-        response.setResponse_message("Delete Follower Success");
+        response.setResponse_message("Delete Following Success");
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }

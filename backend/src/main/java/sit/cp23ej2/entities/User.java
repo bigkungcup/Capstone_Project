@@ -35,7 +35,7 @@ public class User {
 
     private Integer followers;
 
-    private Integer follows;
+    private Integer followings;
 
     private Integer totalReview;
 

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import sit.cp23ej2.dtos.Follow.FollowerReviewDTO;
+import sit.cp23ej2.dtos.Folloing.FollowingReviewDTO;
 
 @Getter
 @Setter
@@ -23,7 +23,7 @@ public class UserDTO {
 
     private Integer followers;
 
-    private Integer follows;
+    private Integer followings;
 
     private Integer totalReview;
 
@@ -35,5 +35,5 @@ public class UserDTO {
 
     private String file;
 
-    private FollowerReviewDTO followerReview;
+    private FollowingReviewDTO followerReview;
 }

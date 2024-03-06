@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
-import sit.cp23ej2.dtos.Follow.FollowerReviewDTO;
+import sit.cp23ej2.dtos.Folloing.FollowingReviewDTO;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewMeDTO;
@@ -29,7 +29,7 @@ import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
-import sit.cp23ej2.repositories.FollowerReposiroty;
+import sit.cp23ej2.repositories.FollowingReposiroty;
 import sit.cp23ej2.repositories.LikeStatusRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
@@ -50,7 +50,10 @@ public class ReviewService extends CommonController {
     private LikeStatusRepository likeStatusRepository;
     
     @Autowired
-    private FollowerReposiroty followerReposiroty;
+    private FollowingReposiroty followerReposiroty;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -92,12 +95,12 @@ public class ReviewService extends CommonController {
                 UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
                 try {
                     // Path pathFile =
-                    // fileStorageService.loadUserFile(review.getUser().getUserId());
+                    
                     // System.out.println(pathFile.toString());
                     // user.setFile(pathFile.toString());
                     // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" +
                     // user.getUserId());
-                    if (review.getUser() != null) {
+                    if (review.getUser() != null && fileStorageService.loadUserFile(review.getUser().getUserId()) != null) {
                         userDTO.setFile(baseUrl + "/api/files/filesUser/" + review.getUser().getUserId());
                     }
 
@@ -106,9 +109,9 @@ public class ReviewService extends CommonController {
                 }
                 if(user != null){
                     followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
-                        FollowerReviewDTO followerReview = modelMapper.map(following, FollowerReviewDTO.class);
-                        if (review.getUser().getUserId() == following.getFollowerId()) {
-                            userDTO.setFollowerReview(followerReview);
+                        FollowingReviewDTO folloingReview = modelMapper.map(following, FollowingReviewDTO.class);
+                        if (review.getUser().getUserId() == following.getFollowingId()) {
+                            userDTO.setFollowerReview(folloingReview);
                         }
                     });
 
