@@ -23,6 +23,7 @@ import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewMeDTO;
 import sit.cp23ej2.dtos.Review.ReviewDTO;
+import sit.cp23ej2.dtos.Review.ReviewRatingStatisticsDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.LikeStatus;
@@ -274,29 +275,40 @@ public class ReviewService extends CommonController {
 
                 // BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
                 // try {
-                //     // && fileStorageService.load(review.getBook().getBookId()) != null
-                //     if (review.getBook() != null) {
-                //         bookDTO.setFile(baseUrl + "/api/files/filesBook/" + review.getBook().getBookId());
-                //     }
+                // // && fileStorageService.load(review.getBook().getBookId()) != null
+                // if (review.getBook() != null) {
+                // bookDTO.setFile(baseUrl + "/api/files/filesBook/" +
+                // review.getBook().getBookId());
+                // }
 
                 // } catch (Exception e) {
-                //     e.printStackTrace();
+                // e.printStackTrace();
                 // }
                 // review.set(bookDTO);
 
                 if (user != null) {
                     List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
-                    
-                        likeStatus.forEach(like -> {
-                            if (review.getReviewId() == like.getLsr_reviewId()) {
-                                reviewDTO.setLikeStatus(like);
-                            }
+
+                    likeStatus.forEach(like -> {
+                        if (review.getReviewId() == like.getLsr_reviewId()) {
+                            reviewDTO.setLikeStatus(like);
+                        }
                     });
                 }
 
                 reviewDTOs.add(reviewDTO);
             });
             return responseWithData(reviewDTOs, 200, "OK", "New Review");
+        } else {
+            throw new HandleExceptionNotFound("Review Not Found", "Review");
+        }
+    }
+
+    public DataResponse getReviewRatingCount() {
+        ReviewRatingStatisticsDTO reviewRatingCount = repository.getReviewRatingCount();
+       
+        if (reviewRatingCount != null) {
+            return responseWithData(reviewRatingCount, 200, "OK", "Review Rating Count");
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
@@ -318,14 +330,17 @@ public class ReviewService extends CommonController {
             if (bookmark.getBook().getBookId() == review.getBookId()) {
                 // throw new HandleExceptionForbidden("Can not create review for user: ");
                 notificationRepository.insertNotification(user.getUserId(),
-                        bookmark.getBook().getBookName(), "has a new review. Check it now!", 0, 0, "/book/" + bookmark.getBook().getBookId() + "/", "Bookmark");
+                        bookmark.getBook().getBookName(), "has a new review. Check it now!", 0, 0,
+                        "/book/" + bookmark.getBook().getBookId() + "/", "Bookmark");
             }
         });
 
         followingReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
             if (following.getFollowingId() == review.getUserId()) {
                 notificationRepository.insertNotification(user.getUserId(),
-                       following.getUserfollowing().getDisplayName() + "(Following)", "has created a review in " + bookDTO.getBookName(), 0, 0, "/book/" + bookDTO.getBookId() + "/", "Review");
+                        following.getUserfollowing().getDisplayName() + "(Following)",
+                        "has created a review in " + bookDTO.getBookName(), 0, 0, "/book/" + bookDTO.getBookId() + "/",
+                        "Review");
             }
         });
 

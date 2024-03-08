@@ -90,6 +90,11 @@ public class ReviewController {
       return reviewService.getReviewByCreateDateTime();
    }
 
+   @GetMapping("/ratingCount")
+   public DataResponse getReviewRatingCount() {
+      return reviewService.getReviewRatingCount();
+   }
+
    @PostMapping("")
    @ResponseStatus(HttpStatus.CREATED)
    public DataResponse createReview(@RequestBody @Valid CreateReviewDTO review) {

@@ -74,6 +74,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/review/guest").permitAll()
                 .requestMatchers("/api/review/guest/**").permitAll()
                 .requestMatchers("/api/review/newReview").permitAll()
+                .requestMatchers("/api/review/ratingCount").permitAll()
                 .requestMatchers("/api/review").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/review/**").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/history").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

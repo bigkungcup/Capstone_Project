@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import sit.cp23ej2.dtos.Review.ReviewRatingStatisticsDTO;
 import sit.cp23ej2.entities.Review;
 import java.util.List;
 
@@ -16,14 +17,14 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
         @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime"
                         +
                         " FROM Review r " +
-                        " WHERE r.rvb_bookId = :bookId AND (:reviewRating IS NULL OR r.reviewRating = :reviewRating)" , nativeQuery = true)
+                        " WHERE r.rvb_bookId = :bookId AND (:reviewRating IS NULL OR r.reviewRating = :reviewRating)", nativeQuery = true)
         Page<Review> getReviewByBookId(Pageable pageable, @Param("bookId") Integer bookId,
                         @Param("reviewRating") Long reviewRating);
 
         @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
                         +
                         " FROM Review r " +
-                        " WHERE r.reviewId = :reviewId" , nativeQuery = true)
+                        " WHERE r.reviewId = :reviewId", nativeQuery = true)
         Review getReviewById(@Param("reviewId") Integer reviewId);
 
         @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
@@ -36,6 +37,13 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
                         " FROM Review r " +
                         " ORDER BY r.reviewCreateDateTime DESC LIMIT 10", nativeQuery = true)
         List<Review> getReviewByCreateDateTime();
+
+        @Query(value = "SELECT (SELECT COUNT(reviewId) FROM Review) as all_star, (SELECT COUNT(reviewId) FROM Review WHERE reviewRating = 5) as 5_star, (SELECT COUNT(reviewId) FROM Review WHERE reviewRating = 4)  as 4_star, "
+                        +
+                        " (SELECT COUNT(reviewId) FROM Review WHERE reviewRating = 3)  as 3_star, (SELECT COUNT(reviewId) FROM Review WHERE reviewRating = 2) as 2_star, "
+                        +
+                        " (SELECT COUNT(reviewId) FROM Review WHERE reviewRating = 1) as 1_star", nativeQuery = true)
+        ReviewRatingStatisticsDTO getReviewRatingCount();
 
         @Modifying
         @Transactional
