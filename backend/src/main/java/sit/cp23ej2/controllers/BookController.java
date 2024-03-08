@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -66,6 +67,31 @@ public class BookController {
     @RequestMapping("/guest/{bookId}")
     public DataResponse getBookByIdGuest(@PathVariable Integer bookId) throws HandleExceptionNotFound {
         return bookService.getBookById(bookId);
+    }
+
+    @GetMapping("/ranking")
+    public DataResponse getBookRanking(@RequestParam(required = false) Integer bookTypeId) {
+        return bookService.getBookRanking(bookTypeId);
+    }
+
+    @GetMapping("/mostview")
+    public DataResponse getBookMostView() {
+        return bookService.getBookMostView();
+    }
+
+    @GetMapping("/newBook")
+    public DataResponse getBookByCreateDateTime() {
+        return bookService.getBookByCreateDateTime();
+    }
+
+    @GetMapping("/random")
+    public DataResponse getBookRandom() {
+        return bookService.getBookByRandom();
+    }
+
+    @GetMapping("/similar/{booktypeId}")
+    public DataResponse getBookByBooktype(@PathVariable Integer booktypeId) {
+        return bookService.getSimilarBook(booktypeId);
     }
 
     @PostMapping("")

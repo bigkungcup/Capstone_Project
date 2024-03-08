@@ -55,7 +55,7 @@ public class Book {
 
     private Integer bookTotalView;
 
-    private Long bookRating;
+    private Double bookRating;
 
     private String bookTag;
     

@@ -20,6 +20,7 @@ import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.FollowingReposiroty;
+import sit.cp23ej2.repositories.NotificationRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
 @Service
@@ -30,6 +31,9 @@ public class FollowingService extends CommonController{
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -121,6 +125,8 @@ public class FollowingService extends CommonController{
         }
 
         reposiroty.insertfollowing(user.getUserId(), userFollowingId, 1);
+
+        notificationRepository.insertNotification(userFollowingId, user.getDisplayName(), "followed you. Follow them back to be friend.", 0, 0, "/user/" + user.getUserId(), "Follow");
         userRepository.increaseFollowings(user.getUserId());
         userRepository.increaseFollowers(userFollowingId);
         response.setResponse_code(201);

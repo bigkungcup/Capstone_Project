@@ -31,6 +31,12 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
                         " FROM Review r WHERE r.rvu_userId = :userId", nativeQuery = true)
         Page<Review> getReviewByUserId(Pageable pageable, @Param("userId") Integer userId);
 
+        @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
+                        +
+                        " FROM Review r " +
+                        " ORDER BY r.reviewCreateDateTime DESC LIMIT 10", nativeQuery = true)
+        List<Review> getReviewByCreateDateTime();
+
         @Modifying
         @Transactional
         @Query(value = "INSERT INTO Review (reviewRating, reviewDetail, reviewTitle, reviewTotalLike, reviewTotalDisLike, rvu_userId, rvb_bookId, spoileFlag)"

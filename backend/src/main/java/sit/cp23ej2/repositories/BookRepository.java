@@ -2,6 +2,8 @@ package sit.cp23ej2.repositories;
 
 import sit.cp23ej2.entities.Book;
 
+import java.util.List;
+
 // import java.util.HashMap;
 // import java.util.List;
 
@@ -57,6 +59,43 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
                         , nativeQuery = true)
         Book getBookById(@Param("bookId") int bookId);
+
+        @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
+                        +
+                        " FROM Book b" +
+                        " WHERE (:booktypeId IS NULL OR b.bb_booktypeId = :booktypeId) " +
+                        " ORDER By b.bookRating DESC, b.bookTotalReview DESC, b.bookName ASC LIMIT 5"
+                        , nativeQuery = true)
+        List<Book> getBookRanking(@Param("booktypeId") Integer booktypeId);
+
+        @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
+                        +
+                        " FROM Book b" +
+                        " ORDER By b.bookTotalView DESC LIMIT 5"
+                        , nativeQuery = true)
+        List<Book> getBookByMostView();
+
+        @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
+                        +
+                        " FROM Book b" +
+                        " ORDER By RAND() LIMIT 6"
+                        , nativeQuery = true)
+        List<Book> getBookByRandom();
+
+        @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
+                        +
+                        " FROM Book b" +
+                        " WHERE b.bb_booktypeId = :booktypeId" +
+                        " ORDER By RAND() LIMIT 10"
+                        , nativeQuery = true)
+        List<Book> getBookByBooktype(@Param("booktypeId") Integer booktypeId);
+
+        @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
+                        +
+                        " FROM Book b" +
+                        " ORDER By b.bookCreateDateTime DESC LIMIT 10"
+                        , nativeQuery = true)
+        List<Book> getBookByCreateDateTime();
 
         Boolean existsByAuthorAndBookName(String author, String bookName);
 

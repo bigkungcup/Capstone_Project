@@ -21,7 +21,7 @@ public class BookDTO {
     private String author;
     private String bookDetail;
     private Integer bookTotalView;
-    private Long bookRating;
+    private Double bookRating;
     private String bookTag;
     private List<String> bookTagList;
     private LocalDateTime bookCreateDateTime;

@@ -1,5 +1,7 @@
 package sit.cp23ej2.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +16,17 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u", nativeQuery = true)
         Page<User> getAllUsers(Pageable pageable);
+
+        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u", nativeQuery = true)
+        List<User> getAllUserList();
+
+        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio " +
+                        " FROM User u " +
+                        " ORDER BY CASE WHEN :sort_param = 'followers' THEN u.followers END DESC, " +
+                        " CASE WHEN :sort_param = 'totalLike' THEN u.totalLike END DESC " +
+                        " LIMIT 5"
+                        , nativeQuery = true)
+        List<User> getUserRanking(@Param ("sort_param") String sort_param);
 
         @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u WHERE userId = :userId", nativeQuery = true)
         User getUserById(@Param("userId") int userId);

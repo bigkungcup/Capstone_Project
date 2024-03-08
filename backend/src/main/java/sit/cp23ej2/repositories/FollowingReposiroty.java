@@ -23,6 +23,12 @@ public interface FollowingReposiroty extends JpaRepository<Following, Integer> {
     @Query(value = "SELECT f.followingId, f.fu_userId, f.userFollowingId, f.followingStatus, f.followingCreateDateTime, f.followingUpdateDateTime "
             +
             " FROM following f " +
+            " WHERE f.fu_userId = :userId", nativeQuery = true)
+    List<Following> getFollowingList(@Param("userId") Integer userId);
+
+    @Query(value = "SELECT f.followingId, f.fu_userId, f.userFollowingId, f.followingStatus, f.followingCreateDateTime, f.followingUpdateDateTime "
+            +
+            " FROM following f " +
             " WHERE f.userFollowingId = :userId", nativeQuery = true)
     Page<Following> getFollowers(Pageable pageable, @Param("userId") Integer userId);
 

@@ -85,6 +85,11 @@ public class ReviewController {
       return reviewService.getReviewByUserId(page, size);
    }
 
+   @GetMapping("/newReview")
+   public DataResponse getReviewByCreateDateTime() {
+      return reviewService.getReviewByCreateDateTime();
+   }
+
    @PostMapping("")
    @ResponseStatus(HttpStatus.CREATED)
    public DataResponse createReview(@RequestBody @Valid CreateReviewDTO review) {

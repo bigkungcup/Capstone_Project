@@ -2,6 +2,7 @@ package sit.cp23ej2.services;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -21,6 +22,7 @@ import sit.cp23ej2.dtos.Folloing.FollowingReviewDTO;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewMeDTO;
+import sit.cp23ej2.dtos.Review.ReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.entities.LikeStatus;
@@ -29,8 +31,10 @@ import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
+import sit.cp23ej2.repositories.BookmarkRepository;
 import sit.cp23ej2.repositories.FollowingReposiroty;
 import sit.cp23ej2.repositories.LikeStatusRepository;
+import sit.cp23ej2.repositories.NotificationRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
@@ -48,12 +52,21 @@ public class ReviewService extends CommonController {
 
     @Autowired
     private LikeStatusRepository likeStatusRepository;
-    
-    @Autowired
-    private FollowingReposiroty followerReposiroty;
+
+    // @Autowired
+    // private FollowingReposiroty followerReposiroty;
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private FollowingReposiroty followingReposiroty;
+
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -95,20 +108,21 @@ public class ReviewService extends CommonController {
                 UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
                 try {
                     // Path pathFile =
-                    
+
                     // System.out.println(pathFile.toString());
                     // user.setFile(pathFile.toString());
                     // bookDTO.setFile("http://localhost:8080/api/files/filesUser/" +
                     // user.getUserId());
-                    if (review.getUser() != null && fileStorageService.loadUserFile(review.getUser().getUserId()) != null) {
+                    if (review.getUser() != null
+                            && fileStorageService.loadUserFile(review.getUser().getUserId()) != null) {
                         userDTO.setFile(baseUrl + "/api/files/filesUser/" + review.getUser().getUserId());
                     }
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if(user != null){
-                    followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
+                if (user != null) {
+                    followingReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
                         FollowingReviewDTO folloingReview = modelMapper.map(following, FollowingReviewDTO.class);
                         if (review.getUser().getUserId() == following.getFollowingId()) {
                             userDTO.setFollowerReview(folloingReview);
@@ -116,11 +130,13 @@ public class ReviewService extends CommonController {
                     });
 
                 }
-                // followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
-                //     FollowerReviewDTO followerReview = modelMapper.map(following, FollowerReviewDTO.class);
-                //     if (review.getUser().getUserId() == following.getFollowerId()) {
-                //         userDTO.setFollowerReview(followerReview);
-                //     }
+                // followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following ->
+                // {
+                // FollowerReviewDTO followerReview = modelMapper.map(following,
+                // FollowerReviewDTO.class);
+                // if (review.getUser().getUserId() == following.getFollowerId()) {
+                // userDTO.setFollowerReview(followerReview);
+                // }
                 // });
                 review.setUserDetail(userDTO);
             });
@@ -128,15 +144,15 @@ public class ReviewService extends CommonController {
             if (user != null) {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
                 reviews.getContent().forEach(review -> {
-                    if(likeStatus.size() == 0){
+                    if (likeStatus.size() == 0) {
                         LikeStatus likestatus = new LikeStatus();
                         likestatus.setLikeStatus(0);
                         review.setLikeStatus(likestatus);
-                    }else{
+                    } else {
                         likeStatus.forEach(like -> {
                             if (review.getReviewId() == like.getLsr_reviewId()) {
                                 review.setLikeStatus(like);
-                            }else{
+                            } else {
                                 LikeStatus likestatus = new LikeStatus();
                                 likestatus.setLikeStatus(0);
                                 review.setLikeStatus(likestatus);
@@ -216,7 +232,7 @@ public class ReviewService extends CommonController {
                 reviews.getContent().forEach(review -> {
                     likeStatus.forEach(like -> {
                         if (review.getReviewId() == like.getLsr_reviewId()) {
-                            review.setLikeStatus(like.getLikeStatus());
+                            review.setLikeStatus(like);
                         }
                     });
                 });
@@ -233,10 +249,86 @@ public class ReviewService extends CommonController {
         return response;
     }
 
+    public DataResponse getReviewByCreateDateTime() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+
+        List<Review> reviews = repository.getReviewByCreateDateTime();
+        if (reviews.size() > 0) {
+            List<ReviewDTO> reviewDTOs = new ArrayList<>();
+            reviews.forEach(review -> {
+                ReviewDTO reviewDTO = modelMapper.map(review, ReviewDTO.class);
+                UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
+                try {
+                    if (review.getUser() != null
+                            && fileStorageService.loadUserFile(review.getUser().getUserId()) != null) {
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + review.getUser().getUserId());
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                reviewDTO.setUserDetail(userDTO);
+
+                // BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
+                // try {
+                //     // && fileStorageService.load(review.getBook().getBookId()) != null
+                //     if (review.getBook() != null) {
+                //         bookDTO.setFile(baseUrl + "/api/files/filesBook/" + review.getBook().getBookId());
+                //     }
+
+                // } catch (Exception e) {
+                //     e.printStackTrace();
+                // }
+                // review.set(bookDTO);
+
+                if (user != null) {
+                    List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
+                    
+                        likeStatus.forEach(like -> {
+                            if (review.getReviewId() == like.getLsr_reviewId()) {
+                                reviewDTO.setLikeStatus(like);
+                            }
+                    });
+                }
+
+                reviewDTOs.add(reviewDTO);
+            });
+            return responseWithData(reviewDTOs, 200, "OK", "New Review");
+        } else {
+            throw new HandleExceptionNotFound("Review Not Found", "Review");
+        }
+    }
+
     public DataResponse createReviewByBookId(CreateReviewDTO review) {
         DataResponse response = new DataResponse();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+
         repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(),
                 review.getBookId(), review.getSpoileFlag());
+
+        BookDTO bookDTO = modelMapper.map(bookRepository.getBookById(review.getBookId()), BookDTO.class);
+
+        bookmarkRepository.getBookmarkListByUserId(user.getUserId()).forEach(bookmark -> {
+            if (bookmark.getBook().getBookId() == review.getBookId()) {
+                // throw new HandleExceptionForbidden("Can not create review for user: ");
+                notificationRepository.insertNotification(user.getUserId(),
+                        bookmark.getBook().getBookName(), "has a new review. Check it now!", 0, 0, "/book/" + bookmark.getBook().getBookId() + "/", "Bookmark");
+            }
+        });
+
+        followingReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
+            if (following.getFollowingId() == review.getUserId()) {
+                notificationRepository.insertNotification(user.getUserId(),
+                       following.getUserfollowing().getDisplayName() + "(Following)", "has created a review in " + bookDTO.getBookName(), 0, 0, "/book/" + bookDTO.getBookId() + "/", "Review");
+            }
+        });
+
         bookRepository.increaseBookTotalReview(review.getBookId());
         userRepository.increaseTotalReview(review.getUserId());
         bookRepository.updateBookReting(review.getBookId());

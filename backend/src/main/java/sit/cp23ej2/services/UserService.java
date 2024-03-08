@@ -143,6 +143,29 @@ public class UserService extends CommonController {
         return response;
     }
 
+    public DataResponse getUserRanking(String sort) {
+      
+        List<User> userRanking = repository.getUserRanking(sort);
+
+        if (userRanking != null) {
+            List<UserDTO> userRankingList = userRanking.stream().map(user -> {
+                UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+                try {
+                    Path pathFile = fileStorageService.loadUserFile(user.getUserId());
+                    if (pathFile != null) {
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return userDTO;
+            }).collect(Collectors.toList());
+            return responseWithData(userRankingList, 200, "OK", "User Ranking");
+        } else {
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
+    }
+
     public DataResponse createUser(CreateUserDTO user) {
         DataResponse response = new DataResponse();
 

@@ -12,38 +12,40 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import jakarta.persistence.Table;
 
 @Getter
 @Setter
 @ToString
 @Entity
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-@Table(name = "Following", schema = "bannarug")
-public class Following {
+@Table(name = "Notification", schema = "bannarug")
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "followingId")
-    private Integer followingId; 
+    @Column(name = "notificationId")
+    private Integer notificationId; 
 
-    // private Integer fu_userId;
+    private String notificationTitle;
 
-    // private Integer userfollowingId;
+    private String notificationDetail;
 
-    private Integer followingStatus;
+    private Integer notificationLevel;
 
-    private LocalDateTime followingCreateDateTime;
+    private String notificationLink;
 
-    private LocalDateTime followingUpdateDateTime;
+    private String notificationType;
+
+    private Integer notificationStatus;
+
+    private LocalDateTime notificationCreateDateTime;
+
+    private LocalDateTime notificationUpdateDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fu_userId", nullable = true)
+    @JoinColumn(name = "nu_userId", nullable = true)
     private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userFollowingId", nullable = true)
-    private User userfollowing;
 }

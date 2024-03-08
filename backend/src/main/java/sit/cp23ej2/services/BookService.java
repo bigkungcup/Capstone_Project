@@ -194,6 +194,131 @@ public class BookService extends CommonController {
         return response;
     }
 
+    public DataResponse getBookRanking(Integer booktypeId) {    
+        List<Book> books = repository.getBookRanking(booktypeId);
+
+        if (books.size() > 0) {
+            List<BookDTO> bookDTOs = new ArrayList<>();
+            books.forEach(book -> {
+                BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                try {
+                    Path pathFile = fileStorageService.load(bookDTO);
+                    if(pathFile != null){
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                bookDTOs.add(bookDTO);
+            });
+            return responseWithData(bookDTOs, 200, "OK", "Book Ranking");
+        } else {
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+    }
+
+    public DataResponse getBookMostView() {
+        List<Book> books = repository.getBookByMostView();
+
+        if (books.size() > 0) {
+            List<BookDTO> bookDTOs = new ArrayList<>();
+            books.forEach(book -> {
+                BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                try {
+                    Path pathFile = fileStorageService.load(bookDTO);
+                    if(pathFile != null){
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                bookDTOs.add(bookDTO);
+            });
+            return responseWithData(bookDTOs, 200, "OK", "Book Most View");
+        } else {
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+    }
+
+    public DataResponse getBookByCreateDateTime(){
+        List<Book> books = repository.getBookByCreateDateTime();
+
+        if (books.size() > 0) {
+            List<BookDTO> bookDTOs = new ArrayList<>();
+            books.forEach(book -> {
+                BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                try {
+                    Path pathFile = fileStorageService.load(bookDTO);
+                    if(pathFile != null){
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                bookDTOs.add(bookDTO);
+            });
+            return responseWithData(bookDTOs, 200, "OK", "New Book");
+        } else {
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+    }
+
+    public DataResponse getBookByRandom() {
+        List<Book> books = repository.getBookByRandom();
+
+        if (books.size() > 0) {
+            List<BookDTO> bookDTOs = new ArrayList<>();
+            books.forEach(book -> {
+                BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                try {
+                    Path pathFile = fileStorageService.load(bookDTO);
+                    if(pathFile != null){
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                bookDTOs.add(bookDTO);
+            });
+            return responseWithData(bookDTOs, 200, "OK", "Book By Random");
+        } else {
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+    }
+
+    public DataResponse getSimilarBook(Integer booktypeId){
+        List<Book> books = repository.getBookByBooktype(booktypeId);
+
+        if (books.size() > 0) {
+            List<BookDTO> bookDTOs = new ArrayList<>();
+            books.forEach(book -> {
+                BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                try {
+                    Path pathFile = fileStorageService.load(bookDTO);
+                    if(pathFile != null){
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                bookDTOs.add(bookDTO);
+            });
+            return responseWithData(bookDTOs, 200, "OK", "Similar Book");
+        } else {
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+    }
+
     public DataResponse createBook(CreateBookDTO book, MultipartFile file) {
         DataResponse response = new DataResponse();
         Boolean existsByAuthorAndBookName = repository.existsByAuthorAndBookName(book.getAuthor(), book.getBookName());
