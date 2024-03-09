@@ -21,9 +21,44 @@ const deleteId = ref(0);
 const bookConfirmPopup = ref(false);
 const reviewConfirmPopup = ref(false);
 
-const roleToken = ref(localStorage.getItem('role'));
-const idToken = ref(localStorage.getItem('id'));
-const bookmarked = ref(false);
+const roleToken = ref(localStorage.getItem("role"));
+const idToken = ref(localStorage.getItem("id"));
+const sortList = [
+  {
+    id: 1,
+    Name: "Newest",
+    value: "desc",
+  },
+  {
+    id: 2,
+    Name: "Oldest",
+    value: "asc",
+  },
+  {
+    id: 3,
+    Name: "Total Likes",
+    value: "reviewTotalLike",
+  },
+];
+const starRate = [{
+  title: 'All',
+  value: null
+},{
+  title: '5',
+  value: 5
+},{
+  title: '4',
+  value: 4
+},{
+  title: '3',
+  value: 3
+},{
+  title: '2',
+  value: 2
+},{
+  title: '1',
+  value: 1
+}];
 
 function setDeleteId(id) {
   deleteId.value = id;
@@ -49,35 +84,65 @@ function bookCoverPath(filePath) {
   return (filePath = `../../_nuxt/@fs/${filePath}`);
 }
 
-async function likeReviews(reviewId,likeStatus) {
+async function likeReviews(reviewId, likeStatus) {
   let status = {
     userId: idToken.value,
     reviewId: reviewId,
     likeStatus: likeStatus,
-  }
+  };
   await reviews.createLike(status);
   await reviews.getReview(route.params.id);
 }
 
-async function updatelikeReviews(reviewId,likeStatus,likeStatusId){
+async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
   let status = {
     userId: idToken.value,
     reviewId: reviewId,
     likeStatusId: likeStatusId,
     likeStatus: likeStatus,
-  }
+  };
   await reviews.updateLike(status);
   await reviews.getReview(route.params.id);
 }
 
-if (roleToken.value == 'GUEST') {
-    await library.getBookDetailByGuest(route.params.id);
-    reviews.clearReviewList();
-    await reviews.getReviewByGuest(route.params.id);
+function handleSelectionChange() {
+  if (roleToken.value == "GUEST") {
+    reviews.getReviewByGuest(route.params.id);
+    // result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
+  } else {
+    reviews.getReview(route.params.id);
+    // result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
+  }
+}
+
+function handleStarRate(value) {
+  reviews.filterReview = value
+  if(roleToken.value == "GUEST"){
+    reviews.getReviewByGuest(route.params.id);
   }else{
-    await library.getBookDetail(route.params.id);
-    reviews.clearReviewList();
-    await reviews.getReview(route.params.id);
+    reviews.getReview(route.params.id);
+  }
+}
+
+async function handleFollow(userId) {
+  await user.createFollower(userId)
+  reviews.getReview(route.params.id)
+}
+
+async function handleUnfollow(userId) {
+  await user.deleteFollower(userId)
+  reviews.getReview(route.params.id)
+}
+
+
+if (roleToken.value == "GUEST") {
+  await library.getBookDetailByGuest(route.params.id);
+  reviews.clearReviewList();
+  await reviews.getReviewByGuest(route.params.id);
+} else {
+  await library.getBookDetail(route.params.id);
+  reviews.clearReviewList();
+  await reviews.getReview(route.params.id);
 }
 
 </script>
@@ -152,20 +217,49 @@ if (roleToken.value == 'GUEST') {
                 </p>
                 <p>
                   Booktype:
-                  <v-btn color="#1D419F">{{ library.bookDetail.data.booktype.booktypeName }}</v-btn>
+                  <v-btn color="#1D419F">{{
+                    library.bookDetail.data.booktype.booktypeName
+                  }}</v-btn>
                 </p>
                 <p>Tags:</p>
                 <div class="tw-flex tw-gap-x-2">
-                <v-chip variant="elevated" color="#1D419F" v-show="library.bookDetail.data.bookTagList[0] != ''" v-for="tag in library.bookDetail.data.bookTagList">{{ tag }}</v-chip>
-              </div>
+                  <v-chip
+                    variant="elevated"
+                    color="#1D419F"
+                    v-show="library.bookDetail.data.bookTagList[0] != ''"
+                    v-for="tag in library.bookDetail.data.bookTagList"
+                    >{{ tag }}</v-chip
+                  >
+                </div>
               </div>
 
-              <div class="tw-flex tw-justify-center tw-gap-x-12" v-show="roleToken == 'USER'">
-                <v-btn class="text-none" color="#1D419F" v-if="library.bookmarkedStatus == null" @click="library.createBookmark(library.bookDetail.data.bookId), library.bookmarkedStatus = 1">
+              <div
+                class="tw-flex tw-justify-center tw-gap-x-12"
+                v-show="roleToken == 'USER'"
+              >
+                <v-btn
+                  class="text-none"
+                  color="#1D419F"
+                  v-if="library.bookmarkedStatus == null"
+                  @click="
+                    library.createBookmark(library.bookDetail.data.bookId),
+                      (library.bookmarkedStatus = 1)
+                  "
+                >
                   <v-icon start icon="mdi mdi-bookmark-outline"></v-icon>
                   Bookmark
                 </v-btn>
-                <v-btn class="text-none" color="#3157BB" v-if="library.bookmarkedStatus != null" @click="library.deleteBookmarkByBookId(library.bookDetail.data.bookId), library.bookmarkedStatus = null">
+                <v-btn
+                  class="text-none"
+                  color="#3157BB"
+                  v-if="library.bookmarkedStatus != null"
+                  @click="
+                    library.deleteBookmarkByBookId(
+                      library.bookDetail.data.bookId
+                    ),
+                      (library.bookmarkedStatus = null)
+                  "
+                >
                   <v-icon start icon="mdi mdi-bookmark-check"></v-icon>
                   Bookmarked
                 </v-btn>
@@ -195,7 +289,8 @@ if (roleToken.value == 'GUEST') {
                   </template>
                   <v-list>
                     <v-list-item
-                      :to="`../../book/update_${library.bookDetail.data.bookId}/`" v-show="roleToken == 'ADMIN'"
+                      :to="`../../book/update_${library.bookDetail.data.bookId}/`"
+                      v-show="roleToken == 'ADMIN'"
                     >
                       <v-list-item-title class="web-text-detail tw-space-x-2"
                         ><v-icon icon="mdi mdi-pencil-outline"></v-icon
@@ -203,7 +298,8 @@ if (roleToken.value == 'GUEST') {
                       >
                     </v-list-item>
                     <v-list-item
-                      class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" v-show="roleToken == 'ADMIN'"
+                      class="hover:tw-bg-zinc-300/20 tw-cursor-pointer"
+                      v-show="roleToken == 'ADMIN'"
                     >
                       <v-list-item-title
                         class="web-text-detail"
@@ -249,38 +345,53 @@ if (roleToken.value == 'GUEST') {
       <div class="web-grey-color tw-w-10/12 tw-rounded-lg tw-drop-shadow-lg">
         <div class="tw-px-6 tw-py-8">
           <p class="web-text-header tw-inline-block tw-align-middle">
-            Review ({{
+            <!-- Review ({{
               reviews.reviewList.data.totalElements
                 ? reviews.reviewList.data.totalElements
                 : 0
-            }}):
+            }}):  -->
+            Reviews :
           </p>
         </div>
         <div
           class="tw-bg-white tw-mx-5 tw-mb-5 tw-p-4 tw-max-h-[50rem] tw-rounded-lg"
         >
           <v-container>
-            <v-row no-gutters>
+            <v-row>
               <v-col cols="10">
-                <v-text-field label="Search" variant="solo-filled">
-                </v-text-field>
+                <v-item-group mandatory v-model="reviews.filterReview">
+                  <v-row no-gutters>
+                    <v-col v-for="star in starRate" cols="12" md="2" class="py-1">
+                      <v-item>
+                        <v-btn
+                          color="#1D419F"
+                          height="50"
+                          width="95%"
+                          :variant="reviews.filterReview == star.value ? 'elevated' : 'outlined'"
+                          @click="handleStarRate(star.value)"
+                        >
+                          <v-icon icon="mdi mdi-star" color="#FFBB11"></v-icon>
+                          {{ star.title }}
+                        </v-btn>
+                      </v-item>
+                    </v-col>
+                  </v-row>
+                </v-item-group>
               </v-col>
-              <v-col cols="1"
-                ><v-btn height="58" class="pa-5" color="#082266" rounded="lg">
-                  Search
-                </v-btn></v-col
-              >
-              <v-col cols="1"
-                ><v-btn
-                  height="58"
-                  class="mx-5 pa-5"
-                  color="#082266"
+              <v-col cols="2">
+                <v-select
+                  label="SORT BY: "
+                  class="tw-font-bold tw-text-white tw-text-xs"
+                  v-model="reviews.sortReview"
+                  :items="sortList"
+                  item-title="Name"
+                  item-value="value"
+                  variant="solo-filled"
+                  bg-color="#082266"
                   rounded="lg"
-                >
-                  <v-icon icon="mdi mdi-filter-variant"></v-icon>
-                  Filter
-                </v-btn></v-col
-              >
+                  @update:model-value="handleSelectionChange()"
+                ></v-select>
+              </v-col>
             </v-row>
             <v-row
               no-gutters
@@ -302,7 +413,15 @@ if (roleToken.value == 'GUEST') {
                   @toggle="toggleReviewConfirmPopup()"
                   @set="setDeleteId($event)"
                   @like="likeReviews($event.reviewId, $event.likeStatus)"
-                  @update="updatelikeReviews($event.reviewId, $event.likeStatus, $event.likeStatusId)"
+                  @follow="handleFollow($event)"
+                  @unfollow="handleUnfollow($event)"
+                  @update="
+                    updatelikeReviews(
+                      $event.reviewId,
+                      $event.likeStatus,
+                      $event.likeStatusId
+                    )
+                  "
                 />
               </v-virtual-scroll>
             </v-row>
@@ -344,7 +463,7 @@ if (roleToken.value == 'GUEST') {
         :dialog="library.successfulPopup"
         @close="library.closeSuccessfulPopup()"
       />
-      <deleteReviewSuccessPopup 
+      <deleteReviewSuccessPopup
         class="delete-popup"
         :dialog="reviews.successfulPopup"
         @close="toggleReviewSuccessfulPopup()"

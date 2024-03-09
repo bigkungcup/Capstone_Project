@@ -65,11 +65,13 @@ onBeforeMount( async () => {
           <v-text-field
           placeholder="Search your book or auther name"
           prepend-inner-icon="mdi-magnify"
+          v-model="library.searchBook"
           clearable
           >
         </v-text-field>
         </v-col>
-        <v-col cols="1"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Search </v-btn></v-col>
+        <v-col cols="1" v-if="roleToken === 'GUEST'"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg" @click="library.getLibraryByGuest()"> Search </v-btn></v-col>
+        <v-col cols="1" v-if="roleToken !== 'GUEST'"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg" @click="library.getLibrary()"> Search </v-btn></v-col>
         <v-col cols="1"><v-btn size="auto" class="tw-mx-8 pa-5" color="#082266" rounded="lg" @click="dialog = true"> 
           <v-icon icon="mdi mdi-filter-variant"></v-icon>
           </v-btn></v-col>

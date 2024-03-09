@@ -6,6 +6,7 @@ import { useLogin } from "./login";
 export const useReviews = defineStore("Reviews", () => {
   // const accessToken = ref(useCookie("accessToken"));
   const refreshToken = useCookie("refreshToken");
+  const roleToken = ref(localStorage.getItem('role'));
   const router = useRouter();
   const login = useLogin();
   const reviewList = ref({
@@ -31,18 +32,32 @@ export const useReviews = defineStore("Reviews", () => {
   const leavePopup = ref(true);
   const myReviewList = ref({
     data: {
-      content: [],
+      content: [{
+        bookDetail:{}
+      }],
       pageable: {
         totalPages: 1,
       },
     },
   });
+  const myReviewPage = ref(0);
+  const sortReview = ref('desc');
+  const filterReview = ref(null);
   // const likeStatus = ref(0); //0 = clear, 1 = like, 2 = dislike
 
   //Get reviews
   async function getReview(bookId) {
     let accessToken = useCookie("accessToken");
     let status = 0;
+    let sortByReview = ''
+    let sortTypeReview = ''
+      if(sortReview.value == 'desc' || sortReview.value == 'asc' ){
+        sortByReview = sortReview.value;
+      }
+      else{
+        sortByReview = 'desc';
+        sortTypeReview  = sortReview.value;
+      }
     const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review`, {
       onRequest({ request, options }) {
         options.method = "GET";
@@ -54,6 +69,9 @@ export const useReviews = defineStore("Reviews", () => {
           bookId: bookId,
           page: reviewPage.value,
           size: 10,
+          sortType: sortByReview,
+          sortBy: sortTypeReview,
+          reviewRating: filterReview.value,
         };
       },
       onResponse({ request, response, options }) {
@@ -132,14 +150,14 @@ export const useReviews = defineStore("Reviews", () => {
             Authorization: `Bearer ${accessToken.value}`,
           };
           options.params = {
-            page: reviewPage.value,
+            page: myReviewPage.value,
             size: 10,
           };
         },
         onResponse({ request, response, options }) {
           status = response._data.response_code;
           if (status == 400) {
-            reviewList.value = {
+            myReviewList.value = {
               data: {
                 content: [],
                 pageable: {
@@ -152,9 +170,17 @@ export const useReviews = defineStore("Reviews", () => {
         },
       });
       if (status == 200) {
-        reviewList.value = data.value;
+        myReviewList.value = data.value;
         console.log("get my review list completed");
-      }
+      }else if (status == 401) {
+        if(refreshToken.value !== null && refreshToken.value !== undefined){
+          await login.handleRefresh();
+          await getMyReview()
+        }
+      } else if (status == 404) {
+        clearMyReviewList();
+        console.log("get my review list uncompleted");
+      } 
     }    
 
   //Get review detail
@@ -379,6 +405,8 @@ export const useReviews = defineStore("Reviews", () => {
           } 
         }
 
+
+
   //Set edit review
   function setEditReview(bookId) {
     // await getReviewDetail(bookId);
@@ -424,11 +452,36 @@ export const useReviews = defineStore("Reviews", () => {
     };
   }
 
+        //Clear my review list
+        function clearMyReviewList() {
+          myReviewList.value = {
+            data: {
+              content: [{
+                bookDetail:{}
+              }],
+              pageable: {
+                totalPages: 1,
+              },
+            },
+          };
+        }
+
   //Change review page
   function changeReviewPage(bookId, page) {
     reviewPage.value = page - 1;
-    getReview(bookId);
+    if(roleToken.value == 'GUEST'){
+      getReviewByGuest(bookId);
+    }else{
+      getReview(bookId);
+    }
+    
   }
+
+    //Change my review page
+    function changeMyReviewPage(bookId, page) {
+      myReviewPage.value = page - 1;
+      getMyReview(bookId);
+    }
 
   //Back Page
   function backPage() {
@@ -441,8 +494,12 @@ export const useReviews = defineStore("Reviews", () => {
     newReview,
     editReview,
     reviewPage,
+    myReviewPage,
     successfulPopup,
     leavePopup,
+    myReviewList,
+    sortReview,
+    filterReview,
     getReview,
     getReviewByGuest,
     getMyReview,
@@ -454,8 +511,10 @@ export const useReviews = defineStore("Reviews", () => {
     createLike,
     updateLike,
     changeReviewPage,
+    changeMyReviewPage,
     setEditReview,
     clearReviewList,
+    clearMyReviewList,
     clearNewReview,
     closeSuccessfulPopup,
   };

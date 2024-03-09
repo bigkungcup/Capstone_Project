@@ -15,11 +15,12 @@ const roleToken = ref(localStorage.getItem('role'));
 function handleFileChange(event) {
   if (book.newBookFile[0]) {
     // Convert the selected image to a data URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.selectedImage = e.target.result;
-    };
-    reader.readAsDataURL(book.newBookFile[0]);
+    // const reader = new FileReader();
+    // reader.onload = (e) => {
+    //   this.selectedImage = e.target.result;
+    // };
+    // reader.readAsDataURL(book.newBookFile[0]);
+    this.selectedImage = URL.createObjectURL(book.newBookFile[0])
   }
 }
 

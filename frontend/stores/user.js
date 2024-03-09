@@ -36,6 +36,22 @@ export const useUsers = defineStore("Users", () => {
   const updateFailed = ref(false);
   const updateFailedError = ref();
   const followStatus = ref(0); //0 = unfollow, 1 = follow
+  const followingList = ref({
+    data: {
+      content: [],
+      pageable: {},
+      totalPages: 1,
+    },
+  });
+  const followerList = ref({
+    data: {
+      content: [],
+      pageable: {},
+      totalPages: 1,
+    },
+  });
+  const followingPage = ref(0);
+  const followerPage = ref(0);
 
   //Get user list
   async function getUserList() {
@@ -243,18 +259,92 @@ export const useUsers = defineStore("Users", () => {
     }
   }
 
-  //Create Follow
-  async function createFollow(userId) {
+    //Get Following list
+    async function getFollowingList() {
+      let accessToken = useCookie("accessToken");
+      let status = 0;
+      const { data } = await useFetch(
+        `${import.meta.env.VITE_BASE_URL}/follow/following`,
+        {
+          onRequest({ request, options }) {
+            options.method = "GET";
+            options.headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken.value}`,
+            };
+            options.params = {
+              page: followingPage.value,
+              size: 10,
+            };
+          },
+          onResponse({ request, response, options }) {
+            status = response._data.response_code;
+          },
+        }
+      );
+      if (status == 200) {
+        if (data.value) {
+          followingList.value = data.value;
+        }
+        console.log("get user list completed");
+      } else if (status == 400) {
+        clearFollowingList();
+        console.log("get user list uncompleted");
+      } else if (status == 401) {
+        await login.handleRefresh();
+        await getFollowingList();
+      }
+    }
+  
+        //Get Follower list
+        async function getFollowerList() {
+          let accessToken = useCookie("accessToken");
+          let status = 0;
+          const { data } = await useFetch(
+            `${import.meta.env.VITE_BASE_URL}/follow/follower`,
+            {
+              onRequest({ request, options }) {
+                options.method = "GET";
+                options.headers = {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${accessToken.value}`,
+                };
+                options.params = {
+                  page: followerPage.value,
+                  size: 10,
+                };
+              },
+              onResponse({ request, response, options }) {
+                status = response._data.response_code;
+              },
+            }
+          );
+          if (status == 200) {
+            if (data.value) {
+              followerList.value = data.value;
+            }
+            console.log("get user list completed");
+          } else if (status == 400) {
+            clearFollowerList();
+            console.log("get user list uncompleted");
+          } else if (status == 401) {
+            await login.handleRefresh();
+            await getFollowerList();
+          }
+        }    
+
+  //Create Follower
+  async function createFollower(userId) {
     let accessToken = useCookie("accessToken");
     let status = 0;
 
-    await $fetch(`${import.meta.env.VITE_BASE_URL}/follower`, {
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/follow`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken.value}`,
       },
       params: {
-        userFollowerId: userId,
+        userFollowingId: userId,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -262,7 +352,7 @@ export const useUsers = defineStore("Users", () => {
           console.log("follow uncompleted");
         } else if (status == 401) {
           login.handleRefresh();
-          createFollow(userId)
+          createFollower(userId)
         }
       },
     });
@@ -272,11 +362,11 @@ export const useUsers = defineStore("Users", () => {
   }
 
   //Delete Follow
-  async function deleteFollow(userId) {
+  async function deleteFollower(userId) {
     let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
-      `${import.meta.env.VITE_BASE_URL}/follower/${userId}`,
+      `${import.meta.env.VITE_BASE_URL}/follow/${userId}`,
       {
         onRequest({ request, options }) {
           options.method = "Delete";
@@ -297,13 +387,35 @@ export const useUsers = defineStore("Users", () => {
     } else if (status == 404) {
     } else if (status == 401) {
       await login.handleRefresh();
-      await deleteFollow(userId);
+      await deleteFollower(userId);
     }
   }
 
   //Clear user list
   function clearUserList() {
     userList.value = {
+      data: {
+        content: [],
+        pageable: {},
+        totalPages: 1,
+      },
+    };
+  }
+
+    //Clear following list
+    function clearFollowingList() {
+      followingList.value = {
+        data: {
+          content: [],
+          pageable: {},
+          totalPages: 1,
+        },
+      };
+    }
+
+      //Clear follower list
+  function clearFollowerList() {
+    followerList.value = {
       data: {
         content: [],
         pageable: {},
@@ -329,6 +441,16 @@ export const useUsers = defineStore("Users", () => {
   function changeUserPage(page) {
     userPage.value = page - 1;
     getUserList();
+  }
+
+  function changeFolloingPage(page) {
+   followingPage.value = page - 1;
+    getFollowingList();
+  }
+
+  function changeFollowerPage(page) {
+    followerPage.value = page - 1;
+    getFollowerList();
   }
 
   //set edit user
@@ -358,11 +480,15 @@ export const useUsers = defineStore("Users", () => {
 
   return {
     userList,
+    followingList,
+    followerList,
     userDetail,
     newUser,
     editUser,
     editUserFile,
     userPage,
+    followingPage,
+    followerPage,
     failPopup,
     confirmPopup,
     successfulPopup,
@@ -377,12 +503,18 @@ export const useUsers = defineStore("Users", () => {
     updateUser,
     deleteUser,
     registerUser,
-    createFollow,
-    deleteFollow,
+    getFollowingList,
+    getFollowerList,
+    createFollower,
+    deleteFollower,
     clearUserList,
     clearNewUser,
+    clearFollowingList,
+    clearFollowerList,
     toggleUserFailPopup,
     changeUserPage,
+    changeFolloingPage,
+    changeFollowerPage,
     setEditUser,
     closeSuccessfulPopup,
   };

@@ -12,7 +12,7 @@ defineProps({
     <v-card 
     v-for="review in reviewList" 
     style="box-shadow: none;" 
-    :to="`/book/1/`">
+    :to="`/book/${review.bookDetail.bookId}/`">
         <v-row class="tw-py-6">
             <v-col cols="3" class="tw-space-y-2" align="center">
                 <v-img class="tw-drop-shadow-lg" src="/image/cover_not_available.jpg" width="150px" height="250px" cover v-if="review.bookDetail.file == null"></v-img>

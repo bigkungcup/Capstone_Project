@@ -1,6 +1,6 @@
 <script setup>
 import { mergeProps } from 'vue'
-defineEmits(["toggle","set","like","update"]);
+defineEmits(["toggle","set","like","follow","unfollow","update"]);
 
 defineProps({
     reviewList: {
@@ -41,16 +41,16 @@ const follow = ref(true)
                   color="#3157BB"
                   class="px-8 py-2"
                   rounded="lg"
-                  v-if="follow == false"
-                  @click="follow = true"
+                  v-if="review.userDetail.followerReview == null"
+                  @click="$emit('follow',review.userDetail.userId)"
                 >Follow</v-btn>
                 <v-btn
                   height="auto"
                   class="px-5 py-2"
                   color="#3157BB"
                   rounded="lg"
-                  v-if="follow == true"
-                  @click="follow = false"
+                  v-if="review.userDetail.followerReview !== null"
+                  @click="$emit('unfollow',review.userDetail.userId)"
                 >Following</v-btn>
 
                 </div>

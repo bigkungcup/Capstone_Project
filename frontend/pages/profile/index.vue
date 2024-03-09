@@ -1,20 +1,26 @@
 <script setup>
 import Bookmarks from '~/components/profiles/bookmark.vue';
-import Reviews from '~/components/profiles/reviews.vue';
+import MyReviews from '~/components/profiles/myReviews.vue';
+import Followings from "~/components/profiles/following.vue";
+import Followers from "~/components/profiles/followers.vue";
 import changePasswordPopup from "~/components/profiles/popups/changePasswordPopup.vue";
 // import Reviews from '~/components/profiles/reviews.vue';
 import { useLogin } from '~/stores/login'
 import { useBooks } from '~/stores/book'
 import { useReviews } from '~/stores/review'
+import { useUsers } from '~/stores/user'
 import { mergeProps } from "vue";
 
 const login = useLogin();
 const book = useBooks();
 const review = useReviews();
+const user = useUsers();
 const changePassword = ref(false);
 const profileSection = ref('bookmark');
-const bookmarkPage = ref(0);
-const reviewPage = ref(0);
+const bookmarkPage = ref(1);
+const reviewPage = ref(1);
+const followingPage = ref(1);
+const followerPage = ref(1);
 const result = ref(0);
 
 function handleChangePassword() {
@@ -41,10 +47,20 @@ async function selectSection(section) {
     result.value = book.bookmarkList.data.totalElements ? book.bookmarkList.data.totalElements : 0
   }else if(section == 'review'){
     profileSection.value = 'review';
-    review.clearReviewList();
+    review.clearMyReviewList();
     await review.getMyReview();
-    result.value = review.reviewList.data.totalElements ? review.reviewList.data.totalElements : 0
-  }
+    result.value = review.myReviewList.data.totalElements ? review.myReviewList.data.totalElements : 0
+  }else if(section == 'following'){
+    profileSection.value = 'following';
+    user.clearFollowingList();
+    await user.getFollowingList();
+    result.value = user.followingList.data.totalElements ? user.followingList.data.totalElements : 0
+}else if(section == 'follower'){
+    profileSection.value = 'follower';
+    user.clearFollowerList();
+    await user.getFollowerList();
+    result.value = user.followerList.data.totalElements ? user.followerList.data.totalElements : 0
+}
 }
 
 function selectBookmark() {
@@ -57,7 +73,6 @@ onBeforeMount(async () => {
   await book.getBookmarkList();
   await selectSection(profileSection.value);
 });
-
 
 </script>
  
@@ -180,14 +195,14 @@ onBeforeMount(async () => {
                             </div>
                         </v-col>
                         <v-col cols="3" class="tw-grid tw-content-center">
-                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'following'" @click="profileSection = 'following'"> Followings </div>
+                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'following'" @click="profileSection = 'following', selectSection(profileSection)"> Followings </div>
                             <div class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3" v-if="profileSection == 'following'"> 
                               <p class="tw-flex tw-justify-center"> Followings </p> 
                               <p class="tw-flex tw-justify-center">({{ result }})</p> 
                             </div>
                         </v-col>
                         <v-col cols="3" class="tw-grid tw-content-center">
-                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'follower'" @click="profileSection = 'follower'"> Followers </div>
+                            <div class="tw-flex tw-justify-center web-text-sub-pf" v-if="profileSection != 'follower'" @click="profileSection = 'follower', selectSection(profileSection)"> Followers </div>
                             <div class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3" v-if="profileSection == 'follower'"> 
                               <p class="tw-flex tw-justify-center"> Followers </p> 
                               <p class="tw-flex tw-justify-center">({{ result }})</p> 
@@ -206,10 +221,24 @@ onBeforeMount(async () => {
                 </v-pagination></div></div>
                 <!-- <Reviews /> -->
                 <div v-if="profileSection == 'review'">
-                <Reviews :reviewList="review.reviewList.data.content"/>
-                <div v-if="review.reviewList.data.content.length !== 0" class="py-1">
-                <v-pagination v-model="reviewPage" :length="review.reviewList.data.totalPages" :total-visible="7"
-                  rounded="20" @update:model-value="review.changeReviewPage(reviewPage)">
+                <MyReviews :reviewList="review.myReviewList.data.content"/>
+                <div v-if="review.myReviewList.data.content.length !== 0" class="py-1">
+                <v-pagination v-model="reviewPage" :length="review.myReviewList.data.totalPages" :total-visible="7"
+                  rounded="20" @update:model-value="review.changeMyReviewPage(reviewPage)">
+                </v-pagination></div></div>
+                <!-- <Followings /> -->
+                <div v-if="profileSection == 'following'">
+                <Followings :followingList="user.followingList.data.content"/>
+                <div v-if="user.followingList.data.content.length !== 0" class="py-1">
+                <v-pagination v-model="followingPage" :length="user.followingList.data.totalPages" :total-visible="7"
+                  rounded="20" @update:model-value="user.changeFolloingPage(followingPage)">
+                </v-pagination></div></div>
+                <!-- <Followers /> -->
+                 <div v-if="profileSection == 'follower'">
+                <Followers :followerList="user.followerList.data.content"/>
+                <div v-if="user.followerList.data.content.length !== 0" class="py-1">
+                <v-pagination v-model="followerPage" :length="user.followerList.data.totalPages" :total-visible="7"
+                  rounded="20" @update:model-value="user.changeFolloerPage(followerPage)">
                 </v-pagination></div></div>
             </div>
         </div>

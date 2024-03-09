@@ -52,6 +52,7 @@ export const useBooks = defineStore("Books", () => {
   const bookType = ref();
   const sortBook = ref('desc')
   const filterBook = ref(0)
+  const searchBook = ref('')
   const bookmarkedStatus = ref(0); // 0 = unbookmarked, 1 = bookmarked
   const runtimeConfig = useRuntimeConfig();
 
@@ -81,7 +82,8 @@ export const useBooks = defineStore("Books", () => {
           size: 10,
           sortType: sortBybook,
           sortBy: sortTypebook,
-          booktypeId: filterBook.value == 0 ? '' : filterBook.value 
+          booktypeId: filterBook.value == 0 ? '' : filterBook.value,
+          search: searchBook.value
         }
       },
       onResponse({ request, response, options }) {
@@ -761,6 +763,7 @@ export const useBooks = defineStore("Books", () => {
     bookmarkList,
     sortBook,
     filterBook,
+    searchBook,
     bookPage,
     historyPage,
     bookmarkPage,
