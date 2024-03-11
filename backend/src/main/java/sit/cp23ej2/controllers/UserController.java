@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
+import sit.cp23ej2.dtos.User.ForgetPasswordDTO;
 import sit.cp23ej2.dtos.User.ResetPasswordDTO;
 import sit.cp23ej2.dtos.User.UpdateUserByAdminDTO;
 import sit.cp23ej2.dtos.User.UpdateUserDTO;
@@ -82,6 +83,11 @@ public class UserController {
     public DataResponse updateUserByAdmin(@RequestBody @Valid ResetPasswordDTO user) {
         // user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
         return userService.resetPassword(user);
+    }
+
+    @PutMapping("/forgetPassword")
+    public DataResponse forgetPassword(@RequestBody @Valid ForgetPasswordDTO forgetPassword) {
+        return userService.forgetPassword(forgetPassword);
     }
 
     @PutMapping("/admin/{userId}")

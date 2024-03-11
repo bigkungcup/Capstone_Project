@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/files/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                 .requestMatchers(HttpMethod.PUT,"/api/user/resetPassword").hasAnyAuthority( "ROLE_USER","ROLE_ADMIN")
+                .requestMatchers(HttpMethod.PUT,"/api/user/forgetPassword").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/user/{userId}").hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.GET,"/api/user/**").hasAnyAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE,"/api/user/**").hasAnyAuthority("ROLE_ADMIN")

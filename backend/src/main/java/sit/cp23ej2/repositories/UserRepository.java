@@ -67,6 +67,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         @Modifying
         @Transactional
+        @Query(value = "UPDATE User SET displayName = :displayName, email = :email, bio = :bio, role = :role"
+                        +
+                        " WHERE userId = :userId", nativeQuery = true)
+        void updateUserNoPasswordByAdmin(@Param("displayName") String displayName, @Param("email") String email,
+                @Param("bio") String bio, @Param("role") String role, @Param("userId") int userId);
+
+        @Modifying
+        @Transactional
         @Query(value = "UPDATE User SET bio = :bio" +
                         " WHERE userId = :userId", nativeQuery = true)
         void updateUserDetailByUser(@Param("bio") String bio, @Param("userId") int userId);

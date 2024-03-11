@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
+import sit.cp23ej2.dtos.User.ForgetPasswordDTO;
 import sit.cp23ej2.dtos.User.PageUserDTO;
 import sit.cp23ej2.dtos.User.ResetPasswordDTO;
 import sit.cp23ej2.dtos.User.UpdateUserByAdminDTO;
@@ -316,8 +317,14 @@ public class UserService extends CommonController {
                 // Display name is changed
                 boolean existsByEmailOrDisplayName = repository.existsByDisplayName(updateUser.getDisplayName());
                 if (!existsByEmailOrDisplayName) {
-                    repository.updateUserByAdmin(updateUser.getDisplayName(), userById.getEmail(),
+                    if(!userById.getPassword().equals(updateUser.getPassword())){
+                        repository.updateUserByAdmin(updateUser.getDisplayName(), userById.getEmail(),
                             updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(), userId);
+                    }else{
+                        repository.updateUserNoPasswordByAdmin(updateUser.getDisplayName(), userById.getEmail(),
+                            updateUser.getBio(), updateUser.getRole(), userId);
+                    }
+                   
                     if (file != null) {
                         fileStorageService.deleteUserFile(userId);
                         fileStorageService.storeUserProfile(file, userId);
@@ -538,6 +545,24 @@ public class UserService extends CommonController {
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Password Reset");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+        return response;
+    }
+
+    public DataResponse forgetPassword(ForgetPasswordDTO forgetPassword) {
+        DataResponse response = new DataResponse();
+
+        User user = repository.getUserByEmail(forgetPassword.getEmail());
+
+        if (user == null) {
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
+
+        repository.resetPassword(forgetPassword.getEmail(), new BCryptPasswordEncoder().encode(forgetPassword.getPassword()));
+
+        response.setResponse_code(200);
+        response.setResponse_status("OK");
+        response.setResponse_message("Forget Password");
         response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
         return response;
     }
