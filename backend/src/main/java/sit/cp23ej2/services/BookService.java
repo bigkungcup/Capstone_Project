@@ -31,6 +31,7 @@ import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.BookmarkRepository;
 import sit.cp23ej2.repositories.BooktypeRepository;
 import sit.cp23ej2.repositories.HistoryRepository;
+import sit.cp23ej2.repositories.RecommendRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
 import java.nio.file.Path;
@@ -58,6 +59,9 @@ public class BookService extends CommonController {
 
     @Autowired
     private BookmarkRepository bookmarkRepository;
+
+    @Autowired
+    private RecommendRepository recommendRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -176,12 +180,19 @@ public class BookService extends CommonController {
             }
 
             if (!currentPrincipalName.equals("anonymousUser")) {
-                bookmarkRepository.getBookmarkListByUserId(userRepository.getUserByEmail(currentPrincipalName).getUserId()).forEach(bookmark -> {
+                User userByEmail = userRepository.getUserByEmail(currentPrincipalName);
+                bookmarkRepository.getBookmarkListByUserId(userByEmail.getUserId()).forEach(bookmark -> {
                     BookmarkBookDTO bookmarks = modelMapper.map(bookmark, BookmarkBookDTO.class);
                     if (bookmark.getBook().getBookId() == bookDTO.getBookId()) {
                         bookDTO.setBookmark(bookmarks);
                     }
                 });
+                Integer recommendBooktypeIdByUserId = recommendRepository.getRecommendBooktypeIdByUserId(userByEmail.getUserId());
+                if(recommendBooktypeIdByUserId != null){
+                    recommendRepository.updateRecommend(book.getBooktype().getBooktypeId(), userByEmail.getUserId());
+                }else{
+                    recommendRepository.insertRecommend(book.getBooktype().getBooktypeId(), userByEmail.getUserId());
+                }
             }
             
             response.setResponse_code(200);
@@ -314,6 +325,38 @@ public class BookService extends CommonController {
                 bookDTOs.add(bookDTO);
             });
             return responseWithData(bookDTOs, 200, "OK", "Similar Book");
+        } else {
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
+        }
+    }
+
+    public DataResponse getRecommendBook(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+        Integer recommendBooktypeIdByUserId = recommendRepository.getRecommendBooktypeIdByUserId(user.getUserId());
+        List<Book> books = repository.getBookByRecommendBook(recommendBooktypeIdByUserId);
+
+        if (books.size() > 0) {
+            List<BookDTO> bookDTOs = new ArrayList<>();
+            books.forEach(book -> {
+                BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
+                if(bookDTO.getBookTag() != null){
+                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                }
+               
+                try {
+                    Path pathFile = fileStorageService.load(bookDTO);
+                    if(pathFile != null){
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                bookDTOs.add(bookDTO);
+            });
+            return responseWithData(bookDTOs, 200, "OK", "Recommand Book");
         } else {
             throw new HandleExceptionNotFound("Book Not Found", "Book");
         }

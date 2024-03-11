@@ -58,7 +58,7 @@ public class FollowingService extends CommonController{
                UserDTO userDTO = modelMapper.map(follow.getUser(), UserDTO.class);
                try {
                 if (user != null) {
-                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDTO.getUserId());
                 }
 
             } catch (Exception e) {
@@ -85,10 +85,10 @@ public class FollowingService extends CommonController{
 
         if(follow.getContent().size() > 0){
             follow.getContent().forEach(follows -> {
-               UserDTO userDTO = modelMapper.map(follows.getUser(), UserDTO.class);
+               UserDTO userDTO = modelMapper.map(follows.getUserfollowing(), UserDTO.class);
                try {
                 if (user != null) {
-                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDTO.getUserId());
                 }
 
             } catch (Exception e) {

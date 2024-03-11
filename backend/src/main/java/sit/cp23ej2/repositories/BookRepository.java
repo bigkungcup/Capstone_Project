@@ -25,38 +25,41 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         " WHERE (:bookRating IS NULL OR b.bookRating = :bookRating) " +
                         " AND (:booktypeId IS NULL OR b.bb_booktypeId = :booktypeId)" +
                         " AND (:search IS NULL OR b.bookName LIKE %:search% OR b.author LIKE %:search%)"
-                        // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
-                        // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END ASC, " +
-                        // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END DESC, " +
-                        // " CASE WHEN :sortBy = 'author' THEN b.author END ASC, " +
-                        // " CASE WHEN :sortBy = 'author' THEN b.author END DESC, " +
-                        // " CASE WHEN :sortBy = 'bookTotalView' THEN b.bookTotalView END ASC, " +
-                        // " CASE WHEN :sortBy IS NOT NULL AND :sortBy = 'bookTotalView' THEN
-                        // b.bookTotalView END ASC, " +
-                        // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END ASC, " +
-                        // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END DESC, " +
-                        // " CASE WHEN :sortBy = 'bookTag' THEN b.bookTag END ASC, " +
-                        // " CASE WHEN :sortBy = 'bookTag' THEN b.bookTag END DESC, " +
-                        // " CASE WHEN :sortBy = '' THEN b.bookCreateDateTime END DESC, " +
-                        // " CASE WHEN :sortBy = 'bookCreateDateTime' THEN b.bookCreateDateTime END DESC
-                        // " +
-                        // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END ASC,
-                        // " +
-                        // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END
-                        // DESC, " +
-                        // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END ASC, " +
-                        // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END DESC, " +
-                        // " CASE WHEN :sortBy IS NULL THEN b.bookId END DESC "
-                        // " ELSE b.bookName "
+        // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating,
+        // b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
+        // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END ASC, " +
+        // " CASE WHEN :sortBy = 'bookName' THEN b.bookName END DESC, " +
+        // " CASE WHEN :sortBy = 'author' THEN b.author END ASC, " +
+        // " CASE WHEN :sortBy = 'author' THEN b.author END DESC, " +
+        // " CASE WHEN :sortBy = 'bookTotalView' THEN b.bookTotalView END ASC, " +
+        // " CASE WHEN :sortBy IS NOT NULL AND :sortBy = 'bookTotalView' THEN
+        // b.bookTotalView END ASC, " +
+        // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END ASC, " +
+        // " CASE WHEN :sortBy = 'bookRating' THEN b.bookRating END DESC, " +
+        // " CASE WHEN :sortBy = 'bookTag' THEN b.bookTag END ASC, " +
+        // " CASE WHEN :sortBy = 'bookTag' THEN b.bookTag END DESC, " +
+        // " CASE WHEN :sortBy = '' THEN b.bookCreateDateTime END DESC, " +
+        // " CASE WHEN :sortBy = 'bookCreateDateTime' THEN b.bookCreateDateTime END DESC
+        // " +
+        // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END ASC,
+        // " +
+        // " CASE WHEN :sortBy = 'bookUpdateDateTime' THEN b.bookUpdateDateTime END
+        // DESC, " +
+        // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END ASC, " +
+        // " CASE WHEN :sortBy = 'bookId' THEN b.bookId END DESC, " +
+        // " CASE WHEN :sortBy IS NULL THEN b.bookId END DESC "
+        // " ELSE b.bookName "
                         , nativeQuery = true)
-        Page<Book> getAllBooks(Pageable pageable, @Param("bookRating") Long bookRating, @Param("booktypeId") Long booktypeId, @Param("search") String search);
+        Page<Book> getAllBooks(Pageable pageable, @Param("bookRating") Long bookRating,
+                        @Param("booktypeId") Long booktypeId, @Param("search") String search);
 
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
                         // " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
-                        " WHERE bookId = :bookId" 
-                        // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
+                        " WHERE bookId = :bookId"
+        // " GROUP BY b.bookId, b.bookName, b.author, b.bookTotalView, b.bookRating,
+        // b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime"
                         , nativeQuery = true)
         Book getBookById(@Param("bookId") int bookId);
 
@@ -64,38 +67,40 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         +
                         " FROM Book b" +
                         " WHERE (:booktypeId IS NULL OR b.bb_booktypeId = :booktypeId) " +
-                        " ORDER By b.bookRating DESC, b.bookTotalReview DESC, b.bookName ASC LIMIT 5"
-                        , nativeQuery = true)
+                        " ORDER By b.bookRating DESC, b.bookTotalReview DESC, b.bookName ASC LIMIT 5", nativeQuery = true)
         List<Book> getBookRanking(@Param("booktypeId") Integer booktypeId);
 
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
-                        " ORDER By b.bookTotalView DESC LIMIT 5"
-                        , nativeQuery = true)
+                        " ORDER By b.bookTotalView DESC LIMIT 5", nativeQuery = true)
         List<Book> getBookByMostView();
 
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
-                        " ORDER By RAND() LIMIT 6"
-                        , nativeQuery = true)
+                        " ORDER By RAND() LIMIT 6", nativeQuery = true)
         List<Book> getBookByRandom();
 
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
                         " WHERE b.bb_booktypeId = :booktypeId" +
-                        " ORDER By RAND() LIMIT 10"
-                        , nativeQuery = true)
+                        " ORDER By RAND() LIMIT 10", nativeQuery = true)
         List<Book> getBookByBooktype(@Param("booktypeId") Integer booktypeId);
 
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
-                        " ORDER By b.bookCreateDateTime DESC LIMIT 10"
-                        , nativeQuery = true)
+                        " ORDER By b.bookCreateDateTime DESC LIMIT 10", nativeQuery = true)
         List<Book> getBookByCreateDateTime();
+
+        @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
+                        +
+                        " FROM Book b" +
+                        " WHERE b.bb_booktypeId = :booktypeId AND b.bookRating > 4 " +
+                        " ORDER By RAND() LIMIT 10", nativeQuery = true)
+        List<Book> getBookByRecommendBook(@Param("booktypeId") Integer booktypeId);
 
         Boolean existsByAuthorAndBookName(String author, String bookName);
 
@@ -115,7 +120,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         // bookTotalView, bookRating) " +
         // "VALUES (:bookName, :author, :bookTag, :bookDetail, 0, 0);", nativeQuery =
         // true)
-        Integer insertBook(@Param("booktypeId") Integer booktypeId, @Param("bookName") String bookName, @Param("author") String author,
+        Integer insertBook(@Param("booktypeId") Integer booktypeId, @Param("bookName") String bookName,
+                        @Param("author") String author,
                         @Param("bookTag") String bookTag, @Param("bookDetail") String bookDetail);
 
         @Query(value = "SELECT @lastInsertId as id", nativeQuery = true)
@@ -126,8 +132,10 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         @Query(value = "UPDATE Book SET bb_booktypeId =:booktypeId, bookName = :bookName, author = :author, bookTag = :bookTag, bookDetail = :bookDetail, bookUpdateDateTime = :updateDateTime"
                         +
                         " WHERE bookId = :bookId", nativeQuery = true)
-        void updateBook(@Param("booktypeId") Integer booktypeId, @Param("bookName") String bookName, @Param("author") String author,
-                        @Param("bookTag") String bookTag, @Param("bookDetail") String bookDetail, @Param("updateDateTime") String updateDateTime,
+        void updateBook(@Param("booktypeId") Integer booktypeId, @Param("bookName") String bookName,
+                        @Param("author") String author,
+                        @Param("bookTag") String bookTag, @Param("bookDetail") String bookDetail,
+                        @Param("updateDateTime") String updateDateTime,
                         @Param("bookId") Integer bookId);
 
         @Modifying

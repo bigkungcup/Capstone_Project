@@ -24,7 +24,7 @@ public class BooktypeService extends CommonController{
 
     public DataResponse getAllBooktype(){
         DataResponse response = new DataResponse();
-        List<Booktype> allBooktype = booktypeRepository.getAllBooktype();;
+        List<Booktype> allBooktype = booktypeRepository.getAllBooktype();
         response.setResponse_code(200);
         response.setResponse_status("OK");
         response.setResponse_message("Get All Booktype");

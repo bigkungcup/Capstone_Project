@@ -94,6 +94,11 @@ public class BookController {
         return bookService.getSimilarBook(booktypeId);
     }
 
+    @GetMapping("/recommend")
+    public DataResponse getRecommendBook() {
+        return bookService.getRecommendBook();
+    }
+
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public DataResponse createBook(@RequestPart("book") @Valid CreateBookDTO book, @RequestPart(value = "file") @Nullable MultipartFile file) {
