@@ -456,9 +456,7 @@ export const useReviews = defineStore("Reviews", () => {
         function clearMyReviewList() {
           myReviewList.value = {
             data: {
-              content: [{
-                bookDetail:{}
-              }],
+              content: [],
               pageable: {
                 totalPages: 1,
               },

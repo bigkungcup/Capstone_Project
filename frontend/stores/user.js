@@ -274,7 +274,7 @@ export const useUsers = defineStore("Users", () => {
             };
             options.params = {
               page: followingPage.value,
-              size: 10,
+              size: 15,
             };
           },
           onResponse({ request, response, options }) {
@@ -311,7 +311,7 @@ export const useUsers = defineStore("Users", () => {
                 };
                 options.params = {
                   page: followerPage.value,
-                  size: 10,
+                  size: 15,
                 };
               },
               onResponse({ request, response, options }) {

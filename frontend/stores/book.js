@@ -54,6 +54,9 @@ export const useBooks = defineStore("Books", () => {
   const filterBook = ref(0)
   const searchBook = ref('')
   const bookmarkedStatus = ref(0); // 0 = unbookmarked, 1 = bookmarked
+  const similarBookList = ref({
+    data: [],
+  });
   const runtimeConfig = useRuntimeConfig();
 
   //Get Library
@@ -370,7 +373,7 @@ export const useBooks = defineStore("Books", () => {
         };
         options.params = {
           page: bookmarkPage.value,
-          size: 8,
+          size: 20,
         }
       },
       onResponse({ request, response, options }) {
@@ -621,6 +624,38 @@ export const useBooks = defineStore("Books", () => {
     }
   }
 
+    //Get Similar Book
+    async function getSimilarBook(bookTypeId) {
+      let status = 0;
+      let accessToken = useCookie("accessToken");
+      clearSimilarBookList();
+      const { data } = await useFetch(
+        `${import.meta.env.VITE_BASE_URL}/book/similar/${bookTypeId}`,
+        {
+          onRequest({ request, options }) {
+            options.method = "GET";
+            options.headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken.value}`,
+            };
+          },
+          onResponse({ request, response, options }) {
+            status = response._data.response_code;
+          },
+        }
+      );
+      if (status == 200) {
+        similarBookList.value = data.value;
+        console.log("get similar book completed");
+      } else if (status == 400) {
+        console.log("get similar book uncompleted");
+      } else if (status == 401) {
+          await login.handleRefresh();
+          await getSimilarBook(bookTypeId);
+      }
+    }
+  
+
   // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds) {
     let interval = Math.floor(seconds / 31536000);
@@ -733,6 +768,13 @@ export const useBooks = defineStore("Books", () => {
       };
     }    
 
+        //Clear similar book list
+        function clearSimilarBookList() {
+          similarBookList.value = {
+            data: [],
+          };
+        }    
+
   //set edit book
   async function setEditBook() {
     (editBook.value = {
@@ -771,11 +813,13 @@ export const useBooks = defineStore("Books", () => {
     failPopup,
     leavePopup,
     bookmarkedStatus,
+    similarBookList,
     getLibrary,
     getLibraryByGuest,
     getBookDetail,
     getBookDetailByGuest,
     getHistoryList,
+    getSimilarBook,
     deleteHistoryAll,
     deleteHistoryById,
     createBook,
@@ -793,6 +837,7 @@ export const useBooks = defineStore("Books", () => {
     countUpdateTime,
     clearNewBook,
     clearHistoryList,
+    clearSimilarBookList,
     setEditBook,
     closeSuccessfulPopup,
   };

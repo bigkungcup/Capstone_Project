@@ -1,4 +1,5 @@
 <script setup>
+defineEmits(["follow","unfollow"]);
 defineProps({
     followerList: {
         type: Array,
@@ -13,11 +14,11 @@ defineProps({
       <v-col cols="4">
         <v-card class="tw-w-[20rem] tw-h-[20rem]" v-for="user in followerList">
           <div class="tw-h-[8rem]">
-            <v-img src="/image/profile_banner.jpg" v-show="user.userFollowings.file == null" cover></v-img>
+            <v-img src="/image/profile_banner.jpg" v-show="user.userFollowers.file == null" cover></v-img>
             <v-img
           class="tw-blur-[2px]"
-          v-show="user.userFollowings.file != null"  
-          :src="user.userFollowings.file"
+          v-show="user.userFollowers.file != null"  
+          :src="user.userFollowers.file"
           cover
         ></v-img>
           </div>
@@ -29,15 +30,15 @@ defineProps({
                 width="120"
                 height="120"
                 class="tw-rounded-full tw-border-white tw-border-8 tw-my-[-4rem] tw-mx-6"
-                v-show="user.userFollowings.file == null"
+                v-show="user.userFollowers.file == null"
                 cover
               />
               <v-img
-                :src="user.userFollowings.file"
+                :src="user.userFollowers.file"
                 width="120"
                 height="120"
                 class="tw-rounded-full tw-border-white tw-border-8 tw-my-[-4rem] tw-mx-6"
-                v-show="user.userFollowings.file !== null"
+                v-show="user.userFollowers.file !== null"
                 cover
               />
             </div>
@@ -46,9 +47,9 @@ defineProps({
             >
           </div>
           <div class="tw-my-[1rem] tw-mx-4">
-            <p class="web-text-title tw-truncate">{{ user.userFollowings.displayName }}</p>
-            <p class="web-text-pf-email tw-truncate">{{ user.userFollowings.email }}</p>
-            <p class="web-text-detail tw-my-2 tw-truncate">{{ user.userFollowings.bio }}</p>
+            <p class="web-text-title tw-truncate">{{ user.userFollowers.displayName }}</p>
+            <p class="web-text-pf-email tw-truncate">{{ user.userFollowers.email }}</p>
+            <p class="web-text-detail tw-my-2 tw-truncate">{{ user.userFollowers.bio }}</p>
           </div>
         </v-card>
       </v-col>

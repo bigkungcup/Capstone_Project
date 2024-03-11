@@ -7,9 +7,8 @@ import DuplicateBookPopup from "~/components/books/popups/duplicateBookPopup.vue
 
 const book = useBooks();
 const route = useRoute();
-const selectedImage = ref();
+const selectedImage = ref(null);
 const validateSize = ref(false);
-const notEditBook = ref();
 const roleToken = ref(localStorage.getItem('role'));
 const router = useRouter();
 
@@ -21,14 +20,9 @@ function toggleBookFailPopup() {
   book.failPopup = !book.failPopup;
 }
 
-function handleFileChange(event) {
+function handleFileChange() {
   if (book.editBookFile[0]) {
-    // Convert the selected image to a data URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.selectedImage = e.target.result;
-    };
-    reader.readAsDataURL(book.editBookFile[0]);
+    selectedImage.value = URL.createObjectURL(book.editBookFile[0])
   }
 }
 
@@ -39,19 +33,18 @@ const rules = {
 };
 
 function setSelectedImage() {
-  // book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
-  selectedImage.value = book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`
+  selectedImage.value = book.editBook.file == null ? null : book.editBook.file
   book.editBookFile = undefined;
 }
 
 onBeforeRouteLeave(() => {
   if (roleToken.value == 'ADMIN') {
-  const coverCheck = selectedImage.value == null ? selectedImage.value != book.bookDetail.data.file : selectedImage.value != `../../_nuxt/@fs/${book.bookDetail.data.file}`;
+  const coverCheck = selectedImage.value == null ? selectedImage.value != book.bookDetail.data.file : selectedImage.value != book.bookDetail.data.file;
   if (
     book.editBook.bookName !== book.bookDetail.data.bookName ||
     book.editBook.author !== book.bookDetail.data.author ||
-    book.editBook.booktypeId !== book.bookDetail.data.booktypeId || 
-    book.editBook.bookTag !== book.bookDetail.data.bookTag || 
+    book.editBook.booktypeId !== book.bookDetail.data.booktype.booktypeId || 
+    (Object.values(book.editBook.bookTag).join(', ') !== book.bookDetail.data.bookTag) || 
     book.editBook.bookDetail !== book.bookDetail.data.bookDetail ||
     coverCheck
   ) {
@@ -157,7 +150,6 @@ onBeforeMount(() => {
                 item-value="booktypeId"
                 label="Select Book type"
                 variant="solo-filled"
-                :color="white"
                 ></v-autocomplete>
               </div>
             </div>
@@ -200,7 +192,6 @@ onBeforeMount(() => {
           v-model="book.editBook.bookTag"
           label="Enter your tag"
           variant="solo-filled"
-          :color="white"
           multiple
           chips
           clearable

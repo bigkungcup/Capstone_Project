@@ -6,7 +6,7 @@ import { useBooks } from "~/stores/book";
 import { useUsers } from "~/stores/user";
 import { useReviews } from "~/stores/review";
 import { ref } from "vue";
-import similarBook from "~/components/similarBook.vue";
+import SimilarBook from "~/components/books/similarBook.vue";
 import { mergeProps } from "vue";
 import deleteBookSuccessPopup from "~/components/books/popups/deleteBookSuccessPopup.vue";
 import deleteReviewSuccessPopup from "~/components/reviews/popups/deleteReviewSuccessPopup.vue";
@@ -141,6 +141,8 @@ if (roleToken.value == "GUEST") {
   await reviews.getReviewByGuest(route.params.id);
 } else {
   await library.getBookDetail(route.params.id);
+  library.getSimilarBook(library.bookDetail.data.booktype.booktypeId);
+  console.log(library.similarBookList);
   reviews.clearReviewList();
   await reviews.getReview(route.params.id);
 }
@@ -338,7 +340,7 @@ if (roleToken.value == "GUEST") {
 
     <div class="tw-mt-5 tw-min-h-[24rem]">
       <p class="web-text-header tw-mx-16">Similar Book</p>
-      <similarBook />
+      <div :class="library.similarBookList.data.length < 7 ? 'tw-mx-16' : ''"><SimilarBook :similarBookList="library.similarBookList.data"/></div>
     </div>
 
     <div class="tw-flex tw-justify-center tw-bg-white tw-py-10">

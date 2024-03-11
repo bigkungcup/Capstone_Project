@@ -7,7 +7,7 @@ import updateUserSuccessPopup from "../../components/users/popups/updateUserSucc
 const user = useUsers();
 const route = useRoute();
 const router = useRouter();
-const selectedImage = ref();
+const selectedImage = ref(null);
 const validateSize = ref(false);
 const validatePassword = ref(false);
 const validEmail =
@@ -20,12 +20,7 @@ function showValidateSize() {
 
 function handleFileChange(event) {
   if (user.editUserFile[0]) {
-    // Convert the selected image to a data URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.selectedImage = e.target.result;
-    };
-    reader.readAsDataURL(user.editUserFile[0]);
+    selectedImage.value = URL.createObjectURL(user.editUserFile[0])
   }
 }
 
@@ -38,8 +33,6 @@ const rules = {
 };
 
 function setSelectedImage() {
-  // book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
-  // selectedImage.value = user.editUser.file == null ? null : `../../ej2/_nuxt/@fs/${user.editUser.file}`;
   selectedImage.value = user.editUser.file == null ? null : user.editUser.file;
   user.editUserFile = undefined;
 }
@@ -76,10 +69,6 @@ if (roleToken.value == 'ADMIN') {
 
 onBeforeRouteLeave(() => {
   if (roleToken.value == 'ADMIN') {
-  // const coverCheck =
-  //   selectedImage.value == null
-  //     ? selectedImage.value != user.userDetail.data.file
-  //     : selectedImage.value != `../../ej2/_nuxt/@fs/${user.userDetail.data.file}`;
   const coverCheck =
     selectedImage.value == null
       ? selectedImage.value != user.userDetail.data.file

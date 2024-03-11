@@ -2,7 +2,6 @@
 import { useRouter } from "vue-router";
 import { useBooks } from "~/stores/book";
 import { ref } from "vue";
-// import LeaveConfirmPopup from "~/components//popups/leaveConfirmPopup.vue";
 import CreateBookSuccessPopup from "~/components/books/popups/createBookSuccessPopup.vue";
 import DuplicateBookPopup from "~/components/books/popups/duplicateBookPopup.vue";
 
@@ -10,17 +9,10 @@ const book = useBooks();
 const selectedImage = ref(null);
 const router = useRouter();
 const roleToken = ref(localStorage.getItem('role'));
-// const confirmLeavePopup = ref(false);
 
-function handleFileChange(event) {
+function handleFileChange() {
   if (book.newBookFile[0]) {
-    // Convert the selected image to a data URL
-    // const reader = new FileReader();
-    // reader.onload = (e) => {
-    //   this.selectedImage = e.target.result;
-    // };
-    // reader.readAsDataURL(book.newBookFile[0]);
-    this.selectedImage = URL.createObjectURL(book.newBookFile[0])
+    selectedImage.value = URL.createObjectURL(book.newBookFile[0])
   }
 }
 
@@ -41,18 +33,14 @@ const rules = {
   selected: (value) => value != null || 'Please select type'
 };
 
-// function toggleLeavePopup() {
-//   confirmLeavePopup.value = !confirmLeavePopup.value;
-// }
-
 onBeforeRouteLeave(() => {
   if (roleToken.value !== 'GUEST') {
   if (
     book.newBook.bookName !== "" ||
     book.newBook.author !== "" ||
     book.newBook.bookDetail !== "" ||
-    book.newBook.booktypeId !== null ||
-    book.newBook.bookTag !== null ||
+    book.newBook.booktypeId !== undefined ||
+    (book.newBook.bookTag !== null ? book.newBook.bookTag.length !== 0 : false) ||
     book.newBookFile !== null 
   ) {
     if(book.leavePopup){
@@ -149,7 +137,6 @@ onBeforeMount(() => {
                 label="Select Book type"
                 variant="solo-filled"
                 :rules="[rules.selected]"
-                :color="white"
                 ></v-autocomplete>
               </div>
             </div>
@@ -181,18 +168,10 @@ onBeforeMount(() => {
                 <span class="tw-font-bold tw-text-[#1D419F] tw-text-lg"
                   >Tags:</span
                 >
-                <!-- <v-text-field
-                  label="Genre"
-                  variant="solo"
-                  class="inline-field"
-                  v-model="book.newBook.bookGenre"
-                  :rules="[rules.required]"
-                ></v-text-field> -->
                 <v-combobox
           v-model="book.newBook.bookTag"
           label="Enter your tag"
           variant="solo-filled"
-          :color="white"
           multiple
           chips
           clearable
@@ -223,11 +202,6 @@ onBeforeMount(() => {
         >submit</v-btn
       >
     </div>
-    <!-- <LeaveConfirmPopup
-      :dialog="confirmLeavePopup"
-      @toggle="toggleLeavePopup()"
-      @back="$router.go(-1)"
-    /> -->
     <CreateBookSuccessPopup
       :dialog="book.successfulPopup"
       @close="book.closeSuccessfulPopup()"

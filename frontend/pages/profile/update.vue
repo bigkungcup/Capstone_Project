@@ -5,7 +5,7 @@ import updateProfileSuccessPopup from "../../components/profiles/popups/updatePr
 
 const login = useLogin();
 const route = useRoute();
-const selectedImage = ref();
+const selectedImage = ref(null);
 const validateSize = ref(false);
 const validEmail = /^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
@@ -15,12 +15,7 @@ function showValidateSize() {
 
 function handleFileChange(event) {
     if (login.editProfileFile[0]) {
-        // Convert the selected image to a data URL
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.selectedImage = e.target.result;
-        };
-        reader.readAsDataURL(login.editProfileFile[0]);
+      selectedImage.value = URL.createObjectURL(login.editProfileFile[0])
     }
 }
 
@@ -32,8 +27,6 @@ const rules = {
 };
 
 function setSelectedImage() {
-    // book.editBook.file == null ? null : `../../_nuxt/@fs/${book.editBook.file}`;
-    // selectedImage.value = login.editProfile.file == null ? null : `../../_nuxt/@fs/${login.editProfile.file}`;
     selectedImage.value = login.editProfile.file == null ? null : login.editProfile.file;
     login.editProfileFile = undefined;
 }
@@ -44,10 +37,6 @@ onBeforeMount(() => {
 });
 
 onBeforeRouteLeave(() => {
-    // const coverCheck =
-    //     selectedImage.value == null
-    //         ? selectedImage.value != login.profile.file
-    //         : selectedImage.value != `../../_nuxt/@fs/${login.profile.file}`;
     const coverCheck =
         selectedImage.value == null
             ? selectedImage.value != login.profile.file
