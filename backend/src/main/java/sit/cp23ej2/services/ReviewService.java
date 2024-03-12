@@ -33,7 +33,7 @@ import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.BookmarkRepository;
-import sit.cp23ej2.repositories.FollowingReposiroty;
+import sit.cp23ej2.repositories.FollowReposiroty;
 import sit.cp23ej2.repositories.LikeStatusRepository;
 import sit.cp23ej2.repositories.NotificationRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
@@ -54,14 +54,11 @@ public class ReviewService extends CommonController {
     @Autowired
     private LikeStatusRepository likeStatusRepository;
 
-    // @Autowired
-    // private FollowingReposiroty followerReposiroty;
-
     @Autowired
     private FileStorageService fileStorageService;
 
     @Autowired
-    private FollowingReposiroty followingReposiroty;
+    private FollowReposiroty followReposiroty;
 
     @Autowired
     private BookmarkRepository bookmarkRepository;
@@ -123,9 +120,9 @@ public class ReviewService extends CommonController {
                     e.printStackTrace();
                 }
                 if (user != null) {
-                    followingReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
+                    followReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
                         FollowingReviewDTO folloingReview = modelMapper.map(following, FollowingReviewDTO.class);
-                        if (review.getUser().getUserId() == following.getUserfollowing().getUserId()) {
+                        if (review.getUser().getUserId() == following.getUserfollow().getUserId()) {
                             userDTO.setFollowingReview(folloingReview);
                         }
                     });
@@ -335,10 +332,10 @@ public class ReviewService extends CommonController {
             }
         });
 
-        followingReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
-            if (following.getFollowingId() == review.getUserId()) {
+        followReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
+            if (following.getFollowId() == review.getUserId()) {
                 notificationRepository.insertNotification(user.getUserId(),
-                        following.getUserfollowing().getDisplayName() + "(Following)",
+                        following.getUserfollow().getDisplayName() + "(Following)",
                         "has created a review in " + bookDTO.getBookName(), 0, 0, "/book/" + bookDTO.getBookId() + "/",
                         "Review");
             }

@@ -12,12 +12,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class FollowingReviewDTO {
-    private Integer followingId; 
+    private Integer followId; 
 
-    private Integer followingStatus;
+    private Integer followStatus;
 
-    private LocalDateTime followingCreateDateTime;
+    private LocalDateTime followCreateDateTime;
 
-    private LocalDateTime followingUpdateDateTime;
+    private LocalDateTime followUpdateDateTime;
     
 }

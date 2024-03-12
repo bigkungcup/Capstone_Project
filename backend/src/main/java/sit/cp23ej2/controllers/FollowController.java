@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import sit.cp23ej2.dtos.DataResponse;
-import sit.cp23ej2.services.FollowingService;
+import sit.cp23ej2.services.FollowService;
 
 @CrossOrigin(origins = {
     "http://localhost:3000",
@@ -28,10 +28,10 @@ import sit.cp23ej2.services.FollowingService;
 @RestController
 @Validated
 @RequestMapping("/api/follow")
-public class FollowingController {
+public class FollowController {
 
     @Autowired
-    private FollowingService followerService;
+    private FollowService followerService;
 
     @GetMapping("/follower")
     public DataResponse getFollowers(@RequestParam(defaultValue = "0", required = false) Integer page,

@@ -20,15 +20,15 @@ import sit.cp23ej2.dtos.User.UserFollowDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
-import sit.cp23ej2.repositories.FollowingReposiroty;
+import sit.cp23ej2.repositories.FollowReposiroty;
 import sit.cp23ej2.repositories.NotificationRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
 @Service
-public class FollowingService extends CommonController {
+public class FollowService extends CommonController {
 
     @Autowired
-    private FollowingReposiroty reposiroty;
+    private FollowReposiroty reposiroty;
 
     @Autowired
     private UserRepository userRepository;
@@ -69,9 +69,9 @@ public class FollowingService extends CommonController {
                 follow.setUserFollowers(userDTO);
 
                 if (reposiroty.checkExists(user.getUserId(), userDTO.getUserId()) == 0) {
-                    follow.setFollowStatus(0);
+                    follow.setFollowingStatus(0);
                 } else {
-                    follow.setFollowStatus(1);
+                    follow.setFollowingStatus(1);
                 }
             });
 
@@ -94,7 +94,7 @@ public class FollowingService extends CommonController {
 
         if (follow.getContent().size() > 0) {
             follow.getContent().forEach(follows -> {
-                UserFollowDTO userDTO = modelMapper.map(follows.getUserfollowing(), UserFollowDTO.class);
+                UserFollowDTO userDTO = modelMapper.map(follows.getUserfollow(), UserFollowDTO.class);
                 try {
                     if (user != null) {
                         userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDTO.getUserId());

@@ -16,13 +16,13 @@ import sit.cp23ej2.entities.User;
 @NoArgsConstructor
 @ToString
 public class FollowerDTO {
-    private Integer followingId; 
+    private Integer followId; 
     
     @JsonIgnore
     private User user;
 
     @JsonIgnore
-    private User userfollowing;
+    private User userfollow;
 
     // private UserFollowDTO userFollowings;
 
@@ -32,7 +32,7 @@ public class FollowerDTO {
 
     private Integer followingStatus;
 
-    private LocalDateTime followingCreateDateTime;
+    private LocalDateTime followCreateDateTime;
 
-    private LocalDateTime followingUpdateDateTime;
+    private LocalDateTime followUpdateDateTime;
 }
