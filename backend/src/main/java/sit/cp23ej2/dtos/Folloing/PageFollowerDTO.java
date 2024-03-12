@@ -11,8 +11,8 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class PageFollowDTO {
-    private List<FollowDTO> content;
+public class PageFollowerDTO {
+    private List<FollowerDTO> content;
     private Object pageable;
     private int pageNumber;
     private int size;

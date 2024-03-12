@@ -90,8 +90,8 @@ public class BookController {
     }
 
     @GetMapping("/similar/{booktypeId}")
-    public DataResponse getBookByBooktype(@PathVariable Integer booktypeId) {
-        return bookService.getSimilarBook(booktypeId);
+    public DataResponse getBookByBooktype(@PathVariable Integer booktypeId, @RequestParam(required =  true) Integer bookId){
+        return bookService.getSimilarBook(booktypeId, bookId);
     }
 
     @GetMapping("/recommend")

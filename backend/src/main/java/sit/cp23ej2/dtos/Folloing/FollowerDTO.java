@@ -8,14 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import sit.cp23ej2.dtos.User.UserDTO;
+import sit.cp23ej2.dtos.User.UserFollowDTO;
 import sit.cp23ej2.entities.User;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class FollowDTO {
+public class FollowerDTO {
     private Integer followingId; 
     
     @JsonIgnore
@@ -24,9 +24,11 @@ public class FollowDTO {
     @JsonIgnore
     private User userfollowing;
 
-    private UserDTO userFollowings;
+    // private UserFollowDTO userFollowings;
 
-    private UserDTO userFollowers;
+    private UserFollowDTO userFollowers;
+
+    private Integer followStatus;
 
     private Integer followingStatus;
 

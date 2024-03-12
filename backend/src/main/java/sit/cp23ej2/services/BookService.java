@@ -305,25 +305,30 @@ public class BookService extends CommonController {
         }
     }
 
-    public DataResponse getSimilarBook(Integer booktypeId){
+    public DataResponse getSimilarBook(Integer booktypeId, Integer bookId){
         List<Book> books = repository.getBookByBooktype(booktypeId);
-
+        books.removeIf(book -> book.getBookId() == bookId);
         if (books.size() > 0) {
             List<BookDTO> bookDTOs = new ArrayList<>();
             books.forEach(book -> {
                 BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
-                try {
-                    Path pathFile = fileStorageService.load(bookDTO);
-                    if(pathFile != null){
+                Path pathFile = fileStorageService.load(bookDTO);
+                if(pathFile != null){
+                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                    try {
                         bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    bookDTOs.add(bookDTO);
                 }
-                bookDTOs.add(bookDTO);
             });
+
+            if(bookDTOs.size() == 0){
+                throw new HandleExceptionNotFound("Book Not Found", "Book");
+            }
+
             return responseWithData(bookDTOs, 200, "OK", "Similar Book");
         } else {
             throw new HandleExceptionNotFound("Book Not Found", "Book");
@@ -341,21 +346,25 @@ public class BookService extends CommonController {
             List<BookDTO> bookDTOs = new ArrayList<>();
             books.forEach(book -> {
                 BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-                if(bookDTO.getBookTag() != null){
-                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
-                }
-               
-                try {
-                    Path pathFile = fileStorageService.load(bookDTO);
-                    if(pathFile != null){
-                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                Path pathFile = fileStorageService.load(bookDTO);
+                if(pathFile != null){
+                    if(bookDTO.getBookTag() != null){
+                        bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                        bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                   
+                    try {
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    bookDTOs.add(bookDTO);
                 }
-                bookDTOs.add(bookDTO);
             });
+
+            if(bookDTOs.size() == 0){
+                throw new HandleExceptionNotFound("Book Not Found", "Book");
+            }
             return responseWithData(bookDTOs, 200, "OK", "Recommand Book");
         } else {
             throw new HandleExceptionNotFound("Book Not Found", "Book");

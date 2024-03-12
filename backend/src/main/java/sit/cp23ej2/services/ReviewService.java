@@ -123,10 +123,10 @@ public class ReviewService extends CommonController {
                     e.printStackTrace();
                 }
                 if (user != null) {
-                    followingReposiroty.getReviewFollowings(user.getUserId()).forEach(following -> {
+                    followingReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
                         FollowingReviewDTO folloingReview = modelMapper.map(following, FollowingReviewDTO.class);
-                        if (review.getUser().getUserId() == following.getFollowingId()) {
-                            userDTO.setFollowerReview(folloingReview);
+                        if (review.getUser().getUserId() == following.getUserfollowing().getUserId()) {
+                            userDTO.setFollowingReview(folloingReview);
                         }
                     });
 
