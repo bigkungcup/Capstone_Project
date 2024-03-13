@@ -625,9 +625,8 @@ export const useBooks = defineStore("Books", () => {
   }
 
     //Get Similar Book
-    async function getSimilarBook(bookTypeId) {
+    async function getSimilarBook(bookTypeId,bookId) {
       let status = 0;
-      let accessToken = useCookie("accessToken");
       clearSimilarBookList();
       const { data } = await useFetch(
         `${import.meta.env.VITE_BASE_URL}/book/similar/${bookTypeId}`,
@@ -636,7 +635,9 @@ export const useBooks = defineStore("Books", () => {
             options.method = "GET";
             options.headers = {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken.value}`,
+            };
+            options.params = {
+              bookId: bookId,
             };
           },
           onResponse({ request, response, options }) {
@@ -651,7 +652,7 @@ export const useBooks = defineStore("Books", () => {
         console.log("get similar book uncompleted");
       } else if (status == 401) {
           await login.handleRefresh();
-          await getSimilarBook(bookTypeId);
+          await getSimilarBook(bookTypeId, bookId);
       }
     }
   

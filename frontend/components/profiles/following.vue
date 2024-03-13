@@ -42,12 +42,12 @@ defineProps({
                 cover
               />
             </div>
-            <v-btn color="#1D419F" variant="elevated" class="tw-m-2" v-if="user.userFollowings.followerReview == null"
-            @click="user.userFollowings.followerReview = false, $emit('unfollow', user.userFollowings.userId)"
+            <v-btn color="#1D419F" variant="elevated" class="tw-m-2" v-if="user.followStatus == 1"
+            @click="user.followStatus = 0, $emit('unfollow', user.userFollowings.userId)"
               >Following</v-btn
             >
-            <v-btn color="#1D419F" variant="outlined"  class="tw-m-2" v-if="user.userFollowings.followerReview !== null"
-            @click="user.userFollowings.followerReview = null, $emit('follow', user.userFollowings.userId)"
+            <v-btn color="#1D419F" variant="outlined"  class="tw-m-2" v-if="user.followStatus !== 1"
+            @click="user.followStatus = 1, $emit('follow', user.userFollowings.userId)"
               >Follow</v-btn
             >
           </div>

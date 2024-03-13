@@ -42,7 +42,12 @@ defineProps({
                 cover
               />
             </div>
-            <v-btn color="#1D419F" variant="outlined" class="tw-m-2"
+            <v-btn color="#1D419F" variant="elevated" class="tw-m-2" v-if="user.followingStatus == 1"
+            @click="user.followingStatus = 0, $emit('unfollow', user.userFollowers.userId)"
+              >Following</v-btn
+            >
+            <v-btn color="#1D419F" variant="outlined"  class="tw-m-2" v-if="user.followingStatus !== 1"
+            @click="user.followingStatus = 1, $emit('follow', user.userFollowers.userId)"
               >Follow</v-btn
             >
           </div>

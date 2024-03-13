@@ -60,7 +60,7 @@
               </div>
             </div>
 
-            
+<!--             
             <div
               class="tw-h-[16rem] tw-w-[30rem] tw-mx-4 tw-border-4 tw-border-[#3157BB] tw-rounded-xl"
             >
@@ -80,7 +80,6 @@
                 <div class="web-text-sub tw-my-1">
                   <v-row no-gutters>
                     <v-col cols="2" class="tw-space-x-2">
-                      <!-- <v-icon icon="mdi mdi-thumb-up-outline" /><span>10</span> -->
                       <v-btn
                         prepend-icon="mdi mdi-thumb-up-outline"
                         variant="text"
@@ -110,7 +109,7 @@
                   </v-row>
                 </div>
               </div>
-            </div>
+            </div> -->
 
 
             <div

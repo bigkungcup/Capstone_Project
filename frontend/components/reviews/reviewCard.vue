@@ -41,7 +41,7 @@ const follow = ref(true)
                   color="#3157BB"
                   class="px-8 py-2"
                   rounded="lg"
-                  v-if="review.userDetail.followerReview == null"
+                  v-if="review.userDetail.followingReview == null"
                   @click="$emit('follow',review.userDetail.userId)"
                 >Follow</v-btn>
                 <v-btn
@@ -49,7 +49,7 @@ const follow = ref(true)
                   class="px-5 py-2"
                   color="#3157BB"
                   rounded="lg"
-                  v-if="review.userDetail.followerReview !== null"
+                  v-if="review.userDetail.followingReview !== null"
                   @click="$emit('unfollow',review.userDetail.userId)"
                 >Following</v-btn>
 

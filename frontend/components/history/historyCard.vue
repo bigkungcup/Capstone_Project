@@ -19,7 +19,7 @@ function bookCoverPath(filePath) {
     <!-- <div  class="tw-px-36 tw-space-y-4"> -->
         <v-row >
                 <v-col cols="6" v-for="book in historyList"  class="">
-    <v-card color="rgb(217, 217, 217, 0.6)" class="tw-h-[12rem]" :to="`/book/${book.historyId}/`">
+    <v-card color="rgb(217, 217, 217, 0.6)" class="tw-h-[12rem]" :to="`/book/${book.bookData.bookId}/`">
         <v-row no-gutters>
             <v-col cols="4" class="tw-my-4" align="center">
                 <!-- <v-img class="tw-drop-shadow-lg " src="/image/foryou1.png" width="100" height="160" cover /> -->

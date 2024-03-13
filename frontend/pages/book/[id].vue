@@ -137,12 +137,12 @@ async function handleUnfollow(userId) {
 
 if (roleToken.value == "GUEST") {
   await library.getBookDetailByGuest(route.params.id);
+  library.getSimilarBook(library.bookDetail.data.booktype.booktypeId, route.params.id);
   reviews.clearReviewList();
   await reviews.getReviewByGuest(route.params.id);
 } else {
   await library.getBookDetail(route.params.id);
-  library.getSimilarBook(library.bookDetail.data.booktype.booktypeId);
-  console.log(library.similarBookList);
+  library.getSimilarBook(library.bookDetail.data.booktype.booktypeId, route.params.id);
   reviews.clearReviewList();
   await reviews.getReview(route.params.id);
 }
@@ -340,7 +340,7 @@ if (roleToken.value == "GUEST") {
 
     <div class="tw-mt-5 tw-min-h-[24rem]">
       <p class="web-text-header tw-mx-16">Similar Book</p>
-      <div :class="library.similarBookList.data.length < 7 ? 'tw-mx-16' : ''"><SimilarBook :similarBookList="library.similarBookList.data"/></div>
+      <div class="tw-mx-16"><SimilarBook :similarBookList="library.similarBookList.data"/></div>
     </div>
 
     <div class="tw-flex tw-justify-center tw-bg-white tw-py-10">
