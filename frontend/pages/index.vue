@@ -1,5 +1,11 @@
 <script setup>
 import { useLogin } from "../stores/login";
+import Recommend from "~/components/home/recommend.vue";
+import MostView from "~/components/home/mostView.vue";
+import NewBook from "~/components/home/newBook.vue";
+import NewReview from "~/components/home/newReview.vue";
+import Other from "~/components/home/other.vue";
+
 
 const accessToken = ref(useCookie("accessToken"));
 const login = useLogin();
@@ -55,8 +61,13 @@ if(accessToken.value == undefined){
   <div>
     
   <div class="ma-8">
-    <div class="tw-text-4xl tw-text-[#082266] tw-font-extrabold tw-py-8"> Recommend </div>
-    <v-img :src="bookPath" width="180" alt="aaa"/>
+    <!-- <div class="tw-text-4xl tw-text-[#082266] tw-font-extrabold tw-py-8"> Recommend </div> -->
+    <Recommend />
+    <MostView />
+    <NewBook />
+    <NewReview />
+    <Other />
+    <!-- <v-img :src="bookPath" width="180" alt="aaa"/> -->
   <!-- <v-sheet class="mx-auto tw-p-4" elevation="2" width="100%" height="100%" color="blue" style="border-radius:20px;" >
       <v-slide-group  show-arrows>
         <v-slide-group-item>
@@ -72,8 +83,8 @@ if(accessToken.value == undefined){
   </div>
 
   </div>
-<!-- 
-<div class="my-5">
+
+<!-- <div class="my-5">
   <v-sheet class="mx-auto" elevation="2" width="100%" height="100%" >
       <v-slide-group class="pa-4" show-arrows cycle :interval="4000">
         <v-slide-group-item>
