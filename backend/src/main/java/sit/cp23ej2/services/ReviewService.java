@@ -149,13 +149,14 @@ public class ReviewService extends CommonController {
                         review.setLikeStatus(likestatus);
                     } else {
                         likeStatus.forEach(like -> {
-                            if (review.getReviewId() == like.getLsr_reviewId()) {
+                            if (review.getReviewId().equals(like.getLsr_reviewId())) {
                                 review.setLikeStatus(like);
-                            } else {
-                                LikeStatus likestatus = new LikeStatus();
-                                likestatus.setLikeStatus(0);
-                                review.setLikeStatus(likestatus);
-                            }
+                            } 
+                            // else {
+                            //     LikeStatus likestatus = new LikeStatus();
+                            //     likestatus.setLikeStatus(0);
+                            //     review.setLikeStatus(likestatus);
+                            // }
                         });
                     }
                 });
