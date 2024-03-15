@@ -26,7 +26,7 @@ function profileCoverPath(filePath) {
       class="nav-text-before-click tw-flex tw-space-x-6 tw-place-self-center tw-text-xl"
     >
       <NuxtLink to="/">Home</NuxtLink>
-      <NuxtLink to="">Ranking</NuxtLink>
+      <NuxtLink to="/ranking/">Ranking</NuxtLink>
       <NuxtLink to="/library/">Library</NuxtLink>
       <NuxtLink to="/history/" v-show="login.roleToken == 'USER'">History</NuxtLink>
       <NuxtLink to="/user/" v-show="login.roleToken == 'ADMIN'">User</NuxtLink>

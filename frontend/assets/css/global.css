@@ -84,6 +84,18 @@
     line-height: 2rem;
 }
 
+.ranking-text-header{
+    color:#1D419F;
+    font-weight: 700;
+    font-size: 3rem; /* 24px */
+    line-height: 3.5rem;
+}
+.ranking-num-header{
+    color:#082266;
+    font-weight: 700;
+    font-size: 5.5rem; /* 24px */
+    line-height: 3rem;
+}
 .web-text-rate{
     color: #FFBB11
 }
