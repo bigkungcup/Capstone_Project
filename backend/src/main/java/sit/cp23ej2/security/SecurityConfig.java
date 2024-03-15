@@ -89,6 +89,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/likeStatus/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/notification").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/notification/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/report").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers("/api/report/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 // .requestMatchers("/api/bookmarkStatus").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 // .requestMatchers("/api/bookmarkStatus/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 // .requestMatchers("/api/followerStatus").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

@@ -3,6 +3,7 @@ package sit.cp23ej2.services;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -22,7 +23,7 @@ import sit.cp23ej2.dtos.Folloing.FollowingReviewDTO;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewDTO;
 import sit.cp23ej2.dtos.Review.PageReviewMeDTO;
-import sit.cp23ej2.dtos.Review.ReviewDTO;
+import sit.cp23ej2.dtos.Review.ReviewMeDTO;
 import sit.cp23ej2.dtos.Review.ReviewRatingStatisticsDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
@@ -255,9 +256,9 @@ public class ReviewService extends CommonController {
 
         List<Review> reviews = repository.getReviewByCreateDateTime();
         if (reviews.size() > 0) {
-            List<ReviewDTO> reviewDTOs = new ArrayList<>();
+            List<ReviewMeDTO> reviewDTOs = new ArrayList<>();
             reviews.forEach(review -> {
-                ReviewDTO reviewDTO = modelMapper.map(review, ReviewDTO.class);
+                ReviewMeDTO reviewDTO = modelMapper.map(review, ReviewMeDTO.class);
                 UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
                 try {
                     if (review.getUser() != null
@@ -270,22 +271,26 @@ public class ReviewService extends CommonController {
                 }
                 reviewDTO.setUserDetail(userDTO);
 
-                // BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
-                // try {
-                // // && fileStorageService.load(review.getBook().getBookId()) != null
-                // if (review.getBook() != null) {
-                // bookDTO.setFile(baseUrl + "/api/files/filesBook/" +
-                // review.getBook().getBookId());
-                // }
+                BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
+                try {
+                    // && fileStorageService.load(review.getBook().getBookId()) != null
+                    if (review.getBook() != null) {
+                        bookDTO.setFile(baseUrl + "/api/files/filesBook/" +
+                                review.getBook().getBookId());
+                    }
 
-                // } catch (Exception e) {
-                // e.printStackTrace();
-                // }
-                // review.set(bookDTO);
+                    if(bookDTO.getBookTag() != null){
+                        bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                        bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                reviewDTO.setBookDetail(bookDTO);
 
                 if (user != null) {
                     List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
-
                     likeStatus.forEach(like -> {
                         if (review.getReviewId() == like.getLsr_reviewId()) {
                             reviewDTO.setLikeStatus(like);
@@ -303,7 +308,7 @@ public class ReviewService extends CommonController {
 
     public DataResponse getReviewRatingCount() {
         ReviewRatingStatisticsDTO reviewRatingCount = repository.getReviewRatingCount();
-       
+
         if (reviewRatingCount != null) {
             return responseWithData(reviewRatingCount, 200, "OK", "Review Rating Count");
         } else {
