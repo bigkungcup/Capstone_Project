@@ -1,5 +1,8 @@
 <script setup>
 import { useLogin } from "../stores/login";
+import { useBooks } from "~/stores/book";
+// import { useUsers } from "~/stores/user";
+import { useReviews } from "~/stores/review";
 import Recommend from "~/components/home/recommend.vue";
 import MostView from "~/components/home/mostView.vue";
 import NewBook from "~/components/home/newBook.vue";
@@ -9,41 +12,76 @@ import Other from "~/components/home/other.vue";
 
 const accessToken = ref(useCookie("accessToken"));
 const login = useLogin();
+const book = useBooks();
+const reviews = useReviews();
+// const user = useUsers();
 
-const colors = [
-        'green',
-        'secondary',
-        'yellow darken-4',
-        'red lighten-2',
-        'orange darken-1',
-      ]
+// const colors = [
+//         'green',
+//         'secondary',
+//         'yellow darken-4',
+//         'red lighten-2',
+//         'orange darken-1',
+//       ]
 const  slides = [
         '/image/bookbanner1.jpg',
         '/image/bookbanner2.png',
         '/image/bookbanner3.png',
       ]
-const bookcovers = [
-      '/image/foryou1.png',
-      '/image/foryou2.jpg',
-      '/image/foryou3.jpg',
-      '/image/foryou4.jpg',
-      '/image/foryou5.png',
-      '/image/foryou6.png',
-      '/image/foryou7.png',
-      '/image/foryou8.jpg',
-      '/image/foryou9.jpg',
-      '/image/foryou9.png',
+// const bookcovers = [
+//       '/image/foryou1.png',
+//       '/image/foryou2.jpg',
+//       '/image/foryou3.jpg',
+//       '/image/foryou4.jpg',
+//       '/image/foryou5.png',
+//       '/image/foryou6.png',
+//       '/image/foryou7.png',
+//       '/image/foryou8.jpg',
+//       '/image/foryou9.jpg',
+//       '/image/foryou9.png',
 
-      ]
+//       ]
 const path = '/ej2'
 
-const bookPath = ref('_nuxt/@fs\\Files\\Uploads\\TEST\\foryou2.jpg')
+// const bookPath = ref('_nuxt/@fs\\Files\\Uploads\\TEST\\foryou2.jpg')
 
 if(accessToken.value == undefined){
   login.resetToken();
 }else{
   login.getProfile();
 }
+
+async function likeReviews(reviewId, likeStatus) {
+  let status = {
+    userId: idToken.value,
+    reviewId: reviewId,
+    likeStatus: likeStatus,
+  };
+  await reviews.createLike(status);
+  await reviews.getReview(route.params.id);
+}
+
+async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
+  let status = {
+    userId: idToken.value,
+    reviewId: reviewId,
+    likeStatusId: likeStatusId,
+    likeStatus: likeStatus,
+  };
+  await reviews.updateLike(status);
+  await reviews.getReview(route.params.id);
+}
+
+
+onBeforeMount(async () => {
+  await book.getRecommendBookList();
+  await book.getMostviewBookList();
+  await book.getNewBookList();
+  await reviews.getNewReviewList();
+  await book.getOtherBookList();
+});
+
+
 
 </script>
 
@@ -62,11 +100,28 @@ if(accessToken.value == undefined){
     
   <div class="ma-8">
     <!-- <div class="tw-text-4xl tw-text-[#082266] tw-font-extrabold tw-py-8"> Recommend </div> -->
-    <Recommend />
-    <MostView />
-    <NewBook />
-    <NewReview />
-    <Other />
+    <div v-if="book.recommendBookList.data.length !== 0">
+      <Recommend :recommendBookList="book.recommendBookList.data"/>
+    </div>
+    <div v-if="book.mostviewBookList.data.length !== 0">
+      <MostView :mostviewBookList="book.mostviewBookList.data"/>
+    </div>
+    <div v-if="book.newBookList.data.length !== 0">
+      <NewBook :newBookList="book.newBookList.data"/>
+    </div>
+    <div v-if="reviews.newReviewList.data.length !== 0">
+      <NewReview :newReviewList="reviews.newReviewList.data" 
+                @like="likeReviews($event.reviewId, $event.likeStatus)"                   
+                @update="updatelikeReviews(
+                      $event.reviewId,
+                      $event.likeStatus,
+                      $event.likeStatusId
+                    )
+                  "/>
+    </div>
+    <div v-if="book.otherBookList.data.length !== 0">
+      <Other :otherBookList="book.otherBookList.data"/>
+    </div>
     <!-- <v-img :src="bookPath" width="180" alt="aaa"/> -->
   <!-- <v-sheet class="mx-auto tw-p-4" elevation="2" width="100%" height="100%" color="blue" style="border-radius:20px;" >
       <v-slide-group  show-arrows>

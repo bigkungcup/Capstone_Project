@@ -43,6 +43,9 @@ export const useReviews = defineStore("Reviews", () => {
   const myReviewPage = ref(0);
   const sortReview = ref('desc');
   const filterReview = ref(null);
+  const newReviewList = ref({
+    data: [],
+  });
   // const likeStatus = ref(0); //0 = clear, 1 = like, 2 = dislike
 
   //Get reviews
@@ -182,6 +185,33 @@ export const useReviews = defineStore("Reviews", () => {
         console.log("get my review list uncompleted");
       } 
     }    
+
+ //Get all new review
+ async function getNewReviewList() {
+  let status = 0;
+  clearNewReviewList();
+
+  const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/newReview`, {
+    onRequest({ request, options }) {
+      options.method = "GET";
+      options.headers = {
+        "Content-Type": "application/json",
+      };
+    },
+    onResponse({ request, response, options }) {
+      status = response._data.response_code;
+    },
+  });
+  if (status == 200) {
+    if (data.value) {
+      newReviewList.value = data.value;
+    }
+    console.log("get new review list completed");
+  } else if (status == 404) {
+    clearNewReviewList();
+    console.log("get new review list uncompleted");
+  }
+}
 
   //Get review detail
   async function getReviewDetail(reviewId) {
@@ -464,6 +494,14 @@ export const useReviews = defineStore("Reviews", () => {
           };
         }
 
+          //Clear review list
+    function clearNewReviewList() {
+      newReviewList.value = {
+        data: {},
+      };
+    }
+
+
   //Change review page
   function changeReviewPage(bookId, page) {
     reviewPage.value = page - 1;
@@ -488,6 +526,7 @@ export const useReviews = defineStore("Reviews", () => {
 
   return {
     reviewList,
+    newReviewList,
     reviewDetail,
     newReview,
     editReview,
@@ -501,6 +540,7 @@ export const useReviews = defineStore("Reviews", () => {
     getReview,
     getReviewByGuest,
     getMyReview,
+    getNewReviewList,
     getReviewDetail,
     getReviewDetailByGuest,
     createReview,
@@ -513,6 +553,7 @@ export const useReviews = defineStore("Reviews", () => {
     setEditReview,
     clearReviewList,
     clearMyReviewList,
+    clearNewReviewList,
     clearNewReview,
     closeSuccessfulPopup,
   };

@@ -1,4 +1,22 @@
-<script setup></script>
+<script setup>
+defineProps({
+    mostviewBookList: {
+        type: Array,
+        require: true,
+  }
+});
+
+function formatTotalview(totalview) {
+    if (totalview >= 1000 && totalview < 1000000) {
+          return (totalview / 1000).toFixed(1) + 'K';
+        } else if (totalview >= 1000000) {
+          return (totalview / 1000000).toFixed(1) + 'M';
+        } else {
+          return totalview.toString();
+        }
+}
+
+</script>
 
 <template>
   <div>
@@ -7,217 +25,49 @@
     </div>
     <div class="tw-space-y-4">
       <!--------- No.1 ------------>
-      <v-card class="tw-h-min-[11rem] tw-h-max-[11rem]">
+      <v-card class="tw-h-min-[11rem] tw-h-max-[11rem]" v-for="(book, index) in mostviewBookList" :to="`/book/${book.bookId}/`">
         <v-row no-gutters>
           <v-col cols="1" align="center" class="tw-my-5"
             ><v-chip variant="elevated" color="#1D419F" size="x-large"
-              ># 1</v-chip
+              ># {{ index+1 }}</v-chip
             ></v-col
           >
           <v-col
             cols="8"
             class="tw-flex tw-flex-col tw-justify-center tw-space-y-2"
           >
-            <p class="web-text-header">I Know Why the Caged Bird Sings</p>
+            <p class="web-text-header">{{ book.bookName }}</p>
             <p
               class="web-text-sub tw-italic tw-min-h-[4rem] tw-max-h-[4rem] tw-py-2 tw-overflow-clip"
             >
-              Maya Angelou’s debut memoir is a modern American classic beloved
-              worldwide Maya Angelou’s debut memoir is a modern American classic
-              beloved worldwide debut memoir is a modern American classic
-              beloved worldwide Maya Angelou’s debut memoir is a modern American
-              classic beloved worldwide...
+            {{ book.bookDetail }}
             </p>
-            <p class="web-text-title">by Luna Freya</p>
+            <p class="web-text-title">by {{ book.author }}</p>
           </v-col>
           <v-col cols="2" align="center" class="tw-my-4 tw-space-y-16">
             <v-chip variant="elevated" color="#1D419F" size="x-large"
-              >Adventure</v-chip
+              >{{ book.booktype.booktypeName }}</v-chip
             >
-            <div class="web-text-title">
-              <v-icon icon="mdi mdi-eye-outline" class="tw-mx-2" />34.5 k
+            <div class="web-text-title d-flex justify-center">
+              <v-icon icon="mdi mdi-eye-outline" class="tw-mx-2" />
+              <p>{{ formatTotalview(book.bookTotalView) }}</p>
             </div>
           </v-col>
           <v-col cols="1"
             ><v-img
-              src="/image/foryou8.jpg"
+              src="/image/cover_not_available.jpg"
+              v-if="book.file == null"
               width="100%"
               height="100%"
               cover
-            ></v-img
-          ></v-col>
-        </v-row>
-      </v-card>
-
-      <!--------- No.2 ------------>
-      <v-card class="tw-h-min-[11rem] tw-h-max-[11rem]">
-        <v-row no-gutters>
-          <v-col cols="1" align="center" class="tw-my-5"
-            ><v-chip variant="elevated" color="#1D419F" size="x-large"
-              ># 1</v-chip
-            ></v-col
-          >
-          <v-col
-            cols="8"
-            class="tw-flex tw-flex-col tw-justify-center tw-space-y-2"
-          >
-            <p class="web-text-header">I Know Why the Caged Bird Sings</p>
-            <p
-              class="web-text-sub tw-italic tw-min-h-[4rem] tw-max-h-[4rem] tw-py-2 tw-overflow-clip"
-            >
-              Maya Angelou’s debut memoir is a modern American classic beloved
-              worldwide Maya Angelou’s debut memoir is a modern American classic
-              beloved worldwide debut memoir is a modern American classic
-              beloved worldwide Maya Angelou’s debut memoir is a modern American
-              classic beloved worldwide...
-            </p>
-            <p class="web-text-title">by Luna Freya</p>
-          </v-col>
-          <v-col cols="2" align="center" class="tw-my-4 tw-space-y-16">
-            <v-chip variant="elevated" color="#1D419F" size="x-large"
-              >Adventure</v-chip
-            >
-            <div class="web-text-title">
-              <v-icon icon="mdi mdi-eye-outline" class="tw-mx-2" />34.5 k
-            </div>
-          </v-col>
-          <v-col cols="1"
-            ><v-img
-              src="/image/foryou4.jpg"
+            /><v-img
+              :src="book.file"
+              v-if="book.file != null"
               width="100%"
               height="100%"
               cover
-            ></v-img
-          ></v-col>
-        </v-row>
-      </v-card>
-
-      <!--------- No.3 ------------>
-      <v-card class="tw-h-min-[11rem] tw-h-max-[11rem]">
-        <v-row no-gutters>
-          <v-col cols="1" align="center" class="tw-my-5"
-            ><v-chip variant="elevated" color="#1D419F" size="x-large"
-              ># 1</v-chip
-            ></v-col
-          >
-          <v-col
-            cols="8"
-            class="tw-flex tw-flex-col tw-justify-center tw-space-y-2"
-          >
-            <p class="web-text-header">I Know Why the Caged Bird Sings</p>
-            <p
-              class="web-text-sub tw-italic tw-min-h-[4rem] tw-max-h-[4rem] tw-py-2 tw-overflow-clip"
-            >
-              Maya Angelou’s debut memoir is a modern American classic beloved
-              worldwide Maya Angelou’s debut memoir is a modern American classic
-              beloved worldwide debut memoir is a modern American classic
-              beloved worldwide Maya Angelou’s debut memoir is a modern American
-              classic beloved worldwide...
-            </p>
-            <p class="web-text-title">by Luna Freya</p>
+            />
           </v-col>
-          <v-col cols="2" align="center" class="tw-my-4 tw-space-y-16">
-            <v-chip variant="elevated" color="#1D419F" size="x-large"
-              >Adventure</v-chip
-            >
-            <div class="web-text-title">
-              <v-icon icon="mdi mdi-eye-outline" class="tw-mx-2" />34.5 k
-            </div>
-          </v-col>
-          <v-col cols="1"
-            ><v-img
-              src="/image/foryou3.jpg"
-              width="100%"
-              height="100%"
-              cover
-            ></v-img
-          ></v-col>
-        </v-row>
-      </v-card>
-
-      <!--------- No.4 ------------>
-      <v-card class="tw-h-min-[11rem] tw-h-max-[11rem]">
-        <v-row no-gutters>
-          <v-col cols="1" align="center" class="tw-my-5"
-            ><v-chip variant="elevated" color="#1D419F" size="x-large"
-              ># 1</v-chip
-            ></v-col
-          >
-          <v-col
-            cols="8"
-            class="tw-flex tw-flex-col tw-justify-center tw-space-y-2"
-          >
-            <p class="web-text-header">I Know Why the Caged Bird Sings</p>
-            <p
-              class="web-text-sub tw-italic tw-min-h-[4rem] tw-max-h-[4rem] tw-py-2 tw-overflow-clip"
-            >
-              Maya Angelou’s debut memoir is a modern American classic beloved
-              worldwide Maya Angelou’s debut memoir is a modern American classic
-              beloved worldwide debut memoir is a modern American classic
-              beloved worldwide Maya Angelou’s debut memoir is a modern American
-              classic beloved worldwide...
-            </p>
-            <p class="web-text-title">by Luna Freya</p>
-          </v-col>
-          <v-col cols="2" align="center" class="tw-my-4 tw-space-y-16">
-            <v-chip variant="elevated" color="#1D419F" size="x-large"
-              >Adventure</v-chip
-            >
-            <div class="web-text-title">
-              <v-icon icon="mdi mdi-eye-outline" class="tw-mx-2" />34.5 k
-            </div>
-          </v-col>
-          <v-col cols="1"
-            ><v-img
-              src="/image/foryou3.jpg"
-              width="100%"
-              height="100%"
-              cover
-            ></v-img
-          ></v-col>
-        </v-row>
-      </v-card>
-
-      <!--------- No.5 ------------>
-      <v-card class="tw-h-min-[11rem] tw-h-max-[11rem]">
-        <v-row no-gutters>
-          <v-col cols="1" align="center" class="tw-my-5"
-            ><v-chip variant="elevated" color="#1D419F" size="x-large"
-              ># 1</v-chip
-            ></v-col
-          >
-          <v-col
-            cols="8"
-            class="tw-flex tw-flex-col tw-justify-center tw-space-y-2"
-          >
-            <p class="web-text-header">I Know Why the Caged Bird Sings</p>
-            <p
-              class="web-text-sub tw-italic tw-min-h-[4rem] tw-max-h-[4rem] tw-py-2 tw-overflow-clip"
-            >
-              Maya Angelou’s debut memoir is a modern American classic beloved
-              worldwide Maya Angelou’s debut memoir is a modern American classic
-              beloved worldwide debut memoir is a modern American classic
-              beloved worldwide Maya Angelou’s debut memoir is a modern American
-              classic beloved worldwide...
-            </p>
-            <p class="web-text-title">by Luna Freya</p>
-          </v-col>
-          <v-col cols="2" align="center" class="tw-my-4 tw-space-y-16">
-            <v-chip variant="elevated" color="#1D419F" size="x-large"
-              >Adventure</v-chip
-            >
-            <div class="web-text-title">
-              <v-icon icon="mdi mdi-eye-outline" class="tw-mx-2" />34.5 k
-            </div>
-          </v-col>
-          <v-col cols="1"
-            ><v-img
-              src="/image/foryou3.jpg"
-              width="100%"
-              height="100%"
-              cover
-            ></v-img
-          ></v-col>
         </v-row>
       </v-card>
     </div>

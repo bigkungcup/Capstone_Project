@@ -1,17 +1,10 @@
 <script setup>
-const bookcovers = [
-      '/image/foryou1.png',
-      '/image/foryou2.jpg',
-      '/image/foryou3.jpg',
-      '/image/foryou4.jpg',
-      '/image/foryou5.png',
-      '/image/foryou6.png',
-      '/image/foryou7.png',
-      '/image/foryou8.jpg',
-      '/image/foryou9.jpg',
-      '/image/foryou9.png',
-
-      ]
+defineProps({
+    recommendBookList: {
+        type: Array,
+        require: true,
+  }
+});
 </script>
 
 <template>
@@ -21,16 +14,32 @@ const bookcovers = [
     </div>
     <!-- <v-img :src="bookPath" width="180" alt="aaa" /> -->
     <v-sheet class="mx-auto tw-p-4" elevation="2" width="100%" height="100%" color="#3157BB" style="border-radius:20px;" >
+      <v-row no-gutters>
+      <v-col cols="3" class="tw-flex tw-items-center tw-justify-center" align="center">
+      <div class="tw-text-7xl" style="font-family: 'Rampart One';"> For You </div>
+      </v-col>
+      <v-col cols="9" class="" align="center">
       <v-slide-group  show-arrows>
         <v-slide-group-item>
-          <div class="tw-flex tw-items-center tw-text-7xl" style="font-family: 'Rampart One';"> For You </div>
-          <v-card color="white" class="mx-4 " height="100%" width="20rem" v-for="(cover, index) in bookcovers" :key="index" >
-            <div class="d-flex fill-height align-center justify-center tw-p-8" >
-              <v-img :src="cover" height="100%" cover></v-img>
+          <v-card color="white" class="mx-4 " height="100%" width="20rem" rounded="xl" v-for="book in recommendBookList" :to="`/book/${book.bookId}/`">
+            <div class="align-center justify-center tw-px-6 tw-pt-4 tw-border-8 tw-border-[#A5BEFF] tw-rounded-3xl" >
+              <v-img :src="book.file" height="100%" cover></v-img>
+              <div class="tw-space-x-1 tw-inline-flex tw-items-center">
+              <v-rating
+                  :model-value="0.5 * Math.floor(2 * book.bookRating)"
+                  color="#FFB703"
+                  density="compact"
+                  size="large"
+                  half-increments
+                  readonly
+                ></v-rating>
+                <p class="web-text-rate">{{ book.bookRating }}</p>
+              </div>
             </div>
           </v-card>
         </v-slide-group-item>
-      </v-slide-group>
+      </v-slide-group></v-col>
+    </v-row>
     </v-sheet>
   </div>
 </template>
