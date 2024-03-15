@@ -188,6 +188,35 @@ export const useReviews = defineStore("Reviews", () => {
 
  //Get all new review
  async function getNewReviewList() {
+  let accessToken = useCookie("accessToken");
+  let status = 0;
+  clearNewReviewList();
+
+  const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/newReview`, {
+    onRequest({ request, options }) {
+      options.method = "GET";
+      options.headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken.value}`,
+      };
+    },
+    onResponse({ request, response, options }) {
+      status = response._data.response_code;
+    },
+  });
+  if (status == 200) {
+    if (data.value) {
+      newReviewList.value = data.value;
+    }
+    console.log("get new review list completed");
+  } else if (status == 404) {
+    clearNewReviewList();
+    console.log("get new review list uncompleted");
+  }
+}
+
+ //Get all new review by guest
+ async function getNewReviewListByGuest() {
   let status = 0;
   clearNewReviewList();
 
@@ -497,7 +526,7 @@ export const useReviews = defineStore("Reviews", () => {
           //Clear review list
     function clearNewReviewList() {
       newReviewList.value = {
-        data: {},
+        data: [],
       };
     }
 
@@ -541,6 +570,7 @@ export const useReviews = defineStore("Reviews", () => {
     getReviewByGuest,
     getMyReview,
     getNewReviewList,
+    getNewReviewListByGuest,
     getReviewDetail,
     getReviewDetailByGuest,
     createReview,

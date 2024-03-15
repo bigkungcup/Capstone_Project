@@ -14,6 +14,8 @@ const accessToken = ref(useCookie("accessToken"));
 const login = useLogin();
 const book = useBooks();
 const reviews = useReviews();
+const roleToken = ref(localStorage.getItem("role"));
+const idToken = ref(localStorage.getItem("id"));
 // const user = useUsers();
 
 // const colors = [
@@ -77,7 +79,11 @@ onBeforeMount(async () => {
   await book.getRecommendBookList();
   await book.getMostviewBookList();
   await book.getNewBookList();
-  await reviews.getNewReviewList();
+  if(roleToken.value == "GUEST"){
+    await reviews.getNewReviewListByGuest();
+  }else{
+    await reviews.getNewReviewList();
+  }
   await book.getOtherBookList();
 });
 
