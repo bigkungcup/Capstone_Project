@@ -65,6 +65,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/api/book/mostview").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/book/random").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/book/newBook").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/book/ranking").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/book/similar/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/book").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.POST,"/api/book").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
