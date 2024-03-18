@@ -16,7 +16,7 @@ jobs:
       - name: Delete Directory
         run: |
           cd ..
-          sudo rm -rf Files
+          sudo rm -rf Files 
 
       # Runs a Database  
       - name: Database Docker Compose Down and Remove Images
