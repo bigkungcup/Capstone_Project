@@ -43,6 +43,20 @@
     line-height: 1.75rem; /* 28px */
 }
 
+.web-text-sub-pf{
+    color: #082266;
+    font-weight: 600;
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.75rem; /* 28px */
+}
+
+.web-text-sub-pf-white{
+    color: white;
+    font-weight: 600;
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.75rem; /* 28px */
+}
+
 .web-text-title{
     color: #082266;
     font-weight: 700;
@@ -56,10 +70,48 @@
     font-size: 1.875rem; /* 30px */
     line-height: 2.25rem; /* 36px */
 }
+.web-text-pf-email{
+    color: #6E6E6E;
+    font-weight: 400;
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.75rem; /* 28px */
+}
 
+.web-text-rv-head{
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem;
+}
 
+.ranking-text-header{
+    color:#1D419F;
+    font-weight: 700;
+    font-size: 3rem; /* 24px */
+    line-height: 3.5rem;
+}
+.ranking-num-header{
+    color:#082266;
+    font-weight: 700;
+    font-size: 5.5rem; /* 24px */
+    line-height: 3rem;
+}
 .web-text-rate{
     color: #FFBB11
+}
+
+.login-text-sub{
+    color: #082266;
+    font-weight: 300;
+    font-size: 1rem; /* 16px */
+    line-height: 1.75rem; /* 28px */
+}
+
+.user-text-title{
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
 }
 
 .action-popUp-header{
@@ -90,7 +142,37 @@
     line-height: 2rem; /* 32px */
 }
 
+.validate-text{
+    color: #BB0000;
+    font-weight: 400;
+    font-size: 0.7rem; /* 24px */
+}
 
+.confirm-popUp-header{
+    color: #1D419F;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem; /* 36px */
+}
+
+.confirm-popUp-detail{
+    /* color: #646363; */
+    font-weight: 500;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
+
+.warning-popUp-header {
+    color: #BB0000;
+    font-weight: 700;
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem;
+}
+.warning-popUp-detail{
+    font-weight: 500;
+    font-size: 1.25rem;
+    line-height: 2rem; /* 32px */
+}
 .tag-color{
     background-color: #1D419F;
     padding: 10px;

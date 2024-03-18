@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 import { useBooks } from '~/stores/book'
 
 const library = useBooks();
@@ -10,24 +9,26 @@ defineProps({
     }
 })
 
-const dateTime = ref('');
-function countDateTime(time) {
-   dateTime.value = library.countUpdateTime(time)
+function bookCoverPath(filePath) {
+   return filePath = (`/ej2/_nuxt/@fs/${filePath}`)
 }
 
 </script>
  
 <template>
     <div class="tw-px-36 tw-space-y-4">
-        <v-card v-for="book in bookList" color="rgb(217, 217, 217, 0.6)" class="tw-min-h-[19rem] tw-max-h-[19rem]" :to="`/book/${book.bookId}/`">
+        <v-card v-for="book in bookList" :search="search" color="rgb(217, 217, 217, 0.6)" class="tw-min-h-[19rem] tw-max-h-[19rem]" :to="`/book/${book.bookId}/`">
             <v-row no-gutters>
-                <v-col cols="3" class="tw-my-3" align="center">
-                    <v-img src="/image/cover_not_available.jpg" width="180" />
+                <v-col cols="3" class="my-3" align="center">
+                    <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="180" height="280" cover v-show="book.file == null"/>
+                    <v-img class="tw-drop-shadow-lg" :src="book.file" width="180" height="280" cover v-show="book.file != null" />
+                    <!-- <v-img class="tw-drop-shadow-lg" :src="book.file" width="180" height="280" cover v-show="book.file != null" /> -->
+                    <!-- <v-img src="~\Files\Uploads\TEST1\foryou2.jpg" width="180" v-show="book.file !== null"/> -->
                 </v-col>
                 <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
                     <div>
                         <p class="web-text-title">{{ book.bookName }}</p>
-                        <p class="tw-opacity-60" :onload="countDateTime(book.countDateTime)">Update about {{ dateTime }}</p>
+                        <!-- <p class="tw-opacity-60">Update about {{ library.countUpdateTime(book.countDateTime) }}</p> -->
                     </div>
                     <div class="tw-min-h-[9rem] tw-max-h-[9rem] tw-py-2 tw-overflow-clip">
                         <p class="tw-indent-8">{{ book.bookDetail }}</p>
@@ -45,11 +46,11 @@ function countDateTime(time) {
                     <div class="web-text-detail tw-col-span-7 tw-py-14">
                         <div class="tw-flex tw-gap-x-2 tw-py-2 tw-items-center">
                             <p class="tw-font-bold">Book Type : </p>
-                            <v-btn color="#1D419F" v-show="book.bookType != null">{{ book.bookType }}</v-btn>
+                            <v-btn color="#1D419F">{{ book.booktype.booktypeName }}</v-btn>
                         </div>
-                        <div class="tw-flex tw-gap-x-4 tw-py-2 tw-items-center">
-                            <p class="tw-font-bold">Genre : </p>
-                            <v-btn color="#1D419F" v-show="book.bookGenre != null">{{ book.bookGenre }}</v-btn>
+                        <div class="tw-flex tw-gap-x-2 tw-py-2 tw-items-center">
+                            <p class="tw-font-bold">Tags : </p>
+                            <v-chip variant="elevated" color="#1D419F" v-show="book.bookTagList[0] != ''" v-for="tag in book.bookTagList">{{ tag }}</v-chip>
                     </div>
                 </div>
                 </v-col>

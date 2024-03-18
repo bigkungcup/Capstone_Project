@@ -1,7 +1,5 @@
 package sit.cp23ej2.controllers;
 
-import java.time.Instant;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +21,7 @@ import jakarta.validation.constraints.NotNull;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
+import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.services.ReviewService;
 
@@ -47,22 +46,53 @@ public class ReviewController {
    @GetMapping("")
    public DataResponse getAllBook(@NotNull @RequestParam(required = false) Integer bookId,
          @NotNull @RequestParam(defaultValue = "0", required = false) Integer page,
-         @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
-      DataResponse response = new DataResponse();
-
+         @RequestParam(defaultValue = "10", required = false) Integer size,
+         @RequestParam(required = false) Long reviewRating,
+         @RequestParam(required =  false) String  sortBy, 
+         @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
       if (bookId == 0 || bookId == null) {
-         response.setResponse_code(400);
-         response.setResponse_status("Bad Request");
-         response.setResponse_message("Book Id is required");
-         response.setResponse_datetime(Instant.now());
-         return response;
+         throw new HandleExceptionBadRequest("Book Id is required");
       }
-      return reviewService.getReviewByBookId(bookId, page, size);
+      return reviewService.getReviewByBookId(bookId, page, size, reviewRating, sortBy, sortType);
+   }
+
+   @GetMapping("/guest")
+   public DataResponse getAllBookByGuest(@NotNull @RequestParam(required = false) Integer bookId,
+         @NotNull @RequestParam(defaultValue = "0", required = false) Integer page,
+         @RequestParam(defaultValue = "10", required = false) Integer size,
+         @RequestParam(required = false) Long reviewRating,
+         @RequestParam(required =  false) String  sortBy, 
+         @RequestParam(required =  false) String sortType) throws HandleExceptionNotFound {
+      if (bookId == 0 || bookId == null) {
+         throw new HandleExceptionBadRequest("Book Id is required");
+      }
+      return reviewService.getReviewByBookId(bookId, page, size, reviewRating, sortBy, sortType);
    }
 
    @GetMapping("/{reviewId}")
    public DataResponse getReviewById(@PathVariable Integer reviewId) throws HandleExceptionNotFound {
       return reviewService.getReviewById(reviewId);
+   }
+
+   @GetMapping("/guest/{reviewId}")
+   public DataResponse getReviewByIdGuest(@PathVariable Integer reviewId) throws HandleExceptionNotFound {
+      return reviewService.getReviewById(reviewId);
+   }
+
+   @GetMapping("/me")
+   public DataResponse getReviewByUserId(@RequestParam(defaultValue = "0", required = false) Integer page,
+         @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
+      return reviewService.getReviewByUserId(page, size);
+   }
+
+   @GetMapping("/newReview")
+   public DataResponse getReviewByCreateDateTime() {
+      return reviewService.getReviewByCreateDateTime();
+   }
+
+   @GetMapping("/ratingCount")
+   public DataResponse getReviewRatingCount() {
+      return reviewService.getReviewRatingCount();
    }
 
    @PostMapping("")

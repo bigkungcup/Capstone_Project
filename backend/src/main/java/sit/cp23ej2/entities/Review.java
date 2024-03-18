@@ -3,6 +3,7 @@ package sit.cp23ej2.entities;
 // import java.time.Instant;
 import java.time.LocalDateTime;
 
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 // import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -57,5 +58,10 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rvb_bookId", nullable = true)
     private Book book;
+    
+    // @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rvu_userId", nullable = true)
+    private User user;
 
 }

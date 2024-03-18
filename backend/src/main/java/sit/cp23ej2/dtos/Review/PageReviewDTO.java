@@ -6,14 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import sit.cp23ej2.entities.Review;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
 public class PageReviewDTO {
-    private List<Review> content;
+    private List<ReviewDTO> content;
     private Object pageable;
     private int pageNumber;
     private int size;

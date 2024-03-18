@@ -26,6 +26,14 @@ export default defineNuxtConfig({
     close: () => {},
   },
   vite: {
+    server: {
+      fs: {
+          allow: ["C:/Files/Uploads"]
+      },
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      }
+  },
     vue: {
       template: {
         transformAssetUrls,
@@ -43,7 +51,8 @@ export default defineNuxtConfig({
     // },
     routeRules: {
       "/api/**": {
-        proxy: "https://capstone23.sit.kmutt.ac.th/ej2/**",
+        // proxy: "https://capstone23.sit.kmutt.ac.th/ej2/**",
+        proxy: { to: "http://localhost:8080/api/**", },
       },
     },
     prerender: {
@@ -65,5 +74,12 @@ export default defineNuxtConfig({
   ssr: false,
   devServer: {
     port: 3000,
+  },
+  webpack: {
+    devMiddleware: {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    },
   },
 });
