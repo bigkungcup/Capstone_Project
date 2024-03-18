@@ -16,7 +16,7 @@ jobs:
       - name: Delete Directory
         run: |
           cd ..
-          sudo rm -rf mysql-data
+          # sudo rm -rf mysql-data
           sudo rm -rf Files
 
       # Runs a Database  
