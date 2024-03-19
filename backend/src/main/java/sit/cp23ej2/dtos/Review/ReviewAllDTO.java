@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import sit.cp23ej2.dtos.Book.BookDTO;
-import sit.cp23ej2.dtos.User.UserDTO;
+import sit.cp23ej2.dtos.User.UserReviewDTO;
 import sit.cp23ej2.entities.Book;
 import sit.cp23ej2.entities.LikeStatus;
 import sit.cp23ej2.entities.User;
@@ -18,7 +17,7 @@ import sit.cp23ej2.entities.User;
 @Setter
 @NoArgsConstructor
 @ToString
-public class ReviewMeDTO {
+public class ReviewAllDTO {
      private Integer reviewId;
    
     private String reviewTitle;
@@ -43,9 +42,7 @@ public class ReviewMeDTO {
     @JsonIgnore
     private User user;
 
-    private UserDTO userDetail;
-
-    private BookDTO bookDetail;
+    private UserReviewDTO userDetail;
 
     private LikeStatus likeStatus;
 

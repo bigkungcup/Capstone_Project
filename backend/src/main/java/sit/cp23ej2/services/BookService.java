@@ -141,9 +141,9 @@ public class BookService extends CommonController {
     public DataResponse getBookById(Integer bookId) throws HandleExceptionNotFound {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("authentication: " + authentication.getName());
+        // System.out.println("authentication: " + authentication.getName());
         String currentPrincipalName = authentication.getName();
-        System.out.println("currentPrincipalName: " + currentPrincipalName);
+        // System.out.println("currentPrincipalName: " + currentPrincipalName);
 
         Book book = repository.getBookById(bookId);
 
@@ -167,6 +167,7 @@ public class BookService extends CommonController {
             BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
             bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
             bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+            bookDTO.setBookTotalBookmark(bookmarkRepository.getBookmarkListByBookId(bookId).size());
             try {
 
                 Path pathFile = fileStorageService.load(bookDTO);

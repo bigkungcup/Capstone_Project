@@ -20,6 +20,9 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
     @Query(value = "SELECT b.bookmarkId, b.bb_bookId, b.bu_userId, b.bookmarkStatus, b.bookmarkCreateDateTime, b.bookmarkUpdateDateTime FROM Bookmark b WHERE b.bu_userId = :userId", nativeQuery = true)
     List<Bookmark> getBookmarkListByUserId(@Param("userId") Integer userId);
 
+    @Query(value = "SELECT b.bookmarkId, b.bb_bookId, b.bu_userId, b.bookmarkStatus, b.bookmarkCreateDateTime, b.bookmarkUpdateDateTime FROM Bookmark b WHERE b.bb_bookId = :bookId", nativeQuery = true)
+    List<Bookmark> getBookmarkListByBookId(@Param("bookId") Integer bookId);
+
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO Bookmark (bb_bookId, bu_userId, bookmarkStatus)" +

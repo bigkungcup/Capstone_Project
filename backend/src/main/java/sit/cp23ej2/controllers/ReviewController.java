@@ -80,9 +80,10 @@ public class ReviewController {
    }
 
    @GetMapping("/me")
-   public DataResponse getReviewByUserId(@RequestParam(defaultValue = "0", required = false) Integer page,
+   public DataResponse getReviewByUserId(@RequestParam(required = true) Integer userId,
+         @RequestParam(defaultValue = "0", required = false) Integer page,
          @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
-      return reviewService.getReviewByUserId(page, size);
+      return reviewService.getReviewByUserId(userId, page, size);
    }
 
    @GetMapping("/newReview")

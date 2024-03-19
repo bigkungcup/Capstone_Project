@@ -29,7 +29,9 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
         @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
                         +
-                        " FROM Review r WHERE r.rvu_userId = :userId", nativeQuery = true)
+                        " FROM Review r WHERE r.rvu_userId = :userId " + 
+                        " ORDER BY r.reviewCreateDateTime DESC "
+                        , nativeQuery = true)
         Page<Review> getReviewByUserId(Pageable pageable, @Param("userId") Integer userId);
 
         @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "

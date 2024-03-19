@@ -20,16 +20,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
+import sit.cp23ej2.dtos.Folloing.FollowingReviewDTO;
 import sit.cp23ej2.dtos.User.CreateUserDTO;
 import sit.cp23ej2.dtos.User.ForgetPasswordDTO;
 import sit.cp23ej2.dtos.User.PageUserDTO;
 import sit.cp23ej2.dtos.User.ResetPasswordDTO;
 import sit.cp23ej2.dtos.User.UpdateUserByAdminDTO;
 import sit.cp23ej2.dtos.User.UpdateUserDTO;
+import sit.cp23ej2.dtos.User.UserByIdDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
+import sit.cp23ej2.dtos.User.UserRankingDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
+import sit.cp23ej2.repositories.FollowReposiroty;
 import sit.cp23ej2.repositories.UserRepository;
 
 @Service
@@ -40,6 +44,9 @@ public class UserService extends CommonController {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private FollowReposiroty followReposiroty;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -83,33 +90,70 @@ public class UserService extends CommonController {
     }
 
     public DataResponse getUserById(int userId) throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
-        User user = repository.getUserById(userId);
-        if (user == null) {
-            throw new HandleExceptionNotFound("User Not Found", "User");
-        }
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        if (userDTO != null) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = repository.getUserByEmail(currentPrincipalName);
+
+        if(user.getUserId().equals(userId)){
+            User userDetail = repository.getUserById(user.getUserId());
+            // if (userDetail == null) {
+            //     throw new HandleExceptionNotFound("User Not Found", "User");
+            // }
+            UserDTO userDTO = modelMapper.map(userDetail, UserDTO.class);
+            if (userDTO != null) {
+                try {
+                    Path pathFile = fileStorageService.loadUserFile(userId);
+                    if (pathFile != null) {
+                        // userDTO.setFile(pathFile.toString());
+                        // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
+                        // user.getUserId());
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDetail.getUserId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                // response.setResponse_code(200);
+                // response.setResponse_status("OK");
+                // response.setResponse_message("User");
+                // response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+                // response.setData(userDTO);
+
+                return responseWithData(userDTO, 200, "OK", "User");
+            } else {
+                throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+        }else{
+            User userDetail = repository.getUserById(userId);
+            if (userDetail == null) {
+                throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+
+            UserByIdDTO userDTO = modelMapper.map(userDetail, UserByIdDTO.class);
             try {
                 Path pathFile = fileStorageService.loadUserFile(userId);
                 if (pathFile != null) {
-                    // userDTO.setFile(pathFile.toString());
-                    // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
-                    // user.getUserId());
-                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDetail.getUserId());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("User");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(userDTO);
-        } else {
-            throw new HandleExceptionNotFound("User Not Found", "User");
+
+            followReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
+                FollowingReviewDTO folloingReview = modelMapper.map(following, FollowingReviewDTO.class);
+                if (userDTO.getUserId() == following.getUserfollow().getUserId()) {
+                    userDTO.setFollow(folloingReview);
+                }
+            });
+
+            // response.setResponse_code(200);
+            // response.setResponse_status("OK");
+            // response.setResponse_message("User");
+            // response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+            // response.setData(userDTO);
+            return responseWithData(userDTO, 200, "OK", "User");
         }
-        return response;
     }
 
     public DataResponse getUserByEmail() throws HandleExceptionNotFound {
@@ -145,12 +189,16 @@ public class UserService extends CommonController {
     }
 
     public DataResponse getUserRanking(String sort) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User userDetail = repository.getUserByEmail(currentPrincipalName);
       
         List<User> userRanking = repository.getUserRanking(sort);
 
         if (userRanking != null) {
-            List<UserDTO> userRankingList = userRanking.stream().map(user -> {
-                UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+            List<UserRankingDTO> userRankingList = userRanking.stream().map(user -> {
+                UserRankingDTO userDTO = modelMapper.map(user, UserRankingDTO.class);
                 try {
                     Path pathFile = fileStorageService.loadUserFile(user.getUserId());
                     if (pathFile != null) {
@@ -158,6 +206,23 @@ public class UserService extends CommonController {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+
+                if (userDetail != null) {
+                    // System.out.println("userDetail"+ userDetail.getUserId());
+                    // List<Follow> followingList = followReposiroty.getFollowingList(userDetail.getUserId());
+                    // // if(followingList.size() > 0){
+                        
+                    // }
+                    // System.out.println("followingList"+ followingList);
+                    followReposiroty.getFollowingList(userDetail.getUserId()).forEach(following -> {
+                        FollowingReviewDTO folloingReview = modelMapper.map(following, FollowingReviewDTO.class);
+                        // System.out.println("folloingReview"+ following);
+                        if (userDTO.getUserId() == following.getUserfollow().getUserId()) {
+                            userDTO.setFollow(folloingReview);
+                        }
+                    });
+
                 }
                 return userDTO;
             }).collect(Collectors.toList());
@@ -218,7 +283,7 @@ public class UserService extends CommonController {
                     e.printStackTrace();
                 }
 
-                userDTO.setPassword(new BCryptPasswordEncoder().encode(dataUser.getPassword()));
+                // userDTO.setPassword(new BCryptPasswordEncoder().encode(dataUser.getPassword()));
                 userDTO.setBio(updateUser.getBio());
 
                 response.setResponse_code(200);
@@ -252,7 +317,7 @@ public class UserService extends CommonController {
                         e.printStackTrace();
                     }
 
-                    userDTO.setPassword(new BCryptPasswordEncoder().encode(dataUser.getPassword()));
+                    // userDTO.setPassword(new BCryptPasswordEncoder().encode(dataUser.getPassword()));
                     userDTO.setBio(updateUser.getBio());
                     userDTO.setDisplayName(updateUser.getDisplayName());
 
@@ -304,9 +369,9 @@ public class UserService extends CommonController {
                     e.printStackTrace();
                 }
 
-                userDTO.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword()));
+                // userDTO.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword()));
                 userDTO.setBio(updateUser.getBio());
-                userDTO.setRole(updateUser.getRole());
+                // userDTO.setRole(updateUser.getRole());
 
                 response.setResponse_code(200);
                 response.setResponse_status("OK");
@@ -345,9 +410,9 @@ public class UserService extends CommonController {
                         e.printStackTrace();
                     }
 
-                    userDTO.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword()));
+                    // userDTO.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword()));
                     userDTO.setBio(updateUser.getBio());
-                    userDTO.setRole(updateUser.getRole());
+                    // userDTO.setRole(updateUser.getRole());
                     userDTO.setDisplayName(updateUser.getDisplayName());
 
                     response.setResponse_code(200);

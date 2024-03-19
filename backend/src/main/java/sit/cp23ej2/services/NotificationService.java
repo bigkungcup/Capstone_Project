@@ -80,7 +80,8 @@ public class NotificationService extends CommonController {
                 User userById = userRepository.getUserById(Integer.parseInt(link[2]));
                 dto.setUser(modelMapper.map(userById, UserDTO.class));
                 try {
-                    if (userById != null) {
+                    Path pathFile = fileStorageService.loadUserFile(userById.getUserId());
+                    if (pathFile != null) {
                         dto.getUser().setFile(baseUrl + "/api/files/filesUser/" + userById.getUserId());
                     }
                 } catch (Exception e) {

@@ -1,7 +1,10 @@
 package sit.cp23ej2.services;
 
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,12 +24,13 @@ import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.dtos.Folloing.FollowingReviewDTO;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
-import sit.cp23ej2.dtos.Review.PageReviewDTO;
+import sit.cp23ej2.dtos.Review.PageReviewAllDTO;
 import sit.cp23ej2.dtos.Review.PageReviewMeDTO;
 import sit.cp23ej2.dtos.Review.ReviewMeDTO;
 import sit.cp23ej2.dtos.Review.ReviewRatingStatisticsDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
+import sit.cp23ej2.dtos.User.UserReviewDTO;
 import sit.cp23ej2.entities.LikeStatus;
 import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.entities.User;
@@ -99,12 +103,12 @@ public class ReviewService extends CommonController {
             pageable = PageRequest.of(page, size, Sort.by(sortBy));
         }
 
-        PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(pageable, bookId, reviewRating),
-                PageReviewDTO.class);
+        PageReviewAllDTO reviews = modelMapper.map(repository.getReviewByBookId(pageable, bookId, reviewRating),
+        PageReviewAllDTO.class);
         if (reviews.getContent().size() > 0) {
 
             reviews.getContent().forEach(review -> {
-                UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
+                UserReviewDTO userDTO = modelMapper.map(review.getUser(), UserReviewDTO.class);
                 try {
                     // Path pathFile =
 
@@ -129,6 +133,10 @@ public class ReviewService extends CommonController {
                     });
 
                 }
+
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewUpdateDateTime());
+                review.setCountDateTime(Math.abs(duration.toSeconds()));
+
                 // followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following ->
                 // {
                 // FollowerReviewDTO followerReview = modelMapper.map(following,
@@ -143,22 +151,29 @@ public class ReviewService extends CommonController {
             if (user != null) {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
                 reviews.getContent().forEach(review -> {
-                    if (likeStatus.size() == 0) {
-                        LikeStatus likestatus = new LikeStatus();
-                        likestatus.setLikeStatus(0);
-                        review.setLikeStatus(likestatus);
-                    } else {
-                        likeStatus.forEach(like -> {
-                            if (review.getReviewId().equals(like.getLsr_reviewId())) {
-                                review.setLikeStatus(like);
-                            } 
-                            // else {
-                            //     LikeStatus likestatus = new LikeStatus();
-                            //     likestatus.setLikeStatus(0);
-                            //     review.setLikeStatus(likestatus);
-                            // }
-                        });
-                    }
+                    // if (likeStatus.size() == 0) {
+                    //     LikeStatus likestatus = new LikeStatus();
+                    //     likestatus.setLikeStatus(0);
+                    //     review.setLikeStatus(likestatus);
+                    // } else {
+                        if(likeStatus.size() > 0){
+                            likeStatus.forEach(like -> {
+                                if (review.getReviewId().equals(like.getLsr_reviewId())) {
+                                    review.setLikeStatus(like);
+                                } 
+                            });
+                        }
+                        // likeStatus.forEach(like -> {
+                        //     if (review.getReviewId().equals(like.getLsr_reviewId())) {
+                        //         review.setLikeStatus(like);
+                        //     } 
+                        //     // else {
+                        //     //     LikeStatus likestatus = new LikeStatus();
+                        //     //     likestatus.setLikeStatus(0);
+                        //     //     review.setLikeStatus(likestatus);
+                        //     // }
+                        // });
+                    // }
                 });
             }
 
@@ -189,7 +204,7 @@ public class ReviewService extends CommonController {
         return response;
     }
 
-    public DataResponse getReviewByUserId(int page, int size) throws HandleExceptionNotFound {
+    public DataResponse getReviewByUserId(Integer userId, int page, int size) throws HandleExceptionNotFound {
         DataResponse response = new DataResponse();
 
         Pageable pageable = PageRequest.of(page, size);
@@ -198,7 +213,7 @@ public class ReviewService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        PageReviewMeDTO reviews = modelMapper.map(repository.getReviewByUserId(pageable, user.getUserId()),
+        PageReviewMeDTO reviews = modelMapper.map(repository.getReviewByUserId(pageable, userId),
                 PageReviewMeDTO.class);
 
         if (reviews.getContent().size() > 0) {
@@ -206,8 +221,9 @@ public class ReviewService extends CommonController {
             reviews.getContent().forEach(review -> {
                 UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
                 try {
-                    if (user != null) {
-                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    Path pathFile = fileStorageService.loadUserFile(userDTO.getUserId());
+                    if (pathFile != null) {
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDTO.getUserId());
                     }
 
                 } catch (Exception e) {
@@ -216,8 +232,9 @@ public class ReviewService extends CommonController {
                 review.setUserDetail(userDTO);
 
                 BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
+                Path pathFile = fileStorageService.load(bookDTO);
                 try {
-                    if (user != null) {
+                    if (pathFile != null) {
                         bookDTO.setFile(baseUrl + "/api/files/filesBook/" + review.getBook().getBookId());
                     }
 
@@ -225,10 +242,13 @@ public class ReviewService extends CommonController {
                     e.printStackTrace();
                 }
                 review.setBookDetail(bookDTO);
+
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewUpdateDateTime());
+                review.setCountDateTime(Math.abs(duration.toSeconds()));
             });
 
             if (user != null) {
-                List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
+                List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(userId);
                 reviews.getContent().forEach(review -> {
                     likeStatus.forEach(like -> {
                         if (review.getReviewId() == like.getLsr_reviewId()) {
@@ -275,7 +295,8 @@ public class ReviewService extends CommonController {
                 BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
                 try {
                     // && fileStorageService.load(review.getBook().getBookId()) != null
-                    if (review.getBook() != null) {
+                    Path pathFile = fileStorageService.load(bookDTO);
+                    if (pathFile != null) {
                         bookDTO.setFile(baseUrl + "/api/files/filesBook/" +
                                 review.getBook().getBookId());
                     }
@@ -298,6 +319,9 @@ public class ReviewService extends CommonController {
                         }
                     });
                 }
+
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewUpdateDateTime());
+                reviewDTO.setCountDateTime(Math.abs(duration.toSeconds()));
 
                 reviewDTOs.add(reviewDTO);
             });
@@ -323,6 +347,14 @@ public class ReviewService extends CommonController {
         String currentPrincipalName = authentication.getName();
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
+
+        if(userRepository.getUserById(review.getUserId()) == null){
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
+
+        if(!user.getUserId().equals(review.getUserId())){
+            throw new HandleExceptionForbidden("Can not create review for user: ");
+        }
 
         repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(),
                 review.getBookId(), review.getSpoileFlag());

@@ -1,5 +1,6 @@
 package sit.cp23ej2.services;
 
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
@@ -37,6 +38,9 @@ public class FollowService extends CommonController {
     private NotificationRepository notificationRepository;
 
     @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Value("${base_url}")
@@ -44,22 +48,25 @@ public class FollowService extends CommonController {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public DataResponse getFollowers(Integer page, Integer size) {
+    public DataResponse getFollowers(Integer userId, Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
+        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User user = userRepository.getUserByEmail(currentPrincipalName);
-        PageFollowerDTO follower = modelMapper.map(reposiroty.getFollowers(pageable, user.getUserId()),
+        // String currentPrincipalName = authentication.getName();
+
+        // User user = userRepository.getUserByEmail(currentPrincipalName);
+        
+        PageFollowerDTO follower = modelMapper.map(reposiroty.getFollowers(pageable, userId),
                 PageFollowerDTO.class);
 
         if (follower.getContent().size() > 0) {
             follower.getContent().forEach(follow -> {
                 UserFollowDTO userDTO = modelMapper.map(follow.getUser(), UserFollowDTO.class);
                 try {
-                    if (user != null) {
+                    Path pathFile = fileStorageService.loadUserFile(userDTO.getUserId());
+                    if (pathFile != null) {
                         userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDTO.getUserId());
                     }
 
@@ -68,7 +75,7 @@ public class FollowService extends CommonController {
                 }
                 follow.setUserFollowers(userDTO);
 
-                if (reposiroty.checkExists(user.getUserId(), userDTO.getUserId()) == 0) {
+                if (reposiroty.checkExists(userId, userDTO.getUserId()) == 0) {
                     follow.setFollowingStatus(0);
                 } else {
                     follow.setFollowingStatus(1);
@@ -82,21 +89,24 @@ public class FollowService extends CommonController {
         return responseWithData(follower, 200, "OK", "All Followers");
     }
 
-    public DataResponse getFollowing(Integer page, Integer size) {
+    public DataResponse getFollowing(Integer userId, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
+        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User user = userRepository.getUserByEmail(currentPrincipalName);
-        PageFollowingDTO follow = modelMapper.map(reposiroty.getFollowings(pageable, user.getUserId()),
+        // String currentPrincipalName = authentication.getName();
+
+        // User user = userRepository.getUserByEmail(currentPrincipalName);
+
+        PageFollowingDTO follow = modelMapper.map(reposiroty.getFollowings(pageable, userId),
                 PageFollowingDTO.class);
 
         if (follow.getContent().size() > 0) {
             follow.getContent().forEach(follows -> {
                 UserFollowDTO userDTO = modelMapper.map(follows.getUserfollow(), UserFollowDTO.class);
                 try {
-                    if (user != null) {
+                    Path pathFile = fileStorageService.loadUserFile(userDTO.getUserId());
+                    if (pathFile != null) {
                         userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDTO.getUserId());
                     }
 

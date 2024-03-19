@@ -11,8 +11,8 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class PageReviewMeDTO {
-    private List<ReviewMeDTO> content;
+public class PageReviewAllDTO {
+    private List<ReviewAllDTO> content;
     private Object pageable;
     private int pageNumber;
     private int size;

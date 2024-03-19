@@ -45,16 +45,16 @@ public class BookmarkService extends CommonController {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public DataResponse getBookmarkByUserId(Integer page, Integer size) throws HandleExceptionNotFound{
+    public DataResponse getBookmarkByUserId(Integer userId, Integer page, Integer size) throws HandleExceptionNotFound{
         DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
+        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // String currentPrincipalName = authentication.getName();
 
-        User user = userRepository.getUserByEmail(currentPrincipalName);
+        // User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        PageBookmarkDTO pageBookmarkDTO = modelMapper.map(repository.getBookmarkByUserId(user.getUserId(), pageable), PageBookmarkDTO.class);
+        PageBookmarkDTO pageBookmarkDTO = modelMapper.map(repository.getBookmarkByUserId(userId, pageable), PageBookmarkDTO.class);
        
         if(pageBookmarkDTO.getContent().size() > 0){
             pageBookmarkDTO.getContent().forEach(bookmark -> {
