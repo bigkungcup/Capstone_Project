@@ -8,6 +8,7 @@ services:
       dockerfile: Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://database/bannarug?serverTimezone=UTC
+      SPRING_PROFILES_ACTIVE: prod
     ports:
       - 8080:8080
     volumes:
