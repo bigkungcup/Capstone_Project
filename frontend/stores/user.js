@@ -52,6 +52,10 @@ export const useUsers = defineStore("Users", () => {
   });
   const followingPage = ref(0);
   const followerPage = ref(0);
+  const rankingUserList = ref({
+    data: [],
+  });
+  const rankingSort = ref('followers')
 
   //Get user list
   async function getUserList() {
@@ -89,6 +93,36 @@ export const useUsers = defineStore("Users", () => {
       await getUserList();
     } else if (status == 404) {
       router.push("/PageNotFound/");
+    }
+  }
+
+   //Get ranking user
+   async function getRankingUserList() {
+    let status = 0;
+    clearRankingUserList();
+
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/user/ranking`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+        options.params = {
+          sort: rankingSort.value
+        }
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+      },
+    });
+    if (status == 200) {
+      if (data.value) {
+        rankingUserList.value = data.value;
+      }
+      console.log("get ranking user list completed");
+    } else if (status == 404) {
+      clearRankingUserList();
+      console.log("get ranking user list uncompleted");
     }
   }
 
@@ -434,6 +468,13 @@ export const useUsers = defineStore("Users", () => {
     };
   }
 
+          //Clear ranking user list
+          function clearRankingUserList() {
+            rankingUserList.value = {
+              data: [],
+            };
+          }  
+
   function toggleUserFailPopup() {
     failPopup.value = !failPopup.value;
   }
@@ -498,7 +539,10 @@ export const useUsers = defineStore("Users", () => {
     updateFailed,
     updateFailedError,
     followStatus,
+    rankingUserList,
+    rankingSort,
     getUserList,
+    getRankingUserList,
     getUserDetail,
     updateUser,
     deleteUser,
@@ -511,6 +555,7 @@ export const useUsers = defineStore("Users", () => {
     clearNewUser,
     clearFollowingList,
     clearFollowerList,
+    clearRankingUserList,
     toggleUserFailPopup,
     changeUserPage,
     changeFolloingPage,

@@ -69,6 +69,10 @@ export const useBooks = defineStore("Books", () => {
   const otherBookList = ref({
     data: [],
   });
+  const rankingBookList = ref({
+    data: [],
+  });
+  const rankingFilter = ref(0)
   const runtimeConfig = useRuntimeConfig();
 
   //Get Library
@@ -272,6 +276,36 @@ export const useBooks = defineStore("Books", () => {
         console.log("get other book list uncompleted");
       }
     }
+
+      //Get ranking book
+  async function getRankingBookList() {
+    let status = 0;
+    clearRankingBookList();
+
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/ranking`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+        options.params = {
+          bookTypeId: rankingFilter.value == 0 ? '' : rankingFilter.value
+        }
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+      },
+    });
+    if (status == 200) {
+      if (data.value) {
+        rankingBookList.value = data.value;
+      }
+      console.log("get ranking book list completed");
+    } else if (status == 404) {
+      clearRankingBookList();
+      console.log("get ranking book list uncompleted");
+    }
+  }
 
   //Get Book Detail
   async function getBookDetail(bookId) {
@@ -908,7 +942,13 @@ export const useBooks = defineStore("Books", () => {
     };
   }
 
-  
+        //Clear ranking book list
+        function clearRankingBookList() {
+          rankingBookList.value = {
+            data: [],
+          };
+        }
+      
 
   //Clear history list
   function clearHistoryList() {
@@ -984,6 +1024,8 @@ export const useBooks = defineStore("Books", () => {
     leavePopup,
     bookmarkedStatus,
     similarBookList,
+    rankingBookList,
+    rankingFilter,
     getLibrary,
     getLibraryByGuest,
     getBookDetail,
@@ -994,6 +1036,7 @@ export const useBooks = defineStore("Books", () => {
     getMostviewBookList,
     getNewBookList,
     getOtherBookList,
+    getRankingBookList,
     deleteHistoryAll,
     deleteHistoryById,
     createBook,
@@ -1017,6 +1060,7 @@ export const useBooks = defineStore("Books", () => {
     clearMostviewBookList,
     clearNewBookList,
     clearOtherBookList,
+    clearRankingBookList,
     setEditBook,
     closeSuccessfulPopup,
   };

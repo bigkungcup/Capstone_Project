@@ -195,7 +195,7 @@ if (roleToken.value == "GUEST") {
                   readonly
                 ></v-rating>
                 <p class="web-text-rate">
-                  {{ library.bookDetail.data.bookRating }}
+                  {{ library.getStarRating(library.bookDetail.data.bookRating) }}
                 </p>
               </div>
             </v-col>

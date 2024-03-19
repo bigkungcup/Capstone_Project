@@ -1,7 +1,42 @@
 <script setup>
-import FirstRank from "~/components/ranking/firstRank.vue";
-import LastRank from "~/components/ranking/lastRank.vue";
+import { ref } from "vue";
+import { useBooks } from "~/stores/book";
+import { useUsers } from "~/stores/user";
+import BookRank from "~/components/ranking/bookRank.vue";
+import UserRank from "~/components/ranking/userRank.vue";
 
+const book = useBooks();
+const user = useUsers();
+const section = ref("book");
+
+const sortList = [
+  {
+    id: 1,
+    Name: "Total Followers",
+    value: "followers",
+  },
+  {
+    id: 2,
+    Name: "Total Likes",
+    value: "totalLike",
+  },
+];
+
+async function handleFollow(userId) {
+  await user.createFollower(userId)
+  user.getRankingUserList()
+}
+
+async function handleUnfollow(userId) {
+  await user.deleteFollower(userId)
+  user.getRankingUserList()
+}
+
+onBeforeMount(async () => {
+  await book.getBookType();
+  book.bookType.push({ booktypeId: 0, booktypeName: "All" });
+  await book.getRankingBookList();
+});
 </script>
 
 <template>
@@ -9,19 +44,49 @@ import LastRank from "~/components/ranking/lastRank.vue";
     <div class="tw-flex tw-place-content-center">
       <div class="tw-bg-white tw-w-[70rem]">
         <div class="tw-space-x-8 tw-mx-8 tw-my-8">
-          <v-btn variant="elevated" color="#1D419F" >BOOK</v-btn>
-          <v-btn variant="outlined" color="#1D419F">USER</v-btn>
+          <v-btn
+            :variant="section == 'book' ? 'elevated' : 'outlined'"
+            color="#1D419F"
+            @click="section = 'book'"
+            >BOOK</v-btn
+          >
+          <v-btn
+            :variant="section == 'user' ? 'elevated' : 'outlined'"
+            color="#1D419F"
+            @click="section = 'user'"
+            >USER</v-btn
+          >
         </div>
         <hr />
         <div class="tw-mx-8 tw-mt-6">
           <v-row>
             <v-col cols="3">
               <v-select
-                label="All"
+                label=""
                 class="tw-font-bold tw-text-white tw-text-xs"
+                v-if="section == 'book'"
+                v-model="book.rankingFilter"
+                :items="book.bookType"
+                item-title="booktypeName"
+                item-value="booktypeId"
                 variant="solo-filled"
                 bg-color="#082266"
                 rounded="lg"
+                @update:model-value="book.getRankingBookList()"
+              ></v-select>
+
+              <v-select
+                label="SORT BY: "
+                class="tw-font-bold tw-text-white tw-text-xs"
+                v-if="section == 'user'"
+                v-model="user.rankingSort"
+                :items="sortList"
+                item-title="Name"
+                item-value="value"
+                variant="solo-filled"
+                bg-color="#082266"
+                rounded="lg"
+                @update:model-value="user.getRankingUserList()"
               ></v-select>
             </v-col>
             <v-col cols="9"></v-col>
@@ -64,11 +129,13 @@ import LastRank from "~/components/ranking/lastRank.vue";
         </div>
 
         <div class="tw-flex tw-justify-center ranking-text-header">
-            Top 10 All time
+          Top 10 All time
         </div>
-        <div class="tw-mx-8">
-            <FirstRank />
-            <LastRank />
+        <div class="tw-mx-8" v-if="section == 'book'">
+          <BookRank :bookList="book.rankingBookList.data" />
+        </div>
+        <div class="tw-mx-8" v-if="section == 'user'">
+          <UserRank :userList="user.rankingUserList.data" :sort="user.rankingSort" @follow="handleFollow($event)" @unfollow="handleUnfollow($event)"/>
         </div>
       </div>
     </div>
