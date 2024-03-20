@@ -11,11 +11,16 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(String to, String subject, String template, String data) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
-        message.setText(body);
+
+        if(template.equals("Change Pasword")){
+            message.setText("Your password is: " + data);
+        }
+
+        message.setText(template);
 
         mailSender.send(message);
     }

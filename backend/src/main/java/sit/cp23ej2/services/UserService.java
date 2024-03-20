@@ -49,6 +49,9 @@ public class UserService extends CommonController {
     private FollowReposiroty followReposiroty;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Value("${base_url}")
@@ -96,6 +99,25 @@ public class UserService extends CommonController {
 
         User user = repository.getUserByEmail(currentPrincipalName);
 
+        if(user == null){
+            User userDetail = repository.getUserById(userId);
+            if (userDetail == null) {
+                throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+
+            UserByIdDTO userDTO = modelMapper.map(userDetail, UserByIdDTO.class);
+            try {
+                Path pathFile = fileStorageService.loadUserFile(userId);
+                if (pathFile != null) {
+                    userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDetail.getUserId());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return responseWithData(userDTO, 200, "OK", "User");
+        }
+
         if(user.getUserId().equals(userId)){
             User userDetail = repository.getUserById(user.getUserId());
             // if (userDetail == null) {
@@ -114,11 +136,6 @@ public class UserService extends CommonController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                // response.setResponse_code(200);
-                // response.setResponse_status("OK");
-                // response.setResponse_message("User");
-                // response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-                // response.setData(userDTO);
 
                 return responseWithData(userDTO, 200, "OK", "User");
             } else {
@@ -147,11 +164,6 @@ public class UserService extends CommonController {
                 }
             });
 
-            // response.setResponse_code(200);
-            // response.setResponse_status("OK");
-            // response.setResponse_message("User");
-            // response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            // response.setData(userDTO);
             return responseWithData(userDTO, 200, "OK", "User");
         }
     }
@@ -385,6 +397,7 @@ public class UserService extends CommonController {
                     if(!userById.getPassword().equals(updateUser.getPassword())){
                         repository.updateUserByAdmin(updateUser.getDisplayName(), userById.getEmail(),
                             updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(), userId);
+                        // emailService.sendEmail(userById.getEmail(), "Password Reset", "Change Pasword", updateUser.getPassword());
                     }else{
                         repository.updateUserNoPasswordByAdmin(updateUser.getDisplayName(), userById.getEmail(),
                             updateUser.getBio(), updateUser.getRole(), userId);

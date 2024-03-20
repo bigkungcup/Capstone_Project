@@ -18,7 +18,7 @@ public class UserDTO {
 
     // private String password;
 
-    // private String role;
+    private String role;
 
     private Integer followers;
 

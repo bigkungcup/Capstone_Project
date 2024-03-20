@@ -56,13 +56,15 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/user/ranking").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/user/ranking/**").permitAll()
                 .requestMatchers(HttpMethod.PUT,"/api/user/forgetPassword").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/user/{userId}").permitAll()
+
                 .requestMatchers(HttpMethod.GET,"/api/user/all").hasAnyAuthority( "ROLE_ADMIN")
-                .requestMatchers(HttpMethod.GET,"/api/user/{userId}").hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/user/resetPassword").hasAnyAuthority( "ROLE_USER","ROLE_ADMIN")
                 .requestMatchers(HttpMethod.GET,"/api/user/**").hasAnyAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE,"/api/user/**").hasAnyAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/user/admin/**").hasAnyAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/user/**").hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
+
                 .requestMatchers(HttpMethod.GET,"/api/book/guest").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/book/guest/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/book/mostview").permitAll()
@@ -76,23 +78,34 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/book/**").hasAnyAuthority( "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/book/**").hasAnyAuthority( "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE,"/api/book/**").hasAnyAuthority( "ROLE_ADMIN")
+
                 .requestMatchers("/api/review/guest").permitAll()
                 .requestMatchers("/api/review/guest/**").permitAll()
                 .requestMatchers("/api/review/newReview").permitAll()
                 .requestMatchers("/api/review/ratingCount").permitAll()
                 .requestMatchers("/api/review").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET,"/api/review/me").permitAll()
                 .requestMatchers("/api/review/**").hasAnyAuthority("ROLE_GUEST", "ROLE_USER", "ROLE_ADMIN")
+
                 .requestMatchers("/api/history").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                .requestMatchers("/api/bookmark").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            
+                .requestMatchers(HttpMethod.GET,"/api/bookmark").permitAll()
                 .requestMatchers("/api/bookmark/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                 .requestMatchers("/api/booktype").permitAll()
                 .requestMatchers("/api/booktype/**").permitAll()
+
                 .requestMatchers("/api/follow").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                .requestMatchers("/api/follow/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET,"/api/follow/**").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/follow/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .requestMatchers(HttpMethod.DELETE,"/api/follow/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                 .requestMatchers("/api/likeStatus").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/likeStatus/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                 .requestMatchers("/api/notification").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/notification/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                 .requestMatchers("/api/report").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .requestMatchers("/api/report/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 // .requestMatchers("/api/bookmarkStatus").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
