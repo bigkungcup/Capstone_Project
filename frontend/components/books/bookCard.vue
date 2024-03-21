@@ -37,8 +37,8 @@ function bookCoverPath(filePath) {
                         <v-rating :model-value="0.5 * Math.floor(2 * book.bookRating)" color="#FFB703"
                             density="compact" size="meduim" half-increments readonly></v-rating>
                         <p class="web-text-rate">{{0.5 * Math.floor(2 * book.bookRating)}}</p>
-                        <!-- <p v-show="book.bookTotalReview == null">(0 review)</p>
-                        <p v-show="book.bookTotalReview != null">({{ book.bookTotalReview }} reviews)</p> -->
+                        <p v-show="book.bookTotalReview == null">(0 review)</p>
+                        <p v-show="book.bookTotalReview != null">({{ book.bookTotalReview }} reviews)</p>
                     </div>
                 </v-col>
                 <v-col class="tw-grid tw-grid-cols-8 tw-gap-2">

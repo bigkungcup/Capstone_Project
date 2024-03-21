@@ -1,4 +1,5 @@
 <script setup>
+import { useReviews } from '~/stores/review'
 defineEmits(["like", "update"]);
 defineProps({
     reviewList: {
@@ -7,6 +8,7 @@ defineProps({
     }
 })
 
+const reviews = useReviews();
 const roleToken = ref(localStorage.getItem("role"));
 </script>
  
@@ -30,9 +32,22 @@ const roleToken = ref(localStorage.getItem("role"));
                         half-increments readonly></v-rating>
                 </div>
                 <p class="tw-flex tw-justify-start web-text-title">{{ review.reviewTitle }}</p>
-                <p class="tw-flex tw-justify-start web-text-sub tw-min-h-[6rem]">
-                    {{ review.reviewDetail }}
+                <p class="tw-flex tw-justify-start web-text-sub tw-min-h-[6rem]" v-if="review.spoileFlag == 0">
+                   {{ review.reviewDetail }}
                 </p>
+                <div class="web-text-sub tw-min-h-[6rem]" v-if="review.spoileFlag == 1">
+                    <v-expansion-panels variant="inset">
+                        <v-expansion-panel>
+                            <v-expansion-panel-title color="#082266" class="tw-font-bold" expand-icon="mdi-plus"
+                                collapse-icon="mdi-minus">
+                                Spoil
+                            </v-expansion-panel-title>
+                            <v-expansion-panel-text class="tw-indent-8 web-text-detail">
+                                {{ review.reviewDetail }}
+                            </v-expansion-panel-text>
+                        </v-expansion-panel>
+                    </v-expansion-panels>
+                </div>
                 <p class="tw-flex tw-justify-start web-text-sub tw-py-4">
                     <div v-if="roleToken != 'USER'">
                     {{ review.reviewTotalLike }} likes {{ review.reviewTotalDisLike }} dislikes
@@ -132,7 +147,7 @@ const roleToken = ref(localStorage.getItem("role"));
             </v-col>
             <v-col cols="2">
                 <div class="tw-flex tw-justify-end web-text-sub tw-px-5">
-                    30 minutes ago
+                    {{ reviews.countUpdateTime(review.countDateTime) }}
                 </div>
             </v-col>
         </v-row>

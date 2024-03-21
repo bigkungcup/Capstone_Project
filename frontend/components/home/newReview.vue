@@ -34,10 +34,22 @@ const roleToken = ref(localStorage.getItem("role"));
               <div class="tw-mx-6 tw-my-4">
                 <nuxt-link :to="`/book/${review.bookDetail.bookId}/`">
                   <p class="web-text-title">"{{ review.reviewTitle }}"</p>
-                  <p class="web-text-sub tw-min-h-[7rem]">
+                       <p class="web-text-sub tw-min-h-[7rem]" v-if="review.spoileFlag == 0">
                     {{ review.reviewDetail }}
                   </p>
                 </nuxt-link>
+                <div class="web-text-sub tw-min-h-[7rem]" v-if="review.spoileFlag == 1">
+                  <v-expansion-panels variant="inset">
+                        <v-expansion-panel>
+                            <v-expansion-panel-title color="#082266" class="tw-font-bold" expand-icon="mdi-plus"
+                                collapse-icon="mdi-minus">
+                                Spoil
+                            </v-expansion-panel-title>
+                            <v-expansion-panel-text class="tw-indent-8 web-text-detail">
+                                {{ review.reviewDetail }}
+                            </v-expansion-panel-text>
+                        </v-expansion-panel>
+                    </v-expansion-panels></div>
                 <div class="web-text-sub tw-my-1">
                   <v-row no-gutters>
                     <v-col cols="2">

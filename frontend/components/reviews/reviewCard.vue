@@ -1,4 +1,5 @@
 <script setup>
+import { useReviews } from '~/stores/review'
 import { mergeProps } from 'vue'
 defineEmits(["toggle","set","like","follow","unfollow","update"]);
 
@@ -13,6 +14,7 @@ defineProps({
     },
 })
 
+const reviews = useReviews();
 const roleToken = ref(localStorage.getItem('role'));
 const idToken = ref(localStorage.getItem('id'));
 
@@ -57,7 +59,7 @@ const follow = ref(true)
 
                 </div>
                 </v-col>
-                <v-col cols="9" class="web-text-detail tw-my-5 tw-space-y-3">
+                <v-col cols="7" class="web-text-detail tw-my-5 tw-space-y-3">
                     <v-rating :model-value="review.reviewRating" color="#FFB703" density="compact" size="meduim"
                         half-increments readonly></v-rating>
                     <p class="tw-font-bold tw-mr-8">{{ review.reviewTitle }}</p>
@@ -119,6 +121,11 @@ const follow = ref(true)
                         </span>
                     </div>
                 </v-col>
+                <v-col cols="2">
+                <div class="tw-flex tw-justify-end web-text-sub tw-px-5">
+                    {{ reviews.countUpdateTime(review.countDateTime) }}
+                </div>
+            </v-col>
             </v-row>
         </v-card>
     </div>
