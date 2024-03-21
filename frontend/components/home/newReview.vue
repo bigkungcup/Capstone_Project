@@ -24,17 +24,21 @@ const roleToken = ref(localStorage.getItem("role"));
               v-for="review in newReviewList"
             >
               <nuxt-link :to="`/book/${review.bookDetail.bookId}/`">
+                <p class="tw-truncate web-text-rv-head">
+
                 <span
                   class="tw-bg-[#1646C4] web-text-rv-head tw-p-3"
                   style="border-radius: 18px 0 0 0"
                 >
                   {{ review.bookDetail.bookName }}
                 </span>
+                </p>
               </nuxt-link>
               <div class="tw-mx-6 tw-my-4">
                 <nuxt-link :to="`/book/${review.bookDetail.bookId}/`">
                   <p class="web-text-title">"{{ review.reviewTitle }}"</p>
-                       <p class="web-text-sub tw-min-h-[7rem]" v-if="review.spoileFlag == 0">
+                       <p class="web-text-sub tw-italic tw-min-h-[6rem] tw-max-h-[6rem] tw-py-2 tw-overflow-clip"
+ v-if="review.spoileFlag == 0">
                     {{ review.reviewDetail }}
                   </p>
                 </nuxt-link>
@@ -166,12 +170,12 @@ const roleToken = ref(localStorage.getItem("role"));
                       </div>
                     </v-col>
                     <v-col cols="3"></v-col>
-                    <v-col cols="6" align="end" class="px-2"
+                    <v-col cols="5" align="right" class="py-2"
                       ><div class="web-text-sub tw-truncate">
                         {{ review.userDetail.displayName }}
                       </div></v-col
                     >
-                    <v-col cols="1" align="center"
+                    <v-col cols="2" align="center"
                       ><v-img
                         src="/image/guest_icon.png"
                         v-if="review.userDetail.file == null"
@@ -181,6 +185,7 @@ const roleToken = ref(localStorage.getItem("role"));
                         :src="review.userDetail.file"
                         v-if="review.userDetail.file != null"
                         width="40"
+                        height="40"
                         class="tw-rounded-full tw-border-[#082266] tw-border-2"
                         cover
                       />
