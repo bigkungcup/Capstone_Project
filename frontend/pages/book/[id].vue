@@ -7,10 +7,12 @@ import { useUsers } from "~/stores/user";
 import { useReviews } from "~/stores/review";
 import { ref } from "vue";
 import SimilarBook from "~/components/books/similarBook.vue";
+import SimilarBookNotFound from "~/components/books/similarBookNotFound.vue";
 import { mergeProps } from "vue";
 import deleteBookSuccessPopup from "~/components/books/popups/deleteBookSuccessPopup.vue";
 import deleteReviewSuccessPopup from "~/components/reviews/popups/deleteReviewSuccessPopup.vue";
 import deleteBookFailPopup from "~/components/books/popups/deleteBookFailPopup.vue";
+import ReviewNotFound from "~/components/reviews/reviewNotFound.vue";
 
 const library = useBooks();
 const reviews = useReviews();
@@ -340,7 +342,8 @@ if (roleToken.value == "GUEST") {
 
     <div class="tw-mt-5 tw-min-h-[24rem]">
       <p class="web-text-header tw-mx-16">Similar Book</p>
-      <div class="tw-mx-16"><SimilarBook :similarBookList="library.similarBookList.data"/></div>
+      <div class="tw-mx-16" v-if="library.similarBookList.data.length != 0"><SimilarBook :similarBookList="library.similarBookList.data"/></div>
+      <div class="tw-mx-16" v-if="library.similarBookList.data.length == 0"><SimilarBookNotFound /></div>
     </div>
 
     <div class="tw-flex tw-justify-center tw-bg-white tw-py-10">
@@ -373,7 +376,8 @@ if (roleToken.value == "GUEST") {
                           @click="handleStarRate(star.value)"
                         >
                           <v-icon icon="mdi mdi-star" color="#FFBB11"></v-icon>
-                          {{ star.title }}
+                          <span v-if="reviews.filterReview != star.value">{{ star.title }}</span>
+                          <span v-if="reviews.filterReview == star.value">{{ star.title }} ({{ reviews.reviewList.data.totalElements ? reviews.reviewList.data.totalElements : 0 }})</span>
                         </v-btn>
                       </v-item>
                     </v-col>
@@ -399,13 +403,7 @@ if (roleToken.value == "GUEST") {
               no-gutters
               v-show="reviews.reviewList.data.content.length == 0"
             >
-              <v-col cols="12" align="center">
-                <v-img
-                  src="/image/rvnotfound.png"
-                  width="40%"
-                  class="tw-opacity-50"
-                ></v-img>
-              </v-col>
+            <ReviewNotFound />
             </v-row>
             <v-row v-show="reviews.reviewList.data.content.length !== 0">
               <v-virtual-scroll :items="['']" max-height="35rem">

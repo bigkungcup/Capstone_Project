@@ -8,6 +8,7 @@ import UserRank from "~/components/ranking/userRank.vue";
 const book = useBooks();
 const user = useUsers();
 const section = ref("book");
+const roleToken = ref(localStorage.getItem('role'));
 
 const sortList = [
   {
@@ -24,12 +25,21 @@ const sortList = [
 
 async function handleFollow(userId) {
   await user.createFollower(userId)
-  user.getRankingUserList()
+  await user.getRankingUserList();
 }
 
 async function handleUnfollow(userId) {
   await user.deleteFollower(userId)
-  user.getRankingUserList()
+  await user.getRankingUserList();
+}
+
+async function handleGetRankingUser() {
+  if(roleToken.value == "GUEST"){
+    await user.getRankingUserListByGuest();
+  }else{
+    user.clearRankingUserList();
+    await user.getRankingUserList();
+  }
 }
 
 onBeforeMount(async () => {
@@ -47,13 +57,13 @@ onBeforeMount(async () => {
           <v-btn
             :variant="section == 'book' ? 'elevated' : 'outlined'"
             color="#1D419F"
-            @click="section = 'book'"
+            @click="section = 'book',book.getRankingBookList()"
             >BOOK</v-btn
           >
           <v-btn
             :variant="section == 'user' ? 'elevated' : 'outlined'"
             color="#1D419F"
-            @click="section = 'user'"
+            @click="section = 'user',handleGetRankingUser()"
             >USER</v-btn
           >
         </div>
@@ -86,7 +96,7 @@ onBeforeMount(async () => {
                 variant="solo-filled"
                 bg-color="#082266"
                 rounded="lg"
-                @update:model-value="user.getRankingUserList()"
+                @update:model-value="handleGetRankingUser()"
               ></v-select>
             </v-col>
             <v-col cols="9"></v-col>

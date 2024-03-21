@@ -517,7 +517,7 @@ export const useBooks = defineStore("Books", () => {
 
 
   //Get Bookmark
-  async function getBookmarkList() {
+  async function getBookmarkList(userId) {
     let accessToken = useCookie("accessToken");
     let status = 0;
 
@@ -529,6 +529,7 @@ export const useBooks = defineStore("Books", () => {
           Authorization: `Bearer ${accessToken.value}`,
         };
         options.params = {
+          userId: userId,
           page: bookmarkPage.value,
           size: 20,
         }
@@ -547,7 +548,7 @@ export const useBooks = defineStore("Books", () => {
       console.log("get library uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
-      await getBookmarkList();
+      await getBookmarkList(userId);
     }
   }
 

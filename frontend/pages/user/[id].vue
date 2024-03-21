@@ -1,19 +1,85 @@
 <script setup>
 import Bookmarks from "~/components/profiles/bookmark.vue";
-// import Reviews from '~/components/profiles/reviews.vue';
+import BookmarkNotFound from "~/components/profiles/bookmarkNotFound.vue";
+import MyReviews from "~/components/profiles/myReviews.vue";
+import Followings from "~/components/profiles/following.vue";
+import Followers from "~/components/profiles/followers.vue";
+import ReviewNotFound from "~/components/reviews/reviewNotFound.vue";
+import UserNotFound from "~/components/users/userNotFound.vue";
 import { useUsers } from "~/stores/user";
+import { useBooks } from "~/stores/book";
+import { useReviews } from "~/stores/review";
 import { useRoute, useRouter } from "vue-router";
 import { mergeProps } from "vue";
 import deleteUserConfirmPopup from "~/components/users/popups/deleteUserConfirmPopup.vue";
 import deleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessPopup.vue";
 
 const user = useUsers();
+const book = useBooks();
+const review = useReviews();
 const router = useRouter();
 const route = useRoute();
+const profileSection = ref("bookmark");
+const bookmarkPage = ref(1);
+const reviewPage = ref(1);
+const followingPage = ref(1);
+const followerPage = ref(1);
+const result = ref(0);
+const idToken = ref(localStorage.getItem('id'));
 const roleToken = ref(localStorage.getItem('role'));
 
 function toggleUserConfirmPopup() {
   user.confirmPopup = !user.confirmPopup;
+}
+
+async function handleFollow(userId) {
+  await user.createFollower(userId)
+  await user.getUserDetail(route.params.id);
+}
+
+async function handleUnfollow(userId) {
+  await user.deleteFollower(userId)
+  await user.getUserDetail(route.params.id);
+}
+
+async function handleGetUserDetail() {
+  if(roleToken.value == "GUEST"){
+    await user.getUserDetailByGuest(route.params.id);
+  }else{
+    await user.getUserDetail(route.params.id);
+  }
+}
+
+async function selectSection(section) {
+  if (section == "bookmark") {
+    profileSection.value = "bookmark";
+    await book.getBookmarkList(route.params.id);
+    result.value = book.bookmarkList.data.totalElements
+      ? book.bookmarkList.data.totalElements
+      : 0;
+  } else if (section == "review") {
+    profileSection.value = "review";
+    review.clearMyReviewList();
+    await review.getMyReview(route.params.id);
+    console.log(review.myReviewList.data.content.length);
+    result.value = review.myReviewList.data.totalElements
+      ? review.myReviewList.data.totalElements
+      : 0;
+  } else if (section == "following") {
+    profileSection.value = "following";
+    user.clearFollowingList();
+    await user.getFollowingList(route.params.id);
+    result.value = user.followingList.data.totalElements
+      ? user.followingList.data.totalElements
+      : 0;
+  } else if (section == "follower") {
+    profileSection.value = "follower";
+    user.clearFollowerList();
+    await user.getFollowerList(route.params.id);
+    result.value = user.followerList.data.totalElements
+      ? user.followerList.data.totalElements
+      : 0;
+  }
 }
 
 function closeUserSuccessfulPopup() {
@@ -26,16 +92,24 @@ function bookCoverPath(filePath) {
 }
 
 onBeforeMount(async () => {
-  if (roleToken.value == 'ADMIN') {
-  await user.getUserDetail(route.params.id);
-}else{
-  router.push(`/UnauthenPage/`)
-}
+  if(route.params.id == idToken.value){
+    router.push(`/Profile/`)
+  }else{
+    await book.getBookmarkList();
+    await selectSection(profileSection.value);
+    handleGetUserDetail()
+  }
+
+//   if (roleToken.value == 'ADMIN') {
+//   await user.getUserDetail(route.params.id);
+// }else{
+//   router.push(`/UnauthenPage/`)
+// }
 });
 </script>
 
 <template>
-  <div class="tw-bg-[#D9D9D9] tw-h-full" v-show="roleToken == 'ADMIN'">
+  <div class="tw-bg-[#D9D9D9] tw-h-full">
     <div class="tw-flex tw-place-content-center">
       <div class="tw-w-[70rem] tw-max-h-[16rem]">
         <v-img src="/image/profile_banner.jpg" v-show="user.userDetail.data.file == null" cover></v-img>
@@ -72,7 +146,7 @@ onBeforeMount(async () => {
             ></v-img>
           </v-col>
 
-          <v-col cols="4">
+          <v-col cols="5">
             <div class="tw-space-y-1">
               <p class="web-text-header">
                 {{ user.userDetail.data.displayName }}
@@ -82,18 +156,39 @@ onBeforeMount(async () => {
             </div>
           </v-col>
 
-          <v-col cols="5">
+          <v-col cols="2">
             <div class="py-1">
-              <p class="web-text-sub tw-flex tw-place-content-end">
-                {{ user.userDetail.data.follows }} Following
+              <!-- <p class="web-text-sub tw-flex tw-place-content-end">
+                {{ user.userDetail.data.followings }} Following
                 {{ user.userDetail.data.followers }} Followers
-              </p>
+              </p> -->
             </div>
           </v-col>
 
-          <v-col cols="1">
+          <v-col cols="3" class="tw-grid tw-content-between">
             <!-- <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/update_${user.userDetail.data.userId}/`">Edit profile</v-btn> -->
-            <span class="text-center web-text-detail">
+            <div align="end" v-if="roleToken != 'GUEST'">
+            <span>
+              <v-btn
+                  height="auto"
+                  variant="outlined"
+                  color="#3157BB"
+                  class="px-8 py-2"
+                  rounded="lg"
+                  v-if="user.userDetail.data.follow == null"
+                  @click="handleFollow(user.userDetail.data.userId)"
+                >Follow</v-btn>
+                <v-btn
+                  height="auto"
+                  class="px-5 py-2"
+                  color="#3157BB"
+                  rounded="lg"
+                  v-if="user.userDetail.data.follow !== null"
+                  @click="handleUnfollow(user.userDetail.data.userId)"
+                >Following</v-btn>
+            </span>  
+
+            <span class="tw-px-4 text-center web-text-detail">
               <v-menu>
                 <template v-slot:activator="{ props: menu }">
                   <v-tooltip location="top">
@@ -107,7 +202,7 @@ onBeforeMount(async () => {
                     <span>More</span>
                   </v-tooltip>
                 </template>
-                <v-list>
+                <v-list v-if="roleToken == 'ADMIN'">
                   <v-list-item :to="`/user/update_${route.params.id}`+'/'">
                     <v-list-item-title class="web-text-detail tw-space-x-2"
                       ><v-icon icon="mdi mdi-pencil-outline"></v-icon
@@ -127,8 +222,24 @@ onBeforeMount(async () => {
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
+                <v-list v-if="roleToken == 'USER'">
+                  <v-list-item :to="`/user/update_${route.params.id}`+'/'">
+                    <v-list-item-title class="web-text-detail tw-space-x-2"
+                      ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
+                      ><span>Report this user</span></v-list-item-title
+                    >
+                  </v-list-item>
+                </v-list>
               </v-menu>
             </span>
+            </div>
+
+            <div class="py-4">
+              <p class="tw-px-4 web-text-sub-thin tw-flex tw-place-content-end">
+                {{ user.userDetail.data.followings }} Following
+                {{ user.userDetail.data.followers }} Followers
+              </p>
+            </div>
           </v-col>
         </v-row>
       </div>
@@ -138,33 +249,174 @@ onBeforeMount(async () => {
     <div class="tw-flex tw-place-content-center tw-my-6">
       <div class="tw-bg-white tw-w-[70rem] tw-h-full">
         <div class="tw-border-y-4">
-          <v-row class="tw-py-3">
-            <v-col cols="2">
-              <div class="tw-flex tw-justify-center web-text-sub-pf">
+          <v-row class="">
+            <v-col cols="3" class="tw-grid tw-content-center">
+              <div
+                class="tw-flex tw-justify-center web-text-sub-pf"
+                v-if="profileSection != 'bookmark'"
+                @click="
+                  (profileSection = 'bookmark'), selectSection(profileSection)
+                "
+              >
                 Bookmarks
               </div>
+              <div
+                class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3"
+                v-if="profileSection == 'bookmark'"
+              >
+                <p class="tw-flex tw-justify-center">Bookmarks</p>
+                <p class="tw-flex tw-justify-center">({{ result }})</p>
+              </div>
             </v-col>
-            <v-col cols="2">
-              <div class="tw-flex tw-justify-center web-text-sub-pf">
+            <v-col cols="3" class="tw-grid tw-content-center">
+              <div
+                class="tw-flex tw-justify-center web-text-sub-pf"
+                v-if="profileSection != 'review'"
+                @click="
+                  (profileSection = 'review'), selectSection(profileSection)
+                "
+              >
                 My reviews
               </div>
-            </v-col>
-            <v-col cols="2">
-              <div class="tw-flex tw-justify-center web-text-sub-pf">
-                Followings
+              <div
+                class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3"
+                v-if="profileSection == 'review'"
+              >
+                <p class="tw-flex tw-justify-center">My reviews</p>
+                <p class="tw-flex tw-justify-center">({{ result }})</p>
               </div>
             </v-col>
-            <v-col cols="2">
-              <div class="tw-flex tw-justify-center web-text-sub-pf">
+            <v-col cols="3" class="tw-grid tw-content-center">
+              <div
+                class="tw-flex tw-justify-center web-text-sub-pf"
+                v-if="profileSection != 'following'"
+                @click="
+                  (profileSection = 'following'), selectSection(profileSection)
+                "
+              >
+                Followings
+              </div>
+              <div
+                class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3"
+                v-if="profileSection == 'following'"
+              >
+                <p class="tw-flex tw-justify-center">Followings</p>
+                <p class="tw-flex tw-justify-center">({{ result }})</p>
+              </div>
+            </v-col>
+            <v-col cols="3" class="tw-grid tw-content-center">
+              <div
+                class="tw-flex tw-justify-center web-text-sub-pf"
+                v-if="profileSection != 'follower'"
+                @click="
+                  (profileSection = 'follower'), selectSection(profileSection)
+                "
+              >
                 Followers
+              </div>
+              <div
+                class="web-text-sub-pf-white tw-bg-[#082266] tw-py-3"
+                v-if="profileSection == 'follower'"
+              >
+                <p class="tw-flex tw-justify-center">Followers</p>
+                <p class="tw-flex tw-justify-center">({{ result }})</p>
               </div>
             </v-col>
           </v-row>
         </div>
 
         <!-------- insert component here ---------->
-        <Bookmarks />
+     <!-- Bookmark /> -->
+     <div v-if="profileSection == 'bookmark'">
+          <div v-if="book.bookmarkList.data.content.length !== 0">
+            <Bookmarks :bookmarkList="book.bookmarkList.data.content" />
+            <div class="py-1">
+              <v-pagination
+                v-model="bookmarkPage"
+                :length="book.bookmarkList.data.totalPages"
+                :total-visible="7"
+                rounded="20"
+                @update:model-value="book.changeBookmarkPage(bookmarkPage)"
+              >
+              </v-pagination>
+            </div>
+          </div>
+          <div v-if="book.bookmarkList.data.content.length == 0">
+            <BookmarkNotFound />
+          </div>
+        </div>
         <!-- <Reviews /> -->
+        <div v-if="profileSection == 'review'">
+          <div v-if="review.myReviewList.data.content.length !== 0">
+          <MyReviews :reviewList="review.myReviewList.data.content" 
+                      @like="likeReviews($event.reviewId, $event.likeStatus)"
+                      @update="
+                    updatelikeReviews(
+                      $event.reviewId,
+                      $event.likeStatus,
+                      $event.likeStatusId
+                    )
+                  "/>
+          <div
+            class="py-1"
+          >
+            <v-pagination
+              v-model="reviewPage"
+              :length="review.myReviewList.data.totalPages"
+              :total-visible="7"
+              rounded="20"
+              @update:model-value="review.changeMyReviewPage(reviewPage)"
+            >
+            </v-pagination>
+          </div></div>
+          <div v-if="review.myReviewList.data.content.length == 0">
+          <ReviewNotFound />
+        </div>
+        </div>
+        <!-- <Followings /> -->
+        <div v-if="profileSection == 'following'">
+          <div v-if="user.followingList.data.content.length !== 0">
+          <Followings 
+            :followingList="user.followingList.data.content" 
+            @follow="user.createFollower($event)"
+            @unfollow="user.deleteFollower($event)"/>
+          <div class="py-1">
+            <v-pagination
+              v-model="followingPage"
+              :length="user.followingList.data.totalPages"
+              :total-visible="7"
+              rounded="20"
+              @update:model-value="user.changeFolloingPage(followingPage)"
+            >
+            </v-pagination>
+          </div></div>
+          <div v-if="user.followingList.data.content.length == 0">
+            <UserNotFound />
+          </div>        
+        </div>
+        <!-- <Followers /> -->
+        <div v-if="profileSection == 'follower'">
+          <div v-if="user.followerList.data.content.length !== 0">
+          <Followers 
+            :followerList="user.followerList.data.content" 
+            @follow="user.createFollower($event)"
+            @unfollow="user.deleteFollower($event)"/>
+          <div class="py-1">
+            <v-pagination
+              v-model="followerPage"
+              :length="user.followerList.data.totalPages"
+              :total-visible="7"
+              rounded="20"
+              @update:model-value="user.changeFollowerPage(followerPage)"
+            >
+            </v-pagination>
+          </div></div>
+          <div v-if="user.followerList.data.content.length == 0">
+            <UserNotFound />
+          </div>
+        </div>
+
+        <!-- Admin popup -->
         <deleteUserConfirmPopup
           class="delete-popup"
           :dialog="user.confirmPopup"

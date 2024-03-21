@@ -2,11 +2,10 @@
 import Bookmarks from "~/components/profiles/bookmark.vue";
 import BookmarkNotFound from "~/components/profiles/bookmarkNotFound.vue";
 import MyReviews from "~/components/profiles/myReviews.vue";
-import MyReviewNotFound from "~/components/profiles/myReviewNotFound.vue";
 import Followings from "~/components/profiles/following.vue";
-import FollowingNotFound from "~/components/profiles/followingNotFound.vue";
 import Followers from "~/components/profiles/followers.vue";
-import FollowerNotFound from "~/components/profiles/followerNotFound.vue";
+import ReviewNotFound from "~/components/reviews/reviewNotFound.vue";
+import UserNotFound from "~/components/users/userNotFound.vue";
 import changePasswordPopup from "~/components/profiles/popups/changePasswordPopup.vue";
 import { useLogin } from "~/stores/login";
 import { useBooks } from "~/stores/book";
@@ -25,22 +24,44 @@ const reviewPage = ref(1);
 const followingPage = ref(1);
 const followerPage = ref(1);
 const result = ref(0);
+const idToken = ref(localStorage.getItem('id'));
 
 function handleChangePassword() {
   changePassword.value = !changePassword.value;
 }
 
+async function likeReviews(reviewId, likeStatus) {
+  let status = {
+    userId: idToken.value,
+    reviewId: reviewId,
+    likeStatus: likeStatus,
+  };
+  await review.createLike(status);
+  await review.getMyReview(idToken.value);
+}
+
+async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
+  let status = {
+    userId: idToken.value,
+    reviewId: reviewId,
+    likeStatusId: likeStatusId,
+    likeStatus: likeStatus,
+  };
+  await review.updateLike(status);
+  await review.getMyReview(idToken.value);
+}
+
 async function selectSection(section) {
   if (section == "bookmark") {
     profileSection.value = "bookmark";
-    await book.getBookmarkList();
+    await book.getBookmarkList(idToken.value);
     result.value = book.bookmarkList.data.totalElements
       ? book.bookmarkList.data.totalElements
       : 0;
   } else if (section == "review") {
     profileSection.value = "review";
     review.clearMyReviewList();
-    await review.getMyReview();
+    await review.getMyReview(idToken.value);
     console.log(review.myReviewList.data.content.length);
     result.value = review.myReviewList.data.totalElements
       ? review.myReviewList.data.totalElements
@@ -48,14 +69,14 @@ async function selectSection(section) {
   } else if (section == "following") {
     profileSection.value = "following";
     user.clearFollowingList();
-    await user.getFollowingList();
+    await user.getFollowingList(idToken.value);
     result.value = user.followingList.data.totalElements
       ? user.followingList.data.totalElements
       : 0;
   } else if (section == "follower") {
     profileSection.value = "follower";
     user.clearFollowerList();
-    await user.getFollowerList();
+    await user.getFollowerList(idToken.value);
     result.value = user.followerList.data.totalElements
       ? user.followerList.data.totalElements
       : 0;
@@ -109,7 +130,7 @@ onBeforeMount(async () => {
             ></v-img>
           </v-col>
 
-          <v-col cols="4">
+          <v-col cols="5">
             <div>
               <p class="web-text-header">{{ login.profile.displayName }}</p>
               <p class="web-text-sub">{{ login.profile.email }}</p>
@@ -117,18 +138,19 @@ onBeforeMount(async () => {
             </div>
           </v-col>
 
-          <v-col cols="5">
+          <!-- <v-col cols="5">
             <div class="py-1">
               <p class="web-text-sub tw-flex tw-place-content-end">
-                {{ login.profile.follows }} Following
+                {{ login.profile.followings }} Following
                 {{ login.profile.followers }} Followers
               </p>
             </div>
-          </v-col>
+          </v-col> -->
 
-          <v-col cols="1">
+          <v-col cols="5" class="tw-grid tw-content-between">
             <!-- <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/update_${login.profile.userId}/`">Edit profile</v-btn> -->
-            <span class="text-center web-text-detail">
+            <div align="end">
+            <span class="tw-px-4 text-center web-text-detail">
               <v-menu>
                 <template v-slot:activator="{ props: menu }">
                   <v-tooltip location="top">
@@ -164,6 +186,14 @@ onBeforeMount(async () => {
                 </v-list>
               </v-menu>
             </span>
+          </div>
+
+          <div class="py-4">
+              <p class="tw-px-4 web-text-sub-thin tw-flex tw-place-content-end">
+                {{ login.profile.followings }} Following
+                {{ login.profile.followers }} Followers
+              </p>
+            </div>
           </v-col>
         </v-row>
       </div>
@@ -272,7 +302,15 @@ onBeforeMount(async () => {
         <!-- <Reviews /> -->
         <div v-if="profileSection == 'review'">
           <div v-if="review.myReviewList.data.content.length !== 0">
-          <MyReviews :reviewList="review.myReviewList.data.content" />
+          <MyReviews :reviewList="review.myReviewList.data.content" 
+                      @like="likeReviews($event.reviewId, $event.likeStatus)"
+                      @update="
+                    updatelikeReviews(
+                      $event.reviewId,
+                      $event.likeStatus,
+                      $event.likeStatusId
+                    )
+                  "/>
           <div
             class="py-1"
           >
@@ -286,7 +324,7 @@ onBeforeMount(async () => {
             </v-pagination>
           </div></div>
           <div v-if="review.myReviewList.data.content.length == 0">
-          <MyReviewNotFound />
+          <ReviewNotFound />
         </div>
         </div>
         <!-- <Followings /> -->
@@ -307,7 +345,7 @@ onBeforeMount(async () => {
             </v-pagination>
           </div></div>
           <div v-if="user.followingList.data.content.length == 0">
-            <FollowingNotFound />
+            <UserNotFound />
           </div>        
         </div>
         <!-- <Followers /> -->
@@ -328,7 +366,7 @@ onBeforeMount(async () => {
             </v-pagination>
           </div></div>
           <div v-if="user.followerList.data.content.length == 0">
-            <FollowerNotFound />
+            <UserNotFound />
           </div>
         </div>
       </div>

@@ -35,7 +35,7 @@ async function likeReviews(reviewId, likeStatus) {
     likeStatus: likeStatus,
   };
   await reviews.createLike(status);
-  await reviews.getReview(route.params.id);
+  await reviews.getNewReviewList();
 }
 
 async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
@@ -46,7 +46,7 @@ async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
     likeStatus: likeStatus,
   };
   await reviews.updateLike(status);
-  await reviews.getReview(route.params.id);
+  await reviews.getNewReviewList();
 }
 
 onBeforeMount(async () => {
@@ -56,6 +56,7 @@ onBeforeMount(async () => {
   if(roleToken.value == "GUEST"){
     await reviews.getNewReviewListByGuest();
   }else{
+    reviews.clearNewReviewList();
     await reviews.getNewReviewList();
   }
   await book.getOtherBookList();

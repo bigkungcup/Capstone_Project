@@ -142,7 +142,7 @@ export const useReviews = defineStore("Reviews", () => {
     }
 
     //Get my reviews
-    async function getMyReview() {
+    async function getMyReview(userId) {
       let accessToken = useCookie("accessToken");
       let status = 0;
       const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/me`, {
@@ -153,6 +153,7 @@ export const useReviews = defineStore("Reviews", () => {
             Authorization: `Bearer ${accessToken.value}`,
           };
           options.params = {
+            userId: userId,
             page: myReviewPage.value,
             size: 10,
           };
@@ -178,7 +179,7 @@ export const useReviews = defineStore("Reviews", () => {
       }else if (status == 401) {
         if(refreshToken.value !== null && refreshToken.value !== undefined){
           await login.handleRefresh();
-          await getMyReview()
+          await getMyReview(userId)
         }
       } else if (status == 404) {
         clearMyReviewList();
@@ -190,7 +191,7 @@ export const useReviews = defineStore("Reviews", () => {
  async function getNewReviewList() {
   let accessToken = useCookie("accessToken");
   let status = 0;
-  clearNewReviewList();
+  // clearNewReviewList();
 
   const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/newReview`, {
     onRequest({ request, options }) {

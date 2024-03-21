@@ -43,6 +43,13 @@
     line-height: 1.75rem; /* 28px */
 }
 
+.web-text-sub-thin{
+    color: #082266;
+    font-weight: 200;
+    font-size: 1rem; /* 16px */
+    line-height: 1.75rem; /* 28px */
+}
+
 .web-text-sub-pf{
     color: #082266;
     font-weight: 600;

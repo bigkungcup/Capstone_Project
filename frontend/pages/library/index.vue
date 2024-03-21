@@ -9,6 +9,7 @@ const roleToken = ref(localStorage.getItem('role'));
 const page = ref(1)
 const result = ref(0);
 const dialog = ref(false);
+const booktype = ref('');
 const sortList = [
   {
     id: 1,
@@ -32,7 +33,9 @@ const sortList = [
   },
 ];
 
-function handleSelectionChange() {
+function handleSelectionChange() {  
+  booktype.value = library.filterBook != 0 ? library.bookType.find(({ booktypeId }) => booktypeId ===  library.filterBook) : ''
+
   if (roleToken.value == 'GUEST') {
     library.getLibraryByGuest();
     result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
@@ -52,6 +55,7 @@ onBeforeMount( async () => {
     library.getBookType();
     result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
   }
+  booktype.value = library.filterBook != 0 ? library.bookType.find(({ booktypeId }) => booktypeId ===  library.filterBook) : ''
 });
 
 
@@ -83,10 +87,18 @@ onBeforeMount( async () => {
       </v-row>
 
       <v-row no-gutters>
-        <v-col cols="5">
+        <v-col cols="5" class="tw-space-x-5">
           <v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Result - {{ result }} </v-btn>
+          <v-chip
+          v-if="booktype != ''"           
+          variant="elevated" 
+          color="#1D419F"
+          size="large" 
+          >{{ booktype.booktypeName }}</v-chip>
         </v-col>
-        <v-col cols="4"></v-col>
+        <v-col cols="4">
+          
+        </v-col>
         <v-col cols="3"> 
           <!-- <v-btn size="auto" class="pa-5 ml-12" color="#082266" rounded="lg"> Sort By: Result - {{ result }}
             <v-icon end icon="mdi mdi-menu-down"></v-icon>
