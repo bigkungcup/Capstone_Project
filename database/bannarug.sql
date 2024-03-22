@@ -231,7 +231,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `bannarug`.`Report` ;
 
 CREATE TABLE IF NOT EXISTS `bannarug`.`Report` (
-  `reportId` INT NOT NULL,
+  `reportId` INT NOT NULL AUTO_INCREMENT,
   `reportBy` INT NOT NULL,
   `fixBy` INT NOT NULL,
   `reportTitle` VARCHAR(255) NOT NULL,

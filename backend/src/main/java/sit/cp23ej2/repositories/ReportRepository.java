@@ -25,8 +25,8 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
     
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO Report (reportTitle, reportDetail, problemId, reportType, reportStatus, reportBy) " +
-            "VALUES (:reportTitle, :reportDetail, :problemId, :reportType, 0, :reportBy)", nativeQuery = true)
+    @Query(value = "INSERT INTO Report (reportTitle, reportDetail, problemId, reportType, reportStatus, reportBy, fixBy) " +
+            "VALUES (:reportTitle, :reportDetail, :problemId, :reportType, 0, :reportBy, :reportBy)", nativeQuery = true)
     void insertReport(@Param("reportTitle") String reportTitle, @Param("reportDetail") String reportDetail, @Param("problemId") Integer problemId, 
     @Param("reportType") String reportType, @Param("reportBy") Integer reportBy);
 
