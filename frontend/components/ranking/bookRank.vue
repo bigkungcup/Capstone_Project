@@ -76,7 +76,7 @@ defineProps({
         <v-col cols="2"></v-col>
       </v-row>
       <div>
-        <v-row no-gutters>
+        <v-row no-gutters> 
           <v-col cols="1"></v-col>
           <v-col cols="10" class="d-inline-flex tw-my-[-6rem]">
             <v-img

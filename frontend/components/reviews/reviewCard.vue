@@ -1,7 +1,7 @@
 <script setup>
 import { useReviews } from '~/stores/review'
 import { mergeProps } from 'vue'
-defineEmits(["toggle","set","like","follow","unfollow","update"]);
+defineEmits(["toggle","set","like","follow","unfollow","update","report"]);
 
 defineProps({
     reviewList: {
@@ -66,8 +66,8 @@ const follow = ref(true)
                     <div class="tw-min-h-[4rem] tw-mr-8" v-show="review.spoileFlag == 0">
                         <p>{{ review.reviewDetail }}</p>
                     </div>
-                    <div class="tw-mr-8">
-                    <v-expansion-panels variant="inset" v-show="review.spoileFlag == 1">
+                    <div class="tw-mr-8"  v-show="review.spoileFlag == 1">
+                    <v-expansion-panels variant="inset">
                         <v-expansion-panel>
                             <v-expansion-panel-title color="#082266" class="tw-font-bold" expand-icon="mdi-plus"
                                 collapse-icon="mdi-minus">
@@ -89,7 +89,7 @@ const follow = ref(true)
                         <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus.likeStatus != 1 && review.likeStatus.likeStatus != 0" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 1, likeStatusId: review.likeStatus.likeStatusId })">Likes</v-btn>
                         <v-btn prepend-icon="mdi mdi-thumb-up" variant="text" v-show="review.likeStatus.likeStatus == 1" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">Likes</v-btn>
                         <v-btn prepend-icon="mdi mdi-thumb-down-outline" variant="text" v-show="review.likeStatus.likeStatus != 2 && review.likeStatus.likeStatus != 0" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 2, likeStatusId: review.likeStatus.likeStatusId })">Dislikes</v-btn>
-                        <v-btn prepend-icon="mdi mdi-thumb-down" variant="text" v-show="review.likeStatus.likeStatus == 2" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">{{review.likeStatus.likeStatus}}Dislikes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-down" variant="text" v-show="review.likeStatus.likeStatus == 2" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">Dislikes</v-btn>
                         </div>
                         <span class="text-center">
                             <v-menu>
@@ -110,8 +110,8 @@ const follow = ref(true)
                                             <v-list-item-title class="web-text-detail tw-space-x-2" @click="$emit('toggle'),$emit('set',review.reviewId)"><v-icon icon="mdi mdi-trash-can-outline"></v-icon><span>Delete this review</span></v-list-item-title>
                                         </v-list-item-title>
                                     </v-list-item>
-                                    <v-list-item v-show="roleToken == 'USER'">
-                                        <v-list-item-title class="web-text-detail tw-space-x-2"
+                                    <v-list-item v-show="roleToken == 'USER' && review.userDetail.userId == idToken" class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
+                                        <v-list-item-title class="web-text-detail tw-space-x-2 " @click="$emit('report')"
                                             ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
                                             ><span>Report this review</span></v-list-item-title
                                         >

@@ -1,7 +1,7 @@
 <script setup>
 defineEmits(["like", "update"]);
 defineProps({
-  newReviewList: {
+  problem: {
     type: Array,
     require: true,
   },
@@ -34,18 +34,18 @@ const roleToken = ref(localStorage.getItem("role"));
               <div class="tw-mx-6 tw-my-4">
                 <nuxt-link :to="`/book/${review.bookDetail.bookId}/`">
                   <p class="web-text-title">"{{ review.reviewTitle }}"</p>
-                       <p class="web-text-sub tw-min-h-[7rem]" v-if="review.spoileFlag == 0">
-                    {{ review.reviewDetail }}
-                  </p>
+                       <div class="tw-indent-8 web-text-sub tw-min-h-[7rem] tw-py-2" v-if="review.spoileFlag == 0">
+                    <p>{{ review.reviewDetail }}</p>
+                  </div>
                 </nuxt-link>
-                <div class="web-text-sub tw-min-h-[7rem]" v-if="review.spoileFlag == 1">
+                <div class="web-text-sub tw-min-h-[7rem] tw-py-2" v-if="review.spoileFlag == 1">
                   <v-expansion-panels variant="inset">
                         <v-expansion-panel>
                             <v-expansion-panel-title color="#082266" class="tw-font-bold" expand-icon="mdi-plus"
                                 collapse-icon="mdi-minus">
                                 Spoil
                             </v-expansion-panel-title>
-                            <v-expansion-panel-text class="tw-indent-8 web-text-detail">
+                            <v-expansion-panel-text class="tw-indent-4 web-text-detail tw-truncate">
                                 {{ review.reviewDetail }}
                             </v-expansion-panel-text>
                         </v-expansion-panel>
@@ -168,11 +168,14 @@ const roleToken = ref(localStorage.getItem("role"));
                     <v-col cols="3"></v-col>
                     <v-col cols="6" align="end" class="px-2"
                       ><div class="web-text-sub tw-truncate">
+                        <nuxt-link :to="`/user/${review.userDetail.userId}/`">
                         {{ review.userDetail.displayName }}
+                      </nuxt-link>
                       </div></v-col
                     >
                     <v-col cols="1" align="center"
-                      ><v-img
+                      ><nuxt-link :to="`/user/${review.userDetail.userId}/`">
+                      <v-img
                         src="/image/guest_icon.png"
                         v-if="review.userDetail.file == null"
                         width="40"
@@ -183,7 +186,7 @@ const roleToken = ref(localStorage.getItem("role"));
                         width="40"
                         class="tw-rounded-full tw-border-[#082266] tw-border-2"
                         cover
-                      />
+                      /></nuxt-link>
                     </v-col>
                   </v-row>
                 </div>

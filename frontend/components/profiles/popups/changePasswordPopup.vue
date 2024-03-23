@@ -113,7 +113,7 @@ const rules = {
         </v-card-text>
         <v-card-actions style="height: 4em; width: 50rem;">
           <v-spacer></v-spacer>
-          <v-btn class="tw-mx-2" style="height: 3rem; width: 7rem;" color="#727272" variant="tonal" size="large" rounded="xl" @click="$emit('toggle'),clearAll()">Cancle</v-btn>
+          <v-btn class="tw-mx-2" style="height: 3rem; width: 7rem;" color="#727272" variant="tonal" size="large" rounded="xl" @click="$emit('toggle'),clearAll()">Cancel</v-btn>
           <v-btn class="tw-mx-4" 
           style="height: 3rem; width: 7rem;" 
           color="#1646C4" 

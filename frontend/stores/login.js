@@ -89,7 +89,7 @@ export const useLogin = defineStore("Login", () => {
       accessToken.value = data.access_token;
       refreshToken.value = data.refresh_token;
       getProfile();
-      router.push("/");
+      router.push("//");
       console.log("login completed");
     }
   }

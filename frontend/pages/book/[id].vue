@@ -1,22 +1,25 @@
 <script setup>
-import deleteReviewConfirmPopup from "~/components/reviews/popups/deleteReviewConfirmPopup.vue";
-import deleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmPopup.vue";
-import reviewCard from "~/components/reviews/reviewCard.vue";
+import { ref } from "vue";
+import { mergeProps } from "vue";
 import { useBooks } from "~/stores/book";
 import { useUsers } from "~/stores/user";
 import { useReviews } from "~/stores/review";
-import { ref } from "vue";
+import { useNotifications } from "~/stores/notification";
 import SimilarBook from "~/components/books/similarBook.vue";
 import SimilarBookNotFound from "~/components/books/similarBookNotFound.vue";
-import { mergeProps } from "vue";
+import reviewCard from "~/components/reviews/reviewCard.vue";
+import ReviewNotFound from "~/components/reviews/reviewNotFound.vue";
 import deleteBookSuccessPopup from "~/components/books/popups/deleteBookSuccessPopup.vue";
 import deleteReviewSuccessPopup from "~/components/reviews/popups/deleteReviewSuccessPopup.vue";
 import deleteBookFailPopup from "~/components/books/popups/deleteBookFailPopup.vue";
-import ReviewNotFound from "~/components/reviews/reviewNotFound.vue";
+import deleteReviewConfirmPopup from "~/components/reviews/popups/deleteReviewConfirmPopup.vue";
+import deleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmPopup.vue";
+import CreateReportPopup from "~/components/reports/popups/createReportPopup.vue";
 
 const library = useBooks();
 const reviews = useReviews();
 const user = useUsers();
+const noti = useNotifications();
 const route = useRoute();
 const page = ref(1);
 const deleteId = ref(0);
@@ -197,7 +200,7 @@ if (roleToken.value == "GUEST") {
                   readonly
                 ></v-rating>
                 <p class="web-text-rate">
-                  {{ library.getStarRating(library.bookDetail.data.bookRating) }}
+                  {{ 0.5 * (2 * library.bookDetail.data.bookRating).toFixed(1) }}
                 </p>
               </div>
             </v-col>
@@ -209,13 +212,13 @@ if (roleToken.value == "GUEST") {
                 <p><span>Author:</span> {{ library.bookDetail.data.author }}</p>
                 <p>
                   Bookmarked by:
-                  <span
+                  <!-- <span
                     v-show="library.bookDetail.data.bookTotalBookmarked == null"
                     >0</span
-                  >
+                  > -->
                   <span
-                    v-show="library.bookDetail.data.bookTotalBookmarked != null"
-                    >{{ library.bookDetail.data.bookTotalBookmarked }}</span
+                    
+                    >{{ library.bookDetail.data.bookTotalBookmark }}</span
                   >
                   people
                 </p>
@@ -315,8 +318,9 @@ if (roleToken.value == "GUEST") {
                         >
                       </v-list-item-title>
                     </v-list-item>
-                    <v-list-item>
+                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
                       <v-list-item-title class="web-text-detail tw-space-x-2"
+                      @click="noti.reportStatus.show = true,noti.reportStatus.type = 'book'"
                         ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
                         ><span>Report this book</span></v-list-item-title
                       >
@@ -422,6 +426,7 @@ if (roleToken.value == "GUEST") {
                       $event.likeStatusId
                     )
                   "
+                  @report="noti.reportStatus.show = true,noti.reportStatus.type = 'review'"
                 />
               </v-virtual-scroll>
             </v-row>
@@ -441,6 +446,7 @@ if (roleToken.value == "GUEST") {
           </div>
         </div>
       </div>
+
       <deleteReviewConfirmPopup
         class="delete-popup"
         :dialog="reviewConfirmPopup"
@@ -468,6 +474,11 @@ if (roleToken.value == "GUEST") {
         :dialog="reviews.successfulPopup"
         @close="toggleReviewSuccessfulPopup()"
       />
+  
+      <!-- Create Report Popup -->
+      <div v-if="noti.reportStatus.show">
+      <CreateReportPopup class="report-popup" :title="noti.reportStatus.type == 'book' ? noti.reportBookList : noti.reportReviewList" :report="noti.reportProblem" @cancel="noti.reportStatus.show = false" @submit="noti.createReportBook($event)"/>
+      </div>
     </div>
     <footer class="tw-bg-white tw-py-5"></footer>
   </div>
@@ -475,6 +486,12 @@ if (roleToken.value == "GUEST") {
 
 <style scoped>
 .delete-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.report-popup {
   position: fixed;
   top: 50%;
   left: 50%;

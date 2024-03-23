@@ -109,7 +109,7 @@ onBeforeMount(async () => {
     </div>
 
     <div class="tw-flex tw-place-content-center">
-      <div class="tw-bg-white tw-w-[70rem] tw-h-[9rem]">
+      <div class="tw-bg-white tw-w-[70rem]">
         <v-row class="tw-py-2">
           <v-col cols="2">
             <v-img
@@ -131,10 +131,12 @@ onBeforeMount(async () => {
           </v-col>
 
           <v-col cols="5">
-            <div>
+            <div class="tw-space-y-2">
               <p class="web-text-header">{{ login.profile.displayName }}</p>
               <p class="web-text-sub">{{ login.profile.email }}</p>
-              <p class="web-text-sub tw-py-6">{{ login.profile.bio }}</p>
+              <div class="tw-min-h-[4rem] tw-break-words">
+              <p class="web-text-sub">{{ login.profile.bio }}</p>
+              </div>
             </div>
           </v-col>
 
@@ -206,7 +208,7 @@ onBeforeMount(async () => {
           <v-row class="">
             <v-col cols="3" class="tw-grid tw-content-center">
               <div
-                class="tw-flex tw-justify-center web-text-sub-pf"
+                class="tw-cursor-pointer tw-flex tw-justify-center web-text-sub-pf "
                 v-if="profileSection != 'bookmark'"
                 @click="
                   (profileSection = 'bookmark'), selectSection(profileSection)
@@ -224,7 +226,7 @@ onBeforeMount(async () => {
             </v-col>
             <v-col cols="3" class="tw-grid tw-content-center">
               <div
-                class="tw-flex tw-justify-center web-text-sub-pf"
+                class="tw-flex tw-justify-center web-text-sub-pf tw-cursor-pointer"
                 v-if="profileSection != 'review'"
                 @click="
                   (profileSection = 'review'), selectSection(profileSection)
@@ -242,7 +244,7 @@ onBeforeMount(async () => {
             </v-col>
             <v-col cols="3" class="tw-grid tw-content-center">
               <div
-                class="tw-flex tw-justify-center web-text-sub-pf"
+                class="tw-flex tw-justify-center web-text-sub-pf tw-cursor-pointer"
                 v-if="profileSection != 'following'"
                 @click="
                   (profileSection = 'following'), selectSection(profileSection)
@@ -260,7 +262,7 @@ onBeforeMount(async () => {
             </v-col>
             <v-col cols="3" class="tw-grid tw-content-center">
               <div
-                class="tw-flex tw-justify-center web-text-sub-pf"
+                class="tw-flex tw-justify-center web-text-sub-pf tw-cursor-pointer"
                 v-if="profileSection != 'follower'"
                 @click="
                   (profileSection = 'follower'), selectSection(profileSection)

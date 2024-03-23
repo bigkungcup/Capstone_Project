@@ -577,6 +577,7 @@ export const useBooks = defineStore("Books", () => {
       },
     });
     if (status == 201) {
+      getBookDetail(bookId);
       console.log("bookmark completed");
     }
   }
@@ -604,6 +605,7 @@ export const useBooks = defineStore("Books", () => {
       }
     );
     if (status == 200) {
+      getBookDetail(bookId);
       console.log("delete bookmark completed");
     } else if (status == 400) {
       console.log("delete bookmark uncompleted");
@@ -813,7 +815,6 @@ export const useBooks = defineStore("Books", () => {
       await getSimilarBook(bookTypeId, bookId);
     }
   }
-
 
   // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds) {

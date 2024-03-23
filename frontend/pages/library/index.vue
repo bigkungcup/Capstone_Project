@@ -7,7 +7,6 @@ import { useBooks } from '~/stores/book'
 const library = useBooks();
 const roleToken = ref(localStorage.getItem('role'));
 const page = ref(1)
-const result = ref(0);
 const dialog = ref(false);
 const booktype = ref('');
 const sortList = [
@@ -38,10 +37,8 @@ function handleSelectionChange() {
 
   if (roleToken.value == 'GUEST') {
     library.getLibraryByGuest();
-    result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
   }else{
     library.getLibrary();
-    result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
   }
 }
 
@@ -49,11 +46,9 @@ onBeforeMount( async () => {
   if (roleToken.value == 'GUEST') {
     await library.getLibraryByGuest();
     library.getBookType();
-    result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
   }else{
     await library.getLibrary();
     library.getBookType();
-    result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
   }
   booktype.value = library.filterBook != 0 ? library.bookType.find(({ booktypeId }) => booktypeId ===  library.filterBook) : ''
 });
@@ -88,9 +83,9 @@ onBeforeMount( async () => {
 
       <v-row no-gutters>
         <v-col cols="5" class="tw-space-x-5">
-          <v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Result - {{ result }} </v-btn>
+          <v-btn size="auto" class="pa-5" color="#082266" rounded="lg"> Result - {{ library.bookList.data.totalElements ? library.bookList.data.totalElements : 0 }} </v-btn>
           <v-chip
-          v-if="booktype != ''"           
+          v-if="booktype.booktypeName != null"           
           variant="elevated" 
           color="#1D419F"
           size="large" 

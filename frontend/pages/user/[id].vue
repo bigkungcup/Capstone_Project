@@ -9,14 +9,17 @@ import UserNotFound from "~/components/users/userNotFound.vue";
 import { useUsers } from "~/stores/user";
 import { useBooks } from "~/stores/book";
 import { useReviews } from "~/stores/review";
+import { useNotifications } from "~/stores/notification";
 import { useRoute, useRouter } from "vue-router";
 import { mergeProps } from "vue";
 import deleteUserConfirmPopup from "~/components/users/popups/deleteUserConfirmPopup.vue";
 import deleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessPopup.vue";
+import CreateReportPopup from "~/components/reports/popups/createReportPopup.vue";
 
 const user = useUsers();
 const book = useBooks();
 const review = useReviews();
+const noti = useNotifications();
 const router = useRouter();
 const route = useRoute();
 const profileSection = ref("bookmark");
@@ -147,12 +150,12 @@ onBeforeMount(async () => {
           </v-col>
 
           <v-col cols="5">
-            <div class="tw-space-y-1">
-              <p class="web-text-header">
-                {{ user.userDetail.data.displayName }}
-              </p>
+            <div class="tw-space-y-2">
+              <p class="web-text-header">{{ user.userDetail.data.displayName }}</p>
               <p class="web-text-sub">{{ user.userDetail.data.email }}</p>
-              <p class="web-text-sub tw-py-5">{{ user.userDetail.data.bio }}</p>
+              <div class="tw-min-h-[4rem] tw-break-words">
+              <p class="web-text-sub">{{ user.userDetail.data.bio }}</p>
+              </div>
             </div>
           </v-col>
 
@@ -223,8 +226,8 @@ onBeforeMount(async () => {
                   </v-list-item>
                 </v-list>
                 <v-list v-if="roleToken == 'USER'">
-                  <v-list-item :to="`/user/update_${route.params.id}`+'/'">
-                    <v-list-item-title class="web-text-detail tw-space-x-2"
+                  <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
+                    <v-list-item-title class="web-text-detail tw-space-x-2" @click="noti.reportStatus.show = true,noti.reportStatus.type = 'user'"
                       ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
                       ><span>Report this user</span></v-list-item-title
                     >
@@ -428,6 +431,12 @@ onBeforeMount(async () => {
           :dialog="user.successfulPopup"
           @close="closeUserSuccessfulPopup()"
         />
+
+      <!-- Create Report Popup -->
+      <div v-if="noti.reportStatus.show">
+      <CreateReportPopup class="report-popup" :title="noti.reportUserList" :report="noti.reportProblem" @cancel="noti.reportStatus.show = false" @submit="noti.createUserBook($event)"/>
+      </div>
+
       </div>
     </div>
   </div>
