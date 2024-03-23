@@ -3,7 +3,9 @@ package sit.cp23ej2.services;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
@@ -40,6 +44,9 @@ public class NotificationService extends CommonController {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -96,15 +103,42 @@ public class NotificationService extends CommonController {
         return responseWithData(notificationDTO, 200, "OK", "All Notification");
     }
 
+    public DataResponse getCountNotification() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+
+        User user = userRepository.getUserByEmail(currentPrincipalName);
+        Integer countNotification = repository.getCountNotification(user.getUserId());
+        HashMap<String, Integer> countNotificationMap = new HashMap<>();
+        countNotificationMap.put("countNotification", countNotification);
+        return responseWithData(countNotificationMap, 200, "OK", "Count Notification");
+    }
+
     public DataResponse createNotification(CreateNotificationDTO createNotificationDTO) {
 
         userRepository.getAllUserList().forEach(u -> {
             repository.insertNotification(u.getUserId(), createNotificationDTO.getNotificationTitle(),
                     createNotificationDTO.getNotificationDetail(), 0, 1, createNotificationDTO.getNotificationLink(),
                     createNotificationDTO.getNotificationType());
+
+            // try {
+            //     System.out.println("Send Email");
+            //     Map<String, Object> variables = new HashMap<>();
+            //     variables.put("detail", createNotificationDTO.getNotificationDetail());
+            //     emailService.sendEmail(u.getEmail(), createNotificationDTO.getNotificationTitle(),
+            //             "System Maintenance", variables);
+            // } catch (AddressException e) {
+            //     System.out.println("Address Exception" + e.getMessage());
+            //     e.printStackTrace();
+            // } catch (MessagingException e) {
+            //     System.out.println("Messaging Exception" + e.getMessage());
+            //     e.printStackTrace();
+            // }
+
         });
 
         return response(201, "Created", "Notification Created");
+
         // repository.insertNotification(user.getUserId(),
         // createNotificationDTO.getNotificationTitle(),
         // createNotificationDTO.getNotificationDetail(), 0, 1,

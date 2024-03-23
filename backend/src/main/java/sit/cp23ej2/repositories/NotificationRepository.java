@@ -19,6 +19,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
                         " FROM Notification n WHERE n.nu_userId = :userId", nativeQuery = true)
         List<Notification> getNotificationByUserId(@Param("userId") Integer userId);
 
+        @Query(value = " SELECT COUNT(n.notificationId) " +
+                        " FROM Notification n WHERE n.nu_userId = :userId AND n.notificationStatus = 0", nativeQuery = true)
+        Integer getCountNotification(@Param("userId") Integer userId);
+
         @Modifying
         @Transactional
         @Query(value = "INSERT INTO Notification (nu_userId, notificationTitle, notificationDetail, notificationStatus, notificationLevel, notificationLink, notificationType)"

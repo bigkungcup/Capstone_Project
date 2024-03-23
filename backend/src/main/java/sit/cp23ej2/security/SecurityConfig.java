@@ -50,16 +50,19 @@ public class SecurityConfig {
 
         
         http.cors(withDefaults()).authorizeHttpRequests(authorize -> authorize
+
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/files/**").permitAll()
+
                 .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/user/ranking").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/user/ranking/**").permitAll()
                 .requestMatchers(HttpMethod.PUT,"/api/user/forgetPassword").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/user/{userId}").permitAll()
-
+                
                 .requestMatchers(HttpMethod.GET,"/api/user/all").hasAnyAuthority( "ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET,"/api/user/all/**").hasAnyAuthority( "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/user/resetPassword").hasAnyAuthority( "ROLE_USER","ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET,"/api/user/{userId}").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/user/**").hasAnyAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE,"/api/user/**").hasAnyAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/user/admin/**").hasAnyAuthority("ROLE_ADMIN")

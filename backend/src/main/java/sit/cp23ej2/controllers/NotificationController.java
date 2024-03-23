@@ -41,6 +41,11 @@ public class NotificationController {
         return notificationService.getNotificationByUserId();
     }
 
+    @GetMapping("/count")
+    public DataResponse getNotificationById() {
+        return notificationService.getCountNotification();
+    }
+
     @PostMapping("")
     public DataResponse createNotification(@RequestBody @Valid CreateNotificationDTO createNotificationDTO) {
         return notificationService.createNotification(createNotificationDTO);

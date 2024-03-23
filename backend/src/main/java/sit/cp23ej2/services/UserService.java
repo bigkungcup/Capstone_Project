@@ -19,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Folloing.FollowingReviewDTO;
@@ -353,14 +355,35 @@ public class UserService extends CommonController {
     public DataResponse updateUserByAdmin(UpdateUserByAdminDTO updateUser, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
+        
+       
 
         if (userById != null) {
             if (userById.getDisplayName().equals(updateUser.getDisplayName())
                     && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                             .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
                 // Display name is not changed
+
+                // try {
+                //     System.out.println("Send Email");
+                //     Map<String, Object> variables = new HashMap<>();
+                //     variables.put("displayName", updateUser.getDisplayName());
+                //     variables.put("password", updateUser.getPassword());
+                //     variables.put("email", userById.getEmail());
+                //     emailService.sendEmail(userById.getEmail(), "Reset password request", "Change Pasword", variables);
+                // } catch (AddressException e) {
+                //     System.out.println("Address Exception" + e.getMessage());
+                //     e.printStackTrace();
+                // } catch (MessagingException e) {
+                //     System.out.println("Messaging Exception" + e.getMessage());
+                //     e.printStackTrace();
+                // }
+
+                updateUser.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword())); 
+
                 repository.updateUserDetailByAdmin(updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(),
                         userId);
+                
                 if (file != null) {
                     fileStorageService.deleteUserFile(userId);
                     fileStorageService.storeUserProfile(file, userId);
@@ -396,13 +419,27 @@ public class UserService extends CommonController {
                 boolean existsByEmailOrDisplayName = repository.existsByDisplayName(updateUser.getDisplayName());
                 if (!existsByEmailOrDisplayName) {
                     if(!userById.getPassword().equals(updateUser.getPassword())){
+
+                        // try {
+                        //     System.out.println("Send Email");
+                        //     Map<String, Object> variables = new HashMap<>();
+                        //     variables.put("displayName", updateUser.getDisplayName());
+                        //     variables.put("password", updateUser.getPassword());
+                        //     variables.put("email", userById.getEmail());
+                        //     emailService.sendEmail(userById.getEmail(), "Reset password request", "Change Pasword", variables);
+                        // } catch (AddressException e) {
+                        //     System.out.println("Address Exception" + e.getMessage());
+                        //     e.printStackTrace();
+                        // } catch (MessagingException e) {
+                        //     System.out.println("Messaging Exception" + e.getMessage());
+                        //     e.printStackTrace();
+                        // }
+
+                        updateUser.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword())); 
+
                         repository.updateUserByAdmin(updateUser.getDisplayName(), userById.getEmail(),
                             updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(), userId);
-                            Map<String, Object> variables = new HashMap<>();
-                            variables.put("displayName", updateUser.getDisplayName());
-                            variables.put("password", updateUser.getPassword());
-                            variables.put("email", userById.getEmail());
-                        // emailService.sendEmail(userById.getEmail(), "Reset password request", "Change Pasword", variables);
+                      
                     }else{
                         repository.updateUserNoPasswordByAdmin(updateUser.getDisplayName(), userById.getEmail(),
                             updateUser.getBio(), updateUser.getRole(), userId);
@@ -652,6 +689,22 @@ public class UserService extends CommonController {
 
     public DataResponse deleteUser(int userId) {
         DataResponse response = new DataResponse();
+        // User userById = repository.getUserById(userId);
+        
+        // try {
+        //     System.out.println("Send Email");
+        //     Map<String, Object> variables = new HashMap<>();
+        //     variables.put("username", userById.getDisplayName());
+        //     variables.put("email", userById.getEmail());
+
+        //     emailService.sendEmail(repository.getUserById(userId).getEmail(), "Your Bannarug account has been deleted.", "Delete Account", variables);
+        // } catch (AddressException e) {
+        //     System.out.println("Address Exception" + e.getMessage());
+        //     e.printStackTrace();
+        // } catch (MessagingException e) {
+        //     System.out.println("Messaging Exception" + e.getMessage());
+        //     e.printStackTrace();
+        // }
 
         repository.deleteUser(userId);
 
