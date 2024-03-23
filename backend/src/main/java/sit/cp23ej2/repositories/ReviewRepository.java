@@ -83,6 +83,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
         List<Review> findAll();
 
+        boolean existsByReviewId(Integer reviewId);
+
         @Modifying
         @Transactional
         @Query(value = "UPDATE Review SET reviewTotalLike = reviewTotalLike + 1  WHERE reviewId = :reviewId", nativeQuery = true)

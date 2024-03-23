@@ -104,6 +104,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
         Boolean existsByAuthorAndBookName(String author, String bookName);
 
+        Boolean existsByBookId(Integer bookId);
+
         @Query(value = "SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]", nativeQuery = true)
         Integer getLastId();
 

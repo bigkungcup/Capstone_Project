@@ -4,8 +4,9 @@ import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -397,7 +398,11 @@ public class UserService extends CommonController {
                     if(!userById.getPassword().equals(updateUser.getPassword())){
                         repository.updateUserByAdmin(updateUser.getDisplayName(), userById.getEmail(),
                             updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(), userId);
-                        // emailService.sendEmail(userById.getEmail(), "Password Reset", "Change Pasword", updateUser.getPassword());
+                            Map<String, Object> variables = new HashMap<>();
+                            variables.put("displayName", updateUser.getDisplayName());
+                            variables.put("password", updateUser.getPassword());
+                            variables.put("email", userById.getEmail());
+                        // emailService.sendEmail(userById.getEmail(), "Reset password request", "Change Pasword", variables);
                     }else{
                         repository.updateUserNoPasswordByAdmin(updateUser.getDisplayName(), userById.getEmail(),
                             updateUser.getBio(), updateUser.getRole(), userId);

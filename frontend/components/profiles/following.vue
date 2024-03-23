@@ -11,8 +11,8 @@ defineProps({
 <template>
   <v-container>
     <v-row no-gutters>
-      <v-col cols="4">
-        <v-card class="tw-w-[20rem] tw-h-[20rem]"  v-for="user in followingList">
+      <v-col cols="4" v-for="user in followingList">
+        <v-card class="tw-w-[20rem] tw-h-[20rem] tw-my-2 tw-mx-6" >
           <div class="tw-h-[8rem]">
             <nuxt-link :to="`/user/${user.userFollowings.userId}/`">
             <v-img src="/image/profile_banner.jpg" v-show="user.userFollowings.file == null" cover></v-img>

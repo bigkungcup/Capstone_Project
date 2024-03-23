@@ -40,6 +40,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         boolean existsByDisplayName(String displayName);
 
+        boolean existsByUserId(Integer userId);
 
         @Modifying
         @Transactional

@@ -58,6 +58,8 @@ public class ReportService extends CommonController {
                 reportDTO.setData(bookRepository.getBookById(reportDTO.getProblemId()));
             } else if(reportDTO.getReportType().equals("review")) {
                 reportDTO.setData(reviewRepository.getReviewById(reportDTO.getProblemId()));
+            } else if(reportDTO.getReportType().equals("user")) {
+                reportDTO.setData(userRepository.getUserById(reportDTO.getProblemId()));
             }
         });
 
@@ -91,8 +93,24 @@ public class ReportService extends CommonController {
         String currentPrincipalName = authentication.getName();
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
+        
+        if(createReportDTO.getReportType().equals("book")) {
+            if(!bookRepository.existsByBookId(createReportDTO.getProblemId())) {
+                throw new HandleExceptionNotFound("Book not found", "Book");
+            }
+        } else if(createReportDTO.getReportType().equals("review")) {
+            if(!reviewRepository.existsByReviewId(createReportDTO.getProblemId())) {
+                throw new HandleExceptionNotFound("Review not found", "Review");
+            }
+        }else if(createReportDTO.getReportType().equals("user")){
+            if(!userRepository.existsByUserId(createReportDTO.getProblemId())) {
+                throw new HandleExceptionNotFound("User not found", "User");
+            }
+        }
+
         repository.insertReport(createReportDTO.getReportTitle(), createReportDTO.getReportDetail(),
                 createReportDTO.getProblemId(), createReportDTO.getReportType(), user.getUserId());
+
         return response(201, "Created", "Report has been created");
     }
 
@@ -107,6 +125,7 @@ public class ReportService extends CommonController {
         }
 
         repository.updateReport(user.getUserId(), reportId);
+
         return response(200, "OK", "Report has been updated");
     }
 }

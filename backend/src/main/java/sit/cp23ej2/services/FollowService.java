@@ -51,12 +51,6 @@ public class FollowService extends CommonController {
     public DataResponse getFollowers(Integer userId, Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size);
-
-        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // String currentPrincipalName = authentication.getName();
-
-        // User user = userRepository.getUserByEmail(currentPrincipalName);
         
         PageFollowerDTO follower = modelMapper.map(reposiroty.getFollowers(pageable, userId),
                 PageFollowerDTO.class);
