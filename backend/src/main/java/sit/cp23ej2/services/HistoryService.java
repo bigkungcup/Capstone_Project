@@ -73,11 +73,14 @@ public class HistoryService extends CommonController {
               
             }
 
-            Duration duration = Duration.between(LocalDateTime.now(), book.getBookUpdateDateTime());
-            book.setCountDateTime(Math.abs(duration.toSeconds()));
+            // Duration duration = Duration.between(LocalDateTime.now(), book.getBookCreateDateTime());
+            // book.setCountDateTime(Math.abs(duration.toSeconds()));
             history.getBook().setBookTag(history.getBook().getBookTag().replaceAll(",", ", "));
             book.setBookTagList(new ArrayList<String>(Arrays.asList(history.getBook().getBookTag().split(","))));
             history.setBookData(book);
+
+            Duration duration = Duration.between(LocalDateTime.now(), history.getHistoryUpdateDateTime());
+            history.setCountDateTime(Math.abs(duration.toSeconds()));
         });
 
         // bookHistory.forEach((history) -> {

@@ -99,7 +99,7 @@ public class BookService extends CommonController {
             List<BookDTO> bookDTOs = books.getContent();
             bookDTOs.forEach(bookDTO -> {
 
-                Duration duration = Duration.between(LocalDateTime.now(), bookDTO.getBookUpdateDateTime());
+                Duration duration = Duration.between(LocalDateTime.now(), bookDTO.getBookCreateDateTime());
                 bookDTO.setCountDateTime(Math.abs(duration.toSeconds()));
                 bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
                 ArrayList<String> bookTag = new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", ")));
@@ -156,6 +156,8 @@ public class BookService extends CommonController {
             Integer existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
             if (user != null && existsByUserIdAndBookId == 0) {
                 historyRepository.insertHistory(user.getUserId(), bookId);
+            }else if(user != null && existsByUserIdAndBookId != 0){
+                historyRepository.updateHistory(user.getUserId(), bookId);
             }
         }
 

@@ -51,4 +51,6 @@ public class HistoryDTO {
     private Book book;
 
     private BookDTO bookData;
+
+    private Long countDateTime;
 }

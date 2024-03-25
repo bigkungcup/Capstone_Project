@@ -22,6 +22,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
         @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio " +
                         " FROM User u " +
+                        " WHERE u.role = 'USER' " +
                         " ORDER BY CASE WHEN :sort_param = 'followers' THEN u.followers END DESC, " +
                         " CASE WHEN :sort_param = 'totalLike' THEN u.totalLike END DESC " +
                         " LIMIT 5"

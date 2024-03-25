@@ -37,4 +37,6 @@ public class NotificationDTO {
 
     private BookDTO book;
 
+    private Long countDateTime;
 }
+

@@ -141,7 +141,7 @@ public class ReviewService extends CommonController {
 
                 }
 
-                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewUpdateDateTime());
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewCreateDateTime());
                 review.setCountDateTime(Math.abs(duration.toSeconds()));
 
                 // followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following ->
@@ -250,7 +250,7 @@ public class ReviewService extends CommonController {
                 }
                 review.setBookDetail(bookDTO);
 
-                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewUpdateDateTime());
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewCreateDateTime());
                 review.setCountDateTime(Math.abs(duration.toSeconds()));
             });
 
@@ -327,7 +327,7 @@ public class ReviewService extends CommonController {
                     });
                 }
 
-                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewUpdateDateTime());
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewCreateDateTime());
                 reviewDTO.setCountDateTime(Math.abs(duration.toSeconds()));
 
                 reviewDTOs.add(reviewDTO);
