@@ -1,7 +1,7 @@
 <script setup>
 defineEmits(["like", "update"]);
 defineProps({
-  problem: {
+  newReviewList: {
     type: Array,
     require: true,
   },
