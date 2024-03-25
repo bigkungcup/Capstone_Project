@@ -7,7 +7,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
@@ -72,6 +76,9 @@ public class ReviewService extends CommonController {
     private NotificationRepository notificationRepository;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Value("${base_url}")
@@ -104,7 +111,7 @@ public class ReviewService extends CommonController {
         }
 
         PageReviewAllDTO reviews = modelMapper.map(repository.getReviewByBookId(pageable, bookId, reviewRating),
-        PageReviewAllDTO.class);
+                PageReviewAllDTO.class);
         if (reviews.getContent().size() > 0) {
 
             reviews.getContent().forEach(review -> {
@@ -152,27 +159,27 @@ public class ReviewService extends CommonController {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
                 reviews.getContent().forEach(review -> {
                     // if (likeStatus.size() == 0) {
-                    //     LikeStatus likestatus = new LikeStatus();
-                    //     likestatus.setLikeStatus(0);
-                    //     review.setLikeStatus(likestatus);
+                    // LikeStatus likestatus = new LikeStatus();
+                    // likestatus.setLikeStatus(0);
+                    // review.setLikeStatus(likestatus);
                     // } else {
-                        if(likeStatus.size() > 0){
-                            likeStatus.forEach(like -> {
-                                if (review.getReviewId().equals(like.getLsr_reviewId())) {
-                                    review.setLikeStatus(like);
-                                } 
-                            });
-                        }
-                        // likeStatus.forEach(like -> {
-                        //     if (review.getReviewId().equals(like.getLsr_reviewId())) {
-                        //         review.setLikeStatus(like);
-                        //     } 
-                        //     // else {
-                        //     //     LikeStatus likestatus = new LikeStatus();
-                        //     //     likestatus.setLikeStatus(0);
-                        //     //     review.setLikeStatus(likestatus);
-                        //     // }
-                        // });
+                    if (likeStatus.size() > 0) {
+                        likeStatus.forEach(like -> {
+                            if (review.getReviewId().equals(like.getLsr_reviewId())) {
+                                review.setLikeStatus(like);
+                            }
+                        });
+                    }
+                    // likeStatus.forEach(like -> {
+                    // if (review.getReviewId().equals(like.getLsr_reviewId())) {
+                    // review.setLikeStatus(like);
+                    // }
+                    // // else {
+                    // // LikeStatus likestatus = new LikeStatus();
+                    // // likestatus.setLikeStatus(0);
+                    // // review.setLikeStatus(likestatus);
+                    // // }
+                    // });
                     // }
                 });
             }
@@ -301,7 +308,7 @@ public class ReviewService extends CommonController {
                                 review.getBook().getBookId());
                     }
 
-                    if(bookDTO.getBookTag() != null){
+                    if (bookDTO.getBookTag() != null) {
                         bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
                         bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
                     }
@@ -348,11 +355,11 @@ public class ReviewService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        if(userRepository.getUserById(review.getUserId()) == null){
+        if (userRepository.getUserById(review.getUserId()) == null) {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
 
-        if(!user.getUserId().equals(review.getUserId())){
+        if (!user.getUserId().equals(review.getUserId())) {
             throw new HandleExceptionForbidden("Can not create review for user: ");
         }
 
@@ -361,22 +368,26 @@ public class ReviewService extends CommonController {
 
         BookDTO bookDTO = modelMapper.map(bookRepository.getBookById(review.getBookId()), BookDTO.class);
 
-        bookmarkRepository.getBookmarkListByUserId(user.getUserId()).forEach(bookmark -> {
-            if (bookmark.getBook().getBookId() == review.getBookId()) {
+        bookmarkRepository.getBookmarkListByBookId(review.getBookId()).forEach(bookmark -> {
+            // System.out.println("Insert Notification check bookmark");
+            // if (bookmark.getBook().getBookId() == review.getBookId()) {
                 // throw new HandleExceptionForbidden("Can not create review for user: ");
-                notificationRepository.insertNotification(user.getUserId(),
+                System.out.println("Insert Notification Success");
+                notificationRepository.insertNotification(bookmark.getUser().getUserId(),
                         bookmark.getBook().getBookName(), "has a new review. Check it now!", 0, 0,
                         "/book/" + bookmark.getBook().getBookId() + "/", "Bookmark");
-            }
+            // }
         });
 
-        followReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
-            if (following.getFollowId() == review.getUserId()) {
-                notificationRepository.insertNotification(user.getUserId(),
+        followReposiroty.getFollowerList(user.getUserId()).forEach(following -> {
+            // if (following.getUserfollow().getUserId() == review.getUserId()) {
+                System.out.println("Insert Notification Success");
+                notificationRepository.insertNotification(following.getUserfollow().getUserId(),
                         following.getUserfollow().getDisplayName() + "(Following)",
                         "has created a review in " + bookDTO.getBookName(), 0, 0, "/book/" + bookDTO.getBookId() + "/",
                         "Review");
-            }
+                        // System.out.println("Insert Notification");
+            // }
         });
 
         bookRepository.increaseBookTotalReview(review.getBookId());
@@ -491,6 +502,23 @@ public class ReviewService extends CommonController {
             if (deleteStatus == 0) {
                 throw new HandleExceptionNotFound("Review Not Found", "Review");
             }
+
+            // try {
+            //     System.out.println("Send Email");
+            //     Map<String, Object> variables = new HashMap<>();
+            //     variables.put("bookName", review.getBook().getBookName());
+            //     variables.put("reviewName", review.getReviewTitle());
+            //     variables.put("reviewDetail", review.getReviewDetail());
+            //     emailService.sendEmail(review.getUser().getEmail(), "Your review in Bannarug has been deleted.",
+            //             "Delete Review", variables);
+            // } catch (AddressException e) {
+            //     System.out.println("Address Exception" + e.getMessage());
+            //     e.printStackTrace();
+            // } catch (MessagingException e) {
+            //     System.out.println("Messaging Exception" + e.getMessage());
+            //     e.printStackTrace();
+            // }
+
             bookRepository.updateBookReting(review.getBook().getBookId());
             response.setResponse_code(200);
             response.setResponse_status("OK");

@@ -60,7 +60,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE Review SET reviewRating = :rating, reviewDetail= :detail, reviewTitle = :title, spoileFlag = :spoileFlag"
+        @Query(value = "UPDATE Review SET reviewRating = :rating, reviewDetail= :detail, reviewTitle = :title, spoileFlag = :spoileFlag, reviewUpdateDateTime = NOW()"
                         +
                         " WHERE reviewId = :reviewId", nativeQuery = true)
         void updateReview(@Param("rating") Long reviewRating, @Param("detail") String reviewDetail,

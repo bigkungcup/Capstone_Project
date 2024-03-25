@@ -94,6 +94,7 @@ const notiList = ref({
         >History</NuxtLink
       >
       <NuxtLink to="/user/" v-show="login.roleToken == 'ADMIN'">User</NuxtLink>
+      <NuxtLink to="/report/">Report</NuxtLink>
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
       <span
