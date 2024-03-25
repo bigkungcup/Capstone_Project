@@ -25,7 +25,7 @@ public interface HistoryRepository extends JpaRepository<History, Integer> {
         //     " LEFT JOIN Book b ON h.hb_bookId = b.bookId"  +
         //     " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
             " WHERE hu_userId = :userId" +
-            " ORDER BY h.historyCreateDateTime DESC"
+            " ORDER BY h.historyUpdateDateTime DESC"
         //     " GROUP BY h.historyId, h.hu_userId, h.hb_bookId, h.historyCreateDateTime, h.historyUpdateDateTime" 
             , nativeQuery = true)
     Page<History> getBookHistory(Pageable pageable, @Param("userId") Integer userId);
