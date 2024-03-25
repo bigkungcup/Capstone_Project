@@ -392,7 +392,7 @@ public class ReviewService extends CommonController {
 
         bookRepository.increaseBookTotalReview(review.getBookId());
         userRepository.increaseTotalReview(review.getUserId());
-        bookRepository.updateBookReting(review.getBookId());
+        bookRepository.updateBookRating(review.getBookId());
         response.setResponse_code(201);
         response.setResponse_status("Created");
         response.setResponse_message("Review Created");
@@ -420,7 +420,7 @@ public class ReviewService extends CommonController {
         } else if (reviewData.getUser().getUserId() == user.getUserId() && user.getRole().equals("USER")) {
             repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
                     reviewId);
-            bookRepository.updateBookReting(reviewData.getBook().getBookId());
+            bookRepository.updateBookRating(reviewData.getBook().getBookId());
             Review dataReview = repository.getReviewById(reviewId);
 
             dataReview.setReviewTitle(review.getTitle());
@@ -436,7 +436,7 @@ public class ReviewService extends CommonController {
         } else if (user.getRole().equals("ADMIN")) {
             repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
                     reviewId);
-            bookRepository.updateBookReting(reviewData.getBook().getBookId());
+            bookRepository.updateBookRating(reviewData.getBook().getBookId());
             Review dataReview = repository.getReviewById(reviewId);
 
             dataReview.setReviewTitle(review.getTitle());
@@ -490,7 +490,7 @@ public class ReviewService extends CommonController {
             if (deleteStatus == 0) {
                 throw new HandleExceptionNotFound("Review Not Found", "Review");
             }
-            bookRepository.updateBookReting(review.getBook().getBookId());
+            bookRepository.updateBookRating(review.getBook().getBookId());
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Review Deleted");
@@ -519,7 +519,7 @@ public class ReviewService extends CommonController {
             //     e.printStackTrace();
             // }
 
-            bookRepository.updateBookReting(review.getBook().getBookId());
+            bookRepository.updateBookRating(review.getBook().getBookId());
             response.setResponse_code(200);
             response.setResponse_status("OK");
             response.setResponse_message("Review Deleted");

@@ -36,7 +36,9 @@ import sit.cp23ej2.dtos.User.UserRankingDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
+import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.FollowReposiroty;
+import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
 @Service
@@ -50,6 +52,12 @@ public class UserService extends CommonController {
 
     @Autowired
     private FollowReposiroty followReposiroty;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
 
     @Autowired
     private EmailService emailService;
@@ -275,8 +283,9 @@ public class UserService extends CommonController {
             if (userById.getDisplayName().equals(updateUser.getDisplayName())
                     && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                             .anyMatch(a -> a.getAuthority().equals("ROLE_USER"))) {
+
                 // Display name is not changed
-                repository.updateUserDetailByUser(updateUser.getBio(), userId);
+                repository.updateUserDetailBio(updateUser.getBio(), userId);
                 if (file != null) {
                     fileStorageService.deleteUserFile(userId);
                     fileStorageService.storeUserProfile(file, userId);
@@ -355,8 +364,7 @@ public class UserService extends CommonController {
     public DataResponse updateUserByAdmin(UpdateUserByAdminDTO updateUser, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
-        
-       
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
 
         if (userById != null) {
             if (userById.getDisplayName().equals(updateUser.getDisplayName())
@@ -379,10 +387,13 @@ public class UserService extends CommonController {
                 //     e.printStackTrace();
                 // }
 
-                updateUser.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword())); 
-
-                repository.updateUserDetailByAdmin(updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(),
-                        userId);
+                if(!encoder.matches(updateUser.getPassword(), userById.getPassword())){
+                    updateUser.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword())); 
+                    repository.updateUserDetailByAdmin(updateUser.getPassword(), updateUser.getBio(),
+                    userId);
+                }else{
+                    repository.updateUserDetailBio(updateUser.getBio(), userId);
+                }
                 
                 if (file != null) {
                     fileStorageService.deleteUserFile(userId);
@@ -418,7 +429,7 @@ public class UserService extends CommonController {
                 // Display name is changed
                 boolean existsByEmailOrDisplayName = repository.existsByDisplayName(updateUser.getDisplayName());
                 if (!existsByEmailOrDisplayName) {
-                    if(!userById.getPassword().equals(updateUser.getPassword())){
+                    if(!encoder.matches(updateUser.getPassword(), userById.getPassword())){
 
                         // try {
                         //     System.out.println("Send Email");
@@ -437,12 +448,12 @@ public class UserService extends CommonController {
 
                         updateUser.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword())); 
 
-                        repository.updateUserByAdmin(updateUser.getDisplayName(), userById.getEmail(),
-                            updateUser.getPassword(), updateUser.getBio(), updateUser.getRole(), userId);
+                        repository.updateUserByAdmin(updateUser.getDisplayName(),
+                            updateUser.getPassword(), updateUser.getBio(), userId);
                       
                     }else{
-                        repository.updateUserNoPasswordByAdmin(updateUser.getDisplayName(), userById.getEmail(),
-                            updateUser.getBio(), updateUser.getRole(), userId);
+                        repository.updateUserNoPasswordByAdmin(updateUser.getDisplayName(),
+                            updateUser.getBio(), userId);
                     }
                    
                     if (file != null) {
@@ -689,7 +700,11 @@ public class UserService extends CommonController {
 
     public DataResponse deleteUser(int userId) {
         DataResponse response = new DataResponse();
-        // User userById = repository.getUserById(userId);
+        User userById = repository.getUserById(userId);
+
+        if(userById == null){
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
         
         // try {
         //     System.out.println("Send Email");
@@ -706,7 +721,15 @@ public class UserService extends CommonController {
         //     e.printStackTrace();
         // }
 
+       reviewRepository.getReviewByUserId(userId).forEach(review -> {
+            // reviewRepository.deleteReview(review.getReviewId());
+            bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
+            bookRepository.updateBookRating(review.getBook().getBookId());
+        });
+        
         repository.deleteUser(userId);
+
+        fileStorageService.deleteUserFile(userId);
 
         response.setResponse_code(200);
         response.setResponse_status("OK");

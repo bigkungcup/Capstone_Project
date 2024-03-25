@@ -364,6 +364,15 @@ BEGIN
     SELECT CountData;
     
     SET Rating = SumData/CountData;
+    SELECT Rating;
+    
+    IF Rating IS NULL THEN
+		  SET Rating = 0;
+	  ELSE 
+		  SET Rating = Rating;
+	  END IF;
+    
+    SELECT Rating;
     
     UPDATE Book b SET b.bookRating = Rating WHERE b.bookId = in_book_id;
 END$$

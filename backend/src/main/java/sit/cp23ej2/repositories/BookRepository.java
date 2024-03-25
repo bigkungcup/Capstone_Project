@@ -163,5 +163,5 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         @Modifying
         @Transactional
         @Query(value = " CALL updateBookRating(:bookId); ", nativeQuery = true)
-        void updateBookReting(@Param("bookId") Integer bookId);
+        void updateBookRating(@Param("bookId") Integer bookId);
 }
