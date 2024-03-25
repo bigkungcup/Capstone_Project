@@ -35,7 +35,7 @@ public interface HistoryRepository extends JpaRepository<History, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE FROM History SET historyUpdateDateTime = NOW() WHERE hu_userId = :userId AND hb_bookId = :bookId", nativeQuery = true)
+    @Query(value = "UPDATE History SET historyUpdateDateTime = NOW() WHERE hu_userId = :userId AND hb_bookId = :bookId", nativeQuery = true)
     Integer updateHistory(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
 
     @Modifying
