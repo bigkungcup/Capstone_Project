@@ -52,8 +52,9 @@ public class UserController {
 
     @RequestMapping("/all")
     public DataResponse getAllUser(@RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) throws HandleExceptionNotFound {
-        return userService.getUser(page, size);
+            @RequestParam(defaultValue = "10") Integer size, @RequestParam(required =  false) String role,
+            @RequestParam(required = false) String search) throws HandleExceptionNotFound {
+        return userService.getUser(page, size, role, search);
     }
 
     @RequestMapping("/{userId}")

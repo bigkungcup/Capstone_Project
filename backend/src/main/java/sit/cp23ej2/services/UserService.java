@@ -70,37 +70,62 @@ public class UserService extends CommonController {
 
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public DataResponse getUser(int page, int size) throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
+    public DataResponse getUser(int page, int size, String role, String search) throws HandleExceptionNotFound {
+        // DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
-        PageUserDTO users = modelMapper.map(repository.getAllUsers(pageable), PageUserDTO.class);
+        if(role == null){
+            PageUserDTO users = modelMapper.map(repository.getAllUsers(pageable, role, search), PageUserDTO.class);
 
-        if (users.getContent().size() > 0) {
-            List<UserDTO> userDTO = users.getContent();
-            userDTO = userDTO.stream().map(user -> {
-                try {
-                    Path pathFile = fileStorageService.loadUserFile(user.getUserId());
-                    if (pathFile != null) {
-                        // user.setFile(pathFile.toString());
-                        // user.setFile("http://localhost:8080/api/files/filesUser/" +
-                        // user.getUserId());
-                        user.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+            if (users.getContent().size() > 0) {
+                List<UserDTO> userDTO = users.getContent();
+                userDTO = userDTO.stream().map(user -> {
+                    try {
+                        Path pathFile = fileStorageService.loadUserFile(user.getUserId());
+                        if (pathFile != null) {
+                            user.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return user;
-            }).collect(Collectors.toList());
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("All Users");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(users);
-        } else {
-            throw new HandleExceptionNotFound("User Not Found", "User");
+                    return user;
+                }).collect(Collectors.toList());
+                return responseWithData(users, 200, "OK", "All Users");
+            } else {
+                throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+        }else if(role.equals("USER") || role.equals("ADMIN")){
+            PageUserDTO users = modelMapper.map(repository.getAllUsers(pageable, role, search), PageUserDTO.class);
+
+            if (users.getContent().size() > 0) {
+                List<UserDTO> userDTO = users.getContent();
+                userDTO = userDTO.stream().map(user -> {
+                    try {
+                        Path pathFile = fileStorageService.loadUserFile(user.getUserId());
+                        if (pathFile != null) {
+                            // user.setFile(pathFile.toString());
+                            // user.setFile("http://localhost:8080/api/files/filesUser/" +
+                            // user.getUserId());
+                            user.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return user;
+                }).collect(Collectors.toList());
+                // response.setResponse_code(200);
+                // response.setResponse_status("OK");
+                // response.setResponse_message("All Users");
+                // response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+                // response.setData(users);
+                return responseWithData(users, 200, "OK", "All Users");
+            } else {
+                throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+        }else{
+            throw new HandleExceptionBadRequest("Role is incorrect");
         }
 
-        return response;
+       
     }
 
     public DataResponse getUserById(int userId) throws HandleExceptionNotFound {

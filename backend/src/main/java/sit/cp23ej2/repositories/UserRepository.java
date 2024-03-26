@@ -14,8 +14,12 @@ import sit.cp23ej2.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u", nativeQuery = true)
-        Page<User> getAllUsers(Pageable pageable);
+        @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio " +
+                        "FROM User u" +
+                        " WHERE (:role IS NULL OR u.role = :role) " +
+                        " AND (:search IS NULL OR u.displayName LIKE %:search% OR u.email LIKE %:search%)"
+                        , nativeQuery = true)
+        Page<User> getAllUsers(Pageable pageable, @Param("role") String role, @Param("search") String search);
 
         @Query(value = "SELECT u.userId, u.displayName, u.email, u.password, u.role, u.followers, u.followings, u.totalReview, u.totalFavoriteReview, u.totalLike, u.bio FROM User u", nativeQuery = true)
         List<User> getAllUserList();
