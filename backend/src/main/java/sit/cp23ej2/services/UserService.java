@@ -131,9 +131,11 @@ public class UserService extends CommonController {
 
         if(user.getUserId().equals(userId)){
             User userDetail = repository.getUserById(user.getUserId());
-            // if (userDetail == null) {
-            //     throw new HandleExceptionNotFound("User Not Found", "User");
-            // }
+
+            if (userDetail == null) {
+                throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+
             UserDTO userDTO = modelMapper.map(userDetail, UserDTO.class);
             if (userDTO != null) {
                 try {
@@ -142,6 +144,26 @@ public class UserService extends CommonController {
                         // userDTO.setFile(pathFile.toString());
                         // userDTO.setFile("http://localhost:8080/api/files/filesUser/" +
                         // user.getUserId());
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDetail.getUserId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return responseWithData(userDTO, 200, "OK", "User");
+            } else {
+                throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+        }else if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))){
+            User userDetail = repository.getUserById(userId);
+            if (userDetail == null) {
+                throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+            UserDTO userDTO = modelMapper.map(userDetail, UserDTO.class);
+            if (userDTO != null) {
+                try {
+                    Path pathFile = fileStorageService.loadUserFile(userId);
+                    if (pathFile != null) {
                         userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDetail.getUserId());
                     }
                 } catch (Exception e) {
@@ -364,7 +386,7 @@ public class UserService extends CommonController {
     public DataResponse updateUserByAdmin(UpdateUserByAdminDTO updateUser, Integer userId, MultipartFile file) {
         DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
+        // BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
 
         if (userById != null) {
             if (userById.getDisplayName().equals(updateUser.getDisplayName())
@@ -432,7 +454,6 @@ public class UserService extends CommonController {
                 if (!existsByEmailOrDisplayName) {
                     // if(!encoder.matches(updateUser.getPassword(), userById.getPassword())){
                     if(!updateUser.getPassword().equals(userById.getPassword())){
-                        
                         // try {
                         //     System.out.println("Send Email");
                         //     Map<String, Object> variables = new HashMap<>();
