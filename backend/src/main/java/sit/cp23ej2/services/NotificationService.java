@@ -137,7 +137,7 @@ public class NotificationService extends CommonController {
         User user = userRepository.getUserByEmail(currentPrincipalName);
         Integer countNotification = repository.getCountNotificationSystem(user.getUserId());
         HashMap<String, Integer> countNotificationMap = new HashMap<>();
-        countNotificationMap.put("countNotificationSyatem", countNotification);
+        countNotificationMap.put("countNotificationSystem", countNotification);
         return responseWithData(countNotificationMap, 200, "OK", "Count Notification System");
     }
 
