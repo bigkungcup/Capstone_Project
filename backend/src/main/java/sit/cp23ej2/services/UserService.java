@@ -387,7 +387,8 @@ public class UserService extends CommonController {
                 //     e.printStackTrace();
                 // }
 
-                if(!encoder.matches(updateUser.getPassword(), userById.getPassword())){
+                // if(!encoder.matches(updateUser.getPassword(), userById.getPassword()) || !updateUser.getPassword().equals(userById.getPassword())){
+                if(!updateUser.getPassword().equals(userById.getPassword())){
                     updateUser.setPassword(new BCryptPasswordEncoder().encode(updateUser.getPassword())); 
                     repository.updateUserDetailByAdmin(updateUser.getPassword(), updateUser.getBio(),
                     userId);
@@ -429,8 +430,9 @@ public class UserService extends CommonController {
                 // Display name is changed
                 boolean existsByEmailOrDisplayName = repository.existsByDisplayName(updateUser.getDisplayName());
                 if (!existsByEmailOrDisplayName) {
-                    if(!encoder.matches(updateUser.getPassword(), userById.getPassword())){
-
+                    // if(!encoder.matches(updateUser.getPassword(), userById.getPassword())){
+                    if(!updateUser.getPassword().equals(userById.getPassword())){
+                        
                         // try {
                         //     System.out.println("Send Email");
                         //     Map<String, Object> variables = new HashMap<>();
