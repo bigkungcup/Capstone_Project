@@ -256,18 +256,14 @@ export const useUsers = defineStore("Users", () => {
     if (editUserFile.value === null && userDetail.value.data.file !== null) {
       user = {
         displayName: editUser.value.displayName,
-        email: editUser.value.email,
-        password: editUser.value.password,
+        password: editUser.value.password == '' ? userDetail.value.data.password : editUser.value.password,
         bio: editUser.value.bio,
-        role: editUser.value.role,
       };
     } else {
       user = {
         displayName: editUser.value.displayName,
-        email: editUser.value.email,
-        password: editUser.value.password,
+        password: editUser.value.password == '' ? userDetail.value.data.password : editUser.value.password,
         bio: editUser.value.bio,
-        role: editUser.value.role,
         status: "edit",
       };
     }

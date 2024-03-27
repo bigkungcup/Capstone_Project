@@ -12,6 +12,8 @@ function bookCoverPath(filePath) {
   return (filePath = `../../ej2/_nuxt/@fs/${filePath}`);
 }
 
+const idToken = ref(localStorage.getItem("id"));
+
 </script>
 
 <template>
@@ -19,7 +21,7 @@ function bookCoverPath(filePath) {
     <v-card
       v-for="user in userList"
       class="border-md rounded-pill"
-      :to="`/user/${user.userId}`+'/'"
+      :to="idToken == user.userId ? `/Profile/`:`/user/${user.userId}/`"
     >
       <v-row no-gutters class="my-5">
         <v-col cols="2" align="center">

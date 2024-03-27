@@ -213,6 +213,9 @@ export const useReviews = defineStore("Reviews", () => {
   } else if (status == 404) {
     clearNewReviewList();
     console.log("get new review list uncompleted");
+  }else if (status == 401) {
+    await login.handleRefresh();
+    await getNewReviewList();
   }
 }
 
@@ -460,7 +463,7 @@ export const useReviews = defineStore("Reviews", () => {
               }
             },
           });
-          if (status == 201) {
+          if (status == 200) {
             console.log("like this review completed");
           } 
         }

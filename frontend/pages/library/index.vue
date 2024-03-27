@@ -115,7 +115,7 @@ onBeforeMount( async () => {
       </v-row>
     </v-container>
     
-    <v-dialog v-model="dialog">
+    <v-dialog v-model="dialog" persistent>
       <v-row justify="center">
         <v-col cols="12" sm="7" md="6" lg="5">
       <v-sheet elevation="10" rounded="xl">
@@ -141,7 +141,7 @@ onBeforeMount( async () => {
           <v-btn color="blue-darken-1" variant="text" @click="dialog = false,library.filterBook = 0">
             Close
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="dialog = false,handleSelectionChange()">
+          <v-btn :disabled="library.filterBook == null" color="blue-darken-1" variant="text" @click="dialog = false,handleSelectionChange()">
             Save
           </v-btn>
         </v-card-actions>

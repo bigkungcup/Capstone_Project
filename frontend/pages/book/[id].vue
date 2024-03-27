@@ -14,7 +14,7 @@ import deleteReviewSuccessPopup from "~/components/reviews/popups/deleteReviewSu
 import deleteBookFailPopup from "~/components/books/popups/deleteBookFailPopup.vue";
 import deleteReviewConfirmPopup from "~/components/reviews/popups/deleteReviewConfirmPopup.vue";
 import deleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmPopup.vue";
-import CreateReportPopup from "~/components/reports/popups/createReportPopup.vue";
+import CreateReportPopup from "~/components/reports/createReportPopup.vue";
 
 const library = useBooks();
 const reviews = useReviews();

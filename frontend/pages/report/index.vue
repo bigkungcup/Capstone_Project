@@ -1,5 +1,5 @@
 <script setup>
-import ReportDetail from "~/components/reports/popups/reportDetail.vue";
+import ReportDetail from "~/components/reports/reportDetail.vue";
 </script>
 
 <template>

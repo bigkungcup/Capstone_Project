@@ -5,17 +5,37 @@ import { useLogin } from "./login";
 
 export const useNotifications = defineStore("Notification", () => {
   const router = useRouter();
-//   const accessToken = ref(useCookie("accessToken"));
   const idToken = ref(localStorage.getItem("id"));
   const login = useLogin();
   const roleToken = ref(localStorage.getItem("role"));
   const successfulPopup = ref(false);
-  const reportStatus = ref(
-    {
-        type: '',
-        show: false
-    }
-);
+  const notificationList = ref({
+    data: [],
+  });
+  const countAllNotification = ref({
+    data: [],
+  });
+  const countUserNotification = ref({
+    data: [],
+  });
+  const countSystemNotification = ref({
+    data: [],
+  });
+  const newNotification = ref({
+    title: '',
+    detail: '',
+    link: null
+  });
+  const reportList = ref({
+    data: [],
+  });
+  const reportHistoryList = ref({
+    data: [],
+  });
+  const reportStatus = ref({
+    type: "",
+    show: false,
+  });
   const reportProblem = ref({
     reportTitle: "",
     reportDetail: "",
@@ -38,17 +58,21 @@ export const useNotifications = defineStore("Notification", () => {
   const reportReviewList = ref([
     {
       id: 1,
-      Name: "This review has an incorrect information.",
+      Name: "This review is inappropriate.",
     },
     {
       id: 2,
+      Name: "This review does not hide a spoil.",
+    },
+    {
+      id: 3,
       Name: "This review is spam.",
     },
   ]);
   const reportUserList = ref([
     {
       id: 1,
-      Name: "This user has an incorrect information.",
+      Name: "This user posts inappropriate thing in the public.",
     },
     {
       id: 2,
@@ -56,11 +80,346 @@ export const useNotifications = defineStore("Notification", () => {
     },
   ]);
 
-// --------------- Notification Function ---------------
+  // --------------- Notification Function ---------------
+  //Get Notification List
+  async function getNotificationList(notiLevel) {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
 
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/notification`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+          options.params = {
+            notificationLevel: notiLevel,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        notificationList.value = data.value;
+      }
+      console.log("get notification list completed");
+    } else if (status == 404) {
+      clearNotificationList();
+      console.log("get notification list uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await getNotificationList(notiLevel);
+    }
+  }
 
-// --------------- Report Function ---------------
-//Get Report List
+  //Get all notification number
+  async function getCountAllNotification() {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/notification/count`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        countAllNotification.value = data.value;
+      }
+      console.log("get all notification number completed");
+    } else if (status == 404) {
+      clearCountAllNotification();
+      console.log("get all notification number uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await getCountAllNotification();
+    }
+  }
+
+  //Get user notification number
+  async function getCountUserNotification() {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/notification/countNormal`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        countUserNotification.value = data.value;
+      }
+      console.log("get user notification number completed");
+    } else if (status == 404) {
+      clearCountUserNotification();
+      console.log("get user notification number uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await getCountUserNotification();
+    }
+  }
+
+  //Get system notification number
+  async function getCountSystemNotification() {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/notification/countSystem`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        countSystemNotification.value = data.value;
+      }
+      console.log("get system notification number completed");
+    } else if (status == 404) {
+      clearCountSystemNotification();
+      console.log("get system notification number uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await getCountSystemNotification();
+    }
+  }
+
+      //Create notification
+      async function createNotification() {
+        let accessToken = useCookie("accessToken");
+        let status = 0;
+  
+        await $fetch(`${import.meta.env.VITE_BASE_URL}/notification`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken.value}`,
+          },
+          body: {
+            notificationTitle: newNotification.value.title,
+            notificationDetail: newNotification.value.detail,
+            notificationType: "ADMIN",
+            notificationLink: newNotification.value.link 
+          },
+          onResponse({ request, response, options }) {
+            status = response._data.response_code;
+            if (status == 400) {
+              console.log("create notification uncompleted");
+            } else if (status == 401) {
+              login.handleRefresh();
+              createNotification();
+            }
+          },
+        });
+        if (status == 201) {
+          clearNewNotification();
+          console.log("create notification completed");
+        } 
+      }
+
+      //Update notification status by Id (read by id)
+  async function clearNotificationById(notiId,notiLevel) {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/notification/${notiId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          console.log("read this notification uncompleted");
+        } else if (status == 401) {
+          login.handleRefresh();
+          clearNotificationById(notiId,notiLevel);
+        }
+      },
+    });
+    if (status == 200) {
+      getNotificationList(notiLevel);
+      getCountAllNotification();
+      if(notiLevel == 1){
+        getCountSystemNotification();
+      } else {
+        getCountUserNotification();
+      }
+      console.log("read this notification completed");
+    }
+  }
+
+        //Update all notification status (read all)
+        async function clearAllNotification(notiLevel) {
+          let accessToken = useCookie("accessToken");
+          let status = 0;
+      
+          await $fetch(`${import.meta.env.VITE_BASE_URL}/notification/updateAll`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${accessToken.value}`,
+            },
+            onResponse({ request, response, options }) {
+              status = response._data.response_code;
+              if (status == 400) {
+                console.log("read all notification uncompleted");
+              } else if (status == 401) {
+                login.handleRefresh();
+                clearAllNotification(notiLevel);
+              }
+            },
+          });
+          if (status == 200) {
+            getNotificationList(notiLevel);
+            getCountAllNotification();
+            getCountSystemNotification();
+            getCountUserNotification();
+            console.log("read all notification completed");
+          }
+        }
+
+  //Clear notification list
+  function clearNotificationList() {
+    notificationList.value = {
+      data: [],
+    };
+  }
+
+  //Clear all notification number
+  function clearCountAllNotification() {
+    countAllNotification.value = {
+      data: [],
+    };
+  }
+
+  //Clear all notification number
+  function clearCountUserNotification() {
+    countUserNotification.value = {
+      data: [],
+    };
+  }
+
+  //Clear all notification number
+  function clearCountSystemNotification() {
+    countSystemNotification.value = {
+      data: [],
+    };
+  }
+
+    //Clear new notification 
+    function clearNewNotification() {
+      newNotification.value = {
+        title: '',
+        detail: '',
+        link: null
+      };
+    }
+
+  // --------------- Report Function ---------------
+  //Get Report List
+  async function getReportList() {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+    clearReportList();
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/report/notfix`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        reportList.value = data.value;
+      }
+      console.log("get report list completed");
+    } else if (status == 404) {
+      clearReportList();
+      console.log("get report list uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await getReportList();
+    }
+  }
+
+  //Get Report History List
+  async function getReportHistoryList() {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
+    clearReportList();
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/report/fix`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        reportHistoryList.value = data.value;
+      }
+      console.log("get report history list completed");
+    } else if (status == 404) {
+      clearReportList();
+      console.log("get report history list uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await getReportHistoryList();
+    }
+  }
 
   //Create Report Book
   async function createReportBook(bookId) {
@@ -76,8 +435,8 @@ export const useNotifications = defineStore("Notification", () => {
         reportTitle: reportProblem.value.reportTitle,
         reportDetail: reportProblem.value.reportDetail,
         problemId: reportProblem.value.problemId,
-        reportType: 'book',
-        bookId : bookId
+        reportType: "book",
+        bookId: bookId,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -96,7 +455,6 @@ export const useNotifications = defineStore("Notification", () => {
     }
   }
 
-  
   //Create Report Review
   async function createReportReview(reviewId) {
     let accessToken = useCookie("accessToken");
@@ -111,8 +469,8 @@ export const useNotifications = defineStore("Notification", () => {
         reportTitle: reportProblem.value.reportTitle,
         reportDetail: reportProblem.value.reportDetail,
         problemId: reportProblem.value.problemId,
-        reportType: 'review',
-        reviewId : reviewId
+        reportType: "review",
+        reviewId: reviewId,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -131,7 +489,6 @@ export const useNotifications = defineStore("Notification", () => {
     }
   }
 
-  
   //Create Report User
   async function createReportUser(userId) {
     let accessToken = useCookie("accessToken");
@@ -146,8 +503,8 @@ export const useNotifications = defineStore("Notification", () => {
         reportTitle: reportProblem.value.reportTitle,
         reportDetail: reportProblem.value.reportDetail,
         problemId: reportProblem.value.problemId,
-        reportType: 'user',
-        userId : userId
+        reportType: "user",
+        userId: userId,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -166,7 +523,45 @@ export const useNotifications = defineStore("Notification", () => {
     }
   }
 
+  //Update report status (report done)
+  async function updateReportDone(reportId) {
+    let accessToken = useCookie("accessToken");
+    let status = 0;
 
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/report/${reportId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          console.log("this revport uncompleted");
+        } else if (status == 401) {
+          login.handleRefresh();
+          updateReportDone(reportId);
+        }
+      },
+    });
+    if (status == 200) {
+      getReportList();
+      console.log("this report completed");
+    }
+  }
+
+  //Clear report list
+  function clearReportList() {
+    reportList.value = {
+      data: [],
+    };
+  }
+
+  //Clear report history list
+  function clearReportHistoryList() {
+    reportHistoryList.value = {
+      data: [],
+    };
+  }
 
   //Clear report problem
   function clearReportProblem() {
@@ -178,12 +573,12 @@ export const useNotifications = defineStore("Notification", () => {
   }
 
   //Close successful popup
-//   function closeSuccessfulPopup() {
-//     successfulPopup.value = false;
-//   }
+  //   function closeSuccessfulPopup() {
+  //     successfulPopup.value = false;
+  //   }
 
-// --------------- etc. Function ---------------
-// function countUpdateTime(dateTime,dateValue,dateUnit){
+  // --------------- etc. Function ---------------
+  // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds) {
     let interval = Math.floor(seconds / 31536000);
     if (interval >= 1) {
@@ -221,15 +616,40 @@ export const useNotifications = defineStore("Notification", () => {
   }
 
   return {
+    notificationList,
+    countAllNotification,
+    countUserNotification,
+    countSystemNotification,
+    newNotification,
+    reportList,
+    reportHistoryList,
     reportStatus,
     reportProblem,
     reportBookList,
     reportReviewList,
     reportUserList,
+    getNotificationList,
+    getCountAllNotification,
+    getCountUserNotification,
+    getCountSystemNotification,
+    createNotification,
+    clearNotificationById,
+    clearAllNotification,
+    clearNotificationList,
+    clearCountAllNotification,
+    clearCountUserNotification,
+    clearCountSystemNotification,
+    clearNewNotification,
+    getReportList,
+    getReportHistoryList,
     createReportBook,
     createReportReview,
     createReportUser,
-    countUpdateTime
+    updateReportDone,
+    clearReportList,
+    clearReportHistoryList,
+    clearReportProblem,
+    countUpdateTime,
   };
 });
 

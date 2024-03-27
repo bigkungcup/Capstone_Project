@@ -190,7 +190,7 @@ onBeforeMount(async () => {
             </span>
           </div>
 
-          <div class="py-4">
+          <div class="py-4" v-if="login.profile.role == 'USER'">
               <p class="tw-px-4 web-text-sub-thin tw-flex tw-place-content-end">
                 {{ login.profile.followings }} Following
                 {{ login.profile.followers }} Followers
@@ -202,7 +202,7 @@ onBeforeMount(async () => {
     </div>
 
     <!----------------------- new section -------------------------->
-    <div class="tw-flex tw-place-content-center tw-my-6">
+    <div class="tw-flex tw-place-content-center tw-my-6" v-if="login.profile.role == 'USER'">
       <div class="tw-bg-white tw-w-[70rem] tw-h-full">
         <div class="tw-border-y-4">
           <v-row class="">

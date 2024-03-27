@@ -191,6 +191,9 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 404) {
       clearRecommendBookList();
       console.log("get recommend book list uncompleted");
+    }else if (status == 401) {
+      await login.handleRefresh();
+      await getRecommendBookList();
     }
   }
 
@@ -329,7 +332,7 @@ export const useBooks = defineStore("Books", () => {
     if (status == 200) {
       bookDetail.value = data.value;
       bookmarkedStatus.value = bookDetail.value.data.bookmark;
-      console.log("get book detail  completed");
+      console.log("get book detail completed");
     } else if (status == 400) {
       console.log("get book detail uncompleted");
     } else if (status == 401) {

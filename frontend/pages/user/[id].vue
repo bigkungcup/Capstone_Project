@@ -14,7 +14,7 @@ import { useRoute, useRouter } from "vue-router";
 import { mergeProps } from "vue";
 import deleteUserConfirmPopup from "~/components/users/popups/deleteUserConfirmPopup.vue";
 import deleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessPopup.vue";
-import CreateReportPopup from "~/components/reports/popups/createReportPopup.vue";
+import CreateReportPopup from "~/components/reports/createReportPopup.vue";
 
 const user = useUsers();
 const book = useBooks();
@@ -95,14 +95,9 @@ function bookCoverPath(filePath) {
 }
 
 onBeforeMount(async () => {
-  if(route.params.id == idToken.value){
-    router.push(`/Profile/`)
-  }else{
     await book.getBookmarkList();
     await selectSection(profileSection.value);
     handleGetUserDetail()
-  }
-
 //   if (roleToken.value == 'ADMIN') {
 //   await user.getUserDetail(route.params.id);
 // }else{
@@ -170,8 +165,8 @@ onBeforeMount(async () => {
 
           <v-col cols="3" class="tw-grid tw-content-between">
             <!-- <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/update_${user.userDetail.data.userId}/`">Edit profile</v-btn> -->
-            <div align="end" v-if="roleToken != 'GUEST'">
-            <span>
+            <div align="end">
+            <span v-if="roleToken == 'USER'">
               <v-btn
                   height="auto"
                   variant="outlined"
@@ -191,7 +186,7 @@ onBeforeMount(async () => {
                 >Following</v-btn>
             </span>  
 
-            <span class="tw-px-4 text-center web-text-detail">
+            <span class="tw-px-4 text-center web-text-detail" v-if="roleToken != 'GUEST'">
               <v-menu>
                 <template v-slot:activator="{ props: menu }">
                   <v-tooltip location="top">

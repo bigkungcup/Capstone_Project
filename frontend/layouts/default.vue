@@ -1,78 +1,28 @@
 <script setup>
 import { mergeProps } from "vue";
 import { useLogin } from "~/stores/login";
+import { useNotifications } from "~/stores/notification";
 import userNotiCard from "~/components/notification/userNotiCard.vue";
 import systemNotiCard from "~/components/notification/systemNotiCard.vue";
 
 const accessToken = ref(useCookie("accessToken"));
 const loginStatus = ref(false);
 const login = useLogin();
+const noti = useNotifications();
 const notiSection = ref('user');
 
 loginStatus.value = accessToken.value == undefined ? false : true;
 
-function profileCoverPath(filePath) {
-  return (filePath = `/ej2/_nuxt/@fs/${filePath}`);
+function handleGetNotification(section) {
+  noti.getCountAllNotification();
+  if(section == 'user'){
+    noti.getCountUserNotification();
+    noti.getNotificationList(0)
+  }else{
+    noti.getCountSystemNotification();
+    noti.getNotificationList(1)
+  }
 }
-
-//test
-const notiList = ref({
-    "response_code": 200,
-    "response_status": "OK",
-    "response_message": "All Notification",
-    "response_datetime": "2024-03-23 17:57:01",
-    "data": [
-        {
-            "notificationId": 1,
-            "notificationTitle": "Bannarug: Scheduled Maintenance - Saturday 23/3/2024 12:00 AM (GMT+7)",
-            "notificationDetail": "This is an announcement of upcoming maintenance. We will be shutting down our website for scheduled maintenance on Saturday the 23rd of March between 12:00AM and 13:00AM (GMT+7).",
-            "notificationLevel": 1,
-            "notificationLink": null,
-            "notificationType": "ADMIN",
-            "notificationStatus": 0,
-            "notificationCreateDateTime": "2024-03-23T17:46:58",
-            "notificationUpdateDateTime": "2024-03-23T17:46:58",
-            "user": {
-                "userId": 2,
-                "displayName": "Admin Test",
-                "email": "admin@mail.kmutt.ac.th",
-                "role": "ADMIN",
-                "followers": 0,
-                "followings": 0,
-                "totalReview": 0,
-                "totalFavoriteReview": 0,
-                "totalLike": 0,
-                "bio": "TEST CREATE",
-                "file": null
-            },
-            "book": null
-        },{
-            "notificationId": 2,
-            "notificationTitle": "Bella (followed) has created a new review.",
-            "notificationDetail": "Bella (followed) has created a new review.",
-            "notificationLevel": 0,
-            "notificationLink": null,
-            "notificationType": "USER",
-            "notificationStatus": 0,
-            "notificationCreateDateTime": "2024-03-23T17:46:58",
-            "notificationUpdateDateTime": "2024-03-23T17:46:58",
-            "user": {
-                "userId": 2,
-                "displayName": "User Test2",
-                "email": "TEST2@mail.kmutt.ac.th",
-                "role": "USER",
-                "followers": 0,
-                "followings": 0,
-                "totalReview": 0,
-                "totalFavoriteReview": 0,
-                "totalLike": 0,
-                "bio": "TEST CREATE",
-                "file": null
-            },
-            "book": null
-        },
-      ]})
-
 
 </script>
 
@@ -94,12 +44,12 @@ const notiList = ref({
         >History</NuxtLink
       >
       <NuxtLink to="/user/" v-show="login.roleToken == 'ADMIN'">User</NuxtLink>
-      <NuxtLink to="/report/">Report</NuxtLink>
+      <NuxtLink to="/report/" v-show="login.roleToken == 'ADMIN'">Report</NuxtLink>
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
       <span
         class="d-flex align-center justify-center"
-        v-if="login.roleToken != 'GUEST'"
+        v-if="login.roleToken == 'USER'"
       >
         <v-menu transition="slide-y-transition" :close-on-content-click="false">
           <template v-slot:activator="{ props: menu }">
@@ -107,41 +57,50 @@ const notiList = ref({
               icon="mdi-bell"
               v-bind="mergeProps(menu)"
               style="font-size: 40px"
-              v-if="false"
+              @click="handleGetNotification(notiSection)"
+              v-show="noti.countAllNotification.data.countNotification == 0 || noti.countAllNotification.data.countNotification == null"
             ></v-icon>
-            <v-badge color="error" :content="2" v-if="true">
+            <v-badge color="error" :content="noti.countAllNotification.data.countNotification" v-if="noti.countAllNotification.data.countNotification > 0">
               <v-icon
                 icon="mdi-bell"
                 v-bind="mergeProps(menu)"
                 style="font-size: 40px"
+                @click="handleGetNotification(notiSection)"
               ></v-icon>
             </v-badge>
           </template>
-          <v-card class="tw-min-w-[20rem] tw-max-w-[25rem]">
+          <v-card class="tw-min-w-[25rem] tw-max-w-[25rem]">
             <v-list>
               <v-list-item>
                 <v-list-item-title class=""
                   ><div class="d-flex justify-space-between">
                     <span class="web-text-title">Activity</span>
-                    <span class="web-text-sub-grey py-1">Mark all as read</span>
+                    <span class="web-text-sub-grey py-1 tw-cursor-pointer" @click="noti.clearAllNotification(notiSection == 'user' ? 0 : 1)">Mark all as read</span>
                   </div>
                 </v-list-item-title>
-                <div class="web-text-sub-bold tw-space-x-5 px-3">
-                  <span :class="notiSection == 'user' ? 'tw-text-[#3157BB] tw-cursor-pointer' : 'tw-cursor-pointer'" @click="notiSection = 'user'"
-                    >Notification</span
-                  >
-                  <span :class="notiSection == 'system' ? 'tw-text-[#3157BB] tw-cursor-pointer' : 'tw-cursor-pointer'" @click="notiSection = 'system'"
-                    >System Announcement</span
-                  >
+                <div class="d-flex web-text-sub-bold tw-space-x-5 px-3">
+                  <div class="d-flex tw-cursor-pointer">
+                  <p :class="notiSection == 'user' ? 'tw-text-[#3157BB]' : ''" @click="notiSection = 'user',handleGetNotification(notiSection)">Notification</p>
+                    <v-badge class="px-4 py-3" color="error" :content="noti.countUserNotification.data.countNotificationNormal" v-if="noti.countUserNotification.data.countNotificationNormal > 0"></v-badge></div>
+                  <div class="d-flex tw-cursor-pointer">
+                  <p v-if="true" :class="notiSection == 'system' ? 'tw-text-[#3157BB] tw-cursor-pointer' : 'tw-cursor-pointer'" @click="notiSection = 'system',handleGetNotification(notiSection)"
+                    >System Announcement</p>
+                    <v-badge class="px-4 py-3" color="error" :content="noti.countSystemNotification.data.countNotificationSystem" v-if="noti.countSystemNotification.data.countNotificationSystem > 0"></v-badge></div>
+
                 </div>
               </v-list-item>
               <hr />
             </v-list>
             <v-list v-if="notiSection == 'user'">
-              <userNotiCard :notiList="notiList.data.filter((element) => element.notificationType != 'ADMIN')"/>
+              <v-virtual-scroll :items="['']" max-height="35rem">
+              <userNotiCard :notiList="noti.notificationList.data" @clear="noti.clearNotificationById($event, 0)"/>
+              </v-virtual-scroll>
+              <!-- <userNotiCard :notiList="notiList.data.filter((element) => element.notificationLevel == 0)"/> -->
             </v-list>
             <v-list v-if="notiSection == 'system'">
-              <systemNotiCard :notiList="notiList.data.filter((element) => element.notificationType == 'ADMIN')"/>
+              <v-virtual-scroll :items="['']" max-height="35rem">
+              <systemNotiCard :notiList="noti.notificationList.data" @clear="noti.clearNotificationById($event, 1)"/>
+              </v-virtual-scroll>
             </v-list>
           </v-card>
         </v-menu>
