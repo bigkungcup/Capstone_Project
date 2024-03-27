@@ -88,7 +88,8 @@ public class ReviewService extends CommonController {
 
     public DataResponse getReviewByBookId(Integer bookId, int page, int size, Long reviewRating, String sortBy,
             String sortType) throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
+
+        // DataResponse response = new DataResponse();
         // Pageable pageable = PageRequest.of(page, size);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -184,35 +185,25 @@ public class ReviewService extends CommonController {
                 });
             }
 
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("All Reviews");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(reviews);
+            return responseWithData(reviews, 200, "OK", "All Reviews");
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
 
-        return response;
     }
 
     public DataResponse getReviewById(Integer reviewId) throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Review review = repository.getReviewById(reviewId);
         if (review != null) {
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(review);
+            return responseWithData(review, 200, "OK", "Review");
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
-        return response;
     }
 
     public DataResponse getReviewByUserId(Integer userId, int page, int size) throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Pageable pageable = PageRequest.of(page, size);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -265,15 +256,10 @@ public class ReviewService extends CommonController {
                 });
             }
 
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(reviews);
+            return responseWithData(reviews, 200, "OK", "All My Reviews");
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
-        return response;
     }
 
     public DataResponse getReviewByCreateDateTime() {
@@ -349,7 +335,7 @@ public class ReviewService extends CommonController {
     }
 
     public DataResponse createReviewByBookId(CreateReviewDTO review) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
@@ -393,15 +379,12 @@ public class ReviewService extends CommonController {
         bookRepository.increaseBookTotalReview(review.getBookId());
         userRepository.increaseTotalReview(review.getUserId());
         bookRepository.updateBookRating(review.getBookId());
-        response.setResponse_code(201);
-        response.setResponse_status("Created");
-        response.setResponse_message("Review Created");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+
+        return response(201, "Created", "Review Created");
     }
 
     public DataResponse updateReviewByBookId(UpdateReviewDTO review, Integer reviewId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
@@ -428,11 +411,7 @@ public class ReviewService extends CommonController {
             dataReview.setReviewRating(review.getRating());
             dataReview.setSpoileFlag(review.getSpoileFlag());
 
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review Updated");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(dataReview);
+            return responseWithData(dataReview, 200, "OK", "Review Updated");
         } else if (user.getRole().equals("ADMIN")) {
             repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
                     reviewId);
@@ -444,14 +423,11 @@ public class ReviewService extends CommonController {
             dataReview.setReviewRating(review.getRating());
             dataReview.setSpoileFlag(review.getSpoileFlag());
 
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review Updated");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(dataReview);
+            return responseWithData(dataReview, 200, "OK", "Review Updated");
+        }else{
+            throw new HandleExceptionForbidden("Can not update review for user: ");
         }
 
-        return response;
     }
 
     // public DataResponse updateReviewTotalLikeAndTotalDisLike(UpdateReviewDTO
@@ -470,7 +446,7 @@ public class ReviewService extends CommonController {
     // }
 
     public DataResponse deleteReviewByBookId(int reviewId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
@@ -491,10 +467,8 @@ public class ReviewService extends CommonController {
                 throw new HandleExceptionNotFound("Review Not Found", "Review");
             }
             bookRepository.updateBookRating(review.getBook().getBookId());
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review Deleted");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+
+            return response(200, "OK", "Review Deleted");
         } else if (user.getRole().equals("ADMIN")) {
             bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
             userRepository.decreaseTotalReview(review.getUser().getUserId());
@@ -520,13 +494,11 @@ public class ReviewService extends CommonController {
             // }
 
             bookRepository.updateBookRating(review.getBook().getBookId());
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review Deleted");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        }
 
-        return response;
+            return response(200, "OK", "Review Deleted");
+        }else{
+            throw new HandleExceptionForbidden("Can not delete review for user: ");
+        }
     }
 
 }
