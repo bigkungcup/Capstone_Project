@@ -28,7 +28,7 @@ function bookCoverPath(filePath) {
                 <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
                     <div>
                         <p class="web-text-title">{{ book.bookName }}</p>
-                        <!-- <p class="tw-opacity-60">Update about {{ library.countUpdateTime(book.countDateTime) }}</p> -->
+                        <p class="tw-opacity-60">created about {{ library.countUpdateTime(book.countDateTime) }}</p>
                     </div>
                     <div class="tw-min-h-[9rem] tw-max-h-[9rem] tw-py-2 tw-overflow-clip">
                         <p class="tw-indent-8">{{ book.bookDetail }}</p>
