@@ -1,6 +1,5 @@
 package sit.cp23ej2.services;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -23,36 +22,23 @@ public class BooktypeService extends CommonController{
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DataResponse getAllBooktype(){
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         List<Booktype> allBooktype = booktypeRepository.getAllBooktype();
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Get All Booktype");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        response.setData(allBooktype);
-        return response;
+        return responseWithData(allBooktype, 200, "OK", "All Booktype");
     }
 
     public DataResponse insertBooktype(CreateBooktypeDTO booktype){
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         booktypeRepository.insertBooktype(booktype.getBooktypeName());
-        response.setResponse_code(201);
-        response.setResponse_status("Created");
-        response.setResponse_message("Booktype Created");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(201, "Created", "Booktype Created");
     }
 
     public DataResponse deleteBooktype(Integer booktypeId){
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         if(!booktypeRepository.existsByBooktypeId(booktypeId)){
            throw new HandleExceptionNotFound("Booktype Not Found", "Booktype");
         }
         booktypeRepository.deleteBooktype(booktypeId);
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Booktype Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(200, "OK", "Booktype Deleted");
     }
 }
