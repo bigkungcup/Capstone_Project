@@ -77,7 +77,7 @@ public class BookService extends CommonController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Pageable pageable;
 
@@ -126,16 +126,11 @@ public class BookService extends CommonController {
 
               
             });
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("All books");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(books);
+            return responseWithData(books, 200, "OK", "All books");
         } else {
             throw new HandleExceptionNotFound("Book Not Found", "Book");
         }
 
-        return response;
     }
 
     public DataResponse getBookById(Integer bookId) throws HandleExceptionNotFound {
@@ -147,25 +142,26 @@ public class BookService extends CommonController {
 
         Book book = repository.getBookById(bookId);
 
-        if (book == null) {
-            throw new HandleExceptionNotFound("Book Not Found", "Book");
-        }
+        // if (book == null) {
+        //     throw new HandleExceptionNotFound("Book Not Found", "Book");
+        // }
 
-        if (!currentPrincipalName.equals("anonymousUser")) {
-            User user = userRepository.getUserByEmail(currentPrincipalName);
-            Integer existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
-            if (user != null && existsByUserIdAndBookId == 0) {
-                historyRepository.insertHistory(user.getUserId(), bookId);
-            }else if(user != null && existsByUserIdAndBookId != 0){
-                historyRepository.updateHistory(user.getUserId(), bookId);
-            }
-        }
-
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         repository.increaseBookTotalView(bookId);
 
         if (book != null) {
+            
+            if (!currentPrincipalName.equals("anonymousUser")) {
+                User user = userRepository.getUserByEmail(currentPrincipalName);
+                Integer existsByUserIdAndBookId = historyRepository.existsByUserIdAndBookId(user.getUserId(), bookId);
+                if (user != null && existsByUserIdAndBookId == 0) {
+                    historyRepository.insertHistory(user.getUserId(), bookId);
+                }else if(user != null && existsByUserIdAndBookId != 0){
+                    historyRepository.updateHistory(user.getUserId(), bookId);
+                }
+            }
+
             BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
             bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
             bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
@@ -198,14 +194,10 @@ public class BookService extends CommonController {
                 }
             }
             
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Book Detail");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(bookDTO);
+            return responseWithData(bookDTO, 200, "OK", "Book Detail");
+        }else{
+            throw new HandleExceptionNotFound("Book Not Found", "Book");
         }
-
-        return response;
     }
 
     public DataResponse getBookRanking(Integer booktypeId) {    
@@ -375,7 +367,7 @@ public class BookService extends CommonController {
     }
 
     public DataResponse createBook(CreateBookDTO book, MultipartFile file) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Boolean existsByAuthorAndBookName = repository.existsByAuthorAndBookName(book.getAuthor(), book.getBookName());
         System.out.println("existsByAuthorAndBookName: " + existsByAuthorAndBookName);
         if (!existsByAuthorAndBookName) {
@@ -389,16 +381,12 @@ public class BookService extends CommonController {
         } else {
             throw new HandleExceptionBadRequest("Book Already Exists");
         }
-        response.setResponse_code(201);
-        response.setResponse_status("Created");
-        response.setResponse_message("Book Created");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(201, "Created", "Book Created");
     }
 
     public DataResponse updateBook(UpdateBookDTO book, Integer bookId, MultipartFile file) {
 
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Book dataBook = repository.getBookById(bookId);
 
@@ -443,13 +431,7 @@ public class BookService extends CommonController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Book Updated");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(bookDTO);
-            return response;
+            return responseWithData(bookDTO, 200, "OK", "Book Updated");
         } else {
             Boolean existsByAuthorAndBookName = repository.existsByAuthorAndBookName(book.getAuthor(),
                     book.getBookName());
@@ -493,12 +475,7 @@ public class BookService extends CommonController {
                     e.printStackTrace();
                 }
 
-                response.setResponse_code(200);
-                response.setResponse_status("OK");
-                response.setResponse_message("Book Updated");
-                response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-                response.setData(bookDTO);
-                return response;
+                return responseWithData(bookDTO, 200, "OK", "Book Updated");
             } else {
                 throw new HandleExceptionBadRequest("Book Already Exists");
             }
@@ -507,7 +484,7 @@ public class BookService extends CommonController {
     }
 
     public DataResponse deleteBook(int bookId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         // try {
         Book dataBook = repository.getBookById(bookId);
 
@@ -524,11 +501,7 @@ public class BookService extends CommonController {
         // throw new HandleExceptionBadRequest("Book Can not delete because book have
         // reviews.");
         // }
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Book Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(200, "OK", "Book Deleted");
     }
 
 }
