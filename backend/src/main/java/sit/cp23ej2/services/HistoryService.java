@@ -1,7 +1,6 @@
 package sit.cp23ej2.services;
 
 import java.nio.file.Path;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -22,6 +21,7 @@ import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.dtos.History.PageHistoryDTO;
 import sit.cp23ej2.entities.User;
+import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.HistoryRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
@@ -47,7 +47,7 @@ public class HistoryService extends CommonController {
 
     public DataResponse getBookHistory(Integer page, Integer size) {
 
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -95,30 +95,22 @@ public class HistoryService extends CommonController {
 
         // PageBookDTO books = modelMapper.map(repository.getBookHistory(pageable,
         // user.getUserId()), PageBookDTO.class);
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("All History");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        response.setData(bookHistory);
 
-        return response;
+        return responseWithData(bookHistory, 200, "OK", "All History");
     }
 
     public DataResponse deleteHistory(Integer historyId) {
-        DataResponse response = new DataResponse();
-
+        // DataResponse response = new DataResponse();
+        if(!repository.existsByHistoryId(historyId)){
+            throw new HandleExceptionNotFound("History Not Found", "History");
+        }
         repository.deleteHistory(historyId);
 
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("History Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-
-        return response;
+        return response(200, "OK", "History Deleted");
     }
 
     public DataResponse deleteHistoryByUserId() {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -127,24 +119,15 @@ public class HistoryService extends CommonController {
 
         repository.deleteHistoryByUserId(user.getUserId());
 
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("History Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-
-        return response;
+        return response(200, "OK", "History Deleted");
     }
 
     public DataResponse deleteHistoryByUserIdAndAdmin(Integer userId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         repository.deleteHistoryByUserId(userId);
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("History Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
 
-        return response;
+        return response(200, "OK", "History Deleted");
     }
 
 }

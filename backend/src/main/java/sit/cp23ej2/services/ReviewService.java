@@ -1,7 +1,6 @@
 package sit.cp23ej2.services;
 
 import java.nio.file.Path;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;

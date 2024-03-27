@@ -47,4 +47,6 @@ public interface HistoryRepository extends JpaRepository<History, Integer> {
     @Transactional
     @Query(value = "DELETE FROM History WHERE hu_userId = :userId", nativeQuery = true)
     Integer deleteHistoryByUserId(@Param("userId") Integer userId);
+
+    boolean existsByHistoryId(Integer historyId);
 }
