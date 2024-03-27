@@ -227,8 +227,6 @@ public class UserService extends CommonController {
     }
 
     public DataResponse getUserByEmail() throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
@@ -247,15 +245,16 @@ public class UserService extends CommonController {
         }
 
         if (user != null) {
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("User");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(userDTO);
+            // response.setResponse_code(200);
+            // response.setResponse_status("OK");
+            // response.setResponse_message("User");
+            // response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+            // response.setData(userDTO);
+            return responseWithData(userDTO, 200, "OK", "User");
+            
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
-        return response;
     }
 
     public DataResponse getUserRanking(String sort) {
@@ -303,8 +302,6 @@ public class UserService extends CommonController {
     }
 
     public DataResponse createUser(CreateUserDTO user) {
-        DataResponse response = new DataResponse();
-
         User userByEmail = repository.getUserByEmail(user.getEmail());
         ;
 
@@ -314,16 +311,10 @@ public class UserService extends CommonController {
 
         repository.insertUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getRole(),
                 user.getBio());
-
-        response.setResponse_code(201);
-        response.setResponse_status("OK");
-        response.setResponse_message("User Created");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return responseWithData(user, 201, "OK", "User Created");
     }
 
     public DataResponse updateUser(UpdateUserDTO updateUser, Integer userId, MultipartFile file) {
-        DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
 
         if (userById != null) {
@@ -356,12 +347,8 @@ public class UserService extends CommonController {
 
                 // userDTO.setPassword(new BCryptPasswordEncoder().encode(dataUser.getPassword()));
                 userDTO.setBio(updateUser.getBio());
+                return responseWithData(userDTO, 200, "OK", "User Updated");
 
-                response.setResponse_code(200);
-                response.setResponse_status("OK");
-                response.setResponse_message("User Updated");
-                response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-                response.setData(userDTO);
             } else {
                 // Display name is changed
                 boolean existsByEmailOrDisplayName = repository.existsByDisplayName(updateUser.getDisplayName());
@@ -392,11 +379,7 @@ public class UserService extends CommonController {
                     userDTO.setBio(updateUser.getBio());
                     userDTO.setDisplayName(updateUser.getDisplayName());
 
-                    response.setResponse_code(200);
-                    response.setResponse_status("OK");
-                    response.setResponse_message("User Updated");
-                    response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-                    response.setData(userDTO);
+                    return responseWithData(userDTO, 200, "OK", "User Updated");
                 } else {
                     throw new HandleExceptionBadRequest("DisplayName already exists");
                 }
@@ -404,12 +387,9 @@ public class UserService extends CommonController {
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
-
-        return response;
     }
 
     public DataResponse updateUserByAdmin(UpdateUserByAdminDTO updateUser, Integer userId, MultipartFile file) {
-        DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
         // BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
 
@@ -468,11 +448,7 @@ public class UserService extends CommonController {
                 userDTO.setBio(updateUser.getBio());
                 // userDTO.setRole(updateUser.getRole());
 
-                response.setResponse_code(200);
-                response.setResponse_status("OK");
-                response.setResponse_message("User Updated");
-                response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-                response.setData(userDTO);
+                return responseWithData(userDTO, 200, "OK", "User Updated");
             } else {
                 // Display name is changed
                 boolean existsByEmailOrDisplayName = repository.existsByDisplayName(updateUser.getDisplayName());
@@ -529,11 +505,7 @@ public class UserService extends CommonController {
                     // userDTO.setRole(updateUser.getRole());
                     userDTO.setDisplayName(updateUser.getDisplayName());
 
-                    response.setResponse_code(200);
-                    response.setResponse_status("OK");
-                    response.setResponse_message("User Updated");
-                    response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-                    response.setData(userDTO);
+                    return responseWithData(userDTO, 200, "OK", "User Updated");
                 } else {
                     throw new HandleExceptionBadRequest("DisplayName already exists");
                 }
@@ -704,12 +676,10 @@ public class UserService extends CommonController {
         } else {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
-
-        return response;
     }
 
     public DataResponse resetPassword(ResetPasswordDTO resetPassword) {
-        DataResponse response = new DataResponse();
+
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -721,15 +691,10 @@ public class UserService extends CommonController {
 
         repository.resetPassword(currentPrincipalName,
                 new BCryptPasswordEncoder().encode(resetPassword.getNewPassword()));
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Password Reset");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(200, "OK", "Password Reset");
     }
 
     public DataResponse forgetPassword(ForgetPasswordDTO forgetPassword) {
-        DataResponse response = new DataResponse();
 
         User user = repository.getUserByEmail(forgetPassword.getEmail());
 
@@ -739,15 +704,10 @@ public class UserService extends CommonController {
 
         repository.resetPassword(forgetPassword.getEmail(), new BCryptPasswordEncoder().encode(forgetPassword.getPassword()));
 
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Forget Password");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(200, "OK", "Forget Password");
     }
 
     public DataResponse deleteUser(int userId) {
-        DataResponse response = new DataResponse();
         User userById = repository.getUserById(userId);
 
         if(userById == null){
@@ -779,10 +739,6 @@ public class UserService extends CommonController {
 
         fileStorageService.deleteUserFile(userId);
 
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("User Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(200, "OK", "User Deleted");
     }
 }
