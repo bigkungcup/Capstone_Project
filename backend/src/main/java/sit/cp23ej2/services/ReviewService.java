@@ -359,16 +359,16 @@ public class ReviewService extends CommonController {
                 // throw new HandleExceptionForbidden("Can not create review for user: ");
                 System.out.println("Insert Notification Success");
                 notificationRepository.insertNotification(bookmark.getUser().getUserId(),
-                        bookmark.getBook().getBookName(), "has a new review. Check it now!", 0, 0,
+                        bookmark.getBook().getBookName(), " has a new review. Check it now!", 0, 0,
                         "/book/" + bookmark.getBook().getBookId() + "/", "Bookmark");
             // }
         });
 
-        followReposiroty.getFollowerList(user.getUserId()).forEach(following -> {
+        followReposiroty.getFollowerList(user.getUserId()).forEach(follower -> {
             // if (following.getUserfollow().getUserId() == review.getUserId()) {
                 System.out.println("Insert Notification Success");
-                notificationRepository.insertNotification(following.getUserfollow().getUserId(),
-                        following.getUserfollow().getDisplayName() + "(Following)",
+                notificationRepository.insertNotification(follower.getUser().getUserId(),
+                        follower.getUserfollow().getDisplayName() + " (Following)",
                         "has created a review in " + bookDTO.getBookName(), 0, 0, "/book/" + bookDTO.getBookId() + "/",
                         "Review");
                         // System.out.println("Insert Notification");

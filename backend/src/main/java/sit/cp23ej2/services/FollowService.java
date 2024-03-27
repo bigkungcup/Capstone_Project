@@ -140,7 +140,7 @@ public class FollowService extends CommonController {
         reposiroty.insertfollowing(user.getUserId(), userFollowingId, 1);
 
         notificationRepository.insertNotification(userFollowingId, user.getDisplayName(),
-                "followed you. Follow them back to be friend.", 0, 0, "/user/" + user.getUserId(), "Follow");
+                " followed you. Follow them back to be friend.", 0, 0, "/user/" + user.getUserId(), "Follow");
         userRepository.increaseFollowings(user.getUserId());
         userRepository.increaseFollowers(userFollowingId);
         response.setResponse_code(201);
