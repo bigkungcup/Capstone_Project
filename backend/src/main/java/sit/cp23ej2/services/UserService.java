@@ -37,6 +37,7 @@ import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.FollowReposiroty;
+import sit.cp23ej2.repositories.ReportRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
@@ -57,6 +58,9 @@ public class UserService extends CommonController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private ReportRepository reportRepository;
 
     @Autowired
     private EmailService emailService;
@@ -701,7 +705,8 @@ public class UserService extends CommonController {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
 
-        repository.resetPassword(forgetPassword.getEmail(), new BCryptPasswordEncoder().encode(forgetPassword.getPassword()));
+        // repository.resetPassword(forgetPassword.getEmail(), new BCryptPasswordEncoder().encode(forgetPassword.getPassword()));
+        reportRepository.insertReport("Forget Password", forgetPassword.getEmail() + " Forget Password", user.getUserId(), "user", user.getUserId());
 
         return response(200, "OK", "Forget Password");
     }
