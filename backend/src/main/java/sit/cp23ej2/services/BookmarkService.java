@@ -1,7 +1,6 @@
 package sit.cp23ej2.services;
 
 import java.nio.file.Path;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +45,7 @@ public class BookmarkService extends CommonController {
     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DataResponse getBookmarkByUserId(Integer userId, Integer page, Integer size) throws HandleExceptionNotFound{
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Pageable pageable = PageRequest.of(page, size);
 
         // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -72,20 +71,15 @@ public class BookmarkService extends CommonController {
                 //     }
                 // });
             });
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("All Bookmarks");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(pageBookmarkDTO);
+            return responseWithData(pageBookmarkDTO, 200, "OK", "All Bookmarks");
         }else{
             throw new HandleExceptionNotFound("Bookmark Not Found", "Bookmark");
         }
 
-        return response;
     }
 
     public DataResponse insertBookmark(Integer bb_bookId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -97,15 +91,11 @@ public class BookmarkService extends CommonController {
         }
 
         repository.insertBookmark(bb_bookId, user.getUserId(), 1);
-        response.setResponse_code(201);
-        response.setResponse_status("Created");
-        response.setResponse_message("Bookmark Created");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(201, "Created", "Bookmark Created");
     }
 
     public DataResponse deleteBookmark(Integer bb_bookId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -117,25 +107,17 @@ public class BookmarkService extends CommonController {
         }
 
         repository.deleteBookmark(bb_bookId, user.getUserId());
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Bookmark Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(200, "OK", "Bookmark Deleted");
     }
 
     public DataResponse deleteBookmarkById(Integer bookmarkId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         if(!repository.existsByBookmarkId(bookmarkId)){
             throw new HandleExceptionNotFound("Bookmark Not Found", "Bookmark");
         }
 
         repository.deleteBookmarkById(bookmarkId);
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Bookmark Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(200, "OK", "Bookmark Deleted");
     }
 }
