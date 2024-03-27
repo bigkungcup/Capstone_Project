@@ -1,7 +1,6 @@
 package sit.cp23ej2.services;
 
 import java.nio.file.Path;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import org.modelmapper.ModelMapper;
@@ -118,7 +117,7 @@ public class FollowService extends CommonController {
     }
 
     public DataResponse insertFollowing(Integer userFollowingId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -143,15 +142,11 @@ public class FollowService extends CommonController {
                 " followed you. Follow them back to be friend.", 0, 0, "/user/" + user.getUserId(), "Follow");
         userRepository.increaseFollowings(user.getUserId());
         userRepository.increaseFollowers(userFollowingId);
-        response.setResponse_code(201);
-        response.setResponse_status("Created");
-        response.setResponse_message("Following Created");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(201, "Created", "Following Created");
     }
 
     public DataResponse deleteFollowing(Integer userFollowingId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -173,10 +168,6 @@ public class FollowService extends CommonController {
         reposiroty.deletefollowing(user.getUserId(), userFollowingId);
         userRepository.decreaseFollowings(user.getUserId());
         userRepository.decreaseFollowers(userFollowingId);
-        response.setResponse_code(200);
-        response.setResponse_status("OK");
-        response.setResponse_message("Following Deleted");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        return response(200, "OK", "Following Deleted");
     }
 }
