@@ -402,20 +402,20 @@ public class UserService extends CommonController {
                             .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
                 // Display name is not changed
 
-                // try {
-                //     System.out.println("Send Email");
-                //     Map<String, Object> variables = new HashMap<>();
-                //     variables.put("displayName", updateUser.getDisplayName());
-                //     variables.put("password", updateUser.getPassword());
-                //     variables.put("email", userById.getEmail());
-                //     emailService.sendEmail(userById.getEmail(), "Reset password request", "Change Pasword", variables);
-                // } catch (AddressException e) {
-                //     System.out.println("Address Exception" + e.getMessage());
-                //     e.printStackTrace();
-                // } catch (MessagingException e) {
-                //     System.out.println("Messaging Exception" + e.getMessage());
-                //     e.printStackTrace();
-                // }
+                try {
+                    System.out.println("Send Email");
+                    Map<String, Object> variables = new HashMap<>();
+                    variables.put("displayName", updateUser.getDisplayName());
+                    variables.put("password", updateUser.getPassword());
+                    variables.put("email", userById.getEmail());
+                    emailService.sendEmail(userById.getEmail(), "Reset password request", "Change Pasword", variables);
+                } catch (AddressException e) {
+                    System.out.println("Address Exception" + e.getMessage());
+                    e.printStackTrace();
+                } catch (MessagingException e) {
+                    System.out.println("Messaging Exception" + e.getMessage());
+                    e.printStackTrace();
+                }
 
                 // if(!encoder.matches(updateUser.getPassword(), userById.getPassword()) || !updateUser.getPassword().equals(userById.getPassword())){
                 if(!updateUser.getPassword().equals(userById.getPassword())){

@@ -24,6 +24,7 @@ import sit.cp23ej2.entities.Book;
 import sit.cp23ej2.entities.Report;
 import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.entities.User;
+import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.ReportRepository;
@@ -166,6 +167,10 @@ public class ReportService extends CommonController {
 
         if (!repository.existsByReportId(reportId)) {
             throw new HandleExceptionNotFound("Report not found", "Report");
+        }
+
+        if(repository.getReportById(reportId).getReportStatus() == 1){
+            throw new HandleExceptionBadRequest("Report has been fixed");
         }
 
         repository.updateReport(user.getUserId(), reportId);

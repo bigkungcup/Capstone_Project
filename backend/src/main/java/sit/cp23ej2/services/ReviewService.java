@@ -476,21 +476,21 @@ public class ReviewService extends CommonController {
                 throw new HandleExceptionNotFound("Review Not Found", "Review");
             }
 
-            // try {
-            //     System.out.println("Send Email");
-            //     Map<String, Object> variables = new HashMap<>();
-            //     variables.put("bookName", review.getBook().getBookName());
-            //     variables.put("reviewName", review.getReviewTitle());
-            //     variables.put("reviewDetail", review.getReviewDetail());
-            //     emailService.sendEmail(review.getUser().getEmail(), "Your review in Bannarug has been deleted.",
-            //             "Delete Review", variables);
-            // } catch (AddressException e) {
-            //     System.out.println("Address Exception" + e.getMessage());
-            //     e.printStackTrace();
-            // } catch (MessagingException e) {
-            //     System.out.println("Messaging Exception" + e.getMessage());
-            //     e.printStackTrace();
-            // }
+            try {
+                System.out.println("Send Email");
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("bookName", review.getBook().getBookName());
+                variables.put("reviewName", review.getReviewTitle());
+                variables.put("reviewDetail", review.getReviewDetail());
+                emailService.sendEmail(review.getUser().getEmail(), "Your review in Bannarug has been deleted.",
+                        "Delete Review", variables);
+            } catch (AddressException e) {
+                System.out.println("Address Exception" + e.getMessage());
+                e.printStackTrace();
+            } catch (MessagingException e) {
+                System.out.println("Messaging Exception" + e.getMessage());
+                e.printStackTrace();
+            }
 
             bookRepository.updateBookRating(review.getBook().getBookId());
 

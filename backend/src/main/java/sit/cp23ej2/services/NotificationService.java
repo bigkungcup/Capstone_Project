@@ -148,19 +148,19 @@ public class NotificationService extends CommonController {
                     createNotificationDTO.getNotificationDetail(), 0, 1, createNotificationDTO.getNotificationLink(),
                     createNotificationDTO.getNotificationType());
 
-            // try {
-            //     System.out.println("Send Email");
-            //     Map<String, Object> variables = new HashMap<>();
-            //     variables.put("detail", createNotificationDTO.getNotificationDetail());
-            //     emailService.sendEmail(u.getEmail(), createNotificationDTO.getNotificationTitle(),
-            //             "System Maintenance", variables);
-            // } catch (AddressException e) {
-            //     System.out.println("Address Exception" + e.getMessage());
-            //     e.printStackTrace();
-            // } catch (MessagingException e) {
-            //     System.out.println("Messaging Exception" + e.getMessage());
-            //     e.printStackTrace();
-            // }
+            try {
+                System.out.println("Send Email");
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("detail", createNotificationDTO.getNotificationDetail());
+                emailService.sendEmail(u.getEmail(), createNotificationDTO.getNotificationTitle(),
+                        "System Maintenance", variables);
+            } catch (AddressException e) {
+                System.out.println("Address Exception" + e.getMessage());
+                e.printStackTrace();
+            } catch (MessagingException e) {
+                System.out.println("Messaging Exception" + e.getMessage());
+                e.printStackTrace();
+            }
 
         });
 
