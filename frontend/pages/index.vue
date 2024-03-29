@@ -50,12 +50,12 @@ async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
 }
 
 onBeforeMount(async () => {
-  await book.getRecommendBookList();
   await book.getMostviewBookList();
   await book.getNewBookList();
   if(roleToken.value == "GUEST"){
     await reviews.getNewReviewListByGuest();
   }else{
+    await book.getRecommendBookList();
     reviews.clearNewReviewList();
     await reviews.getNewReviewList();
   }

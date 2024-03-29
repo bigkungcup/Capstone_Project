@@ -15,6 +15,7 @@ import deleteBookFailPopup from "~/components/books/popups/deleteBookFailPopup.v
 import deleteReviewConfirmPopup from "~/components/reviews/popups/deleteReviewConfirmPopup.vue";
 import deleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmPopup.vue";
 import CreateReportPopup from "~/components/reports/createReportPopup.vue";
+import ReportSuccessPopup from "~/components/reports/popups/reportSuccessPopup.vue";
 
 const library = useBooks();
 const reviews = useReviews();
@@ -149,6 +150,7 @@ if (roleToken.value == "GUEST") {
   await library.getBookDetail(route.params.id);
   library.getSimilarBook(library.bookDetail.data.booktype.booktypeId, route.params.id);
   reviews.clearReviewList();
+  noti.clearReportProblem();
   await reviews.getReview(route.params.id);
 }
 
@@ -320,7 +322,7 @@ if (roleToken.value == "GUEST") {
                     </v-list-item>
                     <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
                       <v-list-item-title class="web-text-detail tw-space-x-2"
-                      @click="noti.reportStatus.show = true,noti.reportStatus.type = 'book'"
+                      @click="noti.handleReportBook(library.bookDetail.data.bookId)"
                         ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
                         ><span>Report this book</span></v-list-item-title
                       >
@@ -426,7 +428,7 @@ if (roleToken.value == "GUEST") {
                       $event.likeStatusId
                     )
                   "
-                  @report="noti.reportStatus.show = true,noti.reportStatus.type = 'review'"
+                  @report="noti.handleReportReview($event)"
                 />
               </v-virtual-scroll>
             </v-row>
@@ -476,9 +478,16 @@ if (roleToken.value == "GUEST") {
       />
   
       <!-- Create Report Popup -->
-      <div v-if="noti.reportStatus.show">
-      <CreateReportPopup class="report-popup" :title="noti.reportStatus.type == 'book' ? noti.reportBookList : noti.reportReviewList" :report="noti.reportProblem" @cancel="noti.reportStatus.show = false" @submit="noti.createReportBook($event)"/>
+      <div v-if="noti.reportStatus">
+      <CreateReportPopup class="report-popup" 
+      :title="noti.reportProblem.reportType == 'book' ? noti.reportBookList : noti.reportReviewList" 
+      :report="noti.reportProblem" 
+      @cancel="noti.reportStatus = false,noti.clearReportProblem()" 
+      @submit="noti.createReport()" />
       </div>
+      <div v-if="noti.successfulPopup">
+      <ReportSuccessPopup class="report-popup" @close="noti.successfulPopup = false"/>
+    </div>
     </div>
     <footer class="tw-bg-white tw-py-5"></footer>
   </div>

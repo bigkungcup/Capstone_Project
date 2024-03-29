@@ -66,6 +66,7 @@ export const useLogin = defineStore("Login", () => {
   const updateFailed = ref(false);
   const updateFailedError = ref()
   const profilePic = ref(localStorage.getItem('file'))
+  const forgetEmail = ref('');
 
   //Login
   async function handleLogin() {
@@ -258,13 +259,13 @@ export const useLogin = defineStore("Login", () => {
   }
 
   //Forget password
-  async function forgetPassword(email) {
+  async function forgetPassword() {
     let status = 0;
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/forgetPassword`, {
       method: "PUT",
       body: {
-        email: email
+        email: forgetEmail.value
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -276,6 +277,8 @@ export const useLogin = defineStore("Login", () => {
       },
     });
     if (status == 200) {
+      forgetEmail.value = '';
+      successfulPopup.value = true;
       console.log("send completed");
     }
   }
@@ -350,6 +353,7 @@ export const useLogin = defineStore("Login", () => {
     idToken,
     roleToken,
     fileToken,
+    forgetEmail,
     getProfile,
     updateProfile,
     handleLogin,

@@ -15,6 +15,7 @@ import { mergeProps } from "vue";
 import deleteUserConfirmPopup from "~/components/users/popups/deleteUserConfirmPopup.vue";
 import deleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessPopup.vue";
 import CreateReportPopup from "~/components/reports/createReportPopup.vue";
+import ReportSuccessPopup from "~/components/reports/popups/reportSuccessPopup.vue";
 
 const user = useUsers();
 const book = useBooks();
@@ -97,6 +98,7 @@ function bookCoverPath(filePath) {
 onBeforeMount(async () => {
     await book.getBookmarkList();
     await selectSection(profileSection.value);
+    noti.clearReportProblem();
     handleGetUserDetail()
 //   if (roleToken.value == 'ADMIN') {
 //   await user.getUserDetail(route.params.id);
@@ -222,7 +224,7 @@ onBeforeMount(async () => {
                 </v-list>
                 <v-list v-if="roleToken == 'USER'">
                   <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
-                    <v-list-item-title class="web-text-detail tw-space-x-2" @click="noti.reportStatus.show = true,noti.reportStatus.type = 'user'"
+                    <v-list-item-title class="web-text-detail tw-space-x-2" @click="noti.handleReportUser(user.userDetail.data.userId)"
                       ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
                       ><span>Report this user</span></v-list-item-title
                     >
@@ -428,13 +430,26 @@ onBeforeMount(async () => {
         />
 
       <!-- Create Report Popup -->
-      <div v-if="noti.reportStatus.show">
-      <CreateReportPopup class="report-popup" :title="noti.reportUserList" :report="noti.reportProblem" @cancel="noti.reportStatus.show = false" @submit="noti.createUserBook($event)"/>
+      <div v-if="noti.reportStatus">
+      <CreateReportPopup class="report-popup" 
+      :title="noti.reportUserList" 
+      :report="noti.reportProblem" 
+      @cancel="noti.reportStatus = false, noti.clearReportProblem()" 
+      @submit="noti.createReport()"/>
       </div>
-
-      </div>
+      <div v-if="noti.successfulPopup">
+      <ReportSuccessPopup class="report-popup" @close="noti.successfulPopup = false"/>
+    </div>  
+    </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.report-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>

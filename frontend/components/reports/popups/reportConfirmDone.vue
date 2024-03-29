@@ -1,10 +1,7 @@
 <script setup>
-defineEmits(["toggle",""]);
+defineEmits(["cancel","submit"]);
 defineProps({
-    dialog: {
-        type: Boolean,
-        require: true,
-    },
+
 })
 </script>
  
@@ -18,8 +15,8 @@ defineProps({
         <v-card-text class="d-flex align-content-center justify-center flex-wrap" style="height: 10rem; width: 40rem;"><div class="confirm-popUp-detail">Are you sure to complete this report ?</div></v-card-text>
         <v-card-actions style="height: 5rem; width: 40rem;">
           <v-spacer></v-spacer>
-          <v-btn class="tw-mx-2" style="height: 3rem; width: 7rem;" color="#727272" variant="tonal" size="large" rounded="xl" @click="$emit('toggle')">Cancel</v-btn>
-          <v-btn class="tw-mx-4" style="height: 3rem; width: 7rem;" color="#1D419F" variant="flat" size="large" rounded="xl" @click="">Confirm</v-btn>
+          <v-btn class="tw-mx-2" style="height: 3rem; width: 7rem;" color="#727272" variant="tonal" size="large" rounded="xl" @click="$emit('cancel')">Cancel</v-btn>
+          <v-btn class="tw-mx-4" style="height: 3rem; width: 7rem;" color="#1D419F" variant="flat" size="large" rounded="xl" @click="$emit('submit')">Confirm</v-btn>
         </v-card-actions>
       </v-card>
     </div>

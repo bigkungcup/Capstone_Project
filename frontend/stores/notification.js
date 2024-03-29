@@ -27,18 +27,18 @@ export const useNotifications = defineStore("Notification", () => {
     link: null
   });
   const reportList = ref({
-    data: [],
+    data: {
+      content: [],
+    },
   });
   const reportHistoryList = ref({
     data: [],
   });
-  const reportStatus = ref({
-    type: "",
-    show: false,
-  });
+  const reportStatus = ref(false);
   const reportProblem = ref({
     reportTitle: "",
     reportDetail: "",
+    reportType: "",
     problemId: 0,
   });
   const reportBookList = ref([
@@ -422,7 +422,7 @@ export const useNotifications = defineStore("Notification", () => {
   }
 
   //Create Report Book
-  async function createReportBook(bookId) {
+  async function createReport() {
     let accessToken = useCookie("accessToken");
     let status = 0;
 
@@ -431,12 +431,11 @@ export const useNotifications = defineStore("Notification", () => {
       headers: {
         Authorization: `Bearer ${accessToken.value}`,
       },
-      params: {
+      body: {
         reportTitle: reportProblem.value.reportTitle,
         reportDetail: reportProblem.value.reportDetail,
         problemId: reportProblem.value.problemId,
-        reportType: "book",
-        bookId: bookId,
+        reportType: reportProblem.value.reportType,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -444,81 +443,14 @@ export const useNotifications = defineStore("Notification", () => {
           console.log("report uncompleted");
         } else if (status == 401) {
           login.handleRefresh();
-          createReportBook(bookId);
+          createReport();
         }
       },
     });
     if (status == 201) {
-      reportStatus.value.show = false;
+      reportStatus.value = false;
       successfulPopup.value = true;
-      console.log("report completed");
-    }
-  }
-
-  //Create Report Review
-  async function createReportReview(reviewId) {
-    let accessToken = useCookie("accessToken");
-    let status = 0;
-
-    await $fetch(`${import.meta.env.VITE_BASE_URL}/report`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken.value}`,
-      },
-      params: {
-        reportTitle: reportProblem.value.reportTitle,
-        reportDetail: reportProblem.value.reportDetail,
-        problemId: reportProblem.value.problemId,
-        reportType: "review",
-        reviewId: reviewId,
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-        if (status == 400) {
-          console.log("report uncompleted");
-        } else if (status == 401) {
-          login.handleRefresh();
-          createReportReview(reviewId);
-        }
-      },
-    });
-    if (status == 201) {
-      reportStatus.value.show = false;
-      successfulPopup.value = true;
-      console.log("report completed");
-    }
-  }
-
-  //Create Report User
-  async function createReportUser(userId) {
-    let accessToken = useCookie("accessToken");
-    let status = 0;
-
-    await $fetch(`${import.meta.env.VITE_BASE_URL}/report`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken.value}`,
-      },
-      params: {
-        reportTitle: reportProblem.value.reportTitle,
-        reportDetail: reportProblem.value.reportDetail,
-        problemId: reportProblem.value.problemId,
-        reportType: "user",
-        userId: userId,
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-        if (status == 400) {
-          console.log("report uncompleted");
-        } else if (status == 401) {
-          login.handleRefresh();
-          createReportUser(userId);
-        }
-      },
-    });
-    if (status == 201) {
-      reportStatus.value.show = false;
-      successfulPopup.value = true;
+      clearReportProblem();
       console.log("report completed");
     }
   }
@@ -549,10 +481,30 @@ export const useNotifications = defineStore("Notification", () => {
     }
   }
 
+  function handleReportReview(reviewId) {
+    reportStatus.value = true;
+    reportProblem.value.reportType = 'review';
+    reportProblem.value.problemId = reviewId;
+  }
+  
+  function handleReportBook(bookId) {
+    reportStatus.value = true;
+    reportProblem.value.reportType = 'book';
+    reportProblem.value.problemId = bookId;
+  }
+
+  function handleReportUser(userId) {
+    reportStatus.value = true;
+    reportProblem.value.reportType = 'user';
+    reportProblem.value.problemId = userId;
+  }
+
   //Clear report list
   function clearReportList() {
     reportList.value = {
-      data: [],
+      data: {
+        content: [],
+      },
     };
   }
 
@@ -568,6 +520,7 @@ export const useNotifications = defineStore("Notification", () => {
     reportProblem.value = {
       reportTitle: "",
       reportDetail: "",
+      reportType: "",
       problemId: 0,
     };
   }
@@ -628,6 +581,7 @@ export const useNotifications = defineStore("Notification", () => {
     reportBookList,
     reportReviewList,
     reportUserList,
+    successfulPopup,
     getNotificationList,
     getCountAllNotification,
     getCountUserNotification,
@@ -642,10 +596,11 @@ export const useNotifications = defineStore("Notification", () => {
     clearNewNotification,
     getReportList,
     getReportHistoryList,
-    createReportBook,
-    createReportReview,
-    createReportUser,
+    createReport,
     updateReportDone,
+    handleReportBook,
+    handleReportReview,
+    handleReportUser,
     clearReportList,
     clearReportHistoryList,
     clearReportProblem,

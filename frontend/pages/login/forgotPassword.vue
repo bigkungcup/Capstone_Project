@@ -1,8 +1,24 @@
 <script setup>
+import { useLogin } from "~/stores/login";
+import { ref } from "vue";
+import forgerPasswordSuccessPopup from "~/components/users/popups/forgerPasswordSuccessPopup.vue";
+
 definePageMeta({
   layout: false,
 });
 
+const login = useLogin();
+const validEmail = /^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+const rules = {
+  required: (value) => !!value || "Field is required",
+  email: (value) => value.match(validEmail) || "Please enter a valid email address",
+};
+
+onBeforeMount(() => {
+  login.forgetEmail = '';
+  login.successfulPopup = false;
+});
 </script>
  
 <template>
@@ -14,11 +30,10 @@ definePageMeta({
         cover
         class="tw-opacity-40"
       ></v-img>
-      <!-- <div :style="{ backgroundImage: `url(${bgimage})` }" class="tw-min-h-full tw-bg-cover tw-opacity-40" ></div> -->
-      <!-- <v-img src="/image/login.png" height="65%" cover></v-img> -->
     </v-col>
 
-    <v-row align="center" justify="center" no-gutters>
+    <v-col cols="6" class="">
+    <v-row align="center" justify="center" no-gutters class="tw-min-h-screen tw-max-h-screen">
       <v-col cols="9">
         <NuxtLink to="/" class="d-flex tw-space-x-2 my-5 justify-center">
           <img src="/image/logo.png" style="height: 40px" />
@@ -29,27 +44,35 @@ definePageMeta({
         <div class="d-flex justify-center my-5">
           <p class="web-text-header">Forgot Password</p>
         </div>
-        <p class="web-text-detail tw-mx-4">*Enter your email address and we’ll send you new password to reset your password.</p>
+        <div class="web-text-detail tw-mx-4">
+          <p>*Enter your email address and we’ll send you new password to reset your password.</p>
+        </div>
         <div class="tw-mx-10 tw-my-8">
           <v-text-field
             prepend-inner-icon="mdi-email-outline"
             density="compact"
             label="Enter your email"
             variant="solo"
+            v-model="login.forgetEmail"
+            :rules="[rules.required,rules.email]"
           ></v-text-field>
-
         </div>
 
         <div class="tw-flex tw-justify-center">
-          <v-btn class="px-14" color="#1D419F" rounded variant="flat" size="large"
-            >send</v-btn
-          >
+          <v-btn class="px-14" color="#1D419F" rounded variant="flat" size="large" 
+          :disabled="login.forgetEmail == '' || login.forgetEmail.match(validEmail)"
+          @click="login.forgetPassword()">
+            send
+          </v-btn>
         </div>
         <NuxtLink to="/login/" class="login-text-sub tw-flex tw-justify-center my-3">
           <span>Back to login</span>
         </NuxtLink>
       </v-col>
-    </v-row>
+    </v-row></v-col>
+    <forgerPasswordSuccessPopup
+    :dialog="login.successfulPopup"
+    @close="login.successfulPopup = false"/>
   </v-row>
 </template>
  

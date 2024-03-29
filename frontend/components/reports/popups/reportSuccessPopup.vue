@@ -1,15 +1,12 @@
 <script setup>
 defineEmits(["close"]);
 defineProps({
-    dialog: {
-        type: Boolean,
-        require: true,
-    },
+
 })
 </script>
  
 <template>
-    <div
+    <div 
         class="tw-grid tw-h-100% tw-min-h-screen tw-w-screen tw-absolute tw-inset-0 tw--top-[5.5rem] tw-bg-black/50">
         <v-card style="height: 20rem; width: 40rem;" class="rounded-xl tw-place-self-center">
             <div class="tw-flex tw-justify-center">

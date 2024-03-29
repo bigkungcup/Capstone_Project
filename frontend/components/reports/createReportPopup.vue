@@ -16,12 +16,14 @@ defineProps({
   },
 });
 
-const problemId = ref('');
+// const problemId = ref('');
+// const idToken = ref(localStorage.getItem("id"));
 
-function handleProblemTitle(report,title) {
-    report.problemId = problemId.value;
-    report.reportTitle = title.find((element) => element.id == problemId.value);
-}
+// function handleProblemTitle(report,title) {
+//     report.problemId = problemId.value;
+//     let problem = title.find((element) => element.id == problemId.value);
+//     report.reportTitle = problem.Name;
+// }
 </script>
 
 <template>
@@ -46,14 +48,13 @@ function handleProblemTitle(report,title) {
             <v-select
           label="Please select problem : "
           class="tw-font-bold tw-text-white tw-text-xs " 
-          v-model="problemId"
+          v-model="report.reportTitle"
           :items="title"
           item-title="Name"
-          item-value="id"
+          item-value="Name"
           variant="solo-filled" 
           bg-color="white" 
           rounded="lg"
-          @update:model-value="handleProblemTitle(report,title)"
 ></v-select>
         </div>
         <div class="tw-space-y-1">
@@ -66,48 +67,6 @@ function handleProblemTitle(report,title) {
             clearable
           ></v-textarea>
         </div>
-          <!-- <v-row class="tw-flex tw-items-center tw-space-x-6" no-gutters>
-            <v-col cols="4" class="d-flex tw-place-content-end">
-              <span class="web-text-detail">Old password</span>
-            </v-col>
-            <v-col cols="7">
-              <v-text-field
-                label="Enter old password"
-                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-                :type="visible ? 'text' : 'password'"
-                density="compact"
-                variant="solo"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="tw-flex tw-items-center tw-space-x-6">
-            <v-col cols="4" class="d-flex tw-place-content-end">
-              <span class="web-text-detail">New password</span>
-            </v-col>
-            <v-col cols="7">
-              <v-text-field
-                label="Enter new password"
-                :append-inner-icon="newVisible ? 'mdi-eye-off' : 'mdi-eye'"
-                :type="newVisible ? 'text' : 'password'"
-                density="compact"
-                variant="solo"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="tw-flex tw-items-center tw-space-x-6">
-            <v-col cols="4" class="d-flex tw-place-content-end">
-              <span class="web-text-detail">Confirm new password</span>
-            </v-col>
-            <v-col cols="7">
-              <v-text-field
-                label="Enter confirm password"
-                :append-inner-icon="confirmVisible ? 'mdi-eye-off' : 'mdi-eye'"
-                :type="confirmVisible ? 'text' : 'password'"
-                density="compact"
-                variant="solo"
-              ></v-text-field>
-            </v-col>
-          </v-row> -->
         </div>
       </v-card-text>
       <v-card-actions style="height: 4em; width: 50rem">
@@ -129,6 +88,7 @@ function handleProblemTitle(report,title) {
           variant="flat"
           size="large"
           rounded="xl"
+          @click="$emit('submit')"
           >Submit</v-btn
         >
       </v-card-actions>

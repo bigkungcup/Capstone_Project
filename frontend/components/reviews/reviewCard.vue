@@ -2,7 +2,6 @@
 import { useReviews } from '~/stores/review'
 import { mergeProps } from 'vue'
 defineEmits(["toggle","set","like","follow","unfollow","update","report"]);
-
 defineProps({
     reviewList: {
         type: Array,
@@ -111,7 +110,7 @@ const follow = ref(true)
                                         </v-list-item-title>
                                     </v-list-item>
                                     <v-list-item v-show="roleToken == 'USER' && review.userDetail.userId != idToken" class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
-                                        <v-list-item-title class="web-text-detail tw-space-x-2 " @click="$emit('report')"
+                                        <v-list-item-title class="web-text-detail tw-space-x-2 " @click="$emit('report',review.reviewId)"
                                             ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon
                                             ><span>Report this review</span></v-list-item-title
                                         >
