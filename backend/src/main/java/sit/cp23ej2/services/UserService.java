@@ -34,6 +34,7 @@ import sit.cp23ej2.dtos.User.UserDTO;
 import sit.cp23ej2.dtos.User.UserRankingDTO;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
+import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.FollowReposiroty;
@@ -206,6 +207,10 @@ public class UserService extends CommonController {
             User userDetail = repository.getUserById(userId);
             if (userDetail == null) {
                 throw new HandleExceptionNotFound("User Not Found", "User");
+            }
+
+            if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_USER")) && userDetail.getRole().equals("ADMIN")){
+                throw new HandleExceptionForbidden(currentPrincipalName + " is not allowed to access this resource");
             }
 
             UserByIdDTO userDTO = modelMapper.map(userDetail, UserByIdDTO.class);
