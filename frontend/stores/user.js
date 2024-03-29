@@ -52,6 +52,10 @@ export const useUsers = defineStore("Users", () => {
   });
   const followingPage = ref(0);
   const followerPage = ref(0);
+  const rankingUserList = ref({
+    data: [],
+  });
+  const rankingSort = ref('followers')
 
   //Get user list
   async function getUserList() {
@@ -92,10 +96,103 @@ export const useUsers = defineStore("Users", () => {
     }
   }
 
+     //Get ranking user
+     async function getRankingUserList() {
+      let status = 0;
+      let accessToken = useCookie("accessToken");
+      // clearRankingUserList();
+  
+      const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/user/ranking`, {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          };
+          options.params = {
+            sort: rankingSort.value
+          }
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      });
+      if (status == 200) {
+        if (data.value) {
+          rankingUserList.value = data.value;
+        }
+        console.log("get ranking user list completed");
+      } else if (status == 401) {
+        await login.handleRefresh();
+        await getRankingUserList();
+      }  else if (status == 404) {
+        clearRankingUserList();
+        console.log("get ranking user list uncompleted");
+      }
+    }
+
+   //Get ranking user
+   async function getRankingUserListByGuest() {
+    let status = 0;
+    clearRankingUserList();
+
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/user/ranking`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+        options.params = {
+          sort: rankingSort.value
+        }
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+      },
+    });
+    if (status == 200) {
+      if (data.value) {
+        rankingUserList.value = data.value;
+      }
+      console.log("get ranking user list completed");
+    } else if (status == 404) {
+      clearRankingUserList();
+      console.log("get ranking user list uncompleted");
+    }
+  }
+
+    //Get User Detail
+    async function getUserDetail(userId) {
+      let accessToken = useCookie("accessToken");
+      let status = 0;
+      const { data } = await useFetch(
+        `${import.meta.env.VITE_BASE_URL}/user/${userId}`,
+        {
+          onRequest({ request, options }) {
+            options.method = "GET";
+            options.headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken.value}`,
+            };
+          },
+          onResponse({ request, response, options }) {
+            status = response._data.response_code;
+          },
+        }
+      );
+      if (status == 200) {
+        userDetail.value = data.value;
+        console.log("get user detail completed");
+      } else if (status == 400) {
+        console.log("get user detail uncompleted");
+      } else if (status == 404) {
+        router.push("/PageNotFound/");
+      }
+    }
+
   //Get User Detail
-  let status = 0;
-  async function getUserDetail(userId) {
-    let accessToken = useCookie("accessToken");
+  async function getUserDetailByGuest(userId) {
+    let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/user/${userId}`,
       {
@@ -103,7 +200,6 @@ export const useUsers = defineStore("Users", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -116,9 +212,6 @@ export const useUsers = defineStore("Users", () => {
       console.log("get user detail completed");
     } else if (status == 400) {
       console.log("get user detail uncompleted");
-    } else if (status == 401) {
-      await login.handleRefresh();
-      await getUserDetail(userId);
     } else if (status == 404) {
       router.push("/PageNotFound/");
     }
@@ -163,18 +256,14 @@ export const useUsers = defineStore("Users", () => {
     if (editUserFile.value === null && userDetail.value.data.file !== null) {
       user = {
         displayName: editUser.value.displayName,
-        email: editUser.value.email,
-        password: editUser.value.password,
+        password: editUser.value.password == '' ? userDetail.value.data.password : editUser.value.password,
         bio: editUser.value.bio,
-        role: editUser.value.role,
       };
     } else {
       user = {
         displayName: editUser.value.displayName,
-        email: editUser.value.email,
-        password: editUser.value.password,
+        password: editUser.value.password == '' ? userDetail.value.data.password : editUser.value.password,
         bio: editUser.value.bio,
-        role: editUser.value.role,
         status: "edit",
       };
     }
@@ -260,7 +349,7 @@ export const useUsers = defineStore("Users", () => {
   }
 
     //Get Following list
-    async function getFollowingList() {
+    async function getFollowingList(userId) {
       let accessToken = useCookie("accessToken");
       let status = 0;
       const { data } = await useFetch(
@@ -273,6 +362,7 @@ export const useUsers = defineStore("Users", () => {
               Authorization: `Bearer ${accessToken.value}`,
             };
             options.params = {
+              userId: userId,
               page: followingPage.value,
               size: 15,
             };
@@ -292,12 +382,12 @@ export const useUsers = defineStore("Users", () => {
         console.log("get user list uncompleted");
       } else if (status == 401) {
         await login.handleRefresh();
-        await getFollowingList();
+        await getFollowingList(userId);
       }
     }
   
         //Get Follower list
-        async function getFollowerList() {
+        async function getFollowerList(userId) {
           let accessToken = useCookie("accessToken");
           let status = 0;
           const { data } = await useFetch(
@@ -310,6 +400,7 @@ export const useUsers = defineStore("Users", () => {
                   Authorization: `Bearer ${accessToken.value}`,
                 };
                 options.params = {
+                  userId: userId,
                   page: followerPage.value,
                   size: 15,
                 };
@@ -329,7 +420,7 @@ export const useUsers = defineStore("Users", () => {
             console.log("get user list uncompleted");
           } else if (status == 401) {
             await login.handleRefresh();
-            await getFollowerList();
+            await getFollowerList(userId);
           }
         }    
 
@@ -434,6 +525,13 @@ export const useUsers = defineStore("Users", () => {
     };
   }
 
+          //Clear ranking user list
+          function clearRankingUserList() {
+            rankingUserList.value = {
+              data: [],
+            };
+          }  
+
   function toggleUserFailPopup() {
     failPopup.value = !failPopup.value;
   }
@@ -498,8 +596,13 @@ export const useUsers = defineStore("Users", () => {
     updateFailed,
     updateFailedError,
     followStatus,
+    rankingUserList,
+    rankingSort,
     getUserList,
+    getRankingUserList,
+    getRankingUserListByGuest,
     getUserDetail,
+    getUserDetailByGuest,
     updateUser,
     deleteUser,
     registerUser,
@@ -511,6 +614,7 @@ export const useUsers = defineStore("Users", () => {
     clearNewUser,
     clearFollowingList,
     clearFollowerList,
+    clearRankingUserList,
     toggleUserFailPopup,
     changeUserPage,
     changeFolloingPage,

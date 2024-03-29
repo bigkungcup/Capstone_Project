@@ -11,9 +11,10 @@ defineProps({
 <template>
   <v-container>
     <v-row no-gutters>
-      <v-col cols="4">
-        <v-card class="tw-w-[20rem] tw-h-[20rem]" v-for="user in followerList">
+      <v-col cols="4" v-for="user in followerList">
+        <v-card class="tw-w-[20rem] tw-h-[20rem] tw-my-2 tw-mx-6">
           <div class="tw-h-[8rem]">
+            <nuxt-link :to="`/user/${user.userFollowers.userId}/`">
             <v-img src="/image/profile_banner.jpg" v-show="user.userFollowers.file == null" cover></v-img>
             <v-img
           class="tw-blur-[2px]"
@@ -21,10 +22,12 @@ defineProps({
           :src="user.userFollowers.file"
           cover
         ></v-img>
+      </nuxt-link>
           </div>
 
           <div class="tw-flex tw-place-content-center">
             <div class="tw-w-full tw-h-full">
+              <nuxt-link :to="`/user/${user.userFollowers.userId}/`">
               <v-img
                 src="/image/guest_icon.png"
                 width="120"
@@ -41,6 +44,7 @@ defineProps({
                 v-show="user.userFollowers.file !== null"
                 cover
               />
+            </nuxt-link>
             </div>
             <v-btn color="#1D419F" variant="elevated" class="tw-m-2" v-if="user.followingStatus == 1"
             @click="user.followingStatus = 0, $emit('unfollow', user.userFollowers.userId)"

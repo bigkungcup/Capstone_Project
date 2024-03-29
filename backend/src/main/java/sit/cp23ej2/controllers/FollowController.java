@@ -34,15 +34,17 @@ public class FollowController {
     private FollowService followerService;
 
     @GetMapping("/follower")
-    public DataResponse getFollowers(@RequestParam(defaultValue = "0", required = false) Integer page,
+    public DataResponse getFollowers(@RequestParam(required = true) Integer userId,
+            @RequestParam(defaultValue = "0", required = false) Integer page,
             @RequestParam(defaultValue = "10", required = false) Integer size) {
-        return followerService.getFollowers(page, size);
+        return followerService.getFollowers(userId, page, size);
     }
 
     @GetMapping("/following")
-    public DataResponse getFollowersByGuest(@RequestParam(defaultValue = "0", required = false) Integer page,
+    public DataResponse getFollowersByGuest(@RequestParam(required = true) Integer userId,
+            @RequestParam(defaultValue = "0", required = false) Integer page,
             @RequestParam(defaultValue = "10", required = false) Integer size) {
-        return followerService.getFollowing(page, size);
+        return followerService.getFollowing(userId, page, size);
     }
 
     @PostMapping("")

@@ -69,6 +69,10 @@ export const useBooks = defineStore("Books", () => {
   const otherBookList = ref({
     data: [],
   });
+  const rankingBookList = ref({
+    data: [],
+  });
+  const rankingFilter = ref(0)
   const runtimeConfig = useRuntimeConfig();
 
   //Get Library
@@ -187,6 +191,9 @@ export const useBooks = defineStore("Books", () => {
     } else if (status == 404) {
       clearRecommendBookList();
       console.log("get recommend book list uncompleted");
+    }else if (status == 401) {
+      await login.handleRefresh();
+      await getRecommendBookList();
     }
   }
 
@@ -273,6 +280,36 @@ export const useBooks = defineStore("Books", () => {
       }
     }
 
+      //Get ranking book
+  async function getRankingBookList() {
+    let status = 0;
+    clearRankingBookList();
+
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/ranking`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+        options.params = {
+          bookTypeId: rankingFilter.value == 0 ? '' : rankingFilter.value
+        }
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+      },
+    });
+    if (status == 200) {
+      if (data.value) {
+        rankingBookList.value = data.value;
+      }
+      console.log("get ranking book list completed");
+    } else if (status == 404) {
+      clearRankingBookList();
+      console.log("get ranking book list uncompleted");
+    }
+  }
+
   //Get Book Detail
   async function getBookDetail(bookId) {
     let status = 0;
@@ -295,7 +332,7 @@ export const useBooks = defineStore("Books", () => {
     if (status == 200) {
       bookDetail.value = data.value;
       bookmarkedStatus.value = bookDetail.value.data.bookmark;
-      console.log("get book detail  completed");
+      console.log("get book detail completed");
     } else if (status == 400) {
       console.log("get book detail uncompleted");
     } else if (status == 401) {
@@ -483,7 +520,7 @@ export const useBooks = defineStore("Books", () => {
 
 
   //Get Bookmark
-  async function getBookmarkList() {
+  async function getBookmarkList(userId) {
     let accessToken = useCookie("accessToken");
     let status = 0;
 
@@ -495,6 +532,7 @@ export const useBooks = defineStore("Books", () => {
           Authorization: `Bearer ${accessToken.value}`,
         };
         options.params = {
+          userId: userId,
           page: bookmarkPage.value,
           size: 20,
         }
@@ -513,7 +551,7 @@ export const useBooks = defineStore("Books", () => {
       console.log("get library uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
-      await getBookmarkList();
+      await getBookmarkList(userId);
     }
   }
 
@@ -542,6 +580,7 @@ export const useBooks = defineStore("Books", () => {
       },
     });
     if (status == 201) {
+      getBookDetail(bookId);
       console.log("bookmark completed");
     }
   }
@@ -569,6 +608,7 @@ export const useBooks = defineStore("Books", () => {
       }
     );
     if (status == 200) {
+      getBookDetail(bookId);
       console.log("delete bookmark completed");
     } else if (status == 400) {
       console.log("delete bookmark uncompleted");
@@ -779,7 +819,6 @@ export const useBooks = defineStore("Books", () => {
     }
   }
 
-
   // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds) {
     let interval = Math.floor(seconds / 31536000);
@@ -908,7 +947,13 @@ export const useBooks = defineStore("Books", () => {
     };
   }
 
-  
+        //Clear ranking book list
+        function clearRankingBookList() {
+          rankingBookList.value = {
+            data: [],
+          };
+        }
+      
 
   //Clear history list
   function clearHistoryList() {
@@ -984,6 +1029,8 @@ export const useBooks = defineStore("Books", () => {
     leavePopup,
     bookmarkedStatus,
     similarBookList,
+    rankingBookList,
+    rankingFilter,
     getLibrary,
     getLibraryByGuest,
     getBookDetail,
@@ -994,6 +1041,7 @@ export const useBooks = defineStore("Books", () => {
     getMostviewBookList,
     getNewBookList,
     getOtherBookList,
+    getRankingBookList,
     deleteHistoryAll,
     deleteHistoryById,
     createBook,
@@ -1017,6 +1065,7 @@ export const useBooks = defineStore("Books", () => {
     clearMostviewBookList,
     clearNewBookList,
     clearOtherBookList,
+    clearRankingBookList,
     setEditBook,
     closeSuccessfulPopup,
   };

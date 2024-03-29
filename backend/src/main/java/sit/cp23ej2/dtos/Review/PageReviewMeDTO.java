@@ -12,7 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class PageReviewMeDTO {
-     private List<ReviewMeDTO> content;
+    private List<ReviewMeDTO> content;
     private Object pageable;
     private int pageNumber;
     private int size;

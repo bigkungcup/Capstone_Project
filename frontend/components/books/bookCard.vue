@@ -17,7 +17,7 @@ function bookCoverPath(filePath) {
  
 <template>
     <div class="tw-px-36 tw-space-y-4">
-        <v-card v-for="book in bookList" :search="search" color="rgb(217, 217, 217, 0.6)" class="tw-min-h-[19rem] tw-max-h-[19rem]" :to="`/book/${book.bookId}/`">
+        <v-card v-for="book in bookList" :search="library.searchBook" color="rgb(217, 217, 217, 0.6)" class="tw-min-h-[19rem] tw-max-h-[19rem]" :to="`/book/${book.bookId}/`">
             <v-row no-gutters>
                 <v-col cols="3" class="my-3" align="center">
                     <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="180" height="280" cover v-show="book.file == null"/>
@@ -28,7 +28,7 @@ function bookCoverPath(filePath) {
                 <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
                     <div>
                         <p class="web-text-title">{{ book.bookName }}</p>
-                        <!-- <p class="tw-opacity-60">Update about {{ library.countUpdateTime(book.countDateTime) }}</p> -->
+                        <p class="tw-opacity-60">created about {{ library.countUpdateTime(book.countDateTime) }}</p>
                     </div>
                     <div class="tw-min-h-[9rem] tw-max-h-[9rem] tw-py-2 tw-overflow-clip">
                         <p class="tw-indent-8">{{ book.bookDetail }}</p>
@@ -36,9 +36,9 @@ function bookCoverPath(filePath) {
                     <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6 tw-py-2">
                         <v-rating :model-value="0.5 * Math.floor(2 * book.bookRating)" color="#FFB703"
                             density="compact" size="meduim" half-increments readonly></v-rating>
-                        <p class="web-text-rate">{{book.bookRating}}</p>
-                        <!-- <p v-show="book.bookTotalReview == null">(0 review)</p>
-                        <p v-show="book.bookTotalReview != null">({{ book.bookTotalReview }} reviews)</p> -->
+                        <p class="web-text-rate">{{0.5 * (2 * book.bookRating).toFixed(1)}}</p>
+                        <p v-show="book.bookTotalReview == null">(0 review)</p>
+                        <p v-show="book.bookTotalReview != null">({{ book.bookTotalReview }} reviews)</p>
                     </div>
                 </v-col>
                 <v-col class="tw-grid tw-grid-cols-8 tw-gap-2">

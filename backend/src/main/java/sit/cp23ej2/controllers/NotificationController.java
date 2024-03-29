@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -37,8 +38,23 @@ public class NotificationController {
 
 
     @GetMapping("")
-    public DataResponse getNotificationByUserId() {
-        return notificationService.getNotificationByUserId();
+    public DataResponse getNotificationByUserId(@RequestParam(defaultValue = "0") Integer notificationLevel) {
+        return notificationService.getNotificationByUserId(notificationLevel);
+    }
+
+    @GetMapping("/count")
+    public DataResponse getNotificationById() {
+        return notificationService.getCountNotification();
+    }
+
+    @GetMapping("/countNormal")
+    public DataResponse getNotificationNormalById() {
+        return notificationService.getCountNotificationNormal();
+    }
+
+    @GetMapping("/countSystem")
+    public DataResponse getNotificationSystemById() {
+        return notificationService.getCountNotificationSystem();
     }
 
     @PostMapping("")

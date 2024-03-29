@@ -1,6 +1,7 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import { useNotifications } from "./notification";
 
 export const useLogin = defineStore("Login", () => {
   const cookieOptions = {
@@ -8,6 +9,7 @@ export const useLogin = defineStore("Login", () => {
     path: "/",
   };
   const router = useRouter();
+  const noti = useNotifications();
   const loginAccount = ref({
     email: "",
     password: "",
@@ -18,6 +20,9 @@ export const useLogin = defineStore("Login", () => {
   const idToken = ref(localStorage.getItem("id"));
   const roleToken = ref(localStorage.getItem("role"));
   const fileToken = ref(localStorage.getItem("file"));
+  const setNoti = ref(setInterval(async () => {
+    await noti.getCountAllNotification();
+  }, 60000));
 
   const setToken = (token) => {
     localStorage.setItem("id", token.userId);
@@ -61,6 +66,7 @@ export const useLogin = defineStore("Login", () => {
   const updateFailed = ref(false);
   const updateFailedError = ref()
   const profilePic = ref(localStorage.getItem('file'))
+  const forgetEmail = ref('');
 
   //Login
   async function handleLogin() {
@@ -90,6 +96,11 @@ export const useLogin = defineStore("Login", () => {
       refreshToken.value = data.refresh_token;
       getProfile();
       router.push("/");
+      setNoti.value = setInterval(async () => {
+        await noti.getCountAllNotification();
+      }, 60000);
+      noti.getCountAllNotification();
+      await setNoti();
       console.log("login completed");
     }
   }
@@ -247,6 +258,31 @@ export const useLogin = defineStore("Login", () => {
     }
   }
 
+  //Forget password
+  async function forgetPassword() {
+    let status = 0;
+
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/forgetPassword`, {
+      method: "PUT",
+      body: {
+        email: forgetEmail.value
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          console.log("send uncompleted");
+        } else if (status == 401) {
+          console.log("send uncompleted");
+        }
+      },
+    });
+    if (status == 200) {
+      forgetEmail.value = '';
+      successfulPopup.value = true;
+      console.log("send completed");
+    }
+  }
+
   //Log out
   function logOut() {
     // const myBroadcastChannel1 = new BroadcastChannel('accessToken');
@@ -256,6 +292,7 @@ export const useLogin = defineStore("Login", () => {
     refreshToken.value = null;
     delete_cookie("refreshToken");
     resetToken();
+    clearInterval(setNoti.value);
     // myBroadcastChannel1.close();
     // myBroadcastChannel2.close();
     router.push("/login");
@@ -316,6 +353,7 @@ export const useLogin = defineStore("Login", () => {
     idToken,
     roleToken,
     fileToken,
+    forgetEmail,
     getProfile,
     updateProfile,
     handleLogin,
@@ -326,6 +364,7 @@ export const useLogin = defineStore("Login", () => {
     setEditProfile,
     closeSuccessfulPopup,
     changePassword,
+    forgetPassword,
     resetToken,
     getIdToken,
     getRoleToken,

@@ -29,8 +29,16 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
         @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
                         +
-                        " FROM Review r WHERE r.rvu_userId = :userId", nativeQuery = true)
+                        " FROM Review r WHERE r.rvu_userId = :userId " + 
+                        " ORDER BY r.reviewCreateDateTime DESC "
+                        , nativeQuery = true)
         Page<Review> getReviewByUserId(Pageable pageable, @Param("userId") Integer userId);
+
+        @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
+                        +
+                        " FROM Review r WHERE r.rvu_userId = :userId "
+                        , nativeQuery = true)
+        List<Review> getReviewByUserId(@Param("userId") Integer userId);
 
         @Query(value = "SELECT r.reviewId, r.rvu_userId, r.rvb_bookId, r.reviewTitle, r.reviewDetail, r.reviewRating, r.spoileFlag, r.reviewTotalLike, r.reviewTotalDisLike, r.reviewCreateDateTime, r.reviewUpdateDateTime "
                         +
@@ -58,7 +66,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE Review SET reviewRating = :rating, reviewDetail= :detail, reviewTitle = :title, spoileFlag = :spoileFlag"
+        @Query(value = "UPDATE Review SET reviewRating = :rating, reviewDetail= :detail, reviewTitle = :title, spoileFlag = :spoileFlag, reviewUpdateDateTime = NOW()"
                         +
                         " WHERE reviewId = :reviewId", nativeQuery = true)
         void updateReview(@Param("rating") Long reviewRating, @Param("detail") String reviewDetail,
@@ -80,6 +88,8 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
         Integer deleteReview(@Param("reviewId") Integer reviewId);
 
         List<Review> findAll();
+
+        boolean existsByReviewId(Integer reviewId);
 
         @Modifying
         @Transactional

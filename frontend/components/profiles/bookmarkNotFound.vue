@@ -3,8 +3,7 @@
  
 <template>
     <v-container class="tw-grid tw-place-content-center tw-gap-y-2">
-        <img src="/image/history_notfound.png" style="height: 300px;" class="tw-opacity-50" />
-        <p class="tw-flex tw-justify-center tw-text-[#8D8D8D] tw-text-4xl tw-font-bold">Bookmark not found</p>
+        <img src="/image/book_not_found.png" style="height: 300px;" class="tw-opacity-50" />
     </v-container>
 </template>
  

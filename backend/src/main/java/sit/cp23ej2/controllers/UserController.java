@@ -51,9 +51,10 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping("/all")
-    public DataResponse getAllUser(@RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) throws HandleExceptionNotFound {
-        return userService.getUser(page, size);
+    public DataResponse getAllUser(@RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size, @RequestParam(required =  false) String role,
+            @RequestParam(required = false) String search) throws HandleExceptionNotFound {
+        return userService.getUser(page, size, role, search);
     }
 
     @RequestMapping("/{userId}")
@@ -92,7 +93,6 @@ public class UserController {
 
     @PutMapping("/admin/{userId}")
     public DataResponse updateUserByAdmin(@RequestPart("user") @Valid UpdateUserByAdminDTO user, @PathVariable Integer userId, @RequestPart(value = "file") @Nullable MultipartFile file) {
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword())); 
         return userService.updateUserByAdmin(user, userId, file);
     }
 

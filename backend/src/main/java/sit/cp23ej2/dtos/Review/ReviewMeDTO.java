@@ -48,4 +48,6 @@ public class ReviewMeDTO {
     private BookDTO bookDetail;
 
     private LikeStatus likeStatus;
+
+    private Long countDateTime;
 }

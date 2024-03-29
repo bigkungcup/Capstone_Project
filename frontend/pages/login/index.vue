@@ -80,7 +80,8 @@ onBeforeMount(() => {
               Register
             </NuxtLink>
             <span>|</span>
-            <span class="login-text-sub">Forgot password ?</span>
+            <NuxtLink to="/login/forgotPassword/">
+            <span class="login-text-sub">Forgot password ?</span></NuxtLink>
           </div>
         </div>
 

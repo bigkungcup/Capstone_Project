@@ -1,10 +1,14 @@
 package sit.cp23ej2.services;
 
-import java.sql.Timestamp;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +20,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
 import sit.cp23ej2.controllers.CommonController;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.dtos.Folloing.FollowingReviewDTO;
 import sit.cp23ej2.dtos.Review.CreateReviewDTO;
-import sit.cp23ej2.dtos.Review.PageReviewDTO;
+import sit.cp23ej2.dtos.Review.PageReviewAllDTO;
 import sit.cp23ej2.dtos.Review.PageReviewMeDTO;
 import sit.cp23ej2.dtos.Review.ReviewMeDTO;
 import sit.cp23ej2.dtos.Review.ReviewRatingStatisticsDTO;
 import sit.cp23ej2.dtos.Review.UpdateReviewDTO;
 import sit.cp23ej2.dtos.User.UserDTO;
+import sit.cp23ej2.dtos.User.UserReviewDTO;
 import sit.cp23ej2.entities.LikeStatus;
 import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.entities.User;
@@ -68,6 +75,9 @@ public class ReviewService extends CommonController {
     private NotificationRepository notificationRepository;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Value("${base_url}")
@@ -77,7 +87,8 @@ public class ReviewService extends CommonController {
 
     public DataResponse getReviewByBookId(Integer bookId, int page, int size, Long reviewRating, String sortBy,
             String sortType) throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
+
+        // DataResponse response = new DataResponse();
         // Pageable pageable = PageRequest.of(page, size);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -99,12 +110,12 @@ public class ReviewService extends CommonController {
             pageable = PageRequest.of(page, size, Sort.by(sortBy));
         }
 
-        PageReviewDTO reviews = modelMapper.map(repository.getReviewByBookId(pageable, bookId, reviewRating),
-                PageReviewDTO.class);
+        PageReviewAllDTO reviews = modelMapper.map(repository.getReviewByBookId(pageable, bookId, reviewRating),
+                PageReviewAllDTO.class);
         if (reviews.getContent().size() > 0) {
 
             reviews.getContent().forEach(review -> {
-                UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
+                UserReviewDTO userDTO = modelMapper.map(review.getUser(), UserReviewDTO.class);
                 try {
                     // Path pathFile =
 
@@ -129,6 +140,10 @@ public class ReviewService extends CommonController {
                     });
 
                 }
+
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewCreateDateTime());
+                review.setCountDateTime(Math.abs(duration.toSeconds()));
+
                 // followerReposiroty.getReviewFollowings(user.getUserId()).forEach(following ->
                 // {
                 // FollowerReviewDTO followerReview = modelMapper.map(following,
@@ -143,54 +158,51 @@ public class ReviewService extends CommonController {
             if (user != null) {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
                 reviews.getContent().forEach(review -> {
-                    if (likeStatus.size() == 0) {
-                        LikeStatus likestatus = new LikeStatus();
-                        likestatus.setLikeStatus(0);
-                        review.setLikeStatus(likestatus);
-                    } else {
+                    // if (likeStatus.size() == 0) {
+                    // LikeStatus likestatus = new LikeStatus();
+                    // likestatus.setLikeStatus(0);
+                    // review.setLikeStatus(likestatus);
+                    // } else {
+                    if (likeStatus.size() > 0) {
                         likeStatus.forEach(like -> {
                             if (review.getReviewId().equals(like.getLsr_reviewId())) {
                                 review.setLikeStatus(like);
-                            } 
-                            // else {
-                            //     LikeStatus likestatus = new LikeStatus();
-                            //     likestatus.setLikeStatus(0);
-                            //     review.setLikeStatus(likestatus);
-                            // }
+                            }
                         });
                     }
+                    // likeStatus.forEach(like -> {
+                    // if (review.getReviewId().equals(like.getLsr_reviewId())) {
+                    // review.setLikeStatus(like);
+                    // }
+                    // // else {
+                    // // LikeStatus likestatus = new LikeStatus();
+                    // // likestatus.setLikeStatus(0);
+                    // // review.setLikeStatus(likestatus);
+                    // // }
+                    // });
+                    // }
                 });
             }
 
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("All Reviews");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(reviews);
+            return responseWithData(reviews, 200, "OK", "All Reviews");
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
 
-        return response;
     }
 
     public DataResponse getReviewById(Integer reviewId) throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Review review = repository.getReviewById(reviewId);
         if (review != null) {
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(review);
+            return responseWithData(review, 200, "OK", "Review");
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
-        return response;
     }
 
-    public DataResponse getReviewByUserId(int page, int size) throws HandleExceptionNotFound {
-        DataResponse response = new DataResponse();
+    public DataResponse getReviewByUserId(Integer userId, int page, int size) throws HandleExceptionNotFound {
+        // DataResponse response = new DataResponse();
 
         Pageable pageable = PageRequest.of(page, size);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -198,7 +210,7 @@ public class ReviewService extends CommonController {
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
 
-        PageReviewMeDTO reviews = modelMapper.map(repository.getReviewByUserId(pageable, user.getUserId()),
+        PageReviewMeDTO reviews = modelMapper.map(repository.getReviewByUserId(pageable, userId),
                 PageReviewMeDTO.class);
 
         if (reviews.getContent().size() > 0) {
@@ -206,8 +218,9 @@ public class ReviewService extends CommonController {
             reviews.getContent().forEach(review -> {
                 UserDTO userDTO = modelMapper.map(review.getUser(), UserDTO.class);
                 try {
-                    if (user != null) {
-                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + user.getUserId());
+                    Path pathFile = fileStorageService.loadUserFile(userDTO.getUserId());
+                    if (pathFile != null) {
+                        userDTO.setFile(baseUrl + "/api/files/filesUser/" + userDTO.getUserId());
                     }
 
                 } catch (Exception e) {
@@ -216,8 +229,9 @@ public class ReviewService extends CommonController {
                 review.setUserDetail(userDTO);
 
                 BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
+                Path pathFile = fileStorageService.load(bookDTO);
                 try {
-                    if (user != null) {
+                    if (pathFile != null) {
                         bookDTO.setFile(baseUrl + "/api/files/filesBook/" + review.getBook().getBookId());
                     }
 
@@ -225,10 +239,13 @@ public class ReviewService extends CommonController {
                     e.printStackTrace();
                 }
                 review.setBookDetail(bookDTO);
+
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewCreateDateTime());
+                review.setCountDateTime(Math.abs(duration.toSeconds()));
             });
 
             if (user != null) {
-                List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(user.getUserId());
+                List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(userId);
                 reviews.getContent().forEach(review -> {
                     likeStatus.forEach(like -> {
                         if (review.getReviewId() == like.getLsr_reviewId()) {
@@ -238,15 +255,10 @@ public class ReviewService extends CommonController {
                 });
             }
 
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(reviews);
+            return responseWithData(reviews, 200, "OK", "All My Reviews");
         } else {
             throw new HandleExceptionNotFound("Review Not Found", "Review");
         }
-        return response;
     }
 
     public DataResponse getReviewByCreateDateTime() {
@@ -275,12 +287,13 @@ public class ReviewService extends CommonController {
                 BookDTO bookDTO = modelMapper.map(review.getBook(), BookDTO.class);
                 try {
                     // && fileStorageService.load(review.getBook().getBookId()) != null
-                    if (review.getBook() != null) {
+                    Path pathFile = fileStorageService.load(bookDTO);
+                    if (pathFile != null) {
                         bookDTO.setFile(baseUrl + "/api/files/filesBook/" +
                                 review.getBook().getBookId());
                     }
 
-                    if(bookDTO.getBookTag() != null){
+                    if (bookDTO.getBookTag() != null) {
                         bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
                         bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
                     }
@@ -298,6 +311,9 @@ public class ReviewService extends CommonController {
                         }
                     });
                 }
+
+                Duration duration = Duration.between(LocalDateTime.now(), review.getReviewCreateDateTime());
+                reviewDTO.setCountDateTime(Math.abs(duration.toSeconds()));
 
                 reviewDTOs.add(reviewDTO);
             });
@@ -318,47 +334,56 @@ public class ReviewService extends CommonController {
     }
 
     public DataResponse createReviewByBookId(CreateReviewDTO review) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
         User user = userRepository.getUserByEmail(currentPrincipalName);
+
+        if (userRepository.getUserById(review.getUserId()) == null) {
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
+
+        if (!user.getUserId().equals(review.getUserId())) {
+            throw new HandleExceptionForbidden("Can not create review for user: ");
+        }
 
         repository.insertReview(review.getRating(), review.getDetail(), review.getTitle(), review.getUserId(),
                 review.getBookId(), review.getSpoileFlag());
 
         BookDTO bookDTO = modelMapper.map(bookRepository.getBookById(review.getBookId()), BookDTO.class);
 
-        bookmarkRepository.getBookmarkListByUserId(user.getUserId()).forEach(bookmark -> {
-            if (bookmark.getBook().getBookId() == review.getBookId()) {
+        bookmarkRepository.getBookmarkListByBookId(review.getBookId()).forEach(bookmark -> {
+            // System.out.println("Insert Notification check bookmark");
+            // if (bookmark.getBook().getBookId() == review.getBookId()) {
                 // throw new HandleExceptionForbidden("Can not create review for user: ");
-                notificationRepository.insertNotification(user.getUserId(),
-                        bookmark.getBook().getBookName(), "has a new review. Check it now!", 0, 0,
+                System.out.println("Insert Notification Success");
+                notificationRepository.insertNotification(bookmark.getUser().getUserId(),
+                        bookmark.getBook().getBookName(), " has a new review. Check it now!", 0, 0,
                         "/book/" + bookmark.getBook().getBookId() + "/", "Bookmark");
-            }
+            // }
         });
 
-        followReposiroty.getFollowingList(user.getUserId()).forEach(following -> {
-            if (following.getFollowId() == review.getUserId()) {
-                notificationRepository.insertNotification(user.getUserId(),
-                        following.getUserfollow().getDisplayName() + "(Following)",
+        followReposiroty.getFollowerList(user.getUserId()).forEach(follower -> {
+            // if (following.getUserfollow().getUserId() == review.getUserId()) {
+                System.out.println("Insert Notification Success");
+                notificationRepository.insertNotification(follower.getUser().getUserId(),
+                        follower.getUserfollow().getDisplayName() + " (Following)",
                         "has created a review in " + bookDTO.getBookName(), 0, 0, "/book/" + bookDTO.getBookId() + "/",
                         "Review");
-            }
+                        // System.out.println("Insert Notification");
+            // }
         });
 
         bookRepository.increaseBookTotalReview(review.getBookId());
         userRepository.increaseTotalReview(review.getUserId());
-        bookRepository.updateBookReting(review.getBookId());
-        response.setResponse_code(201);
-        response.setResponse_status("Created");
-        response.setResponse_message("Review Created");
-        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        return response;
+        bookRepository.updateBookRating(review.getBookId());
+
+        return response(201, "Created", "Review Created");
     }
 
     public DataResponse updateReviewByBookId(UpdateReviewDTO review, Integer reviewId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
@@ -377,7 +402,7 @@ public class ReviewService extends CommonController {
         } else if (reviewData.getUser().getUserId() == user.getUserId() && user.getRole().equals("USER")) {
             repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
                     reviewId);
-            bookRepository.updateBookReting(reviewData.getBook().getBookId());
+            bookRepository.updateBookRating(reviewData.getBook().getBookId());
             Review dataReview = repository.getReviewById(reviewId);
 
             dataReview.setReviewTitle(review.getTitle());
@@ -385,15 +410,11 @@ public class ReviewService extends CommonController {
             dataReview.setReviewRating(review.getRating());
             dataReview.setSpoileFlag(review.getSpoileFlag());
 
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review Updated");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(dataReview);
+            return responseWithData(dataReview, 200, "OK", "Review Updated");
         } else if (user.getRole().equals("ADMIN")) {
             repository.updateReview(review.getRating(), review.getDetail(), review.getTitle(), review.getSpoileFlag(),
                     reviewId);
-            bookRepository.updateBookReting(reviewData.getBook().getBookId());
+            bookRepository.updateBookRating(reviewData.getBook().getBookId());
             Review dataReview = repository.getReviewById(reviewId);
 
             dataReview.setReviewTitle(review.getTitle());
@@ -401,14 +422,11 @@ public class ReviewService extends CommonController {
             dataReview.setReviewRating(review.getRating());
             dataReview.setSpoileFlag(review.getSpoileFlag());
 
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review Updated");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-            response.setData(dataReview);
+            return responseWithData(dataReview, 200, "OK", "Review Updated");
+        }else{
+            throw new HandleExceptionForbidden("Can not update review for user: ");
         }
 
-        return response;
     }
 
     // public DataResponse updateReviewTotalLikeAndTotalDisLike(UpdateReviewDTO
@@ -427,7 +445,7 @@ public class ReviewService extends CommonController {
     // }
 
     public DataResponse deleteReviewByBookId(int reviewId) {
-        DataResponse response = new DataResponse();
+        // DataResponse response = new DataResponse();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
 
@@ -447,11 +465,9 @@ public class ReviewService extends CommonController {
             if (deleteStatus == 0) {
                 throw new HandleExceptionNotFound("Review Not Found", "Review");
             }
-            bookRepository.updateBookReting(review.getBook().getBookId());
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review Deleted");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+            bookRepository.updateBookRating(review.getBook().getBookId());
+
+            return response(200, "OK", "Review Deleted");
         } else if (user.getRole().equals("ADMIN")) {
             bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
             userRepository.decreaseTotalReview(review.getUser().getUserId());
@@ -459,14 +475,29 @@ public class ReviewService extends CommonController {
             if (deleteStatus == 0) {
                 throw new HandleExceptionNotFound("Review Not Found", "Review");
             }
-            bookRepository.updateBookReting(review.getBook().getBookId());
-            response.setResponse_code(200);
-            response.setResponse_status("OK");
-            response.setResponse_message("Review Deleted");
-            response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
-        }
 
-        return response;
+            try {
+                System.out.println("Send Email");
+                Map<String, Object> variables = new HashMap<>();
+                variables.put("bookName", review.getBook().getBookName());
+                variables.put("reviewName", review.getReviewTitle());
+                variables.put("reviewDetail", review.getReviewDetail());
+                emailService.sendEmail(review.getUser().getEmail(), "Your review in Bannarug has been deleted.",
+                        "Delete Review", variables);
+            } catch (AddressException e) {
+                System.out.println("Address Exception" + e.getMessage());
+                e.printStackTrace();
+            } catch (MessagingException e) {
+                System.out.println("Messaging Exception" + e.getMessage());
+                e.printStackTrace();
+            }
+
+            bookRepository.updateBookRating(review.getBook().getBookId());
+
+            return response(200, "OK", "Review Deleted");
+        }else{
+            throw new HandleExceptionForbidden("Can not delete review for user: ");
+        }
     }
 
 }

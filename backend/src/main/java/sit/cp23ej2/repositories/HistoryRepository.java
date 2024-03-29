@@ -24,13 +24,19 @@ public interface HistoryRepository extends JpaRepository<History, Integer> {
             " FROM History h" +
         //     " LEFT JOIN Book b ON h.hb_bookId = b.bookId"  +
         //     " LEFT JOIN Review r ON b.bookId = r.rvb_bookId" +
-            " WHERE hu_userId = :userId" 
+            " WHERE hu_userId = :userId" +
+            " ORDER BY h.historyUpdateDateTime DESC"
         //     " GROUP BY h.historyId, h.hu_userId, h.hb_bookId, h.historyCreateDateTime, h.historyUpdateDateTime" 
             , nativeQuery = true)
     Page<History> getBookHistory(Pageable pageable, @Param("userId") Integer userId);
 
     @Query(value = "SELECT COUNT(*) > 0 FROM History WHERE hu_userId = :userId AND hb_bookId = :bookId", nativeQuery = true)
     Integer existsByUserIdAndBookId(Integer userId, Integer bookId);    
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE History SET historyUpdateDateTime = NOW() WHERE hu_userId = :userId AND hb_bookId = :bookId", nativeQuery = true)
+    Integer updateHistory(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
 
     @Modifying
     @Transactional
@@ -41,4 +47,6 @@ public interface HistoryRepository extends JpaRepository<History, Integer> {
     @Transactional
     @Query(value = "DELETE FROM History WHERE hu_userId = :userId", nativeQuery = true)
     Integer deleteHistoryByUserId(@Param("userId") Integer userId);
+
+    boolean existsByHistoryId(Integer historyId);
 }

@@ -31,4 +31,5 @@ public class BookDTO {
     private Integer bookTotalReview;
     private Booktype booktype;
     private BookmarkBookDTO bookmark;
+    private Integer bookTotalBookmark;
 }

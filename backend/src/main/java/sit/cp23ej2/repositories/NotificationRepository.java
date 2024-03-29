@@ -16,8 +16,28 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
                         +
                         " n.notificationLink, n.notificationType, n.notificationCreateDateTime, n.notificationUpdateDateTime"
                         +
+                        " FROM Notification n WHERE n.nu_userId = :userId AND n.notificationLevel = :notificationLevel", nativeQuery = true)
+        List<Notification> getNotificationByUserIdAndLevel(@Param("userId") Integer userId,
+                        @Param("notificationLevel") Integer notificationLevel);
+
+        @Query(value = "SELECT n.notificationId, n.nu_userId, n.notificationTitle, n.notificationDetail, n.notificationStatus, n.notificationLevel, "
+                        +
+                        " n.notificationLink, n.notificationType, n.notificationCreateDateTime, n.notificationUpdateDateTime"
+                        +
                         " FROM Notification n WHERE n.nu_userId = :userId", nativeQuery = true)
         List<Notification> getNotificationByUserId(@Param("userId") Integer userId);
+
+        @Query(value = " SELECT COUNT(n.notificationId) " +
+                        " FROM Notification n WHERE n.nu_userId = :userId AND n.notificationStatus = 0", nativeQuery = true)
+        Integer getCountNotification(@Param("userId") Integer userId);
+
+        @Query(value = " SELECT COUNT(n.notificationId) " +
+                        " FROM Notification n WHERE n.nu_userId = :userId AND n.notificationStatus = 0 AND n.notificationLevel = 0", nativeQuery = true)
+        Integer getCountNotificationNormal(@Param("userId") Integer userId);
+
+        @Query(value = " SELECT COUNT(n.notificationId) " +
+                        " FROM Notification n WHERE n.nu_userId = :userId AND n.notificationStatus = 0 AND n.notificationLevel = 1", nativeQuery = true)
+        Integer getCountNotificationSystem(@Param("userId") Integer userId);
 
         @Modifying
         @Transactional

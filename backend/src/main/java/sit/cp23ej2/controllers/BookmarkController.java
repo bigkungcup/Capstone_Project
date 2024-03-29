@@ -35,9 +35,10 @@ public class BookmarkController {
     private BookmarkService bookmarkService;
 
     @GetMapping("")
-    public DataResponse getBookmarkByUserId(@RequestParam(defaultValue = "0", required = false) Integer page,
+    public DataResponse getBookmarkByUserId(@RequestParam(required = true) Integer userId,
+            @RequestParam(defaultValue = "0", required = false) Integer page,
             @RequestParam(defaultValue = "10", required = false) Integer size) throws HandleExceptionNotFound {
-        return bookmarkService.getBookmarkByUserId(page, size);
+        return bookmarkService.getBookmarkByUserId(userId, page, size);
     }
 
     @PostMapping("")
