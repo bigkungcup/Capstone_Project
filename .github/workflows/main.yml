@@ -11,13 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      # Delete Directory File And Back Up Database
-      # - name: Delete Directory
-      #   run: |
-      #     cd ..
-      #     sudo rm -rf Files 
-
+      
       # Runs a Database  
       - name: Database Docker Compose Down and Remove Images
         run: |
