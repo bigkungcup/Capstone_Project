@@ -38,6 +38,7 @@ import sit.cp23ej2.exception.HandleExceptionForbidden;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
 import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.FollowReposiroty;
+import sit.cp23ej2.repositories.NotificationRepository;
 import sit.cp23ej2.repositories.ReportRepository;
 import sit.cp23ej2.repositories.ReviewRepository;
 import sit.cp23ej2.repositories.UserRepository;
@@ -62,6 +63,9 @@ public class UserService extends CommonController {
 
     @Autowired
     private ReportRepository reportRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private EmailService emailService;
@@ -739,9 +743,16 @@ public class UserService extends CommonController {
         // }
 
        reviewRepository.getReviewByUserId(userId).forEach(review -> {
-            // reviewRepository.deleteReview(review.getReviewId());
+            reviewRepository.deleteReview(review.getReviewId());
             bookRepository.decreaseBookTotalReview(review.getBook().getBookId());
             bookRepository.updateBookRating(review.getBook().getBookId());
+        });
+
+        notificationRepository.getNotificationAll().forEach(notification -> {
+                // String[] link = notification.getNotificationLink().split("/");
+                if(notification.getNotificationLink() != null && notification.getNotificationLink().contains("/user/" + userId)){
+                    notificationRepository.deleteNotificationById(notification.getNotificationId());
+                }
         });
         
         repository.deleteUser(userId);
