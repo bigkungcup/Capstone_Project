@@ -68,6 +68,10 @@ export const useLogin = defineStore("Login", () => {
   const profilePic = ref(localStorage.getItem('file'))
   const forgetEmail = ref('');
 
+  if(accessToken.value != null && refreshToken.value != null){
+    getProfile();
+  }
+
   //Login
   async function handleLogin() {
     let status = 0;
@@ -262,7 +266,7 @@ export const useLogin = defineStore("Login", () => {
   async function forgetPassword() {
     let status = 0;
 
-    await $fetch(`${import.meta.env.VITE_BASE_URL}/forgetPassword`, {
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/user/forgetPassword`, {
       method: "PUT",
       body: {
         email: forgetEmail.value

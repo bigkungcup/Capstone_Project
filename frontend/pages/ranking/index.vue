@@ -50,9 +50,9 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="tw-bg-[#D9D9D9]">
+  <div class="tw-bg-[#D9D9D9] tw-h-full">
     <div class="tw-flex tw-place-content-center">
-      <div class="tw-bg-white tw-w-[70rem]">
+      <div class="tw-bg-white tw-w-[70rem] tw-h-full">
         <div class="tw-space-x-8 tw-mx-8 tw-my-8">
           <v-btn
             :variant="section == 'book' ? 'elevated' : 'outlined'"
@@ -73,7 +73,7 @@ onBeforeMount(async () => {
             <v-col cols="3">
               <v-select
                 label=""
-                class="tw-font-bold tw-text-white tw-text-xs"
+                class="tw-font-bold tw-text-white tw-text-xs tw-w-[15rem]"
                 v-if="section == 'book'"
                 v-model="book.rankingFilter"
                 :items="book.bookType"

@@ -7,6 +7,7 @@ import MostView from "~/components/home/mostView.vue";
 import NewBook from "~/components/home/newBook.vue";
 import NewReview from "~/components/home/newReview.vue";
 import Other from "~/components/home/other.vue";
+import BookNotFound from "~/components/books/bookNotFound.vue";
 
 const accessToken = ref(useCookie("accessToken"));
 const login = useLogin();
@@ -77,16 +78,16 @@ onBeforeMount(async () => {
   <div>
     
   <div class="ma-8">
-    <div v-if="book.recommendBookList.data.length !== 0">
+    <div >
       <Recommend :recommendBookList="book.recommendBookList.data"/>
     </div>
-    <div v-if="book.mostviewBookList.data.length !== 0">
+    <div>
       <MostView :mostviewBookList="book.mostviewBookList.data"/>
     </div>
-    <div v-if="book.newBookList.data.length !== 0">
+    <div>
       <NewBook :newBookList="book.newBookList.data"/>
     </div>
-    <div v-if="reviews.newReviewList.data.length !== 0">
+    <div>
       <NewReview :newReviewList="reviews.newReviewList.data" 
                 @like="likeReviews($event.reviewId, $event.likeStatus)"                   
                 @update="updatelikeReviews(

@@ -2,6 +2,7 @@
 import ReportConfirmDone from "~/components/reports/popups/reportConfirmDone.vue";
 import ReportDetail from "~/components/reports/reportDetail.vue";
 import ReportList from "~/components/reports/reportList.vue";
+import ReportNotFound from "~/components/reports/reportNotFound.vue";
 import { useNotifications } from "~/stores/notification";
 
 const noti = useNotifications();
@@ -34,10 +35,13 @@ onBeforeMount(async () => {
 <template>
   <div>
     <p class="web-text-header tw-flex tw-justify-center tw-my-4">Report</p>
-    <div>
+    <div v-if="noti.reportList.data.content.length != 0">
     <ReportList :reportList="noti.reportList.data.content" 
     @get="handleGetReportDetail($event)"
     @done="handleDoneCheck($event)"/>
+    </div>
+    <div v-if="noti.reportList.data.content.length == 0">
+    <ReportNotFound />
     </div>
   </div>
   <div v-if="reportDetailStatus">
