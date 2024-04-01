@@ -67,7 +67,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         +
                         " FROM Book b" +
                         " WHERE (:booktypeId IS NULL OR b.bb_booktypeId = :booktypeId) " +
-                        " ORDER By b.bookRating DESC, b.bookTotalReview DESC, b.bookName ASC LIMIT 5", nativeQuery = true)
+                        " ORDER By b.bookRating DESC, b.bookTotalReview DESC, b.bookName ASC LIMIT 10", nativeQuery = true)
         List<Book> getBookRanking(@Param("booktypeId") Integer booktypeId);
 
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
