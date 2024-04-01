@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface RecommendRepository extends JpaRepository<Recommend, Integer> {
 
     @Query(value = "SELECT r.rb_booktypeId FROM Recommend r " +
-            "WHERE r.ru_userId = :userId AND r.viewCount = (SELECT MAX(rec.viewCount) FROM Recommend rec)", nativeQuery = true)
+            "WHERE r.ru_userId = :userId AND r.viewCount = (SELECT MAX(rec.viewCount) FROM Recommend rec WHERE rec.ru_userId = :userId) limit 1", nativeQuery = true)
     Integer getRecommendBooktypeIdByUserId(@Param("userId") Integer userId);
 
     @Query(value = "SELECT * FROM Recommend WHERE rb_booktypeId = :booktypeId AND ru_userId = :userId", nativeQuery = true)

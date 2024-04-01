@@ -24,6 +24,7 @@ import sit.cp23ej2.dtos.Book.UpdateBookDTO;
 import sit.cp23ej2.dtos.Bookmark.BookmarkBookDTO;
 import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.entities.Book;
+import sit.cp23ej2.entities.Recommend;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
@@ -190,7 +191,8 @@ public class BookService extends CommonController {
                         bookDTO.setBookmark(bookmarks);
                     }
                 });
-                Integer recommendBooktypeIdByUserId = recommendRepository.getRecommendBooktypeIdByUserId(userByEmail.getUserId());
+                Recommend recommendBooktypeIdByUserId = recommendRepository.existsByBooktypeIdAndUserId(book.getBooktype().getBooktypeId(), userByEmail.getUserId());
+                System.out.println("recommendBooktypeIdByUserId: " + recommendBooktypeIdByUserId);
                 if(recommendBooktypeIdByUserId != null){
                     recommendRepository.updateRecommend(book.getBooktype().getBooktypeId(), userByEmail.getUserId());
                 }else{
