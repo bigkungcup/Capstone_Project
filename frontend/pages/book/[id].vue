@@ -230,8 +230,8 @@ if (roleToken.value == "GUEST") {
                     library.bookDetail.data.booktype.booktypeName
                   }}</v-btn>
                 </p>
-                <p>Tags:</p>
-                <div class="tw-flex tw-gap-x-2">
+                <div class="tw-space-x-2 tw-space-y-2 tw-h-[5rem]">
+                  <span>Tags:</span>
                   <v-chip
                     variant="elevated"
                     color="#1D419F"

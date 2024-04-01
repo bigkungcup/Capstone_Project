@@ -11,6 +11,7 @@ const reportData = ref([]);
 const reportDetailStatus = ref(false);
 const reportDoneId = ref(0);
 const reportDoneCheck = ref(false);
+const page = ref(noti.reportPage+1)
 
 function handleGetReportDetail(reportId) {
   reportData.value = [noti.reportList.data.content.find((element) => element.reportId == reportId)];
@@ -40,6 +41,10 @@ onBeforeMount(async () => {
     @get="handleGetReportDetail($event)"
     @done="handleDoneCheck($event)"/>
     </div>
+    <div v-show="noti.reportList.data.content.length != 0">
+    <v-pagination v-model="page" :length="noti.reportList.data.totalPages" :total-visible="7"
+        rounded="20" @update:model-value="noti.changeReportPage(page)">
+    </v-pagination></div>
     <div v-if="noti.reportList.data.content.length == 0">
     <ReportNotFound />
     </div>

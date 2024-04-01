@@ -46,7 +46,7 @@ defineProps({
                 <v-col :cols="report.reportType == 'review' ? '3' : '2'">
                   <v-chip v-if="report.reportType == 'book'">Book</v-chip>
                   <v-chip v-if="report.reportType == 'user'">User</v-chip>
-                  <v-chip v-if="report.reportType == 'review'">Review</v-chip>
+                  <v-chip v-if="report.reportType == 'review'">Reviewer</v-chip>
                 </v-col>
                 <v-col :cols="report.reportType == 'review' ? '9' : '10'">
                   <div class="px-2" v-if="report.reportType == 'book'">{{ report.data.bookName }}</div>

@@ -18,7 +18,14 @@ export const useUsers = defineStore("Users", () => {
     },
   });
   const userDetail = ref({
-    data: {},
+    data: {
+      displayName: "",
+      email: "",
+      password: "",
+      bio: "",
+      role: "",
+      file: null,
+    },
   });
   const newUser = ref({
     displayName: "",
@@ -561,14 +568,14 @@ export const useUsers = defineStore("Users", () => {
     getUserList();
   }
 
-  function changeFolloingPage(page) {
+  function changeFolloingPage(page,userId) {
    followingPage.value = page - 1;
-    getFollowingList();
+    getFollowingList(userId);
   }
 
-  function changeFollowerPage(page) {
+  function changeFollowerPage(page,userId) {
     followerPage.value = page - 1;
-    getFollowerList();
+    getFollowerList(userId);
   }
 
   //set edit user

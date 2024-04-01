@@ -6,7 +6,7 @@ import { useBooks } from '~/stores/book'
 
 const library = useBooks();
 const roleToken = ref(localStorage.getItem('role'));
-const page = ref(1)
+const page = ref(library.bookPage+1)
 const dialog = ref(false);
 const booktype = ref('');
 const sortList = [

@@ -26,7 +26,18 @@ export const useBooks = defineStore("Books", () => {
   const editBook = ref();
   const newBookFile = ref();
   const editBookFile = ref();
-  const bookDetail = ref();
+  const bookDetail = ref({
+    data: { 
+      bookName: '',
+      author: '',
+      booktype: {
+        booktypeId: 0,
+      },
+      bookTag: '',
+      bookDetail: '',
+      file: null,
+    }
+  });
   const bookPage = ref(0);
   const historyList = ref({
     data: {
@@ -559,7 +570,6 @@ export const useBooks = defineStore("Books", () => {
   //Get Bookmark by guest
   async function getBookmarkListByGuest(userId) {
     let status = 0;
-    console.log('aaaa');
 
     const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/bookmark`, {
       onRequest({ request, options }) {
@@ -898,9 +908,13 @@ export const useBooks = defineStore("Books", () => {
     getHistoryList();
   }
 
-  function changeBookmarkPage(page) {
+  function changeBookmarkPage(page,userId) {
     bookmarkPage.value = page - 1;
-    getBookmark();
+    if (roleToken.value == 'GUEST') {
+      getBookmarkListByGuest(userId);
+    } else {
+      getBookmarkList(userId);
+    }
   }
 
   //Rating Star

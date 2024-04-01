@@ -19,10 +19,10 @@ const review = useReviews();
 const user = useUsers();
 const changePassword = ref(false);
 const profileSection = ref("bookmark");
-const bookmarkPage = ref(1);
-const reviewPage = ref(1);
-const followingPage = ref(1);
-const followerPage = ref(1);
+const bookmarkPage = ref(book.bookmarkPage+1);
+const reviewPage = ref(review.reviewPage+1);
+const followingPage = ref(user.followingPage+1);
+const followerPage = ref(user.followerPage+1);
 const result = ref(0);
 const idToken = ref(localStorage.getItem('id'));
 
@@ -292,7 +292,7 @@ onBeforeMount(async () => {
                 :length="book.bookmarkList.data.totalPages"
                 :total-visible="7"
                 rounded="20"
-                @update:model-value="book.changeBookmarkPage(bookmarkPage)"
+                @update:model-value="book.changeBookmarkPage(bookmarkPage,idToken)"
               >
               </v-pagination>
             </div>
@@ -321,7 +321,7 @@ onBeforeMount(async () => {
               :length="review.myReviewList.data.totalPages"
               :total-visible="7"
               rounded="20"
-              @update:model-value="review.changeMyReviewPage(reviewPage)"
+              @update:model-value="review.changeMyReviewPage(reviewPage,idToken)"
             >
             </v-pagination>
           </div></div>
@@ -342,7 +342,7 @@ onBeforeMount(async () => {
               :length="user.followingList.data.totalPages"
               :total-visible="7"
               rounded="20"
-              @update:model-value="user.changeFolloingPage(followingPage)"
+              @update:model-value="user.changeFolloingPage(followingPage,idToken)"
             >
             </v-pagination>
           </div></div>
@@ -363,7 +363,7 @@ onBeforeMount(async () => {
               :length="user.followerList.data.totalPages"
               :total-visible="7"
               rounded="20"
-              @update:model-value="user.changeFollowerPage(followerPage)"
+              @update:model-value="user.changeFollowerPage(followerPage,idToken)"
             >
             </v-pagination>
           </div></div>

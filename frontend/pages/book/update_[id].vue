@@ -38,7 +38,7 @@ function setSelectedImage() {
 }
 
 onBeforeRouteLeave(() => {
-  if (roleToken.value == 'ADMIN') {
+  if (roleToken.value == 'ADMIN' && book.bookDetail.data.bookName != '') {
   const coverCheck = selectedImage.value == null ? selectedImage.value != book.bookDetail.data.file : selectedImage.value != book.bookDetail.data.file;
   if (
     book.editBook.bookName !== book.bookDetail.data.bookName ||
@@ -83,7 +83,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="roleToken == 'ADMIN'">
+  <div class="tw-pt-1 tw-pb-10 tw-drop-shadow-lg tw-space-y-1" v-show="roleToken == 'ADMIN' && book.bookDetail.data.bookName != ''">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"
