@@ -5,6 +5,7 @@ defineProps({
         require: true,
   }
 });
+const roleToken = ref(localStorage.getItem("role"));
 </script>
 
 <template>

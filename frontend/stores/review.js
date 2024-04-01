@@ -18,7 +18,18 @@ export const useReviews = defineStore("Reviews", () => {
     },
   });
   const reviewPage = ref(0);
-  const reviewDetail = ref();
+  const reviewDetail = ref({
+    data:{
+      reviewId: 0,
+      rating: 0,
+      detail: '',
+      title: '',
+      spoileFlag: false,
+      book: {
+        bookId: 0,
+      },
+    },
+  });
   const newReview = ref({
     rating: 1,
     detail: "",
@@ -591,9 +602,9 @@ export const useReviews = defineStore("Reviews", () => {
   }
 
     //Change my review page
-    function changeMyReviewPage(bookId, page) {
+    function changeMyReviewPage(page, userId) {
       myReviewPage.value = page - 1;
-      getMyReview(bookId);
+      getMyReview(userId);
     }
 
   //Back Page

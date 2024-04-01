@@ -79,6 +79,7 @@ export const useNotifications = defineStore("Notification", () => {
       Name: "This user is spam.",
     },
   ]);
+  const reportPage = ref(0);
 
   // --------------- Notification Function ---------------
   //Get Notification List
@@ -355,7 +356,6 @@ export const useNotifications = defineStore("Notification", () => {
   async function getReportList() {
     let accessToken = useCookie("accessToken");
     let status = 0;
-    clearReportList();
 
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/report/notfix`,
@@ -365,6 +365,10 @@ export const useNotifications = defineStore("Notification", () => {
           options.headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken.value}`,
+          };
+          options.params = {
+            page: reportPage.value,
+            size: 10,
           };
         },
         onResponse({ request, response, options }) {
@@ -563,6 +567,11 @@ export const useNotifications = defineStore("Notification", () => {
     return Math.floor(seconds) + " seconds ago";
   }
 
+  function changeReportPage(page) {
+    reportPage.value = page - 1;
+    getReportList();
+  }
+
   //Back Page
   function backPage() {
     window.history.back();
@@ -582,6 +591,7 @@ export const useNotifications = defineStore("Notification", () => {
     reportReviewList,
     reportUserList,
     successfulPopup,
+    reportPage,
     getNotificationList,
     getCountAllNotification,
     getCountUserNotification,
@@ -605,6 +615,7 @@ export const useNotifications = defineStore("Notification", () => {
     clearReportHistoryList,
     clearReportProblem,
     countUpdateTime,
+    changeReportPage,
   };
 });
 

@@ -20,10 +20,12 @@ export const useLogin = defineStore("Login", () => {
   const idToken = ref(localStorage.getItem("id"));
   const roleToken = ref(localStorage.getItem("role"));
   const fileToken = ref(localStorage.getItem("file"));
-  const setNoti = ref(roleToken.value == 'User' ? setInterval(async () => {
-    await noti.getCountAllNotification();
-  }, 60000) : null);
-
+  const setNoti = ref();
+  if(roleToken.value == 'USER'){
+    setNoti.value = setInterval(async () => {
+      await noti.getCountAllNotification();
+    }, 60000);
+  }
   const setToken = (token) => {
     localStorage.setItem("id", token.userId);
     localStorage.setItem("role", token.role);
@@ -75,6 +77,7 @@ export const useLogin = defineStore("Login", () => {
   //Login
   async function handleLogin() {
     let status = 0;
+    loginFailed.value = false;
     const { data } = await $fetch(
       `${import.meta.env.VITE_BASE_URL}/auth/login`,
       {
@@ -93,18 +96,17 @@ export const useLogin = defineStore("Login", () => {
       }
     );
     if (status == 200) {
-      loginFailed.value = false;
+      router.push("/");
       accessToken.value = useCookie("accessToken", cookieOptions);
       refreshToken.value = useCookie("refreshToken", cookieOptions);
       accessToken.value = data.access_token;
       refreshToken.value = data.refresh_token;
-      getProfile();
-      router.push("/");
+      getProfile();  
+      noti.getCountAllNotification(); 
       setNoti.value = setInterval(async () => {
         await noti.getCountAllNotification();
       }, 60000);
-      noti.getCountAllNotification();
-      await setNoti();
+      // await setNoti();
       console.log("login completed");
     }
   }

@@ -5,7 +5,7 @@ import historyNotFound from "~/components/history/historyNotFound.vue";
 import { useRouter } from "vue-router";
 
 const book = useBooks();
-const page = ref(1);
+const page = ref(book.historyPage+1);
 const router = useRouter();
 const roleToken = ref(localStorage.getItem('role'));
 

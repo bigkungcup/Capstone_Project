@@ -64,6 +64,9 @@ onBeforeMount(() => {
 
 if (roleToken.value == 'ADMIN') {
   await user.getUserDetail(route.params.id);
+  if(user.userDetail.data.displayName == ''){
+    router.push('/PageNotFound/')
+  }
   user.setEditUser();
 }
 
@@ -96,7 +99,7 @@ onBeforeRouteLeave(() => {
 </script>
 
 <template>
-  <div class="tw-pt-1 tw-pb-5 tw-drop-shadow-lg tw-space-y-1" v-show="roleToken == 'ADMIN'">
+  <div class="tw-pt-1 tw-pb-5 tw-drop-shadow-lg tw-space-y-1" v-if="roleToken == 'ADMIN' && user.userDetail.data.displayName != ''">
     <div class="tw-mx-36 tw-mt-5">
       <v-btn
         prepend-icon="mdi mdi-chevron-left"
