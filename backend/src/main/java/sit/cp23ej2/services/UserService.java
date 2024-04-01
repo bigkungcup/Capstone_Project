@@ -727,20 +727,20 @@ public class UserService extends CommonController {
             throw new HandleExceptionNotFound("User Not Found", "User");
         }
         
-        // try {
-        //     System.out.println("Send Email");
-        //     Map<String, Object> variables = new HashMap<>();
-        //     variables.put("username", userById.getDisplayName());
-        //     variables.put("email", userById.getEmail());
+        try {
+            System.out.println("Send Email");
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("username", userById.getDisplayName());
+            variables.put("email", userById.getEmail());
 
-        //     emailService.sendEmail(repository.getUserById(userId).getEmail(), "Your Bannarug account has been deleted.", "Delete Account", variables);
-        // } catch (AddressException e) {
-        //     System.out.println("Address Exception" + e.getMessage());
-        //     e.printStackTrace();
-        // } catch (MessagingException e) {
-        //     System.out.println("Messaging Exception" + e.getMessage());
-        //     e.printStackTrace();
-        // }
+            emailService.sendEmail(repository.getUserById(userId).getEmail(), "Your Bannarug account has been deleted.", "Delete Account", variables);
+        } catch (AddressException e) {
+            System.out.println("Address Exception" + e.getMessage());
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            System.out.println("Messaging Exception" + e.getMessage());
+            e.printStackTrace();
+        }
 
        reviewRepository.getReviewByUserId(userId).forEach(review -> {
             reviewRepository.deleteReview(review.getReviewId());
