@@ -98,7 +98,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
-                        " WHERE b.bb_booktypeId = :booktypeId AND b.bookRating > 4 " +
+                        " WHERE b.bb_booktypeId = :booktypeId AND b.bookRating >= 4 " +
                         " ORDER By RAND() LIMIT 10", nativeQuery = true)
         List<Book> getBookByRecommendBook(@Param("booktypeId") Integer booktypeId);
 
