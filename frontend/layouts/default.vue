@@ -4,6 +4,7 @@ import { useLogin } from "~/stores/login";
 import { useNotifications } from "~/stores/notification";
 import userNotiCard from "~/components/notification/userNotiCard.vue";
 import systemNotiCard from "~/components/notification/systemNotiCard.vue";
+import NotiNotFound from "~/components/notification/notiNotFound.vue";
 
 const accessToken = ref(useCookie("accessToken"));
 const loginStatus = ref(false);
@@ -92,15 +93,25 @@ function handleGetNotification(section) {
               <hr />
             </v-list>
             <v-list v-if="notiSection == 'user'">
+              <div v-if="noti.notificationList.data.length != 0">
               <v-virtual-scroll :items="['']" max-height="35rem">
               <userNotiCard :notiList="noti.notificationList.data" @clear="noti.clearNotificationById($event, 0)"/>
               </v-virtual-scroll>
+              </div>
+              <div v-if="noti.notificationList.data.length == 0">
+                <NotiNotFound />
+              </div>
               <!-- <userNotiCard :notiList="notiList.data.filter((element) => element.notificationLevel == 0)"/> -->
             </v-list>
             <v-list v-if="notiSection == 'system'">
+              <div v-if="noti.notificationList.data.length != 0">
               <v-virtual-scroll :items="['']" max-height="35rem">
               <systemNotiCard :notiList="noti.notificationList.data" @clear="noti.clearNotificationById($event, 1)"/>
               </v-virtual-scroll>
+            </div>
+            <div v-if="noti.notificationList.data.length == 0">
+                <NotiNotFound />
+            </div>
             </v-list>
           </v-card>
         </v-menu>

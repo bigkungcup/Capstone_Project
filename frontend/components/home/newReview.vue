@@ -15,7 +15,7 @@ const roleToken = ref(localStorage.getItem("role"));
     <div class="tw-text-4xl tw-text-[#082266] tw-font-extrabold tw-py-8">
       New Review !
     </div>
-    <div class="">
+    <div v-if="newReviewList.length != 0">
       <v-sheet width="100%" height="100%">
         <v-slide-group show-arrows>
           <v-slide-group-item>
@@ -210,6 +210,9 @@ const roleToken = ref(localStorage.getItem("role"));
           </v-slide-group-item>
         </v-slide-group>
       </v-sheet>
+    </div>
+    <div class="tw-h-[15rem] tw-grid tw-place-content-center py-8" v-if="newReviewList.length == 0">
+      <img src="/image/rvnotfound.png" height="180" width="180" cover/>
     </div>
   </div>
 </template>

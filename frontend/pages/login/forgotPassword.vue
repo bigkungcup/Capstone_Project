@@ -1,7 +1,7 @@
 <script setup>
 import { useLogin } from "~/stores/login";
 import { ref } from "vue";
-import forgerPasswordSuccessPopup from "~/components/users/popups/forgerPasswordSuccessPopup.vue";
+import forgotPasswordSuccessPopup from "~/components/users/popups/forgotPasswordSuccessPopup.vue";
 
 definePageMeta({
   layout: false,
@@ -60,7 +60,7 @@ onBeforeMount(() => {
 
         <div class="tw-flex tw-justify-center">
           <v-btn class="px-14" color="#1D419F" rounded variant="flat" size="large" 
-          :disabled="login.forgetEmail == '' || login.forgetEmail.match(validEmail)"
+          :disabled="login.forgetEmail == '' || !login.forgetEmail.match(validEmail)"
           @click="login.forgetPassword()">
             send
           </v-btn>
@@ -70,7 +70,7 @@ onBeforeMount(() => {
         </NuxtLink>
       </v-col>
     </v-row></v-col>
-    <forgerPasswordSuccessPopup
+    <forgotPasswordSuccessPopup
     :dialog="login.successfulPopup"
     @close="login.successfulPopup = false"/>
   </v-row>

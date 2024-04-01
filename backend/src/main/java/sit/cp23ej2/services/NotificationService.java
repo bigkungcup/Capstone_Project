@@ -68,42 +68,54 @@ public class NotificationService extends CommonController {
 
         notificationByUserId.forEach(noti -> {
             NotificationDTO notificationDTO = modelMapper.map(noti, NotificationDTO.class);
+
+            Duration duration = Duration.between(LocalDateTime.now(), noti.getNotificationCreateDateTime());
+            notificationDTO.setCountDateTime(Math.abs(duration.toSeconds()));
+
             if (noti.getNotificationType().equals("Bookmark") || noti.getNotificationType().equals("Review")) {
                 String[] link = noti.getNotificationLink().split("/");
                 Book bookById = bookRepository.getBookById(Integer.parseInt(link[2]));
-                notificationDTO.setBook(modelMapper.map(bookById, BookDTO.class));
-                notificationDTO.getBook().setBookTag(notificationDTO.getBook().getBookTag().replaceAll(",", ", "));
-                notificationDTO.getBook().setBookTagList(new ArrayList<String>(Arrays.asList(notificationDTO.getBook().getBookTag().split(", "))));
-                try {
-                    Path pathFile = fileStorageService.load(notificationDTO.getBook());
-                    if (pathFile != null) {
-                        notificationDTO.getBook().setFile(baseUrl + "/api/files/filesBook/" + notificationDTO.getBook().getBookId());
+                if(bookById != null){
+                    notificationDTO.setBook(modelMapper.map(bookById, BookDTO.class));
+                    notificationDTO.getBook().setBookTag(notificationDTO.getBook().getBookTag().replaceAll(",", ", "));
+                    notificationDTO.getBook().setBookTagList(new ArrayList<String>(Arrays.asList(notificationDTO.getBook().getBookTag().split(", "))));
+                    try {
+                        Path pathFile = fileStorageService.load(notificationDTO.getBook());
+                        if (pathFile != null) {
+                            notificationDTO.getBook().setFile(baseUrl + "/api/files/filesBook/" + notificationDTO.getBook().getBookId());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    notification.add(notificationDTO);
+                }else{
+                    repository.deleteNotificationById(noti.getNotificationId());
                 }
             }
 
             if(noti.getNotificationType().equals("Follow")){
                 String[] link = noti.getNotificationLink().split("/");
                 User userById = userRepository.getUserById(Integer.parseInt(link[2]));
-                notificationDTO.setUser(modelMapper.map(userById, UserDTO.class));
-                try {
-                    Path pathFile = fileStorageService.loadUserFile(userById.getUserId());
-                    if (pathFile != null) {
-                        notificationDTO.getUser().setFile(baseUrl + "/api/files/filesUser/" + userById.getUserId());
+                if(userById != null){
+                    notificationDTO.setUser(modelMapper.map(userById, UserDTO.class));
+                    try {
+                        Path pathFile = fileStorageService.loadUserFile(userById.getUserId());
+                        if (pathFile != null) {
+                            notificationDTO.getUser().setFile(baseUrl + "/api/files/filesUser/" + userById.getUserId());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    notification.add(notificationDTO);
+                }else{
+                    repository.deleteNotificationById(noti.getNotificationId());
                 }
-
             }
-            
-            Duration duration = Duration.between(LocalDateTime.now(), noti.getNotificationCreateDateTime());
-            notificationDTO.setCountDateTime(Math.abs(duration.toSeconds()));
-
-            notification.add(notificationDTO);
         });
+
+        if(notification.size() == 0){
+            throw new HandleExceptionNotFound("Notification Not Found", "Notification");
+        }
 
         return responseWithData(notification, 200, "OK", "All Notification");
     }

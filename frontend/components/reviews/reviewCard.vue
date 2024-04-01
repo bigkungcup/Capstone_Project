@@ -30,7 +30,7 @@ const follow = ref(true)
         <v-card v-for="review in reviewList" width="100%" >
             <v-row>
                 <v-col cols="3" class="web-text-detail tw-my-5 tw-space-x-5 tw-space-y-1" align="left">
-                    <nuxt-link :to="`/user/${review.userDetail.userId}`+'/'">
+                    <nuxt-link :to="review.userDetail.userId == idToken ? `/profile/`: `/user/${review.userDetail.userId}/`">
                     <v-img src="/image/guest_icon.png" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2 tw-mx-5" cover  v-show="review.userDetail.file == null"/>
                     <v-img :src="review.userDetail.file" width="120" height="120" class="tw-rounded-full tw-border-black tw-border-2  tw-mx-5" cover v-show="review.userDetail.file !== null"/>
                     </nuxt-link>

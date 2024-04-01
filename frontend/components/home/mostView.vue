@@ -6,6 +6,8 @@ defineProps({
   }
 });
 
+const roleToken = ref(localStorage.getItem("role"));
+
 function formatTotalview(totalview) {
     if (totalview >= 1000 && totalview < 1000000) {
           return (totalview / 1000).toFixed(1) + 'K';
@@ -25,7 +27,7 @@ function formatTotalview(totalview) {
     </div>
     <div class="tw-space-y-4">
       <!--------- No.1 ------------>
-      <v-card class="tw-h-min-[11rem] tw-h-max-[11rem]" v-for="(book, index) in mostviewBookList" :to="`/book/${book.bookId}/`">
+      <v-card class="tw-h-min-[11rem] tw-h-max-[11rem]" v-for="(book, index) in mostviewBookList" :to="`/book/${book.bookId}/`" v-if="mostviewBookList.length != 0">
         <v-row no-gutters>
           <v-col cols="1" align="center" class="tw-my-5"
             ><v-chip variant="elevated" color="#1D419F" size="x-large"
@@ -70,6 +72,13 @@ function formatTotalview(totalview) {
           </v-col>
         </v-row>
       </v-card>
+      <div class="tw-h-[15rem] tw-grid tw-place-content-center tw-gap-y-2" v-if="mostviewBookList.length == 0">
+        <img src="/image/book_not_found.png" width="240" />        
+          <v-btn variant="outlined" size="large" rounded="xl" v-show="roleToken !== 'GUEST'"
+                class="custom-border tw-flex  tw-justify-self-center" color="#082266">
+                <NuxtLink to="/book/create/"><p class="tw-font-bold">Create Book</p></NuxtLink>
+            </v-btn>       
+      </div>
     </div>
   </div>
 </template>

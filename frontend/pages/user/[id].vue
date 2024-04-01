@@ -96,10 +96,17 @@ function bookCoverPath(filePath) {
 }
 
 onBeforeMount(async () => {
-    await book.getBookmarkList();
+  if(route.params.id != idToken.value){
     await selectSection(profileSection.value);
     noti.clearReportProblem();
     handleGetUserDetail()
+    if (roleToken.value == "GUEST") {
+      await book.getBookmarkListByGuest(route.params.id);
+    }else{
+      await book.getBookmarkList(route.params.id);
+    }}else{
+      router.push(`/Profile/`)
+    }
 //   if (roleToken.value == 'ADMIN') {
 //   await user.getUserDetail(route.params.id);
 // }else{
@@ -246,7 +253,7 @@ onBeforeMount(async () => {
     </div>
 
     <!----------------------- new section -------------------------->
-    <div class="tw-flex tw-place-content-center tw-my-6">
+    <div class="tw-flex tw-place-content-center tw-my-6" v-if="user.userDetail.data.role == 'USER'">
       <div class="tw-bg-white tw-w-[70rem] tw-h-full">
         <div class="tw-border-y-4">
           <v-row class="">

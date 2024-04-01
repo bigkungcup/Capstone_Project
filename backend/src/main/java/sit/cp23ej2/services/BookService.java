@@ -31,6 +31,7 @@ import sit.cp23ej2.repositories.BookRepository;
 import sit.cp23ej2.repositories.BookmarkRepository;
 import sit.cp23ej2.repositories.BooktypeRepository;
 import sit.cp23ej2.repositories.HistoryRepository;
+import sit.cp23ej2.repositories.NotificationRepository;
 import sit.cp23ej2.repositories.RecommendRepository;
 import sit.cp23ej2.repositories.UserRepository;
 
@@ -62,6 +63,9 @@ public class BookService extends CommonController {
 
     @Autowired
     private RecommendRepository recommendRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -501,6 +505,13 @@ public class BookService extends CommonController {
         // throw new HandleExceptionBadRequest("Book Can not delete because book have
         // reviews.");
         // }
+
+        notificationRepository.getNotificationAll().forEach(notification -> {
+            if(notification.getNotificationLink() != null && notification.getNotificationLink().contains("/book/" + bookId)){
+                notificationRepository.deleteNotificationById(notification.getNotificationId());
+            }
+        });
+
         return response(200, "OK", "Book Deleted");
     }
 

@@ -555,6 +555,39 @@ export const useBooks = defineStore("Books", () => {
     }
   }
 
+  
+  //Get Bookmark by guest
+  async function getBookmarkListByGuest(userId) {
+    let status = 0;
+    console.log('aaaa');
+
+    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/bookmark`, {
+      onRequest({ request, options }) {
+        options.method = "GET";
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+        options.params = {
+          userId: userId,
+          page: bookmarkPage.value,
+          size: 20,
+        }
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+      },
+    });
+    if (status == 200) {
+      if (data.value) {
+        bookmarkList.value = data.value;
+      }
+      console.log("get bookmark list completed");
+    } else if (status == 404) {
+      clearBookmarkList();
+      console.log("get library uncompleted");
+    }
+  }
+
 
   //Create Bookmark
   async function createBookmark(bookId) {
@@ -1052,6 +1085,7 @@ export const useBooks = defineStore("Books", () => {
     changeBookmarkPage,
     getStarRating,
     getBookmarkList,
+    getBookmarkListByGuest,
     createBookmark,
     deleteBookmark,
     deleteBookmarkByBookId,

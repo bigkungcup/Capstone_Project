@@ -6,6 +6,7 @@ defineProps({
         require: true,
     }
 })
+const idToken = ref(localStorage.getItem('id'));
 </script>
 
 <template>
@@ -14,7 +15,7 @@ defineProps({
       <v-col cols="4" v-for="user in followingList">
         <v-card class="tw-w-[20rem] tw-h-[20rem] tw-my-2 tw-mx-6" >
           <div class="tw-h-[8rem]">
-            <nuxt-link :to="`/user/${user.userFollowings.userId}/`">
+            <nuxt-link :to="user.userFollowings.userId == idToken ? `/profile/`: `/user/${user.userFollowings.userId}/`">
             <v-img src="/image/profile_banner.jpg" v-show="user.userFollowings.file == null" cover></v-img>
             <v-img
           class="tw-blur-[2px]"
@@ -27,7 +28,7 @@ defineProps({
 
           <div class="tw-flex tw-place-content-center">
             <div class="tw-w-full tw-h-full">
-              <nuxt-link :to="`/user/${user.userFollowings.userId}/`">
+              <nuxt-link :to="user.userFollowings.userId == idToken ? `/profile/`: `/user/${user.userFollowings.userId}/`">
               <v-img
                 src="/image/guest_icon.png"
                 width="120"
@@ -46,6 +47,8 @@ defineProps({
               />
             </nuxt-link>
             </div>
+            <div class="tw-h-[2.5rem]">
+              <div v-if="user.userFollowings.userId != idToken">
             <v-btn color="#1D419F" variant="elevated" class="tw-m-2" v-if="user.followStatus == 1"
             @click="user.followStatus = 0, $emit('unfollow', user.userFollowings.userId)"
               >Following</v-btn
@@ -54,7 +57,7 @@ defineProps({
             @click="user.followStatus = 1, $emit('follow', user.userFollowings.userId)"
               >Follow</v-btn
             >
-          </div>
+          </div></div></div>
           <div class="tw-my-[1rem] tw-mx-4">
             <p class="web-text-title tw-truncate">{{ user.userFollowings.displayName }}</p>
             <p class="web-text-pf-email tw-truncate">{{ user.userFollowings.email }}</p>

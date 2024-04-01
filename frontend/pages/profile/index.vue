@@ -85,7 +85,7 @@ async function selectSection(section) {
 
 onBeforeMount(async () => {
   await login.getProfile();
-  await book.getBookmarkList();
+  await book.getBookmarkList(idToken.value);
   await selectSection(profileSection.value);
 });
 </script>

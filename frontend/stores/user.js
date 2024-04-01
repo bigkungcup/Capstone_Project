@@ -56,11 +56,29 @@ export const useUsers = defineStore("Users", () => {
     data: [],
   });
   const rankingSort = ref('followers')
+  const filterUser = ref('All');
+  const searchUser = ref('');
 
   //Get user list
   async function getUserList() {
     let accessToken = useCookie("accessToken");
     let status = 0;
+    let detail = ref({});
+    if(filterUser.value == 'All' || filterUser.value == ''){
+      detail.value = {
+        page: userPage.value,
+        size: 10,
+        search: searchUser.value,
+      }
+    }else{
+      detail.value = {
+        page: userPage.value,
+        size: 10,
+        role: filterUser.value.toUpperCase(),
+        search: searchUser.value,
+      }
+    }
+
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/user/all`,
       {
@@ -70,10 +88,7 @@ export const useUsers = defineStore("Users", () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken.value}`,
           };
-          options.params = {
-            page: userPage.value,
-            size: 10,
-          };
+          options.params = detail.value;
         },
         onResponse({ request, response, options }) {
           status = response._data.response_code;
@@ -92,7 +107,8 @@ export const useUsers = defineStore("Users", () => {
       await login.handleRefresh();
       await getUserList();
     } else if (status == 404) {
-      router.push("/PageNotFound/");
+      clearUserList();
+      console.log("get user list uncompleted");
     }
   }
 
@@ -185,6 +201,8 @@ export const useUsers = defineStore("Users", () => {
         console.log("get user detail completed");
       } else if (status == 400) {
         console.log("get user detail uncompleted");
+      } else if (status == 403) {
+        router.push("/UnauthenPage/");
       } else if (status == 404) {
         router.push("/PageNotFound/");
       }
@@ -212,6 +230,8 @@ export const useUsers = defineStore("Users", () => {
       console.log("get user detail completed");
     } else if (status == 400) {
       console.log("get user detail uncompleted");
+    } else if (status == 403) {
+      router.push("/UnauthenPage/");
     } else if (status == 404) {
       router.push("/PageNotFound/");
     }
@@ -598,6 +618,8 @@ export const useUsers = defineStore("Users", () => {
     followStatus,
     rankingUserList,
     rankingSort,
+    filterUser,
+    searchUser,
     getUserList,
     getRankingUserList,
     getRankingUserListByGuest,

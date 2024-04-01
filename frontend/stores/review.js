@@ -108,6 +108,15 @@ export const useReviews = defineStore("Reviews", () => {
     //Get reviews by guest
     async function getReviewByGuest(bookId) {
       let status = 0;
+      let sortByReview = ''
+      let sortTypeReview = ''
+        if(sortReview.value == 'desc' || sortReview.value == 'asc' ){
+          sortByReview = sortReview.value;
+        }
+        else{
+          sortByReview = 'desc';
+          sortTypeReview  = sortReview.value;
+        }
       const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/review/guest`, {
         onRequest({ request, options }) {
           options.method = "GET";
@@ -118,11 +127,14 @@ export const useReviews = defineStore("Reviews", () => {
             bookId: bookId,
             page: reviewPage.value,
             size: 10,
+            sortType: sortByReview,
+            sortBy: sortTypeReview,
+            reviewRating: filterReview.value,
           };
         },
         onResponse({ request, response, options }) {
           status = response._data.response_code;
-          if (status == 400) {
+          if (status == 404) {
             reviewList.value = {
               data: {
                 content: [],
