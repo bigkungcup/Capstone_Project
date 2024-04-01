@@ -97,7 +97,7 @@ onBeforeMount(async () => {
                     )
                   "/>
     </div>
-    <div v-if="book.otherBookList.data.length !== 0">
+    <div>
       <Other :otherBookList="book.otherBookList.data"/>
     </div>
   </div>
