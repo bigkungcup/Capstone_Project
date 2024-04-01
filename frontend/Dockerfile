@@ -24,8 +24,12 @@
 FROM node:lts-alpine AS build
 WORKDIR /frontend
 COPY package*.json ./
-ARG NODE_ENV=development 
-COPY .env.${NODE_ENV} .env
+ARG NODE_ENV
+RUN if [ "$NODE_ENV" = "production" ]; then \
+    cp .env.production .env; \
+    else \
+    cp .env .env; \
+    fi
 RUN npm install
 COPY . .
 # RUN npm run build
