@@ -17,6 +17,8 @@ public class UserByIdDTO {
 
     private String email;
 
+    private String role;
+
     private Integer followers;
 
     private Integer followings;
