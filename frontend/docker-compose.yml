@@ -2,7 +2,7 @@ version: '3'
 
 volumes:
   node_modules: 
-  
+
 services:
   frontend:
     container_name: frontend
@@ -11,7 +11,9 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - NODE_ENV=production
+        NODE_ENV: production
+    environment:
+      - NODE_ENV=production
     volumes:
       - .:/usr/src/app
       - node_modules:/usr/src/app/node_modules
