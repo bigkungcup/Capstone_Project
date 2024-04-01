@@ -13,7 +13,7 @@ defineProps({
       Recommend
     </div>
     <!-- <v-img :src="bookPath" width="180" alt="aaa" /> -->
-    <v-sheet class="mx-auto tw-p-4" elevation="2" width="100%" height="100%" color="#3157BB" style="border-radius:20px;" v-if="recommendBookList.length != 0">
+    <v-sheet class="mx-auto tw-p-4" elevation="2" width="100%" height="100%" color="#3157BB" style="border-radius:20px;">
       <v-row no-gutters>
       <v-col cols="3" class="tw-flex tw-items-center tw-justify-center" align="center">
       <div class="tw-text-7xl" style="font-family: 'Rampart One';"> For You </div>

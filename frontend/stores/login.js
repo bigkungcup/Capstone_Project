@@ -20,9 +20,9 @@ export const useLogin = defineStore("Login", () => {
   const idToken = ref(localStorage.getItem("id"));
   const roleToken = ref(localStorage.getItem("role"));
   const fileToken = ref(localStorage.getItem("file"));
-  const setNoti = ref(setInterval(async () => {
+  const setNoti = ref(roleToken.value == 'User' ? setInterval(async () => {
     await noti.getCountAllNotification();
-  }, 60000));
+  }, 60000) : null);
 
   const setToken = (token) => {
     localStorage.setItem("id", token.userId);
