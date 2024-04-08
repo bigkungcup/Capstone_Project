@@ -315,7 +315,7 @@ public class UserService extends CommonController {
 
     public DataResponse createUser(CreateUserDTO user) {
         User userByEmail = repository.getUserByEmail(user.getEmail());
-        ;
+
 
         if (userByEmail != null) {
             throw new HandleExceptionBadRequest("Email already exists");
