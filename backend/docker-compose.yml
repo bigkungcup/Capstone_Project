@@ -10,7 +10,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://database/bannarug?serverTimezone=UTC
       SPRING_PROFILES_ACTIVE: prod
     expose:
-      - 8080:8080
+      - 8080
     volumes:
       - ../../Files:/Files
     restart: always

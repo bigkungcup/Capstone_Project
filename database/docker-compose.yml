@@ -5,7 +5,7 @@ services:
     image: mysql:latest
     expose:
       # - 3307:3306
-      - 3306:3306
+      - 3306
     volumes:
       - ./bannarug.sql:/docker-entrypoint-initdb.d/bannarug.sql
       - ../../mysql-data:/var/lib/mysql
