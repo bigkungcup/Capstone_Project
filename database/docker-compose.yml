@@ -3,7 +3,7 @@ services:
   database:
     container_name: database
     image: mysql:latest
-    ports:
+    expose:
       # - 3307:3306
       - 3306:3306
     volumes:
