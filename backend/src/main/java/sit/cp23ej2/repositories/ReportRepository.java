@@ -13,23 +13,41 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ReportRepository extends JpaRepository<Report, Integer> {
 
         @Query(value = "SELECT reportId, reportBy, fixBy, reportTitle, reportDetail, problemId, reportType, " +
-                        " reportStatus, reportCreateDateTime, reportUpdateDateTime " +
+                        " reportStatus, reportCreateDateTime, reportUpdateDateTime, rr_reviewId, rb_bookId, ru_userId " +
                         " FROM Report r " +
                         " WHERE reportStatus = 1 ", nativeQuery = true)
         Page<Report> getAllFixReport(Pageable pageable);
 
         @Query(value = "SELECT reportId, reportBy, fixBy, reportTitle, reportDetail, problemId, reportType, " +
-                        " reportStatus, reportCreateDateTime, reportUpdateDateTime " +
+                        " reportStatus, reportCreateDateTime, reportUpdateDateTime, rr_reviewId, rb_bookId, ru_userId " +
                         " FROM Report r " +
                         " WHERE reportStatus = 0", nativeQuery = true)
         Page<Report> getAllNotFixReport(Pageable pageable);
 
         @Modifying
         @Transactional
-        @Query(value = "INSERT INTO Report (reportTitle, reportDetail, problemId, reportType, reportStatus, reportBy, fixBy) "
+        @Query(value = "INSERT INTO Report (reportTitle, reportDetail, problemId, reportType, reportStatus, reportBy, rb_bookId) "
                         +
-                        "VALUES (:reportTitle, :reportDetail, :problemId, :reportType, 0, :reportBy, :reportBy)", nativeQuery = true)
-        void insertReport(@Param("reportTitle") String reportTitle, @Param("reportDetail") String reportDetail,
+                        "VALUES (:reportTitle, :reportDetail, :problemId, :reportType, 0, :reportBy, :problemId)", nativeQuery = true)
+        void insertReportBook(@Param("reportTitle") String reportTitle, @Param("reportDetail") String reportDetail,
+                        @Param("problemId") Integer problemId,
+                        @Param("reportType") String reportType, @Param("reportBy") Integer reportBy);
+
+        @Modifying
+        @Transactional
+        @Query(value = "INSERT INTO Report (reportTitle, reportDetail, problemId, reportType, reportStatus, reportBy, rr_reviewId) "
+                        +
+                        "VALUES (:reportTitle, :reportDetail, :problemId, :reportType, 0, :reportBy, :problemId)", nativeQuery = true)
+        void insertReportReview(@Param("reportTitle") String reportTitle, @Param("reportDetail") String reportDetail,
+                        @Param("problemId") Integer problemId,
+                        @Param("reportType") String reportType, @Param("reportBy") Integer reportBy);
+
+        @Modifying
+        @Transactional
+        @Query(value = "INSERT INTO Report (reportTitle, reportDetail, problemId, reportType, reportStatus, reportBy, ru_userId) "
+                        +
+                        "VALUES (:reportTitle, :reportDetail, :problemId, :reportType, 0, :reportBy, :problemId)", nativeQuery = true)
+        void insertReportUser(@Param("reportTitle") String reportTitle, @Param("reportDetail") String reportDetail,
                         @Param("problemId") Integer problemId,
                         @Param("reportType") String reportType, @Param("reportBy") Integer reportBy);
 

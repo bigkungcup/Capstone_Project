@@ -20,9 +20,7 @@ import sit.cp23ej2.dtos.Report.CreateReportDTO;
 import sit.cp23ej2.dtos.Report.PageReportDTO;
 import sit.cp23ej2.dtos.Review.ReviewReportDTO;
 import sit.cp23ej2.dtos.User.UserReportDTO;
-import sit.cp23ej2.entities.Book;
 import sit.cp23ej2.entities.Report;
-import sit.cp23ej2.entities.Review;
 import sit.cp23ej2.entities.User;
 import sit.cp23ej2.exception.HandleExceptionBadRequest;
 import sit.cp23ej2.exception.HandleExceptionNotFound;
@@ -67,9 +65,9 @@ public class ReportService extends CommonController {
 
         pageReportDTO.getContent().forEach(reportDTO -> {
             if (reportDTO.getReportType().equals("book")) {
-                Book bookById = bookRepository.getBookById(reportDTO.getProblemId());
-                BookReportDTO bookReportDTO = modelMapper.map(bookById, BookReportDTO.class);
-                BookDTO bookDTO = modelMapper.map(bookById, BookDTO.class);
+                // Book bookById = bookRepository.getBookById(reportDTO.getProblemId());
+                BookReportDTO bookReportDTO = modelMapper.map(reportDTO.getBook(), BookReportDTO.class);
+                BookDTO bookDTO = modelMapper.map(reportDTO.getBook(), BookDTO.class);
                 try {
                     Path pathFile = fileStorageService.load(bookDTO);
                     if (pathFile != null) {
@@ -80,26 +78,26 @@ public class ReportService extends CommonController {
                 }
                 reportDTO.setData(bookReportDTO);
             } else if (reportDTO.getReportType().equals("review")) {
-                Review reviewById = reviewRepository.getReviewById(reportDTO.getProblemId());
-                ReviewReportDTO reviewReportDTO = modelMapper.map(reviewById, ReviewReportDTO.class);
+                // Review reviewById = reviewRepository.getReviewById(reportDTO.getProblemId());
+                ReviewReportDTO reviewReportDTO = modelMapper.map(reportDTO.getReview(), ReviewReportDTO.class);
                 try {
-                    UserReportDTO userReportDTO = modelMapper.map(reviewById.getUser(), UserReportDTO.class);
+                    UserReportDTO userReportDTO = modelMapper.map(reportDTO.getReview().getUser(), UserReportDTO.class);
                     reviewReportDTO.setUserDetail(userReportDTO);
-                    Path pathFile = fileStorageService.loadUserFile(reviewById.getUser().getUserId());
+                    Path pathFile = fileStorageService.loadUserFile(reportDTO.getReview().getUser().getUserId());
                     if (pathFile != null) {
-                        reviewReportDTO.getUserDetail().setFile(baseUrl + "/api/files/filesUser/" + reviewById.getUser().getUserId());
+                        reviewReportDTO.getUserDetail().setFile(baseUrl + "/api/files/filesUser/" + reportDTO.getReview().getUser().getUserId());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 reportDTO.setData(reviewReportDTO);
             } else if (reportDTO.getReportType().equals("user")) {
-                User userById = userRepository.getUserById(reportDTO.getProblemId());
-                UserReportDTO userReportDTO = modelMapper.map(userById, UserReportDTO.class);
+                // User userById = userRepository.getUserById(reportDTO.getProblemId());
+                UserReportDTO userReportDTO = modelMapper.map(reportDTO.getUser(), UserReportDTO.class);
                 try {
-                    Path pathFile = fileStorageService.loadUserFile(userById.getUserId());
+                    Path pathFile = fileStorageService.loadUserFile(reportDTO.getUser().getUserId());
                     if (pathFile != null) {
-                        userReportDTO.setFile(baseUrl + "/api/files/filesUser/" + userById.getUserId());
+                        userReportDTO.setFile(baseUrl + "/api/files/filesUser/" + reportDTO.getUser().getUserId());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -142,19 +140,25 @@ public class ReportService extends CommonController {
         if (createReportDTO.getReportType().equals("book")) {
             if (!bookRepository.existsByBookId(createReportDTO.getProblemId())) {
                 throw new HandleExceptionNotFound("Book not found", "Book");
+            }else{
+                repository.insertReportBook(createReportDTO.getReportTitle(), createReportDTO.getReportDetail(),
+                createReportDTO.getProblemId(), createReportDTO.getReportType(), user.getUserId());
             }
         } else if (createReportDTO.getReportType().equals("review")) {
             if (!reviewRepository.existsByReviewId(createReportDTO.getProblemId())) {
                 throw new HandleExceptionNotFound("Review not found", "Review");
+            }else{
+                repository.insertReportReview(createReportDTO.getReportTitle(), createReportDTO.getReportDetail(),
+                createReportDTO.getProblemId(), createReportDTO.getReportType(), user.getUserId());
             }
         } else if (createReportDTO.getReportType().equals("user")) {
             if (!userRepository.existsByUserId(createReportDTO.getProblemId())) {
                 throw new HandleExceptionNotFound("User not found", "User");
+            }else{
+                repository.insertReportUser(createReportDTO.getReportTitle(), createReportDTO.getReportDetail(),
+                createReportDTO.getProblemId(), createReportDTO.getReportType(), user.getUserId());
             }
         }
-
-        repository.insertReport(createReportDTO.getReportTitle(), createReportDTO.getReportDetail(),
-                createReportDTO.getProblemId(), createReportDTO.getReportType(), user.getUserId());
 
         return response(201, "Created", "Report has been created");
     }

@@ -70,8 +70,8 @@ public class BookController {
     }
 
     @GetMapping("/ranking")
-    public DataResponse getBookRanking(@RequestParam(required = false) Integer bookTypeId) {
-        return bookService.getBookRanking(bookTypeId);
+    public DataResponse getBookRanking(@RequestParam(required = false) Integer bookTypeId, @RequestParam(required =  false, defaultValue = "totalReview") String sortBy){
+        return bookService.getBookRanking(bookTypeId, sortBy);
     }
 
     @GetMapping("/mostview")
