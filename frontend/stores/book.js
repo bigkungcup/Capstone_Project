@@ -84,6 +84,7 @@ export const useBooks = defineStore("Books", () => {
     data: [],
   });
   const rankingFilter = ref(0)
+  const rankingSort = ref('totalView')
   const runtimeConfig = useRuntimeConfig();
 
   //Get Library
@@ -158,7 +159,8 @@ export const useBooks = defineStore("Books", () => {
           size: 10,
           sortType: sortBybook,
           sortBy: sortTypebook,
-          booktypeId: filterBook.value == 0 ? '' : filterBook.value
+          booktypeId: filterBook.value == 0 ? '' : filterBook.value,
+          search: searchBook.value
         };
       },
       onResponse({ request, response, options }) {
@@ -303,7 +305,8 @@ export const useBooks = defineStore("Books", () => {
           "Content-Type": "application/json",
         };
         options.params = {
-          bookTypeId: rankingFilter.value == 0 ? '' : rankingFilter.value
+          bookTypeId: rankingFilter.value == 0 ? '' : rankingFilter.value,
+          sortBy: rankingSort.value
         }
       },
       onResponse({ request, response, options }) {
@@ -896,9 +899,12 @@ export const useBooks = defineStore("Books", () => {
 
   function changeLibraryPage(page) {
     bookPage.value = page - 1;
+    console.log(roleToken.value);
     if (roleToken.value == 'GUEST') {
+      console.log(roleToken.value == 'GUEST','Guest');
       getLibraryByGuest();
     } else {
+      console.log(roleToken.value == 'GUEST','User');
       getLibrary();
     }
   }
@@ -1078,6 +1084,7 @@ export const useBooks = defineStore("Books", () => {
     similarBookList,
     rankingBookList,
     rankingFilter,
+    rankingSort,
     getLibrary,
     getLibraryByGuest,
     getBookDetail,

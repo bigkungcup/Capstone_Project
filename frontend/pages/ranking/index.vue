@@ -23,6 +23,17 @@ const sortList = [
   },
 ];
 
+const rankBookList = [
+  {
+    Name: "Total Views",
+    value: "totalView",
+  },
+  {
+    Name: "Total Reviews",
+    value: "totalReview",
+  },
+];
+
 async function handleFollow(userId) {
   await user.createFollower(userId)
   await user.getRankingUserList();
@@ -70,25 +81,29 @@ onBeforeMount(async () => {
         <hr />
         <div class="tw-mx-8 tw-mt-6">
           <v-row>
-            <v-col cols="3">
-              <v-select
+            <v-col cols="4">
+              <div class="d-flex tw-space-x-2" v-if="section == 'book'">
+                <p class="web-text-sub-thin py-3">Rank by:</p>
+                <v-select
                 label=""
-                class="tw-font-bold tw-text-white tw-text-xs tw-w-[15rem]"
-                v-if="section == 'book'"
-                v-model="book.rankingFilter"
-                :items="book.bookType"
-                item-title="booktypeName"
-                item-value="booktypeId"
+                class="tw-font-bold tw-text-white tw-text-xs tw-w-[5rem]"
+                v-model="book.rankingSort"
+                :items="rankBookList"
+                item-title="Name"
+                item-value="value"
                 variant="solo-filled"
                 bg-color="#082266"
                 rounded="lg"
+                width=""
                 @update:model-value="book.getRankingBookList()"
               ></v-select>
+              </div>
 
+              <div class="d-flex tw-space-x-2" v-if="section == 'user'">
+              <p class="web-text-sub-thin py-3">Sort by:</p>
               <v-select
-                label="SORT BY: "
+                label=""
                 class="tw-font-bold tw-text-white tw-text-xs"
-                v-if="section == 'user'"
                 v-model="user.rankingSort"
                 :items="sortList"
                 item-title="Name"
@@ -98,12 +113,29 @@ onBeforeMount(async () => {
                 rounded="lg"
                 @update:model-value="handleGetRankingUser()"
               ></v-select>
+            </div>
             </v-col>
-            <v-col cols="9"></v-col>
+            <v-col cols="4" v-if="section == 'book'">
+              <div class="d-flex tw-space-x-2">
+              <p class="web-text-sub-thin py-3">Book type:</p>
+              <v-select
+                label=""
+                class="tw-font-bold tw-text-white tw-text-xs tw-w-[15rem]"
+                v-model="book.rankingFilter"
+                :items="book.bookType"
+                item-title="booktypeName"
+                item-value="booktypeId"
+                variant="solo-filled"
+                bg-color="#082266"
+                rounded="lg"
+                @update:model-value="book.getRankingBookList()"
+              ></v-select>
+            </div> 
+            </v-col>
           </v-row>
         </div>
 
-        <div class="tw-flex tw-justify-center">
+        <div class="tw-flex tw-justify-center mt-5">
           <v-icon style="font-size: 5rem">
             <svg
               fill="#FFC73A"

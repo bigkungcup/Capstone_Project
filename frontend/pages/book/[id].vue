@@ -22,7 +22,7 @@ const reviews = useReviews();
 const user = useUsers();
 const noti = useNotifications();
 const route = useRoute();
-const page = ref(1);
+const page = ref(reviews.reviewPage+1);
 const deleteId = ref(0);
 const bookConfirmPopup = ref(false);
 const reviewConfirmPopup = ref(false);
@@ -112,6 +112,7 @@ async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
 }
 
 function handleSelectionChange() {
+
   if (roleToken.value == "GUEST") {
     reviews.getReviewByGuest(route.params.id);
     // result.value = library.bookList.data.totalElements ? library.bookList.data.totalElements : 0
@@ -123,6 +124,8 @@ function handleSelectionChange() {
 
 function handleStarRate(value) {
   reviews.filterReview = value
+  page.value = 1;
+  reviews.reviewPage = 0;
   if(roleToken.value == "GUEST"){
     reviews.getReviewByGuest(route.params.id);
   }else{
@@ -320,7 +323,7 @@ if (roleToken.value == "GUEST") {
                         >
                       </v-list-item-title>
                     </v-list-item>
-                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer">
+                    <v-list-item class="hover:tw-bg-zinc-300/20 tw-cursor-pointer" v-show="roleToken == 'USER'">
                       <v-list-item-title class="web-text-detail tw-space-x-2"
                       @click="noti.handleReportBook(library.bookDetail.data.bookId)"
                         ><v-icon icon="mdi mdi-flag-variant-outline"></v-icon

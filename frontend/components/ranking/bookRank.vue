@@ -5,6 +5,16 @@ defineProps({
     require: true,
   },
 });
+
+function formatTotalview(totalview) {
+    if (totalview >= 1000 && totalview < 1000000) {
+          return (totalview / 1000).toFixed(1) + 'K';
+        } else if (totalview >= 1000000) {
+          return (totalview / 1000000).toFixed(1) + 'M';
+        } else {
+          return totalview.toString();
+        }
+}
 </script>
 
 <template>
@@ -17,6 +27,7 @@ defineProps({
           <div class="tw-pt-24" v-for="(book, index) in bookList.slice(1, 2)">
             <nuxt-link :to="`/book/${book.bookId}/`">
               <v-img
+              class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                 :src="book.file"
                 width="150"
                 height="250"
@@ -24,6 +35,7 @@ defineProps({
                 cover
               />
               <v-img
+              class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                 src="/image/cover_not_available.jpg"
                 width="150"
                 height="250"
@@ -37,6 +49,7 @@ defineProps({
           <div class="" v-for="(book, index) in bookList.slice(0, 1)">
             <nuxt-link :to="`/book/${book.bookId}/`">
               <v-img
+              class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                 :src="book.file"
                 width="220"
                 height="360"
@@ -44,6 +57,7 @@ defineProps({
                 cover
               />
               <v-img
+              class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                 src="/image/cover_not_available.jpg"
                 width="220"
                 height="360"
@@ -57,6 +71,7 @@ defineProps({
           <div class="tw-pt-24" v-for="(book, index) in bookList.slice(2, 3)">
             <nuxt-link :to="`/book/${book.bookId}/`">
               <v-img
+              class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                 :src="book.file"
                 width="150"
                 height="250"
@@ -64,6 +79,7 @@ defineProps({
                 cover
               />
               <v-img
+              class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                 src="/image/cover_not_available.jpg"
                 width="150"
                 height="250"
@@ -103,9 +119,12 @@ defineProps({
               half-increments
               readonly
             ></v-rating>
-            <p class="web-text-sub text-subtitle-2">
-              ({{ book.bookTotalReview }} reviews)
-            </p>
+            <div class="d-flex web-text-sub text-subtitle-2 tw-space-x-3 tw-justify-center">
+            <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
+            {{ formatTotalview(book.bookTotalView) }}</p>
+            <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
+            {{ formatTotalview(book.bookTotalReview) }}</p>
+            </div>
           </div>
         </v-col>
         <v-col cols="4" align="center">
@@ -122,9 +141,12 @@ defineProps({
               half-increments
               readonly
             ></v-rating>
-            <p class="web-text-sub text-subtitle-2">
-              ({{ book.bookTotalReview }} reviews)
-            </p>
+            <div class="d-flex web-text-sub text-subtitle-2 tw-space-x-3 tw-justify-center">
+            <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
+            {{ formatTotalview(book.bookTotalView) }}</p>
+            <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
+            {{ formatTotalview(book.bookTotalReview) }}</p>
+            </div>
           </div>
         </v-col>
         <v-col cols="2" align="center">
@@ -141,9 +163,12 @@ defineProps({
               half-increments
               readonly
             ></v-rating>
-            <p class="web-text-sub text-subtitle-2">
-              ({{ book.bookTotalReview }} reviews)
-            </p>
+            <div class="d-flex web-text-sub text-subtitle-2 tw-space-x-3 tw-justify-center">
+            <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
+            {{ formatTotalview(book.bookTotalView) }}</p>
+            <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
+            {{ formatTotalview(book.bookTotalReview) }}</p>
+            </div>
           </div>
         </v-col>
         <v-col cols="2"></v-col>
@@ -154,13 +179,13 @@ defineProps({
     <div class="tw-my-16" v-if="bookList.length != 0">
       <div
         class="tw-h-min-[11rem] tw-h-max-[11rem]"
-        v-for="(book, index) in bookList.slice(3)"
+        v-for="(book, index) in bookList"
       >
         <nuxt-link :to="`/book/${book.bookId}/`">
           <hr class="tw-my-4" />
           <v-row no-gutters>
             <v-col cols="1" align="left" class="tw-my-5">
-              <p class="ranking-num-header">{{ index + 4 }}</p>
+              <p class="ranking-num-header">{{ index+1 }}</p>
             </v-col>
             <v-col
               cols="8"
@@ -175,22 +200,31 @@ defineProps({
               <div
                 class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6 tw-py-1"
               >
-                <v-rating
+                <!-- <v-rating
                   :model-value="0.5 * Math.floor(2 * book.bookRating)"
                   color="#FFB703"
                   density="compact"
                   size="large"
                   half-increments
                   readonly
-                ></v-rating>
-                <span class="web-text-sub"
+                ></v-rating> -->
+                <!-- <span class="web-text-sub"
                   >({{ book.bookTotalReview }} reviews)</span
-                >
+                > -->
+                <div class="d-flex web-text-sub text-subtitle-2 tw-space-x-3 tw-justify-center">
+            <p class="tw-text-[#FFC107]"><v-icon icon="mdi mdi-star" class="tw-mx-1" color="amber" />
+            {{ 0.5 * Math.floor(2 * book.bookRating) }}</p>
+            <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
+            {{ formatTotalview(book.bookTotalView) }}</p>
+            <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
+            {{ formatTotalview(book.bookTotalReview) }}</p>
+            </div>
               </div>
             </v-col>
             <v-col cols="1"></v-col>
             <v-col cols="2" align="right"
               ><v-img
+              class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                 :src="book.file"
                 v-if="book.file != null"
                 width="120"
@@ -198,6 +232,7 @@ defineProps({
                 cover
               ></v-img
               ><v-img
+              class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                 src="/image/cover_not_available.jpg"
                 v-if="book.file == null"
                 width="120"

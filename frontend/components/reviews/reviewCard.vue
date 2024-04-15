@@ -79,7 +79,8 @@ const follow = ref(true)
                     </v-expansion-panels></div>
                     <div class="web-text-sub"><span> {{ review.reviewTotalLike }} likes </span> <span> {{ review.reviewTotalDisLike }} dislikes</span>
                     </div>
-                    <div class="d-flex tw-space-x-3" v-if="roleToken == 'USER'">
+                    <div class="d-flex tw-space-x-3" v-if="roleToken != 'GUEST'">
+                        <div v-if="roleToken == 'USER'">
                         <!-- Start (create) -->
                         <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus == null" @click="$emit('like', { reviewId: review.reviewId, likeStatus: 1 })">Likes</v-btn>
                         <v-btn prepend-icon="mdi mdi-thumb-down-outline" variant="text" v-show="review.likeStatus == null" @click="$emit('like', { reviewId: review.reviewId, likeStatus: 2 })">Dislikes</v-btn>
@@ -89,6 +90,7 @@ const follow = ref(true)
                         <v-btn prepend-icon="mdi mdi-thumb-up" variant="text" v-show="review.likeStatus.likeStatus == 1" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">Likes</v-btn>
                         <v-btn prepend-icon="mdi mdi-thumb-down-outline" variant="text" v-show="review.likeStatus.likeStatus != 2 && review.likeStatus.likeStatus != 0" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 2, likeStatusId: review.likeStatus.likeStatusId })">Dislikes</v-btn>
                         <v-btn prepend-icon="mdi mdi-thumb-down" variant="text" v-show="review.likeStatus.likeStatus == 2" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">Dislikes</v-btn>
+                        </div>
                         </div>
                         <span class="text-center">
                             <v-menu>

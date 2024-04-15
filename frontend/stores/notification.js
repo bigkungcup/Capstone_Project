@@ -235,7 +235,7 @@ export const useNotifications = defineStore("Notification", () => {
             notificationTitle: newNotification.value.title,
             notificationDetail: newNotification.value.detail,
             notificationType: "ADMIN",
-            notificationLink: newNotification.value.link 
+            // notificationLink: newNotification.value.link 
           },
           onResponse({ request, response, options }) {
             status = response._data.response_code;
@@ -248,6 +248,7 @@ export const useNotifications = defineStore("Notification", () => {
           },
         });
         if (status == 201) {
+          successfulPopup.value = true;
           clearNewNotification();
           console.log("create notification completed");
         } 

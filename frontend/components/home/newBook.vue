@@ -28,7 +28,7 @@ const roleToken = ref(localStorage.getItem("role"));
                     width="120"
                     height="190"
                     cover
-                    class="tw-mx-2"
+                    class="tw-mx-2 tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                   ></v-img>
                   <v-img
                     :src="book.file"
@@ -36,7 +36,7 @@ const roleToken = ref(localStorage.getItem("role"));
                     width="120"
                     height="190"
                     cover
-                    class="tw-mx-2"
+                    class="tw-mx-2 tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
                   ></v-img>
                 </v-col>
                 <v-col cols="9" class="tw-my-3">

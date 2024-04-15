@@ -17,9 +17,9 @@ const notification = useNotifications();
       <v-card :color="noti.notificationStatus == 0 ? '#3157BB' : 'white'" variant="tonal" :to="noti.notificationLink">
       <v-row no-gutters @click="$emit('clear', noti.notificationId),noti.notificationStatus = 1">
         <v-col cols="2" align="center" class="py-1">
-          <v-img v-if="noti.notificationType == 'bookmark'" :src="noti.book.file != null ? noti.book.file: '/image/cover_not_available.jpg'" width="40" cover/>
-          <v-avatar v-if="noti.notificationType != 'bookmark'" > 
-            <v-img :src="noti.user.file != null ? noti.user.file : '/image/guest_icon.png'" width="40" cover/>
+          <v-img v-if="noti.notificationType == 'Bookmark'" :src="noti.book.file != null ? noti.book.file: '/image/cover_not_available.jpg'" height="80" width="40" cover/>
+          <v-avatar v-if="noti.notificationType != 'Bookmark'" > 
+            <v-img :src="noti.user.file != null ? noti.user.file : '/image/guest_icon.png'" height="80" width="40" cover/>
           </v-avatar>
         </v-col>
         <v-col cols="10" class="px-2">

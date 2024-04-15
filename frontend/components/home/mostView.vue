@@ -57,12 +57,14 @@ function formatTotalview(totalview) {
           </v-col>
           <v-col cols="1"
             ><v-img
+            class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               src="/image/cover_not_available.jpg"
               v-if="book.file == null"
               width="100%"
               height="100%"
               cover
             /><v-img
+            class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               :src="book.file"
               v-if="book.file != null"
               width="100%"
