@@ -3,11 +3,11 @@ services:
   database:
     container_name: database
     image: mysql:latest
-    ports:
-      - 3307:3306
-    # expose:
+    # ports:
+    #   - 3307:3306
+    expose:
       # - 3307:3306
-      # - 3306
+      - 3306
     volumes:
       - ./bannarug.sql:/docker-entrypoint-initdb.d/bannarug.sql
       - ../../mysql-data:/var/lib/mysql
