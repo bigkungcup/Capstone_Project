@@ -21,9 +21,9 @@ defineProps({
       <v-col cols="9" class="" align="center">
       <v-slide-group  show-arrows v-if="recommendBookList.length != 0">
         <v-slide-group-item>
-          <v-card color="white" class="mx-4 " height="100%" width="20rem" rounded="xl" v-for="book in recommendBookList" :to="`/book/${book.bookId}/`">
+          <v-card color="white" class="mx-4" height="100%" width="18rem" rounded="xl" v-for="book in recommendBookList" :to="`/book/${book.bookId}/`">
             <div class="align-center justify-center tw-px-6 tw-pt-4 tw-border-8 tw-border-[#A5BEFF] tw-rounded-3xl" >
-              <v-img :src="book.file" height="100%" cover></v-img>
+              <v-img class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]" :src="book.file" height="320" width="180" cover></v-img>
               <div class="tw-space-x-1 tw-inline-flex tw-items-center">
               <v-rating
                   :model-value="0.5 * Math.floor(2 * book.bookRating)"
@@ -40,7 +40,7 @@ defineProps({
         </v-slide-group-item>
       </v-slide-group>
       <div class="tw-h-[20rem] tw-space-y-1 py-8" v-if="recommendBookList.length == 0">
-        <v-img src="/image/recommend_not_found.png" height="180" width="180" cover></v-img>
+        <v-img src="/image/recommend_not_found.png" height="180" width="160" cover></v-img>
         <div class="tw-text-center user-text-title">
         <p>No recommend book now.</p>
         <p>Let’s explore some more book!</p>

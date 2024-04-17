@@ -123,7 +123,7 @@ defineProps({
                 {{ report.reportTitle }}
               </td>
               <td>
-                <NuxtLink :to="report.reportType == 'user' ? `/user/${report.data.userId}/` : report.reportType == 'book' ? `/book/${report.data.bookId}/` : `/book/${report.data.book.bookId}/`">
+                <NuxtLink :to="report.reportType == 'user' ? `/user/${report.data.userId}/` : report.reportType == 'book' ? `/book/update_${report.data.bookId}/` : `/review/update_${report.data.reviewId}/`">
                   <v-icon style="font-size: 2rem"
                     ><svg
                       viewBox="0 0 24 24"

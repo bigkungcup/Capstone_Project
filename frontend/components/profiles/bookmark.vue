@@ -10,7 +10,7 @@ defineProps({
  
 <template>
     <div class="py-4 px-10">
-        <v-row no-gutters>
+        <!-- <v-row no-gutters>
             <v-col cols="10">
                 <v-text-field label="Search" variant="solo-filled">
                 </v-text-field>
@@ -22,7 +22,7 @@ defineProps({
                     <v-icon icon="mdi mdi-filter-variant"></v-icon>
                     Filter
                 </v-btn></v-col>
-        </v-row>
+        </v-row> -->
         <v-row no-gutters="">
             <v-col cols="3" class="" align="center" v-for="book in bookmarkList" >
                 <nuxt-link :to="`/book/${book.book.bookId}/`">

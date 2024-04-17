@@ -168,12 +168,6 @@ onBeforeRouteLeave(() => {
               </v-btn>
             </div>
           </div>
-            <div class="web-text-detail my-5">
-                <v-radio-group inline v-model="user.editUser.role" class="d-flex justify-center" hide-details="auto">
-                  <v-radio label="User" value="USER"></v-radio>
-                  <v-radio label="Admin" value="ADMIN"></v-radio>
-                </v-radio-group>
-            </div>
           </v-col>
 
           <v-col cols="9">

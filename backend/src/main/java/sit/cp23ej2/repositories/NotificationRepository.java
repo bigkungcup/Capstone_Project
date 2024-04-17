@@ -16,7 +16,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
                         +
                         " n.notificationLink, n.notificationType, n.notificationCreateDateTime, n.notificationUpdateDateTime"
                         +
-                        " FROM Notification n WHERE n.nu_userId = :userId AND n.notificationLevel = :notificationLevel", nativeQuery = true)
+                        " FROM Notification n WHERE n.nu_userId = :userId AND n.notificationLevel = :notificationLevel" +
+                        " ORDER BY n.notificationCreateDateTime DESC", nativeQuery = true)
         List<Notification> getNotificationByUserIdAndLevel(@Param("userId") Integer userId,
                         @Param("notificationLevel") Integer notificationLevel);
 

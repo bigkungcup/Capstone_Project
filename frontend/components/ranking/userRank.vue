@@ -29,7 +29,7 @@ const idToken = ref(localStorage.getItem('id'));
               v-if="user.file != null"
               width="180"
               height="180"
-              class="tw-rounded-full tw-border-white tw-border-8"
+              class="tw-rounded-full tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               cover
             />
           <v-img
@@ -37,7 +37,7 @@ const idToken = ref(localStorage.getItem('id'));
               v-if="user.file == null"
               width="180"
               height="180"
-              class="tw-rounded-full tw-border-white tw-border-8"
+              class="tw-rounded-full tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               cover
             />
           </nuxt-link>
@@ -51,7 +51,7 @@ const idToken = ref(localStorage.getItem('id'));
               v-if="user.file != null"
               width="250"
               height="250"
-              class="tw-rounded-full tw-border-white tw-border-8"
+              class="tw-rounded-full tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               cover
             />
           <v-img
@@ -59,7 +59,7 @@ const idToken = ref(localStorage.getItem('id'));
               v-if="user.file == null"
               width="250"
               height="250"
-              class="tw-rounded-full tw-border-white tw-border-8"
+              class="tw-rounded-full tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               cover
             />
         </nuxt-link>
@@ -73,7 +73,7 @@ const idToken = ref(localStorage.getItem('id'));
               v-if="user.file != null"
               width="180"
               height="180"
-              class="tw-rounded-full tw-border-white tw-border-8"
+              class="tw-rounded-full tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               cover
             />
           <v-img
@@ -81,7 +81,7 @@ const idToken = ref(localStorage.getItem('id'));
               v-if="user.file == null"
               width="180"
               height="180"
-              class="tw-rounded-full tw-border-white tw-border-8"
+              class="tw-rounded-full tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               cover
             />
           </nuxt-link>
@@ -126,11 +126,11 @@ const idToken = ref(localStorage.getItem('id'));
 
     <!-- section 2 -->
     <div class="tw-my-24" v-if="userList.length != 0">
-      <div class="tw-h-min-[11rem] tw-h-max-[11rem]" v-for="(user, index) in userList.slice(3)">
+      <div class="tw-h-min-[11rem] tw-h-max-[11rem]" v-for="(user, index) in userList">
         <hr class="tw-my-4" />
         <v-row no-gutters>
           <v-col cols="1" align="left" class="tw-my-8">
-            <p class="ranking-num-header">{{ index+4 }}</p>
+            <p class="ranking-num-header">{{ index+1 }}</p>
           </v-col>
           <v-col
             cols="8"
@@ -174,7 +174,7 @@ const idToken = ref(localStorage.getItem('id'));
               v-if="user.file != null"
               width="150"
               height="150"
-              class="tw-rounded-full tw-border-white tw-border-8"
+              class="tw-rounded-full tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               cover
             />
             <v-img
@@ -182,7 +182,7 @@ const idToken = ref(localStorage.getItem('id'));
               v-if="user.file == null"
               width="150"
               height="150"
-              class="tw-rounded-full tw-border-white tw-border-8"
+              class="tw-rounded-full tw-drop-shadow-lg tw-border-2 tw-border-[#082266]"
               cover
             />
           </nuxt-link>

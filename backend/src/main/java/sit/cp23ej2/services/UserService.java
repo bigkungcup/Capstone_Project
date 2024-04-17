@@ -277,7 +277,7 @@ public class UserService extends CommonController {
       
         List<User> userRanking = repository.getUserRanking(sort);
 
-        if (userRanking != null) {
+        if (userRanking != null && userRanking.size() > 0){
             List<UserRankingDTO> userRankingList = userRanking.stream().map(user -> {
                 UserRankingDTO userDTO = modelMapper.map(user, UserRankingDTO.class);
                 try {
@@ -715,7 +715,7 @@ public class UserService extends CommonController {
         }
 
         // repository.resetPassword(forgetPassword.getEmail(), new BCryptPasswordEncoder().encode(forgetPassword.getPassword()));
-        reportRepository.insertReport("Forget Password", forgetPassword.getEmail() + " Forget Password", user.getUserId(), "user", user.getUserId());
+        reportRepository.insertReportUser("Forget Password", forgetPassword.getEmail() + " Forget Password", user.getUserId(), "user", user.getUserId());
 
         return response(200, "OK", "Forget Password");
     }

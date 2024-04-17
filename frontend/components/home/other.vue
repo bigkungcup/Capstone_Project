@@ -20,8 +20,8 @@ const roleToken = ref(localStorage.getItem("role"));
           <div class="tw-h-min-[11rem] tw-h-max-[11rem]">
             <v-row no-gutters>
               <v-col cols="4">
-                <v-img src="/image/cover_not_available.jpg" width="100" height="160" v-if="book.file == null" cover/>
-                <v-img :src="book.file" width="100" height="160" v-if="book.file != null" cover/>
+                <v-img class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]" src="/image/cover_not_available.jpg" width="100" height="160" v-if="book.file == null" cover/>
+                <v-img class="tw-drop-shadow-lg tw-border-2 tw-border-[#082266]" :src="book.file" width="100" height="160" v-if="book.file != null" cover/>
               </v-col>
               <v-col
                 cols="8"

@@ -23,10 +23,13 @@ const  slides = [
       ]
 const path = '/ej2'
 
-if(accessToken.value == undefined){
+if(accessToken.value == undefined || accessToken.value == null){
   login.resetToken();
+  roleToken.value = localStorage.getItem("role");
 }else{
-  login.getProfile();
+  await login.getProfile();
+  roleToken.value = localStorage.getItem("role");
+  // console.log(roleToken.value);
 }
 
 async function likeReviews(reviewId, likeStatus) {
@@ -78,7 +81,7 @@ onBeforeMount(async () => {
   <div>
     
   <div class="ma-8">
-    <div >
+    <div v-if="roleToken == 'USER'">
       <Recommend :recommendBookList="book.recommendBookList.data"/>
     </div>
     <div>

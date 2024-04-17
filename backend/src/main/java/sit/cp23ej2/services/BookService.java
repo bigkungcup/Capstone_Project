@@ -106,9 +106,12 @@ public class BookService extends CommonController {
 
                 Duration duration = Duration.between(LocalDateTime.now(), bookDTO.getBookCreateDateTime());
                 bookDTO.setCountDateTime(Math.abs(duration.toSeconds()));
-                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                ArrayList<String> bookTag = new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", ")));
-                bookDTO.setBookTagList(bookTag);
+                if(bookDTO.getBookTag() != null){
+                    System.out.println("bookDTO.getBookTag(): " + bookDTO.getBookTag());
+                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                    ArrayList<String> bookTag = new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", ")));
+                    bookDTO.setBookTagList(bookTag);
+                }
                 try {
 
                     Path pathFile = fileStorageService.load(bookDTO);
@@ -168,8 +171,10 @@ public class BookService extends CommonController {
             }
 
             BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-            bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-            bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+            if(bookDTO.getBookTag() != null){
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+            }
             bookDTO.setBookTotalBookmark(bookmarkRepository.getBookmarkListByBookId(bookId).size());
             try {
 
@@ -206,15 +211,22 @@ public class BookService extends CommonController {
         }
     }
 
-    public DataResponse getBookRanking(Integer booktypeId) {    
-        List<Book> books = repository.getBookRanking(booktypeId);
+    public DataResponse getBookRanking(Integer booktypeId, String sortParam) {
+
+        if(!sortParam.equals("totalReview") && !sortParam.equals("totalView")){
+            throw new HandleExceptionBadRequest("Sort Param is invalid");
+        }
+        
+        List<Book> books = repository.getBookRanking(booktypeId, sortParam);
 
         if (books.size() > 0) {
             List<BookDTO> bookDTOs = new ArrayList<>();
             books.forEach(book -> {
                 BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                if(bookDTO.getBookTag() != null){
+                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                }
                 try {
                     Path pathFile = fileStorageService.load(bookDTO);
                     if(pathFile != null){
@@ -238,8 +250,10 @@ public class BookService extends CommonController {
             List<BookDTO> bookDTOs = new ArrayList<>();
             books.forEach(book -> {
                 BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                if(bookDTO.getBookTag() != null){
+                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                }
                 try {
                     Path pathFile = fileStorageService.load(bookDTO);
                     if(pathFile != null){
@@ -263,8 +277,10 @@ public class BookService extends CommonController {
             List<BookDTO> bookDTOs = new ArrayList<>();
             books.forEach(book -> {
                 BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                if(bookDTO.getBookTag() != null){
+                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                }
                 try {
                     Path pathFile = fileStorageService.load(bookDTO);
                     if(pathFile != null){
@@ -288,8 +304,10 @@ public class BookService extends CommonController {
             List<BookDTO> bookDTOs = new ArrayList<>();
             books.forEach(book -> {
                 BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                if(bookDTO.getBookTag() != null){
+                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                }
                 try {
                     Path pathFile = fileStorageService.load(bookDTO);
                     if(pathFile != null){
@@ -315,8 +333,10 @@ public class BookService extends CommonController {
                 BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
                 Path pathFile = fileStorageService.load(bookDTO);
                 if(pathFile != null){
-                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                    if(bookDTO.getBookTag() != null){
+                        bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                        bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                    }
                     try {
                         bookDTO.setFile(baseUrl + "/api/files/filesBook/" + bookDTO.getBookId());
                     } catch (Exception e) {
@@ -419,8 +439,10 @@ public class BookService extends CommonController {
             BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
 
             bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBooktypeId()));
-            bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-            bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+            if(bookDTO.getBookTag() != null){
+                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+            }
             bookDTO.setBookUpdateDateTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
             
             try {
@@ -462,8 +484,10 @@ public class BookService extends CommonController {
                 BookDTO bookDTO = modelMapper.map(newDataBook, BookDTO.class);
                 
                 bookDTO.setBooktype(booktypeRepository.getBooktypeById(book.getBooktypeId()));
-                bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
-                bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                if(bookDTO.getBookTag() != null){
+                    bookDTO.setBookTag(bookDTO.getBookTag().replaceAll(",", ", "));
+                    bookDTO.setBookTagList(new ArrayList<String>(Arrays.asList(bookDTO.getBookTag().split(", "))));
+                }
                 bookDTO.setBookUpdateDateTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
 
                 try {

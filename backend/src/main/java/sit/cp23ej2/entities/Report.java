@@ -50,4 +50,16 @@ public class Report {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fixBy", nullable = true)
     private User fixBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rr_reviewId", nullable = true)
+    private Review review;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rb_bookId", nullable = true)
+    private Book book;    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ru_userId", nullable = true)
+    private User user;
 }

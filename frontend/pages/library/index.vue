@@ -30,11 +30,17 @@ const sortList = [
     Name: 'Total Rating' ,
     value: 'bookRating'
   },
+  {
+    id: 5,
+    Name: 'Total View' ,
+    value: 'bookTotalView'
+  },
 ];
 
 function handleSelectionChange() {  
   booktype.value = library.filterBook != 0 ? library.bookType.find(({ booktypeId }) => booktypeId ===  library.filterBook) : ''
-
+  page.value = 1;
+  library.bookPage = 0;
   if (roleToken.value == 'GUEST') {
     library.getLibraryByGuest();
   }else{
@@ -69,8 +75,8 @@ onBeforeMount( async () => {
           >
         </v-text-field>
         </v-col>
-        <v-col cols="1" v-if="roleToken === 'GUEST'"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg" @click="library.getLibraryByGuest()"> Search </v-btn></v-col>
-        <v-col cols="1" v-if="roleToken !== 'GUEST'"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg" @click="library.getLibrary()"> Search </v-btn></v-col>
+        <v-col cols="1" v-if="roleToken === 'GUEST'"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg" @click="page = 1,library.bookPage = 0,library.getLibraryByGuest()"> Search </v-btn></v-col>
+        <v-col cols="1" v-if="roleToken !== 'GUEST'"><v-btn size="auto" class="pa-5" color="#082266" rounded="lg" @click="page = 1,library.bookPage = 0,library.getLibrary()"> Search </v-btn></v-col>
         <v-col cols="1"><v-btn size="auto" class="tw-mx-8 pa-5" color="#082266" rounded="lg" @click="dialog = true"> 
           <v-icon icon="mdi mdi-filter-variant"></v-icon>
           </v-btn></v-col>
