@@ -67,6 +67,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         +
                         " FROM Book b" +
                         " WHERE (:booktypeId IS NULL OR b.bb_booktypeId = :booktypeId) " +
+                        " b.bookTotalView > 0 " +
                         // " AND (:bookTotalReview ) " +
                         // " ORDER By b.bookRating DESC, b.bookTotalReview DESC, b.bookName ASC LIMIT 10"
                         " ORDER BY CASE WHEN :sort_param = 'totalReview' THEN b.bookTotalReview END DESC, " +
@@ -77,6 +78,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         @Query(value = "SELECT b.bookId, b.bb_booktypeId, b.bookName, b.author, b.bookTotalView, b.bookRating, b.bookTag, b.bookDetail, b.bookCreateDateTime, b.bookUpdateDateTime, b.bookTotalReview"
                         +
                         " FROM Book b" +
+                        " WHERE b.bookTotalView > 0 " +
                         " ORDER By b.bookTotalView DESC LIMIT 5", nativeQuery = true)
         List<Book> getBookByMostView();
 
