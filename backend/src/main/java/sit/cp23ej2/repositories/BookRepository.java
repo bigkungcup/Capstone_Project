@@ -67,7 +67,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         +
                         " FROM Book b" +
                         " WHERE (:booktypeId IS NULL OR b.bb_booktypeId = :booktypeId) " +
-                        " b.bookTotalView > 0 " +
+                        " AND b.bookTotalView > 0 " +
                         // " AND (:bookTotalReview ) " +
                         // " ORDER By b.bookRating DESC, b.bookTotalReview DESC, b.bookName ASC LIMIT 10"
                         " ORDER BY CASE WHEN :sort_param = 'totalReview' THEN b.bookTotalReview END DESC, " +
