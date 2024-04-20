@@ -18,7 +18,7 @@ import sit.cp23ej2.services.LikeStatusService;
 
 @CrossOrigin(origins = {
     "http://localhost:3000",
-    "*"
+    "https://capstone23.sit.kmutt.ac.th/ej2"
 }, methods = {
     RequestMethod.OPTIONS,
     RequestMethod.GET,
