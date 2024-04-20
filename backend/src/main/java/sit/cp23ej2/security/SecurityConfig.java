@@ -122,6 +122,13 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
+        http.headers(headers ->
+        headers
+            .contentSecurityPolicy(contentSecurityPolicy ->
+                contentSecurityPolicy
+                    .policyDirectives("script-src 'self' https://trustedscripts.example.com; object-src https://trustedplugins.example.com; report-uri /csp-report-endpoint/")
+            )
+    );
         return http.build();
 
     }
