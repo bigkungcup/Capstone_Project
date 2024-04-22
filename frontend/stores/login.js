@@ -62,7 +62,7 @@ export const useLogin = defineStore("Login", () => {
   const editProfile = ref();
   const editProfileFile = ref();
   const failPopup = ref(false);
-  const successfulPopup = ref(false);
+  const successfulPopup = ref('hide');
   const loginFailed = ref(false);
   const leavePopup = ref(true);
   const updateFailed = ref(false);
@@ -169,6 +169,7 @@ export const useLogin = defineStore("Login", () => {
   async function updateProfile() {
     let status = 0;
     let user = {};
+    successfulPopup.value = 'load';
     if (editProfileFile.value === null && profile.value.file !== null) {
       user = {
         displayName: editProfile.value.displayName,
@@ -216,6 +217,7 @@ export const useLogin = defineStore("Login", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          successfulPopup.value = 'hide';
           updateFailed.value = true;
           updateFailedError.value = Object.values(response._data.filedErrors);
           console.log("update user uncompleted");
@@ -224,10 +226,11 @@ export const useLogin = defineStore("Login", () => {
     });
     if (status == 200) {
       updateFailed.value = false;
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       fileToken.value = editProfileFile.value[0]
       console.log("update user completed");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await handleRefresh();
       await updateProfile();
     }
@@ -236,6 +239,7 @@ export const useLogin = defineStore("Login", () => {
   //Change password
   async function changePassword(oldPassword,newPassword) {
     let status = 0;
+    successfulPopup.value = 'load';
     await $fetch(`${import.meta.env.VITE_BASE_URL}/user/resetPassword`, {
       method: "PUT",
       headers: {
@@ -248,6 +252,7 @@ export const useLogin = defineStore("Login", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          successfulPopup.value = 'hide';
           updateFailed.value = true;
           updateFailedError.value = Object.values(response._data.filedErrors);
           console.log("change password uncompleted");
@@ -256,9 +261,10 @@ export const useLogin = defineStore("Login", () => {
     });
     if (status == 200) {
       updateFailed.value = false;
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       console.log("change password completed");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await handleRefresh();
       await changePassword();
     }
@@ -267,6 +273,7 @@ export const useLogin = defineStore("Login", () => {
   //Forget password
   async function forgetPassword() {
     let status = 0;
+    successfulPopup.value = 'load';
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/user/forgetPassword`, {
       method: "PUT",
@@ -276,15 +283,22 @@ export const useLogin = defineStore("Login", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          successfulPopup.value = 'hide';
           console.log("send uncompleted");
         } else if (status == 401) {
+          successfulPopup.value = 'hide';
+          console.log("send uncompleted");
+        } else if (status == 404) {
+          failPopup.value = true;
+          successfulPopup.value = 'hide';
           console.log("send uncompleted");
         }
       },
     });
     if (status == 200) {
       forgetEmail.value = '';
-      successfulPopup.value = true;
+      failPopup.value = false;
+      successfulPopup.value = 'show';
       console.log("send completed");
     }
   }
@@ -301,7 +315,7 @@ export const useLogin = defineStore("Login", () => {
     clearInterval(setNoti.value);
     // myBroadcastChannel1.close();
     // myBroadcastChannel2.close();
-    router.push("/login");
+    router.push("/login/");
   }
 
   //Clear login account
@@ -332,7 +346,7 @@ export const useLogin = defineStore("Login", () => {
 
   //Close successful popup
   function closeSuccessfulPopup() {
-    successfulPopup.value = false;
+    successfulPopup.value = 'hide';
     leavePopup.value = false;
     backPage()
   }

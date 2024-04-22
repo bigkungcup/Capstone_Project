@@ -39,7 +39,7 @@ export const useReviews = defineStore("Reviews", () => {
     spoileFlag: false,
   });
   const editReview = ref();
-  const successfulPopup = ref(false);
+  const successfulPopup = ref('hide');
   const leavePopup = ref(true);
   const myReviewList = ref({
     data: {
@@ -332,6 +332,7 @@ export const useReviews = defineStore("Reviews", () => {
   async function createReview() {
     let accessToken = useCookie("accessToken");
     let status = 0;
+    successfulPopup.value = 'load';
     await $fetch(`${import.meta.env.VITE_BASE_URL}/review`, {
       method: "POST",
       headers: {
@@ -348,17 +349,20 @@ export const useReviews = defineStore("Reviews", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          successfulPopup.value = 'hide';
           console.log("upload review uncompleted");
         }
       },
     });
     if (status == 201) {
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       console.log("upload review completed");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await login.handleRefresh();
       await createReview();
     } else if (status == 404) {
+      successfulPopup.value = 'hide';
       router.push("/PageNotFound/");
     }
   }
@@ -382,17 +386,20 @@ export const useReviews = defineStore("Reviews", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          successfulPopup.value = 'hide';
           console.log("update review uncompleted");
         }
       },
     });
     if (status == 200) {
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       console.log("update review completed");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await login.handleRefresh();
       await updateReview(reviewId);
     } else if (status == 404) {
+      successfulPopup.value = 'hide';
       router.push("/PageNotFound/");
     }
   }
@@ -400,6 +407,7 @@ export const useReviews = defineStore("Reviews", () => {
   //Delete review
   async function deleteReview(reviewId, bookId) {
     let accessToken = useCookie("accessToken");
+    successfulPopup.value = 'load';
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/review/${reviewId}`,
@@ -417,16 +425,19 @@ export const useReviews = defineStore("Reviews", () => {
       }
     );
     if (status == 200) {
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       reviewPage.value = 0;
       getReview(bookId);
       console.log("delete review completed");
     } else if (status == 404) {
+      successfulPopup.value = 'hide';
       console.log("delete review uncompleted");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await login.handleRefresh();
       await deleteReview(reviewId, bookId);
     } else if (status == 404) {
+      successfulPopup.value = 'hide';
       router.push("/PageNotFound/");
     }
   }
@@ -509,7 +520,7 @@ export const useReviews = defineStore("Reviews", () => {
 
   //Close successful popup
   function closeSuccessfulPopup() {
-    successfulPopup.value = false;
+    successfulPopup.value = 'hide';
     leavePopup.value = false;
     backPage().then(() => {
       clearNewReview();

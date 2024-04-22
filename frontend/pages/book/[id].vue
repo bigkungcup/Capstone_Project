@@ -16,6 +16,7 @@ import deleteReviewConfirmPopup from "~/components/reviews/popups/deleteReviewCo
 import deleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmPopup.vue";
 import CreateReportPopup from "~/components/reports/createReportPopup.vue";
 import ReportSuccessPopup from "~/components/reports/popups/reportSuccessPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 const library = useBooks();
 const reviews = useReviews();
@@ -72,10 +73,6 @@ function setDeleteId(id) {
 
 function toggleBookConfirmPopup() {
   bookConfirmPopup.value = !bookConfirmPopup.value;
-}
-
-function toggleReviewSuccessfulPopup() {
-  reviews.successfulPopup = !reviews.successfulPopup;
 }
 
 function toggleBookFailPopup() {
@@ -471,13 +468,13 @@ if (roleToken.value == "GUEST") {
       />
       <deleteBookSuccessPopup
         class="delete-popup"
-        :dialog="library.successfulPopup"
+        :dialog="library.successfulPopup == 'show'"
         @close="library.closeSuccessfulPopup()"
       />
       <deleteReviewSuccessPopup
         class="delete-popup"
-        :dialog="reviews.successfulPopup"
-        @close="toggleReviewSuccessfulPopup()"
+        :dialog="reviews.successfulPopup == 'show'"
+        @close="reviews.successfulPopup = 'hide'"
       />
   
       <!-- Create Report Popup -->
@@ -488,9 +485,12 @@ if (roleToken.value == "GUEST") {
       @cancel="noti.reportStatus = false,noti.clearReportProblem()" 
       @submit="noti.createReport()" />
       </div>
-      <div v-if="noti.successfulPopup">
-      <ReportSuccessPopup class="report-popup" @close="noti.successfulPopup = false"/>
+      <div v-if="noti.successfulPopup == 'show'">
+      <ReportSuccessPopup class="report-popup" @close="noti.successfulPopup = 'hide'"/>
     </div>
+    <div v-if="noti.successfulPopup == 'load' || library.successfulPopup == 'load' || reviews.successfulPopup == 'load'">
+    <LoadingPopup />
+  </div>
     </div>
     <footer class="tw-bg-white tw-py-5"></footer>
   </div>

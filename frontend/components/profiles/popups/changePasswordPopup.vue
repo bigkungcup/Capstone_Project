@@ -53,7 +53,7 @@ const rules = {
     <div v-show="dialog" class="tw-grid tw-h-100% tw-min-h-screen tw-w-screen tw-absolute tw-inset-0 tw--top-[5.5rem] tw-bg-black/50">
 
       <!-- Change password popup -->
-        <v-card style="min-height: 25rem; width: 50rem;" class="rounded-xl tw-place-self-center" v-show="!login.updateFailed && !login.successfulPopup">
+        <v-card style="min-height: 25rem; width: 50rem;" class="rounded-xl tw-place-self-center" v-show="!login.updateFailed && login.successfulPopup == 'hide'">
         <v-card-title class="tw-bg-[#1D419F]" style="height: 5rem; width: 50rem;">
           <p class="action-popUp-header !tw-text-white tw-flex tw-justify-center tw-my-4 ">Change Password</p>
         </v-card-title>
@@ -127,8 +127,18 @@ const rules = {
         </v-card-actions>
       </v-card>
 
+      <!-- Load popup -->
+      <div class="tw-place-self-center" v-show="login.successfulPopup == 'load'">
+            <v-progress-circular
+      :size="160"
+      :width="7"
+      color="blue-lighten-4"
+      indeterminate
+    ></v-progress-circular>
+      </div>
+
       <!-- Successful popup -->
-      <v-card style="height: 20rem; width: 40rem;" class="rounded-xl tw-place-self-center" v-show="login.successfulPopup">
+      <v-card style="height: 20rem; width: 40rem;" class="rounded-xl tw-place-self-center" v-show="login.successfulPopup == 'show'">
           <div class="tw-flex tw-justify-center tw-my-3">
           <v-icon icon="mdi mdi-check-circle-outline" color="#1D419F" style="font-size: 8rem;" ></v-icon>
         </div>
@@ -136,7 +146,7 @@ const rules = {
         <v-card-text class="d-flex align-content-center justify-center flex-wrap" style="height: 2rem; width: 40rem;">
             <div class="confirm-popUp-detail">Your password has been updated successfully.</div></v-card-text>
         <v-card-actions style="height: 5rem; width: 40rem;"  class="tw-flex tw-justify-center">
-          <v-btn class=" tw-mx-2" style="height: 3rem; width: 7rem; color: white;" color="#1D419F" variant="flat" size="large" rounded="xl" @click="$emit('toggle'),clearAll(),login.successfulPopup = false">OK</v-btn>
+          <v-btn class=" tw-mx-2" style="height: 3rem; width: 7rem; color: white;" color="#1D419F" variant="flat" size="large" rounded="xl" @click="$emit('toggle'),clearAll(),login.successfulPopup = 'hide'">OK</v-btn>
         </v-card-actions>
       </v-card>
 

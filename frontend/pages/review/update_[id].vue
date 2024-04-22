@@ -5,12 +5,17 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 // import leaveConfirmPopup from "~/components/popups/leaveConfirmPopup.vue";
 import UpdateReviewSuccessPopup from "~/components/reviews/popups/updateReviewSuccessPopup.vue";
+import DeleteReviewConfirmPopup from "~/components/reviews/popups/deleteReviewConfirmPopup.vue";
+import DeleteReviewSuccessPopup from "~/components/reviews/popups/deleteReviewSuccessPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 const book = useBooks();
 const reviews = useReviews();
 const route = useRoute();
 const router = useRouter();
 const roleToken = ref(localStorage.getItem('role'));
+const popupStatus = ref('');
+const reviewConfirmPopup = ref(false);
 // const confirmLeavePopup = ref(false);
 
 // function toggleLeavePopup() {
@@ -142,7 +147,15 @@ if (roleToken.value == 'GUEST') {
       </v-card>
     </div>
 
-    <div class="d-flex justify-end tw-mx-[10rem] tw-mt-5 tw-space-x-4">
+    <div class="d-flex justify-space-between">
+      <div class="justify-start tw-mx-[9rem]">
+        <v-btn
+        color="red"
+        variant="flat"
+        @click="reviewConfirmPopup = true,popupStatus = 'delete'"
+        >Delete</v-btn>
+      </div>
+      <div class="justify-end tw-mx-[9rem] tw-space-x-4">
       <v-btn
         color="#1D419F"
         variant="outlined"
@@ -152,25 +165,44 @@ if (roleToken.value == 'GUEST') {
       <v-btn
         color="#1D419F"
         variant="flat"
-        @click="reviews.updateReview(route.params.id)"
+        @click="reviews.updateReview(route.params.id),popupStatus = 'update'"
         :disabled="
           reviews.editReview.title == '' ||
           reviews.editReview.detail == '' ||
           reviews.editReview.title.length > 255
         "
         >submit</v-btn
-      >
+      ></div>
     </div>
     <UpdateReviewSuccessPopup
-      :dialog="reviews.successfulPopup"
+      v-if="popupStatus == 'update'"
+      :dialog="reviews.successfulPopup == 'show'"
       @close="reviews.closeSuccessfulPopup()"
     />
-    <!-- <leaveConfirmPopup
-      :dialog="confirmLeavePopup"
-      @toggle="toggleLeavePopup()"
-      @back="$router.go(-1)"
-    /> -->
+  </div>
+  <div v-if="popupStatus == 'delete'">
+      <DeleteReviewConfirmPopup
+        class="delete-popup"
+        :dialog="reviewConfirmPopup"
+        @toggle="reviewConfirmPopup = !reviewConfirmPopup,popupStatus == ''"
+        @delete="reviews.deleteReview(route.params.id)"
+      />
+      <DeleteReviewSuccessPopup
+        class="delete-popup"
+        :dialog="reviews.successfulPopup == 'show'"
+        @close="reviews.successfulPopup = 'hide',popupStatus == '',router.go(-1)"
+      />
+    </div>
+    <div v-if="reviews.successfulPopup == 'load'">
+    <LoadingPopup />
   </div>
 </template>
 
-<style></style>
+<style>
+.delete-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
