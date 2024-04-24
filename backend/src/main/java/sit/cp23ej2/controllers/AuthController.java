@@ -12,6 +12,7 @@ import sit.cp23ej2.services.JwtService;
 import sit.cp23ej2.services.UserService;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
     RequestMethod.POST
 }, allowedHeaders = "*")
 @RestController
+@Validated
 @RequestMapping("/api/auth")
 public class AuthController {
 
