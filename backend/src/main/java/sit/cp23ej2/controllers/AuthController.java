@@ -12,7 +12,6 @@ import sit.cp23ej2.services.JwtService;
 import sit.cp23ej2.services.UserService;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,9 +26,8 @@ import jakarta.servlet.http.HttpServletResponse;
     RequestMethod.PUT,
     RequestMethod.DELETE,
     RequestMethod.POST
-}, allowedHeaders = "*")
+}, allowedHeaders = "*", exposedHeaders = {"Access-Control-Allow-Origin","Access-Control-Allow-Credentials"})
 @RestController
-@Validated
 @RequestMapping("/api/auth")
 public class AuthController {
 
