@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @CrossOrigin(origins = {
     "http://localhost:3000",
-    "https://capstone23.sit.kmutt.ac.th/ej2"
+    "*"
 }, methods = {
     RequestMethod.OPTIONS,
     RequestMethod.GET,
