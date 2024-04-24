@@ -43,10 +43,10 @@ jobs:
           cd ..
           
       # Runs a Reverse-Proxy
-      - name: Reverse-Proxy Docker Compose Down
-        run: |
-          cd nginx
-          docker compose down
-          docker compose up -d --build
-          docker image prune -f
-          cd ..
+      # - name: Reverse-Proxy Docker Compose Down
+      #   run: |
+      #     cd nginx
+      #     docker compose down
+      #     docker compose up -d --build
+      #     docker image prune -f
+      #     cd ..
