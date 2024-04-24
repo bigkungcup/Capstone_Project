@@ -2,6 +2,7 @@
 import { useLogin } from "~/stores/login";
 import { ref } from "vue";
 import forgotPasswordSuccessPopup from "~/components/users/popups/forgotPasswordSuccessPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 definePageMeta({
   layout: false,
@@ -17,7 +18,7 @@ const rules = {
 
 onBeforeMount(() => {
   login.forgetEmail = '';
-  login.successfulPopup = false;
+  login.successfulPopup = 'hide';
 });
 </script>
  
@@ -48,6 +49,7 @@ onBeforeMount(() => {
           <p>*Enter your email address and we’ll send you new password to reset your password.</p>
         </div>
         <div class="tw-mx-10 tw-my-8">
+          <v-card text="Email not found" variant="tonal" class="my-5" color="red-lighten-1" v-show="login.failPopup"></v-card>
           <v-text-field
             prepend-inner-icon="mdi-email-outline"
             density="compact"
@@ -71,8 +73,11 @@ onBeforeMount(() => {
       </v-col>
     </v-row></v-col>
     <forgotPasswordSuccessPopup
-    :dialog="login.successfulPopup"
-    @close="login.successfulPopup = false"/>
+    :dialog="login.successfulPopup == 'show'"
+    @close="login.successfulPopup = 'hide'"/>
+    <div v-if="login.successfulPopup == 'load'">
+    <LoadingPopup />
+  </div>
   </v-row>
 </template>
  

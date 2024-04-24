@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
     RequestMethod.PUT,
     RequestMethod.DELETE,
     RequestMethod.POST
-}, allowedHeaders = "*", exposedHeaders = {"Access-Control-Allow-Origin","Access-Control-Allow-Credentials"})
+}, allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

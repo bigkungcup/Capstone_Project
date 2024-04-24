@@ -57,7 +57,7 @@ export const useBooks = defineStore("Books", () => {
     },
   });
   const bookmarkPage = ref(0);
-  const successfulPopup = ref(false);
+  const successfulPopup = ref('hide');
   const failPopup = ref(false);
   const leavePopup = ref(true);
   const bookType = ref();
@@ -389,6 +389,7 @@ export const useBooks = defineStore("Books", () => {
   //Create Book
   async function createBook() {
     let accessToken = useCookie("accessToken");
+    successfulPopup.value = 'load';
     let status = 0;
     const book = {
       bookName: newBook.value.bookName,
@@ -417,18 +418,21 @@ export const useBooks = defineStore("Books", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          successfulPopup.value = 'hide';
           failPopup.value = true;
           console.log("upload book uncompleted");
         } else if (status == 404) {
+          successfulPopup.value = 'hide';
           router.push("/PageNotFound/");
         } else if (status == 401) {
+          successfulPopup.value = 'hide';
           login.handleRefresh();
           createBook();
         }
       },
     });
     if (status == 201) {
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       console.log("upload book completed");
     }
   }
@@ -438,6 +442,7 @@ export const useBooks = defineStore("Books", () => {
     let status = 0;
     let accessToken = useCookie("accessToken");
     let book = {};
+    successfulPopup.value = 'load';
     if (editBookFile.value === null && bookDetail.value.data.file !== null) {
       book = {
         bookName: editBook.value.bookName,
@@ -483,17 +488,20 @@ export const useBooks = defineStore("Books", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          successfulPopup.value = 'hide';
           failPopup.value = true;
           console.log("update book uncompleted");
         } else if (status == 404) {
+          successfulPopup.value = 'hide';
           router.push("/PageNotFound/");
         }
       },
     });
     if (status == 200) {
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       console.log("update book completed");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await login.handleRefresh();
       await updateBook(bookId);
     }
@@ -503,6 +511,8 @@ export const useBooks = defineStore("Books", () => {
   async function deleteBook(bookId) {
     let accessToken = useCookie("accessToken");
     let status = 0;
+    successfulPopup.value = 'load';
+
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
       {
@@ -519,14 +529,17 @@ export const useBooks = defineStore("Books", () => {
       }
     );
     if (status == 200) {
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       console.log("delete book completed");
     } else if (status == 400) {
+      successfulPopup.value = 'hide';
       failPopup.value = true;
       console.log("delete book uncompleted");
     } else if (status == 404) {
+      successfulPopup.value = 'hide';
       router.push("/PageNotFound/");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await login.handleRefresh();
       await deleteBook(bookId);
     }
@@ -786,11 +799,8 @@ export const useBooks = defineStore("Books", () => {
     );
     if (status == 200) {
       getHistoryList();
-      // successfulPopup.value = true;
-      // console.log("delete book completed");
     } else if (status == 400) {
       failPopup.value = true;
-      // console.log("delete book uncompleted");
     } else if (status == 404) {
       // router.push("/PageNotFound/");
     } else if (status == 401) {
@@ -819,12 +829,9 @@ export const useBooks = defineStore("Books", () => {
       }
     );
     if (status == 200) {
-      getHistoryList()
-      // successfulPopup.value = true;
-      // console.log("delete book completed");
+      getHistoryList();
     } else if (status == 400) {
       failPopup.value = true;
-      // console.log("delete book uncompleted");
     } else if (status == 404) {
       // router.push("/PageNotFound/");
     } else if (status == 401) {
@@ -899,12 +906,9 @@ export const useBooks = defineStore("Books", () => {
 
   function changeLibraryPage(page) {
     bookPage.value = page - 1;
-    console.log(roleToken.value);
     if (roleToken.value == 'GUEST') {
-      console.log(roleToken.value == 'GUEST','Guest');
       getLibraryByGuest();
     } else {
-      console.log(roleToken.value == 'GUEST','User');
       getLibrary();
     }
   }
@@ -941,7 +945,7 @@ export const useBooks = defineStore("Books", () => {
 
   //Close successful popup
   function closeSuccessfulPopup() {
-    successfulPopup.value = false;
+    successfulPopup.value = 'hide';
     leavePopup.value = false;
     backPage().then(() => {
       clearNewBook();

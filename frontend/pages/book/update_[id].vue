@@ -4,6 +4,10 @@ import { useBooks } from "~/stores/book";
 import { ref } from "vue";
 import UpdateBookSuccessPopup from "~/components/books/popups/updateBookSuccessPopup.vue";
 import DuplicateBookPopup from "~/components/books/popups/duplicateBookPopup.vue";
+import DeleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmPopup.vue";
+import DeleteBookFailPopup from "~/components/books/popups/deleteBookFailPopup.vue";
+import DeleteBookSuccessPopup from "~/components/books/popups/deleteBookSuccessPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 const book = useBooks();
 const route = useRoute();
@@ -11,6 +15,8 @@ const selectedImage = ref(null);
 const validateSize = ref(false);
 const roleToken = ref(localStorage.getItem('role'));
 const router = useRouter();
+const popupStatus = ref('');
+const bookConfirmPopup = ref(false);
 
 function showValidateSize() {
   validateSize.value = true;
@@ -203,14 +209,22 @@ onBeforeMount(() => {
       </v-card>
     </div>
 
-    <div class="d-flex justify-end tw-mx-[9rem] tw-space-x-4">
+    <div class="d-flex justify-space-between">
+      <div class="justify-start tw-mx-[9rem]">
+        <v-btn
+        color="red"
+        variant="flat"
+        @click="bookConfirmPopup = true,popupStatus = 'delete'"
+        >Delete</v-btn>
+      </div>
+      <div class="justify-end tw-mx-[9rem] tw-space-x-4">
       <v-btn color="#1D419F" variant="outlined" @click="book.setEditBook(route.params.id).then(setSelectedImage())"
-        >reset</v-btn
+        >Reset</v-btn
       >
       <v-btn
         color="#1D419F"
         variant="flat"
-        @click="book.updateBook(route.params.id)"
+        @click="book.updateBook(route.params.id),popupStatus = 'update'"
         :disabled="
           book.editBook.bookName == '' ||
           book.editBook.author == '' ||
@@ -220,10 +234,11 @@ onBeforeMount(() => {
           (book.editBookFile == null ? false : book.editBookFile[0].size > 50000000)
         "
         >submit</v-btn
-      >
+      ></div>
     </div>
     <UpdateBookSuccessPopup
-      :dialog="book.successfulPopup"
+      v-if="popupStatus == 'update'"
+      :dialog="book.successfulPopup == 'show'"
       @close="book.closeSuccessfulPopup()"
     />
     <DuplicateBookPopup 
@@ -231,11 +246,38 @@ onBeforeMount(() => {
       @close="toggleBookFailPopup()"
     />
   </div>
+  <div v-if="popupStatus == 'delete'">
+      <DeleteBookConfirmPopup
+        class="delete-popup"
+        :dialog="bookConfirmPopup"
+        @toggle="bookConfirmPopup = !bookConfirmPopup,popupStatus == ''"
+        @delete="book.deleteBook(route.params.id)"
+      />
+      <DeleteBookFailPopup
+        class="delete-popup"
+        :dialog="book.failPopup"
+        @close="book.failPopup = !book.failPopup,popupStatus == ''"
+      />
+      <DeleteBookSuccessPopup
+        class="delete-popup"
+        :dialog="book.successfulPopup == 'show'"
+        @close="book.successfulPopup = 'hide',popupStatus == '',router.push(`/library/`)"
+      />
+    </div>
+    <div v-if="book.successfulPopup == 'load'">
+    <LoadingPopup />
+  </div>
 </template>
 
 <style scoped>
 .inline-elements {
   display: flex;
   align-items: center;
+}
+.delete-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>

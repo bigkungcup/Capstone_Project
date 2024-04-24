@@ -5,6 +5,7 @@ import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import leaveConfirmPopup from "~/components/popups/leaveConfirmPopup.vue";
 import CreateReviewSuccessPopup from "~/components/reviews/popups/createReviewSuccessPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 const book = useBooks();
 const reviews = useReviews();
@@ -163,7 +164,7 @@ if (roleToken.value == 'USER') {
       >
     </div>
     <CreateReviewSuccessPopup
-      :dialog="reviews.successfulPopup"
+      :dialog="reviews.successfulPopup == 'show'"
       @close="reviews.closeSuccessfulPopup()"
     />
     <leaveConfirmPopup
@@ -171,6 +172,9 @@ if (roleToken.value == 'USER') {
       @toggle="toggleLeavePopup()"
       @back="$router.go(-1)"
     />
+    <div v-if="reviews.successfulPopup == 'load'">
+    <LoadingPopup />
+  </div>
   </div>
 </template>
 

@@ -8,7 +8,7 @@ export const useNotifications = defineStore("Notification", () => {
   const idToken = ref(localStorage.getItem("id"));
   const login = useLogin();
   const roleToken = ref(localStorage.getItem("role"));
-  const successfulPopup = ref(false);
+  const successfulPopup = ref('hide');
   const notificationList = ref({
     data: [],
   });
@@ -225,6 +225,7 @@ export const useNotifications = defineStore("Notification", () => {
       async function createNotification() {
         let accessToken = useCookie("accessToken");
         let status = 0;
+        successfulPopup.value = 'load';
   
         await $fetch(`${import.meta.env.VITE_BASE_URL}/notification`, {
           method: "POST",
@@ -240,15 +241,17 @@ export const useNotifications = defineStore("Notification", () => {
           onResponse({ request, response, options }) {
             status = response._data.response_code;
             if (status == 400) {
+              successfulPopup.value = 'hide';
               console.log("create notification uncompleted");
             } else if (status == 401) {
+              successfulPopup.value = 'hide';
               login.handleRefresh();
               createNotification();
             }
           },
         });
         if (status == 201) {
-          successfulPopup.value = true;
+          successfulPopup.value = 'show';
           clearNewNotification();
           console.log("create notification completed");
         } 
@@ -430,6 +433,7 @@ export const useNotifications = defineStore("Notification", () => {
   async function createReport() {
     let accessToken = useCookie("accessToken");
     let status = 0;
+    successfulPopup.value = 'load';
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/report`, {
       method: "POST",
@@ -445,8 +449,10 @@ export const useNotifications = defineStore("Notification", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          successfulPopup.value = 'hide';
           console.log("report uncompleted");
         } else if (status == 401) {
+          successfulPopup.value = 'hide';
           login.handleRefresh();
           createReport();
         }
@@ -454,7 +460,7 @@ export const useNotifications = defineStore("Notification", () => {
     });
     if (status == 201) {
       reportStatus.value = false;
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       clearReportProblem();
       console.log("report completed");
     }
@@ -530,13 +536,6 @@ export const useNotifications = defineStore("Notification", () => {
     };
   }
 
-  //Close successful popup
-  //   function closeSuccessfulPopup() {
-  //     successfulPopup.value = false;
-  //   }
-
-  // --------------- etc. Function ---------------
-  // function countUpdateTime(dateTime,dateValue,dateUnit){
   function countUpdateTime(seconds) {
     let interval = Math.floor(seconds / 31536000);
     if (interval >= 1) {

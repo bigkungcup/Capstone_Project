@@ -52,8 +52,6 @@ onBeforeMount(() => {
         cover
         class="tw-opacity-40"
       ></v-img>
-      <!-- <div :style="{ backgroundImage: `url(${bgimage})` }" class="tw-min-h-full tw-bg-cover tw-opacity-40" ></div> -->
-      <!-- <v-img src="/image/login.png" height="65%" cover></v-img> -->
     </v-col>
     <v-row align="center" justify="center" no-gutters>
       <v-col cols="9">

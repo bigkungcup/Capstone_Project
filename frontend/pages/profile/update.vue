@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useLogin } from "../../stores/login";
 import updateProfileSuccessPopup from "../../components/profiles/popups/updateProfileSuccessPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 const login = useLogin();
 const route = useRoute();
@@ -168,10 +169,13 @@ login.setEditProfile();
             (login.editProfileFile == null ? false : login.editProfileFile[0].size > 50000000) ||
             login.editProfile.email.length > 255">submit</v-btn>
         </div>
-        <updateProfileSuccessPopup
-      :dialog="login.successfulPopup"
-      @close="login.closeSuccessfulPopup()"/>
     </div>
+    <updateProfileSuccessPopup
+      :dialog="login.successfulPopup == 'show'"
+      @close="login.closeSuccessfulPopup()"/>
+    <div v-if="login.successfulPopup == 'load'">
+    <LoadingPopup />
+  </div>
 </template>
  
 <style></style>

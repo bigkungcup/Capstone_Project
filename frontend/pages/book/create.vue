@@ -4,6 +4,7 @@ import { useBooks } from "~/stores/book";
 import { ref } from "vue";
 import CreateBookSuccessPopup from "~/components/books/popups/createBookSuccessPopup.vue";
 import DuplicateBookPopup from "~/components/books/popups/duplicateBookPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 const book = useBooks();
 const selectedImage = ref(null);
@@ -203,13 +204,16 @@ onBeforeMount(() => {
       >
     </div>
     <CreateBookSuccessPopup
-      :dialog="book.successfulPopup"
+      :dialog="book.successfulPopup == 'show'"
       @close="book.closeSuccessfulPopup()"
     />
     <DuplicateBookPopup 
       :dialog="book.failPopup"
       @close="toggleBookFailPopup()"
     />
+    <div v-if="book.successfulPopup == 'load'">
+    <LoadingPopup />
+  </div>
   </div>
 </template>
 

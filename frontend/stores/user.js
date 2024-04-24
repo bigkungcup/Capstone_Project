@@ -37,7 +37,7 @@ export const useUsers = defineStore("Users", () => {
   const editUserFile = ref();
   const userPage = ref(0);
   const failPopup = ref(false);
-  const successfulPopup = ref(false);
+  const successfulPopup = ref('hide');
   const confirmPopup = ref(false);
   const leavePopup = ref(true);
   const updateFailed = ref(false);
@@ -280,6 +280,7 @@ export const useUsers = defineStore("Users", () => {
     let accessToken = useCookie("accessToken");
     let status = 0;
     let user = {};
+    successfulPopup.value = 'load';
     if (editUserFile.value === null && userDetail.value.data.file !== null) {
       user = {
         displayName: editUser.value.displayName,
@@ -326,18 +327,21 @@ export const useUsers = defineStore("Users", () => {
         status = response._data.response_code;
         if (status == 400) {
           updateFailed.value = true;
+          successfulPopup.value = 'hide';
           updateFailedError.value = Object.values(response._data.filedErrors);
           console.log("update user uncompleted");
         } else if (status == 404) {
+          successfulPopup.value = 'hide';
           router.push("/PageNotFound/");
         }
       },
     });
     if (status == 200) {
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       updateFailed.value = false;
       console.log("update user completed");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await login.handleRefresh();
       await updateUser(userId);
     }
@@ -347,6 +351,7 @@ export const useUsers = defineStore("Users", () => {
   async function deleteUser(userId) {
     let accessToken = useCookie("accessToken");
     let status = 0;
+    successfulPopup.value = 'load';
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/user/${userId}`,
       {
@@ -363,13 +368,15 @@ export const useUsers = defineStore("Users", () => {
       }
     );
     if (status == 200) {
-      successfulPopup.value = true;
+      successfulPopup.value = 'show';
       userPage.value = 0;
       // getReview(bookId);
       console.log("delete user completed");
     } else if (status == 404) {
+      successfulPopup.value = 'hide';
       router.push("/PageNotFound/");
     } else if (status == 401) {
+      successfulPopup.value = 'hide';
       await login.handleRefresh();
       await deleteUser(userId);
     }
@@ -593,7 +600,7 @@ export const useUsers = defineStore("Users", () => {
 
   //Close successful popup
   function closeSuccessfulPopup() {
-    successfulPopup.value = false;
+    successfulPopup.value = 'hide';
     leavePopup.value = false;
     backPage();
   }

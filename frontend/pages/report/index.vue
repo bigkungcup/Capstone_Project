@@ -1,6 +1,7 @@
 <script setup>
 import CreateNoti from "~/components/notification/createNoti.vue";
 import CreateNotiSuccess from "~/components/notification/popups/createNotiSuccess.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 import ReportConfirmDone from "~/components/reports/popups/reportConfirmDone.vue";
 import ReportDetail from "~/components/reports/reportDetail.vue";
 import ReportList from "~/components/reports/reportList.vue";
@@ -64,8 +65,11 @@ onBeforeMount(async () => {
   <div v-if="notiCheck">
     <CreateNoti @cancel="notiCheck = false,noti.clearNewNotification()" @submit="noti.createNotification()" />
   </div>
-  <div v-if="noti.successfulPopup">
-    <CreateNotiSuccess @close="noti.successfulPopup = false,notiCheck = false2"/>
+  <div v-if="noti.successfulPopup == 'show'">
+    <CreateNotiSuccess @close="noti.successfulPopup = 'hide',notiCheck = false"/>
+  </div>
+  <div v-if="noti.successfulPopup == 'load'">
+    <LoadingPopup/>
   </div>
 </template>
 

@@ -16,6 +16,7 @@ import deleteUserConfirmPopup from "~/components/users/popups/deleteUserConfirmP
 import deleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessPopup.vue";
 import CreateReportPopup from "~/components/reports/createReportPopup.vue";
 import ReportSuccessPopup from "~/components/reports/popups/reportSuccessPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 const user = useUsers();
 const book = useBooks();
@@ -87,7 +88,7 @@ async function selectSection(section) {
 }
 
 function closeUserSuccessfulPopup() {
-  user.successfulPopup = !user.successfulPopup;
+  user.successfulPopup = 'hide';
   window.history.back();
 }
 
@@ -432,7 +433,7 @@ onBeforeMount(async () => {
         />
         <deleteUserSuccessPopup
           class="delete-popup"
-          :dialog="user.successfulPopup"
+          :dialog="user.successfulPopup == 'show'"
           @close="closeUserSuccessfulPopup()"
         />
 
@@ -444,9 +445,12 @@ onBeforeMount(async () => {
       @cancel="noti.reportStatus = false, noti.clearReportProblem()" 
       @submit="noti.createReport()"/>
       </div>
-      <div v-if="noti.successfulPopup">
-      <ReportSuccessPopup class="report-popup" @close="noti.successfulPopup = false"/>
+      <div v-if="noti.successfulPopup == 'show' ">
+      <ReportSuccessPopup class="report-popup" @close="noti.successfulPopup = 'hide'"/>
     </div>  
+    <div v-if="noti.successfulPopup == 'load' || user.successfulPopup == 'load'">
+    <LoadingPopup />
+  </div>
     </div>
     </div>
   </div>

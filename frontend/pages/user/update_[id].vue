@@ -3,6 +3,9 @@ import { ref } from "vue";
 import { useUsers } from "../../stores/user";
 import { useRoute, useRouter } from "vue-router";
 import updateUserSuccessPopup from "../../components/users/popups/updateUserSuccessPopup.vue";
+import DeleteUserConfirmPopup from "~/components/users/popups/deleteUserConfirmPopup.vue";
+import DeleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessPopup.vue";
+import LoadingPopup from "~/components/popups/loadingPopup.vue";
 
 const user = useUsers();
 const route = useRoute();
@@ -13,6 +16,8 @@ const validatePassword = ref(false);
 const validEmail =
   /^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[.]+[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const roleToken = ref(localStorage.getItem('role'));
+const popupStatus = ref('');
+const userConfirmPopup = ref(false);
 
 function showValidateSize() {
   validateSize.value = true;
@@ -223,7 +228,15 @@ onBeforeRouteLeave(() => {
       </v-card>
     </div>
 
-    <div class="d-flex justify-end tw-mx-[9rem] tw-space-x-4">
+    <div class="d-flex justify-space-between">
+      <div class="justify-start tw-mx-[9rem]" v-if="roleToken == 'ADMIN'">
+        <v-btn
+        color="red"
+        variant="flat"
+        @click="userConfirmPopup = true,popupStatus = 'delete'"
+        >Delete</v-btn>
+      </div>
+      <div class="justify-end tw-mx-[9rem] tw-space-x-4">
       <v-btn
         color="#1D419F"
         variant="outlined"
@@ -233,7 +246,7 @@ onBeforeRouteLeave(() => {
       <v-btn
         color="#1D419F"
         variant="flat"
-        @click="user.updateUser(route.params.id)"
+        @click="user.updateUser(route.params.id),popupStatus = 'update'"
         :disabled="
           user.editUser.displayName == '' ||
           user.editUser.email == '' ||
@@ -248,11 +261,36 @@ onBeforeRouteLeave(() => {
         "
         >submit</v-btn
       >
+      </div>
     </div>
     <updateUserSuccessPopup
-      :dialog="user.successfulPopup"
+      :dialog="user.successfulPopup == 'show'"
+      v-if="popupStatus == 'update'"
       @close="user.closeSuccessfulPopup()"/>
+  </div>
+  <div v-if="popupStatus == 'delete'">
+      <DeleteUserConfirmPopup
+        class="delete-popup"
+        :dialog="userConfirmPopup"
+        @toggle="userConfirmPopup = !userConfirmPopup,popupStatus == ''"
+        @delete="user.deleteUser(route.params.id)"
+      />
+      <DeleteUserSuccessPopup
+        class="delete-popup"
+        :dialog="user.successfulPopup == 'show'"
+        @close="user.successfulPopup = 'hide',popupStatus == '',router.push(`/user/`)"
+      />
+    </div>
+    <div v-if="user.successfulPopup == 'load'">
+    <LoadingPopup />
   </div>
 </template>
 
-<style></style>
+<style>
+.delete-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
