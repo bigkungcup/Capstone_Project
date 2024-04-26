@@ -60,7 +60,7 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
         boolean existsByReportId(Integer reportId);
 
         @Query(value = "SELECT reportId, reportBy, fixBy, reportTitle, reportDetail, problemId, reportType, " +
-                        " reportStatus, reportCreateDateTime, reportUpdateDateTime " +
+                        " reportStatus, reportCreateDateTime, reportUpdateDateTime, rr_reviewId, rb_bookId, ru_userId " +
                         " FROM Report r " +
                         " WHERE reportId = :reportId", nativeQuery = true)
         Report getReportById(@Param("reportId") Integer reportId);
