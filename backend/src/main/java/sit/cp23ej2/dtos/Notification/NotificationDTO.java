@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import sit.cp23ej2.dtos.Book.BookDTO;
-import sit.cp23ej2.dtos.User.UserDTO;
+import sit.cp23ej2.dtos.User.UserReportDTO;
 
 @Getter
 @Setter
@@ -33,7 +33,7 @@ public class NotificationDTO {
 
     private LocalDateTime notificationUpdateDateTime;
 
-    private UserDTO user;
+    private UserReportDTO user;
 
     private BookDTO book;
 
