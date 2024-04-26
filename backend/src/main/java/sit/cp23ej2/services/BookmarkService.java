@@ -51,7 +51,11 @@ public class BookmarkService extends CommonController {
         // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // String currentPrincipalName = authentication.getName();
 
-        // User user = userRepository.getUserByEmail(currentPrincipalName);
+        User user = userRepository.getUserById(userId);
+
+        if(user == null){
+            throw new HandleExceptionNotFound("User Not Found", "User");
+        }
 
         PageBookmarkDTO pageBookmarkDTO = modelMapper.map(repository.getBookmarkByUserId(userId, pageable), PageBookmarkDTO.class);
        
