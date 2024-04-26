@@ -23,7 +23,7 @@ import sit.cp23ej2.dtos.DataResponse;
 import sit.cp23ej2.dtos.Book.BookDTO;
 import sit.cp23ej2.dtos.Notification.CreateNotificationDTO;
 import sit.cp23ej2.dtos.Notification.NotificationDTO;
-import sit.cp23ej2.dtos.User.UserDTO;
+import sit.cp23ej2.dtos.User.UserReportDTO;
 import sit.cp23ej2.entities.Book;
 import sit.cp23ej2.entities.Notification;
 import sit.cp23ej2.entities.User;
@@ -72,7 +72,7 @@ public class NotificationService extends CommonController {
             Duration duration = Duration.between(LocalDateTime.now(), noti.getNotificationCreateDateTime());
             notificationDTO.setCountDateTime(Math.abs(duration.toSeconds()));
 
-            if (noti.getNotificationType().equals("Bookmark") || noti.getNotificationType().equals("Review")) {
+            if (noti.getNotificationType().equals("Bookmark")) {
                 String[] link = noti.getNotificationLink().split("/");
                 Book bookById = bookRepository.getBookById(Integer.parseInt(link[2]));
                 if(bookById != null){
@@ -93,11 +93,11 @@ public class NotificationService extends CommonController {
                 }
             }
 
-            if(noti.getNotificationType().equals("Follow")){
+            if(noti.getNotificationType().equals("Follow") || noti.getNotificationType().equals("Review")){
                 String[] link = noti.getNotificationLink().split("/");
                 User userById = userRepository.getUserById(Integer.parseInt(link[2]));
                 if(userById != null){
-                    notificationDTO.setUser(modelMapper.map(userById, UserDTO.class));
+                    notificationDTO.setUser(modelMapper.map(userById, UserReportDTO.class));
                     try {
                         Path pathFile = fileStorageService.loadUserFile(userById.getUserId());
                         if (pathFile != null) {
