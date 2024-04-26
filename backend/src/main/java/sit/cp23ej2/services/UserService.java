@@ -321,6 +321,10 @@ public class UserService extends CommonController {
             throw new HandleExceptionBadRequest("Email already exists");
         }
 
+        if(repository.existsByDisplayName(user.getDisplayName())){
+            throw new HandleExceptionBadRequest("Display name already exists");
+        }
+
         repository.insertUser(user.getDisplayName(), user.getEmail(), user.getPassword(), user.getRole(),
                 user.getBio());
         return responseWithData(user, 201, "OK", "User Created");
