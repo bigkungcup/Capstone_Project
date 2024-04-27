@@ -1,4 +1,5 @@
 <script setup>
+import { useBooks } from '~/stores/book'
 defineEmits(["like", "update"]);
 defineProps({
   newReviewList: {
@@ -7,18 +8,9 @@ defineProps({
   },
 });
 
+const library = useBooks();
 const roleToken = ref(localStorage.getItem("role"));
-const idToken = ref(localStorage.getItem("id"));
 
-function formatTotalLike(totalLike) {
-    if (totalLike >= 1000 && totalLike < 1000000) {
-          return (totalLike / 1000).toFixed(1) + 'K';
-        } else if (totalLike >= 1000000) {
-          return (totalLike / 1000000).toFixed(1) + 'M';
-        } else {
-          return totalLike.toString();
-        }
-}
 </script>
 
 <template>
@@ -92,10 +84,9 @@ function formatTotalLike(totalLike) {
                             $emit('like', {
                               reviewId: review.reviewId,
                               likeStatus: 1,
-                              userId: idToken,
                             })
                           "
-                          >{{ formatTotalLike(review.reviewTotalLike) }}</v-btn
+                          >{{ library.formatTotalNumber(review.reviewTotalLike) }}</v-btn
                         >
                         <v-btn
                           prepend-icon="mdi mdi-thumb-down-outline"
@@ -104,11 +95,10 @@ function formatTotalLike(totalLike) {
                           @click="
                             $emit('like', {
                               reviewId: review.reviewId,
-                              likeStatus: 2,
-                              userId: idToken,
+                              likeStatus: 2,                        
                             })
                           "
-                          >{{ formatTotalLike(review.reviewTotalDisLike) }}</v-btn
+                          >{{ library.formatTotalNumber(review.reviewTotalDisLike) }}</v-btn
                         >
                         <!-- Like/Dislike (update) -->
                         <div
@@ -129,7 +119,7 @@ function formatTotalLike(totalLike) {
                                 likeStatusId: review.likeStatus.likeStatusId,
                               })
                             "
-                            >{{ formatTotalLike(review.reviewTotalLike) }}</v-btn
+                            >{{ library.formatTotalNumber(review.reviewTotalLike) }}</v-btn
                           >
                           <v-btn
                             prepend-icon="mdi mdi-thumb-up"
@@ -142,7 +132,7 @@ function formatTotalLike(totalLike) {
                                 likeStatusId: review.likeStatus.likeStatusId,
                               })
                             "
-                            >{{ formatTotalLike(review.reviewTotalLike) }}</v-btn
+                            >{{ library.formatTotalNumber(review.reviewTotalLike) }}</v-btn
                           >
                           <v-btn
                             prepend-icon="mdi mdi-thumb-down-outline"
@@ -158,7 +148,7 @@ function formatTotalLike(totalLike) {
                                 likeStatusId: review.likeStatus.likeStatusId,
                               })
                             "
-                            >{{ formatTotalLike(review.reviewTotalDisLike) }}</v-btn
+                            >{{ library.formatTotalNumber(review.reviewTotalDisLike) }}</v-btn
                           >
                           <v-btn
                             prepend-icon="mdi mdi-thumb-down"
@@ -171,7 +161,7 @@ function formatTotalLike(totalLike) {
                                 likeStatusId: review.likeStatus.likeStatusId,
                               })
                             "
-                            >{{ formatTotalLike(review.reviewTotalDisLike) }}</v-btn
+                            >{{ library.formatTotalNumber(review.reviewTotalDisLike) }}</v-btn
                           >
                         </div>
                       </div>
@@ -179,8 +169,8 @@ function formatTotalLike(totalLike) {
                         class="d-flex tw-space-x-1 web-text-sub-thin"
                         v-if="roleToken != 'USER'"
                       >
-                      <span> {{ formatTotalLike(review.reviewTotalLike) }} likes</span>
-                      <span>{{ formatTotalLike(review.reviewTotalDisLike) }} dislikes</span>
+                      <span> {{ library.formatTotalNumber(review.reviewTotalLike) }} likes</span>
+                      <span>{{ library.formatTotalNumber(review.reviewTotalDisLike) }} dislikes</span>
                       </div>
                     </v-col>
                     <v-col :cols="roleToken == 'USER' ? 3 : 0 "></v-col>

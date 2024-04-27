@@ -65,6 +65,7 @@ export const useReviews = defineStore("Reviews", () => {
     let status = 0;
     let sortByReview = "";
     let sortTypeReview = "";
+    loadSection.value = 'load';
     if (sortReview.value == "desc" || sortReview.value == "asc") {
       sortByReview = sortReview.value;
     } else {
@@ -90,6 +91,7 @@ export const useReviews = defineStore("Reviews", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
+          loadSection.value = 'done';
           reviewList.value = {
             data: {
               content: [],
@@ -102,12 +104,15 @@ export const useReviews = defineStore("Reviews", () => {
       },
     });
     if (status == 200) {
+      loadSection.value = 'done';
       reviewList.value = data.value;
       // console.log("get review list completed");
     } else if (status == 401) {
+      loadSection.value = 'not';
         await login.handleRefresh();
         await getReview(bookId);
     } else if (status == 404) {
+      loadSection.value = 'done';
       clearReviewList();
       // console.log("get review list uncompleted");
     }
@@ -118,6 +123,7 @@ export const useReviews = defineStore("Reviews", () => {
     let status = 0;
     let sortByReview = "";
     let sortTypeReview = "";
+    loadSection.value = 'load';
     if (sortReview.value == "desc" || sortReview.value == "asc") {
       sortByReview = sortReview.value;
     } else {
@@ -144,6 +150,7 @@ export const useReviews = defineStore("Reviews", () => {
         onResponse({ request, response, options }) {
           status = response._data.response_code;
           if (status == 404) {
+            loadSection.value = 'done';
             reviewList.value = {
               data: {
                 content: [],
@@ -158,8 +165,11 @@ export const useReviews = defineStore("Reviews", () => {
       }
     );
     if (status == 200) {
+      loadSection.value = 'done';
       reviewList.value = data.value;
       // console.log("get review list completed");
+    } else {
+      loadSection.value = 'done';
     }
   }
 

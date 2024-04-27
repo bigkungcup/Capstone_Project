@@ -1,20 +1,13 @@
 <script setup>
+import { useBooks } from '~/stores/book'
 defineProps({
   bookList: {
     type: Array,
     require: true,
   },
 });
+const library = useBooks();
 
-function formatTotalview(totalview) {
-    if (totalview >= 1000 && totalview < 1000000) {
-          return (totalview / 1000).toFixed(1) + 'K';
-        } else if (totalview >= 1000000) {
-          return (totalview / 1000000).toFixed(1) + 'M';
-        } else {
-          return totalview.toString();
-        }
-}
 </script>
 
 <template>
@@ -121,9 +114,9 @@ function formatTotalview(totalview) {
             ></v-rating>
             <div class="d-flex web-text-sub text-subtitle-2 tw-space-x-3 tw-justify-center">
             <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
-            {{ formatTotalview(book.bookTotalView) }}</p>
+            {{ library.formatTotalNumber(book.bookTotalView) }}</p>
             <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
-            {{ formatTotalview(book.bookTotalReview) }}</p>
+            {{ library.formatTotalNumber(book.bookTotalReview) }}</p>
             </div>
           </div>
         </v-col>
@@ -143,9 +136,9 @@ function formatTotalview(totalview) {
             ></v-rating>
             <div class="d-flex web-text-sub text-subtitle-2 tw-space-x-3 tw-justify-center">
             <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
-            {{ formatTotalview(book.bookTotalView) }}</p>
+            {{ library.formatTotalNumber(book.bookTotalView) }}</p>
             <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
-            {{ formatTotalview(book.bookTotalReview) }}</p>
+            {{ library.formatTotalNumber(book.bookTotalReview) }}</p>
             </div>
           </div>
         </v-col>
@@ -165,9 +158,9 @@ function formatTotalview(totalview) {
             ></v-rating>
             <div class="d-flex web-text-sub text-subtitle-2 tw-space-x-3 tw-justify-center">
             <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
-            {{ formatTotalview(book.bookTotalView) }}</p>
+            {{ library.formatTotalNumber(book.bookTotalView) }}</p>
             <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
-            {{ formatTotalview(book.bookTotalReview) }}</p>
+            {{ library.formatTotalNumber(book.bookTotalReview) }}</p>
             </div>
           </div>
         </v-col>
@@ -204,9 +197,9 @@ function formatTotalview(totalview) {
             <p class="tw-text-[#FFC107]"><v-icon icon="mdi mdi-star" class="tw-mx-1" color="amber" />
             {{ 0.5 * Math.floor(2 * book.bookRating).toFixed(0) }}</p>
             <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
-            {{ formatTotalview(book.bookTotalView) }}</p>
+            {{ library.formatTotalNumber(book.bookTotalView) }}</p>
             <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
-            {{ formatTotalview(book.bookTotalReview) }}</p>
+            {{ library.formatTotalNumber(book.bookTotalReview) }}</p>
             </div>
               </div>
             </v-col>

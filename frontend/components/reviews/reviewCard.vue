@@ -1,4 +1,5 @@
 <script setup>
+import { useBooks } from '~/stores/book'
 import { useReviews } from '~/stores/review'
 import { mergeProps } from 'vue'
 defineEmits(["toggle","set","like","follow","unfollow","update","report"]);
@@ -13,15 +14,10 @@ defineProps({
     },
 })
 
+const library = useBooks();
 const reviews = useReviews();
 const roleToken = ref(localStorage.getItem('role'));
 const idToken = ref(localStorage.getItem('id'));
-
-function userCoverPath(filePath) {
-   return filePath = (`../../_nuxt/@fs/${filePath}`)
-}
-
-const follow = ref(true)
 
 </script>
  
@@ -62,7 +58,7 @@ const follow = ref(true)
                     <v-rating :model-value="review.reviewRating" color="#FFB703" density="compact" size="meduim"
                         half-increments readonly></v-rating>
                     <p class="tw-font-bold tw-mr-8">{{ review.reviewTitle }}</p>
-                    <div class="tw-min-h-[4rem] tw-mr-8" v-show="review.spoileFlag == 0">
+                    <div class="tw-min-h-[7rem] tw-mr-8" v-show="review.spoileFlag == 0">
                         <p>{{ review.reviewDetail }}</p>
                     </div>
                     <div class="tw-mr-8"  v-show="review.spoileFlag == 1">
@@ -77,22 +73,23 @@ const follow = ref(true)
                             </v-expansion-panel-text>
                         </v-expansion-panel>
                     </v-expansion-panels></div>
-                    <div class="web-text-sub"><span> {{ review.reviewTotalLike }} likes </span> <span> {{ review.reviewTotalDisLike }} dislikes</span>
-                    </div>
-                    <div class="d-flex tw-space-x-3" v-if="roleToken != 'GUEST'">
+                    <div class="d-flex tw-space-x-3">
+                        <div class="web-text-sub"  v-if="roleToken != 'USER'">
+                            <span> {{ library.formatTotalNumber(review.reviewTotalLike) }} likes </span> <span> {{ library.formatTotalNumber(review.reviewTotalDisLike) }} dislikes</span>
+                        </div>
                         <div v-if="roleToken == 'USER'">
                         <!-- Start (create) -->
-                        <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus == null" @click="$emit('like', { reviewId: review.reviewId, likeStatus: 1 })">Likes</v-btn>
-                        <v-btn prepend-icon="mdi mdi-thumb-down-outline" variant="text" v-show="review.likeStatus == null" @click="$emit('like', { reviewId: review.reviewId, likeStatus: 2 })">Dislikes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus == null" @click="$emit('like', { reviewId: review.reviewId, likeStatus: 1 })">{{ library.formatTotalNumber(review.reviewTotalLike) }} Likes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-down-outline" variant="text" v-show="review.likeStatus == null" @click="$emit('like', { reviewId: review.reviewId, likeStatus: 2 })">{{ library.formatTotalNumber(review.reviewTotalDisLike) }} Dislikes</v-btn>
                         <!-- Like/Dislike (update) -->
                         <div v-if="review.likeStatus != null">
-                        <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus.likeStatus != 1 && review.likeStatus.likeStatus != 0" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 1, likeStatusId: review.likeStatus.likeStatusId })">Likes</v-btn>
-                        <v-btn prepend-icon="mdi mdi-thumb-up" variant="text" v-show="review.likeStatus.likeStatus == 1" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">Likes</v-btn>
-                        <v-btn prepend-icon="mdi mdi-thumb-down-outline" variant="text" v-show="review.likeStatus.likeStatus != 2 && review.likeStatus.likeStatus != 0" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 2, likeStatusId: review.likeStatus.likeStatusId })">Dislikes</v-btn>
-                        <v-btn prepend-icon="mdi mdi-thumb-down" variant="text" v-show="review.likeStatus.likeStatus == 2" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">Dislikes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-up-outline" variant="text" v-show="review.likeStatus.likeStatus != 1 && review.likeStatus.likeStatus != 0" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 1, likeStatusId: review.likeStatus.likeStatusId })">{{ library.formatTotalNumber(review.reviewTotalLike) }} Likes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-up" variant="text" v-show="review.likeStatus.likeStatus == 1" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">{{ library.formatTotalNumber(review.reviewTotalLike) }} Likes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-down-outline" variant="text" v-show="review.likeStatus.likeStatus != 2 && review.likeStatus.likeStatus != 0" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 2, likeStatusId: review.likeStatus.likeStatusId })">{{ library.formatTotalNumber(review.reviewTotalDisLike) }} Dislikes</v-btn>
+                        <v-btn prepend-icon="mdi mdi-thumb-down" variant="text" v-show="review.likeStatus.likeStatus == 2" @click="$emit('update', { reviewId: review.reviewId, likeStatus: 3, likeStatusId: review.likeStatus.likeStatusId })">{{ library.formatTotalNumber(review.reviewTotalDisLike) }} Dislikes</v-btn>
                         </div>
                         </div>
-                        <span class="text-center">
+                        <span class="text-center" v-if="roleToken != 'GUEST'">
                             <v-menu>
                                 <template v-slot:activator="{ props: menu }">
                                     <v-tooltip location="top">
