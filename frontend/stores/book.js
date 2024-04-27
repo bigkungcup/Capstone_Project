@@ -4,8 +4,7 @@ import { ref } from "vue";
 import { useLogin } from "./login";
 
 export const useBooks = defineStore("Books", () => {
-  const refreshToken = useCookie("refreshToken");
-  const roleToken = ref(localStorage.getItem('role'));
+  const roleToken = ref(localStorage.getItem("role"));
   const router = useRouter();
   const login = useLogin();
   const bookList = ref({
@@ -27,16 +26,16 @@ export const useBooks = defineStore("Books", () => {
   const newBookFile = ref();
   const editBookFile = ref();
   const bookDetail = ref({
-    data: { 
-      bookName: '',
-      author: '',
+    data: {
+      bookName: "",
+      author: "",
       booktype: {
         booktypeId: 0,
       },
-      bookTag: '',
-      bookDetail: '',
+      bookTag: "",
+      bookDetail: "",
       file: null,
-    }
+    },
   });
   const bookPage = ref(0);
   const historyList = ref({
@@ -57,13 +56,13 @@ export const useBooks = defineStore("Books", () => {
     },
   });
   const bookmarkPage = ref(0);
-  const successfulPopup = ref('hide');
+  const successfulPopup = ref("hide");
   const failPopup = ref(false);
   const leavePopup = ref(true);
   const bookType = ref();
-  const sortBook = ref('desc')
-  const filterBook = ref(0)
-  const searchBook = ref('')
+  const sortBook = ref("desc");
+  const filterBook = ref(0);
+  const searchBook = ref("");
   const bookmarkedStatus = ref(0); // 0 = unbookmarked, 1 = bookmarked
   const similarBookList = ref({
     data: [],
@@ -83,21 +82,21 @@ export const useBooks = defineStore("Books", () => {
   const rankingBookList = ref({
     data: [],
   });
-  const rankingFilter = ref(0)
-  const rankingSort = ref('totalView')
-  const runtimeConfig = useRuntimeConfig();
+  const rankingFilter = ref(0);
+  const rankingSort = ref("totalView");
+  const loadPage = ref("not");
+  const loadSection = ref("not");
 
   //Get Library
   async function getLibrary() {
-    let accessToken = useCookie("accessToken");
+    loadPage.value = "load";
     let status = 0;
-    let sortBybook = ''
-    let sortTypebook = ''
-    if (sortBook.value == 'desc' || sortBook.value == 'asc') {
+    let sortBybook = "";
+    let sortTypebook = "";
+    if (sortBook.value == "desc" || sortBook.value == "asc") {
       sortBybook = sortBook.value;
-    }
-    else {
-      sortBybook = 'desc';
+    } else {
+      sortBybook = "desc";
       sortTypebook = sortBook.value;
     }
 
@@ -106,16 +105,16 @@ export const useBooks = defineStore("Books", () => {
         options.method = "GET";
         options.headers = {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
+          Authorization: `Bearer ${login.accessToken}`,
         };
         options.params = {
           page: bookPage.value,
           size: 10,
           sortType: sortBybook,
           sortBy: sortTypebook,
-          booktypeId: filterBook.value == 0 ? '' : filterBook.value,
-          search: searchBook.value
-        }
+          booktypeId: filterBook.value == 0 ? "" : filterBook.value,
+          search: searchBook.value,
+        };
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
@@ -123,13 +122,16 @@ export const useBooks = defineStore("Books", () => {
     });
     if (status == 200) {
       if (data.value) {
+        loadPage.value = "done";
         bookList.value = data.value;
       }
-      console.log("get library completed");
+      // console.log("get library completed");
     } else if (status == 404) {
+      loadPage.value = "done";
       clearBookList();
-      console.log("get library uncompleted");
+      // console.log("get library uncompleted");
     } else if (status == 401) {
+      loadPage.value = "not";
       await login.handleRefresh();
       await getLibrary();
     }
@@ -138,196 +140,216 @@ export const useBooks = defineStore("Books", () => {
   //Get Library by guest
   async function getLibraryByGuest() {
     let status = 0;
-    let sortBybook = ''
-    let sortTypebook = ''
-    if (sortBook.value == 'desc' || sortBook.value == 'asc') {
+    loadPage.value = "load";
+    let sortBybook = "";
+    let sortTypebook = "";
+    if (sortBook.value == "desc" || sortBook.value == "asc") {
       sortBybook = sortBook.value;
-    }
-    else {
-      sortBybook = 'desc';
+    } else {
+      sortBybook = "desc";
       sortTypebook = sortBook.value;
     }
 
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/guest`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-        };
-        options.params = {
-          page: bookPage.value,
-          size: 10,
-          sortType: sortBybook,
-          sortBy: sortTypebook,
-          booktypeId: filterBook.value == 0 ? '' : filterBook.value,
-          search: searchBook.value
-        };
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
-    if (status == 200) {
-      if (data.value) {
-        bookList.value = data.value;
-      }
-      console.log("get library completed");
-    } else if (status == 404) {
-      clearBookList();
-      console.log("get library uncompleted");
-    }
-  }
-
-  //Get all book recommend
-  async function getRecommendBookList() {
-    let accessToken = useCookie("accessToken");
-    let status = 0;
-    clearRecommendBookList();
-
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/recommend`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
-        };
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
-    if (status == 200) {
-      if (data.value) {
-        recommendBookList.value = data.value;
-      }
-      console.log("get recommend book list completed");
-    } else if (status == 404) {
-      clearRecommendBookList();
-      console.log("get recommend book list uncompleted");
-    }else if (status == 401) {
-      await login.handleRefresh();
-      await getRecommendBookList();
-    }
-  }
-
-  //Get all book most view 
-  async function getMostviewBookList() {
-    let status = 0;
-    clearMostviewBookList();
-
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/mostview`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-        };
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
-    if (status == 200) {
-      if (data.value) {
-        mostviewBookList.value = data.value;
-      }
-      console.log("get most view book list completed");
-    } else if (status == 404) {
-      clearMostviewBookList();
-      console.log("get most view book list uncompleted");
-    }
-  }
-
-  //Get all new book 
-  async function getNewBookList() {
-    let status = 0;
-    clearNewBookList();
-
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/newBook`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-        };
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
-    if (status == 200) {
-      if (data.value) {
-        newBookList.value = data.value;
-      }
-      console.log("get new book list completed");
-    } else if (status == 404) {
-      clearNewBookList();
-      console.log("get new book list uncompleted");
-    }
-  }
-
-    //Get all other book 
-    async function getOtherBookList() {
-      let accessToken = useCookie("accessToken");
-      let status = 0;
-      clearOtherBookList();
-  
-      const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/random`, {
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/book/guest`,
+      {
         onRequest({ request, options }) {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+          };
+          options.params = {
+            page: bookPage.value,
+            size: 10,
+            sortType: sortBybook,
+            sortBy: sortTypebook,
+            booktypeId: filterBook.value == 0 ? "" : filterBook.value,
+            search: searchBook.value,
           };
         },
         onResponse({ request, response, options }) {
           status = response._data.response_code;
         },
-      });
-      if (status == 200) {
-        if (data.value) {
-          otherBookList.value = data.value;
-        }
-        console.log("get other book list completed");
-      } else if (status == 404) {
-        clearOtherBookList();
-        console.log("get other book list uncompleted");
       }
-    }
-
-      //Get ranking book
-  async function getRankingBookList() {
-    let status = 0;
-    clearRankingBookList();
-
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/book/ranking`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-        };
-        options.params = {
-          bookTypeId: rankingFilter.value == 0 ? '' : rankingFilter.value,
-          sortBy: rankingSort.value
-        }
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
+    );
     if (status == 200) {
       if (data.value) {
+        loadPage.value = "done";
+        bookList.value = data.value;
+      }
+      // console.log("get library completed");
+    } else if (status == 404) {
+      loadPage.value = "done";
+      clearBookList();
+      // console.log("get library uncompleted");
+    }
+  }
+
+  //Get all book recommend
+  async function getRecommendBookList() {
+    let status = 0;
+    clearRecommendBookList();
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/book/recommend`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${login.accessToken}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        recommendBookList.value = data.value;
+      }
+      // console.log("get recommend book list completed");
+    } else if (status == 404) {
+      clearRecommendBookList();
+      // console.log("get recommend book list uncompleted");
+    } else if (status == 401) {
+      await login.handleRefresh();
+      await getRecommendBookList();
+    }
+  }
+
+  //Get all book most view
+  async function getMostviewBookList() {
+    let status = 0;
+    clearMostviewBookList();
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/book/mostview`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        mostviewBookList.value = data.value;
+      }
+      // console.log("get most view book list completed");
+    } else if (status == 404) {
+      clearMostviewBookList();
+      // console.log("get most view book list uncompleted");
+    }
+  }
+
+  //Get all new book
+  async function getNewBookList() {
+    let status = 0;
+    clearNewBookList();
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/book/newBook`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        newBookList.value = data.value;
+      }
+      // console.log("get new book list completed");
+    } else if (status == 404) {
+      clearNewBookList();
+      // console.log("get new book list uncompleted");
+    }
+  }
+
+  //Get all other book
+  async function getOtherBookList() {
+    let status = 0;
+    clearOtherBookList();
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/book/random`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${login.accessToken}`,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        otherBookList.value = data.value;
+      }
+      // console.log("get other book list completed");
+    } else if (status == 404) {
+      clearOtherBookList();
+      // console.log("get other book list uncompleted");
+    }
+  }
+
+  //Get ranking book
+  async function getRankingBookList() {
+    let status = 0;
+    loadPage.value = "load";
+    clearRankingBookList();
+
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/book/ranking`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+          };
+          options.params = {
+            bookTypeId: rankingFilter.value == 0 ? "" : rankingFilter.value,
+            sortBy: rankingSort.value,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
+    if (status == 200) {
+      if (data.value) {
+        loadPage.value = "done";
         rankingBookList.value = data.value;
       }
-      console.log("get ranking book list completed");
-    } else if (status == 404) {
+      // console.log("get ranking book list completed");
+    } else {
+      loadPage.value = "done";
       clearRankingBookList();
-      console.log("get ranking book list uncompleted");
+      // console.log("get ranking book list uncompleted");
     }
   }
 
   //Get Book Detail
   async function getBookDetail(bookId) {
     let status = 0;
-    let accessToken = useCookie("accessToken");
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
       {
@@ -335,7 +357,7 @@ export const useBooks = defineStore("Books", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -346,9 +368,9 @@ export const useBooks = defineStore("Books", () => {
     if (status == 200) {
       bookDetail.value = data.value;
       bookmarkedStatus.value = bookDetail.value.data.bookmark;
-      console.log("get book detail completed");
+      // console.log("get book detail completed");
     } else if (status == 400) {
-      console.log("get book detail uncompleted");
+      // console.log("get book detail uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
       await getBookDetail(bookId);
@@ -377,25 +399,24 @@ export const useBooks = defineStore("Books", () => {
     if (status == 200) {
       bookDetail.value = data.value;
       bookmarkedStatus.value = bookDetail.value.data.bookmark;
-      console.log("get book detail  completed");
+      // console.log("get book detail  completed");
     } else if (status == 400) {
-      console.log("get book detail uncompleted");
+      // console.log("get book detail uncompleted");
     } else if (status == 404) {
       router.push("/PageNotFound/");
     }
   }
 
-
   //Create Book
   async function createBook() {
-    let accessToken = useCookie("accessToken");
-    successfulPopup.value = 'load';
+    successfulPopup.value = "load";
     let status = 0;
     const book = {
       bookName: newBook.value.bookName,
       author: newBook.value.author,
       booktypeId: newBook.value.booktypeId,
-      bookTag: newBook.value.bookTag == null ? "" : newBook.value.bookTag.join(','),
+      bookTag:
+        newBook.value.bookTag == null ? "" : newBook.value.bookTag.join(","),
       bookDetail: newBook.value.bookDetail,
     };
 
@@ -412,43 +433,45 @@ export const useBooks = defineStore("Books", () => {
     await $fetch(`${import.meta.env.VITE_BASE_URL}/book`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${accessToken.value}`,
+        Authorization: `Bearer ${login.accessToken}`,
       },
       body: formData,
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
-          successfulPopup.value = 'hide';
+          successfulPopup.value = "hide";
           failPopup.value = true;
-          console.log("upload book uncompleted");
+          // console.log("upload book uncompleted");
         } else if (status == 404) {
-          successfulPopup.value = 'hide';
+          successfulPopup.value = "hide";
           router.push("/PageNotFound/");
         } else if (status == 401) {
-          successfulPopup.value = 'hide';
+          successfulPopup.value = "hide";
           login.handleRefresh();
           createBook();
         }
       },
     });
     if (status == 201) {
-      successfulPopup.value = 'show';
-      console.log("upload book completed");
+      successfulPopup.value = "show";
+      // console.log("upload book completed");
     }
   }
 
   //Update Book
   async function updateBook(bookId) {
     let status = 0;
-    let accessToken = useCookie("accessToken");
     let book = {};
-    successfulPopup.value = 'load';
+    successfulPopup.value = "load";
     if (editBookFile.value === null && bookDetail.value.data.file !== null) {
       book = {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
         booktypeId: editBook.value.booktypeId,
-        bookTag: editBook.value.bookTag == null ? "" : editBook.value.bookTag.join(','),
+        bookTag:
+          editBook.value.bookTag == null
+            ? ""
+            : editBook.value.bookTag.join(","),
         bookDetail: editBook.value.bookDetail,
       };
     } else {
@@ -456,7 +479,10 @@ export const useBooks = defineStore("Books", () => {
         bookName: editBook.value.bookName,
         author: editBook.value.author,
         booktypeId: editBook.value.booktypeId,
-        bookTag: editBook.value.bookTag == null ? "" : editBook.value.bookTag.join(','),
+        bookTag:
+          editBook.value.bookTag == null
+            ? ""
+            : editBook.value.bookTag.join(","),
         bookDetail: editBook.value.bookDetail,
         status: "edit",
       };
@@ -467,7 +493,11 @@ export const useBooks = defineStore("Books", () => {
       "book",
       new Blob([JSON.stringify(book)], { type: "application/json" })
     );
-    if (bookDetail.value.data.file === null && editBookFile.value !== null && editBookFile.value !== undefined) {
+    if (
+      bookDetail.value.data.file === null &&
+      editBookFile.value !== null &&
+      editBookFile.value !== undefined
+    ) {
       //Add cover case
       formData.append("file", editBookFile.value[0]);
     } else if (
@@ -482,26 +512,26 @@ export const useBooks = defineStore("Books", () => {
     await $fetch(`${import.meta.env.VITE_BASE_URL}/book/${bookId}`, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${accessToken.value}`,
+        Authorization: `Bearer ${login.accessToken}`,
       },
       body: formData,
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
-          successfulPopup.value = 'hide';
+          successfulPopup.value = "hide";
           failPopup.value = true;
-          console.log("update book uncompleted");
+          // console.log("update book uncompleted");
         } else if (status == 404) {
-          successfulPopup.value = 'hide';
+          successfulPopup.value = "hide";
           router.push("/PageNotFound/");
         }
       },
     });
     if (status == 200) {
-      successfulPopup.value = 'show';
-      console.log("update book completed");
+      successfulPopup.value = "show";
+      // console.log("update book completed");
     } else if (status == 401) {
-      successfulPopup.value = 'hide';
+      successfulPopup.value = "hide";
       await login.handleRefresh();
       await updateBook(bookId);
     }
@@ -509,9 +539,8 @@ export const useBooks = defineStore("Books", () => {
 
   //Delete book
   async function deleteBook(bookId) {
-    let accessToken = useCookie("accessToken");
     let status = 0;
-    successfulPopup.value = 'load';
+    successfulPopup.value = "load";
 
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/book/${bookId}`,
@@ -520,7 +549,7 @@ export const useBooks = defineStore("Books", () => {
           options.method = "Delete";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -529,109 +558,117 @@ export const useBooks = defineStore("Books", () => {
       }
     );
     if (status == 200) {
-      successfulPopup.value = 'show';
-      console.log("delete book completed");
+      successfulPopup.value = "show";
+      // console.log("delete book completed");
     } else if (status == 400) {
-      successfulPopup.value = 'hide';
+      successfulPopup.value = "hide";
       failPopup.value = true;
-      console.log("delete book uncompleted");
+      // console.log("delete book uncompleted");
     } else if (status == 404) {
-      successfulPopup.value = 'hide';
+      successfulPopup.value = "hide";
       router.push("/PageNotFound/");
     } else if (status == 401) {
-      successfulPopup.value = 'hide';
+      successfulPopup.value = "hide";
       await login.handleRefresh();
       await deleteBook(bookId);
     }
   }
 
-
   //Get Bookmark
   async function getBookmarkList(userId) {
-    let accessToken = useCookie("accessToken");
     let status = 0;
+    loadSection.value = "load";
 
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/bookmark`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
-        };
-        options.params = {
-          userId: userId,
-          page: bookmarkPage.value,
-          size: 20,
-        }
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/bookmark`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${login.accessToken}`,
+          };
+          options.params = {
+            userId: userId,
+            page: bookmarkPage.value,
+            size: 20,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
     if (status == 200) {
       if (data.value) {
+        loadSection.value = "done";
         bookmarkList.value = data.value;
       }
-      console.log("get bookmark list completed");
-    } else if (status == 404) {
-      clearBookmarkList();
-      console.log("get library uncompleted");
+      // console.log("get bookmark list completed");
     } else if (status == 401) {
+      loadSection.value = "not";
       await login.handleRefresh();
       await getBookmarkList(userId);
+    } else {
+      loadSection.value = "done";
+      clearBookmarkList();
+      // console.log("get library uncompleted");
     }
   }
 
-  
   //Get Bookmark by guest
   async function getBookmarkListByGuest(userId) {
     let status = 0;
+    loadSection.value = "load";
 
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/bookmark`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-        };
-        options.params = {
-          userId: userId,
-          page: bookmarkPage.value,
-          size: 20,
-        }
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/bookmark`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+          };
+          options.params = {
+            userId: userId,
+            page: bookmarkPage.value,
+            size: 20,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
     if (status == 200) {
       if (data.value) {
+        loadSection.value = "done";
         bookmarkList.value = data.value;
       }
-      console.log("get bookmark list completed");
-    } else if (status == 404) {
+      // console.log("get bookmark list completed");
+    } else {
+      loadSection.value = "done";
       clearBookmarkList();
-      console.log("get library uncompleted");
+      // console.log("get library uncompleted");
     }
   }
 
-
   //Create Bookmark
   async function createBookmark(bookId) {
-    let accessToken = useCookie("accessToken");
     let status = 0;
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/bookmark`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${accessToken.value}`,
+        Authorization: `Bearer ${login.accessToken}`,
       },
       params: {
-        bookId: bookId
+        bookId: bookId,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
-          console.log("bookmark uncompleted");
+          // console.log("bookmark uncompleted");
         } else if (status == 401) {
           login.handleRefresh();
           createBookmark(bookId);
@@ -640,13 +677,12 @@ export const useBooks = defineStore("Books", () => {
     });
     if (status == 201) {
       getBookDetail(bookId);
-      console.log("bookmark completed");
+      // console.log("bookmark completed");
     }
   }
 
   //Delete bookmark by bookId
   async function deleteBookmarkByBookId(bookId) {
-    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/bookmark`,
@@ -655,10 +691,10 @@ export const useBooks = defineStore("Books", () => {
           options.method = "Delete";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
           options.params = {
-            bookId: bookId
+            bookId: bookId,
           };
         },
         onResponse({ request, response, options }) {
@@ -668,9 +704,9 @@ export const useBooks = defineStore("Books", () => {
     );
     if (status == 200) {
       getBookDetail(bookId);
-      console.log("delete bookmark completed");
+      // console.log("delete bookmark completed");
     } else if (status == 400) {
-      console.log("delete bookmark uncompleted");
+      // console.log("delete bookmark uncompleted");
     } else if (status == 404) {
     } else if (status == 401) {
       await login.handleRefresh();
@@ -680,7 +716,6 @@ export const useBooks = defineStore("Books", () => {
 
   //Delete bookmark by bookmarkId
   async function deleteBookmark(bookmarkId) {
-    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/bookmark/${bookId}`,
@@ -689,7 +724,7 @@ export const useBooks = defineStore("Books", () => {
           options.method = "Delete";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -698,10 +733,10 @@ export const useBooks = defineStore("Books", () => {
       }
     );
     if (status == 200) {
-      console.log("delete bookmark completed");
+      // console.log("delete bookmark completed");
     } else if (status == 400) {
       failPopup.value = true;
-      console.log("delete bookmark uncompleted");
+      // console.log("delete bookmark uncompleted");
     } else if (status == 404) {
     } else if (status == 401) {
       await login.handleRefresh();
@@ -709,33 +744,33 @@ export const useBooks = defineStore("Books", () => {
     }
   }
 
-
   //Get book type
   async function getBookType() {
     let status = 0;
     let content = [];
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/booktype`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-        };
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/booktype`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
     if (status == 200) {
       if (data.value) {
-        // bookType.value = data.value
-        // console.log(bookType.value.data[0].booktypeId);
-        content = data.value
-        bookType.value = content.data
+        content = data.value;
+        bookType.value = content.data;
       }
-      console.log("get library completed");
+      // console.log("get library completed");
     } else if (status == 400) {
       clearBookList();
-      console.log("get library uncompleted");
+      // console.log("get library uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
       await getBookType();
@@ -746,33 +781,39 @@ export const useBooks = defineStore("Books", () => {
 
   //Get History
   async function getHistoryList() {
-    let accessToken = useCookie("accessToken");
+    loadPage.value = "load";
     let status = 0;
-    const { data } = await useFetch(`${import.meta.env.VITE_BASE_URL}/history`, {
-      onRequest({ request, options }) {
-        options.method = "GET";
-        options.headers = {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
-        };
-        options.params = {
-          page: historyPage.value,
-          size: 10
-        };
-      },
-      onResponse({ request, response, options }) {
-        status = response._data.response_code;
-      },
-    });
+    const { data } = await useFetch(
+      `${import.meta.env.VITE_BASE_URL}/history`,
+      {
+        onRequest({ request, options }) {
+          options.method = "GET";
+          options.headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${login.accessToken}`,
+          };
+          options.params = {
+            page: historyPage.value,
+            size: 10,
+          };
+        },
+        onResponse({ request, response, options }) {
+          status = response._data.response_code;
+        },
+      }
+    );
     if (status == 200) {
       if (data.value) {
+        loadPage.value = "done";
         historyList.value = data.value;
       }
-      console.log("get library completed");
+      // console.log("get library completed");
     } else if (status == 404) {
+      loadPage.value = "done";
       clearHistoryList();
-      console.log("get library uncompleted");
+      // console.log("get library uncompleted");
     } else if (status == 401) {
+      loadPage.value = "not";
       await login.handleRefresh();
       await getHistoryList();
     }
@@ -780,7 +821,6 @@ export const useBooks = defineStore("Books", () => {
 
   //Delete history by ID
   async function deleteHistoryById(bookId) {
-    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/history/${bookId}`,
@@ -789,7 +829,7 @@ export const useBooks = defineStore("Books", () => {
           options.method = "Delete";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -811,7 +851,6 @@ export const useBooks = defineStore("Books", () => {
 
   //Delete history all
   async function deleteHistoryAll() {
-    let accessToken = useCookie("accessToken");
     let status = 0;
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/history/all`,
@@ -820,7 +859,7 @@ export const useBooks = defineStore("Books", () => {
           options.method = "Delete";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -863,9 +902,9 @@ export const useBooks = defineStore("Books", () => {
     );
     if (status == 200) {
       similarBookList.value = data.value;
-      console.log("get similar book completed");
+      // console.log("get similar book completed");
     } else if (status == 400) {
-      console.log("get similar book uncompleted");
+      // console.log("get similar book uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
       await getSimilarBook(bookTypeId, bookId);
@@ -906,7 +945,7 @@ export const useBooks = defineStore("Books", () => {
 
   function changeLibraryPage(page) {
     bookPage.value = page - 1;
-    if (roleToken.value == 'GUEST') {
+    if (roleToken.value == "GUEST") {
       getLibraryByGuest();
     } else {
       getLibrary();
@@ -918,9 +957,9 @@ export const useBooks = defineStore("Books", () => {
     getHistoryList();
   }
 
-  function changeBookmarkPage(page,userId) {
+  function changeBookmarkPage(page, userId) {
     bookmarkPage.value = page - 1;
-    if (roleToken.value == 'GUEST') {
+    if (roleToken.value == "GUEST") {
       getBookmarkListByGuest(userId);
     } else {
       getBookmarkList(userId);
@@ -932,20 +971,20 @@ export const useBooks = defineStore("Books", () => {
     return (number = 0.5 * Math.floor(2 * number));
   }
 
-//Format Total Views
+  //Format Total Views
   function formatTotalview(totalview) {
     if (totalview >= 1000 && totalview < 1000000) {
-          return (totalview / 1000).toFixed(1) + 'K';
-        } else if (totalview >= 1000000) {
-          return (totalview / 1000000).toFixed(1) + 'M';
-        } else {
-          return totalview.toString();
-        }
+      return (totalview / 1000).toFixed(1) + "K";
+    } else if (totalview >= 1000000) {
+      return (totalview / 1000000).toFixed(1) + "M";
+    } else {
+      return totalview.toString();
+    }
   }
 
   //Close successful popup
   function closeSuccessfulPopup() {
-    successfulPopup.value = 'hide';
+    successfulPopup.value = "hide";
     leavePopup.value = false;
     backPage().then(() => {
       clearNewBook();
@@ -976,12 +1015,12 @@ export const useBooks = defineStore("Books", () => {
     };
   }
 
-    //Clear recommend book list
-    function clearRecommendBookList() {
-      recommendBookList.value = {
-        data: [],
-      };
-    }
+  //Clear recommend book list
+  function clearRecommendBookList() {
+    recommendBookList.value = {
+      data: [],
+    };
+  }
 
   //Clear most review book list
   function clearMostviewBookList() {
@@ -990,27 +1029,26 @@ export const useBooks = defineStore("Books", () => {
     };
   }
 
-    //Clear new book list
-    function clearNewBookList() {
-      newBookList.value = {
-        data: [],
-      };
-    }
+  //Clear new book list
+  function clearNewBookList() {
+    newBookList.value = {
+      data: [],
+    };
+  }
 
-      //Clear other book list
+  //Clear other book list
   function clearOtherBookList() {
     otherBookList.value = {
       data: [],
     };
   }
 
-        //Clear ranking book list
-        function clearRankingBookList() {
-          rankingBookList.value = {
-            data: [],
-          };
-        }
-      
+  //Clear ranking book list
+  function clearRankingBookList() {
+    rankingBookList.value = {
+      data: [],
+    };
+  }
 
   //Clear history list
   function clearHistoryList() {
@@ -1089,6 +1127,8 @@ export const useBooks = defineStore("Books", () => {
     rankingBookList,
     rankingFilter,
     rankingSort,
+    loadPage,
+    loadSection,
     getLibrary,
     getLibraryByGuest,
     getBookDetail,

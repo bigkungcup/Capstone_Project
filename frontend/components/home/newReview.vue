@@ -8,6 +8,17 @@ defineProps({
 });
 
 const roleToken = ref(localStorage.getItem("role"));
+const idToken = ref(localStorage.getItem("id"));
+
+function formatTotalLike(totalLike) {
+    if (totalLike >= 1000 && totalLike < 1000000) {
+          return (totalLike / 1000).toFixed(1) + 'K';
+        } else if (totalLike >= 1000000) {
+          return (totalLike / 1000000).toFixed(1) + 'M';
+        } else {
+          return totalLike.toString();
+        }
+}
 </script>
 
 <template>
@@ -67,7 +78,7 @@ const roleToken = ref(localStorage.getItem("role"));
                 </div>
                 <div class="web-text-sub tw-my-1">
                   <v-row no-gutters>
-                    <v-col cols="2">
+                    <v-col :cols="roleToken == 'USER' ? 2 : 5 ">
                       <div
                         class="d-flex tw-space-x-1"
                         v-if="roleToken == 'USER'"
@@ -81,9 +92,10 @@ const roleToken = ref(localStorage.getItem("role"));
                             $emit('like', {
                               reviewId: review.reviewId,
                               likeStatus: 1,
+                              userId: idToken,
                             })
                           "
-                          >{{ review.reviewTotalLike }}</v-btn
+                          >{{ formatTotalLike(review.reviewTotalLike) }}</v-btn
                         >
                         <v-btn
                           prepend-icon="mdi mdi-thumb-down-outline"
@@ -93,9 +105,10 @@ const roleToken = ref(localStorage.getItem("role"));
                             $emit('like', {
                               reviewId: review.reviewId,
                               likeStatus: 2,
+                              userId: idToken,
                             })
                           "
-                          >{{ review.reviewTotalDisLike }}</v-btn
+                          >{{ formatTotalLike(review.reviewTotalDisLike) }}</v-btn
                         >
                         <!-- Like/Dislike (update) -->
                         <div
@@ -116,7 +129,7 @@ const roleToken = ref(localStorage.getItem("role"));
                                 likeStatusId: review.likeStatus.likeStatusId,
                               })
                             "
-                            >{{ review.reviewTotalLike }}</v-btn
+                            >{{ formatTotalLike(review.reviewTotalLike) }}</v-btn
                           >
                           <v-btn
                             prepend-icon="mdi mdi-thumb-up"
@@ -129,7 +142,7 @@ const roleToken = ref(localStorage.getItem("role"));
                                 likeStatusId: review.likeStatus.likeStatusId,
                               })
                             "
-                            >{{ review.reviewTotalLike }}</v-btn
+                            >{{ formatTotalLike(review.reviewTotalLike) }}</v-btn
                           >
                           <v-btn
                             prepend-icon="mdi mdi-thumb-down-outline"
@@ -145,7 +158,7 @@ const roleToken = ref(localStorage.getItem("role"));
                                 likeStatusId: review.likeStatus.likeStatusId,
                               })
                             "
-                            >{{ review.reviewTotalDisLike }}</v-btn
+                            >{{ formatTotalLike(review.reviewTotalDisLike) }}</v-btn
                           >
                           <v-btn
                             prepend-icon="mdi mdi-thumb-down"
@@ -158,29 +171,19 @@ const roleToken = ref(localStorage.getItem("role"));
                                 likeStatusId: review.likeStatus.likeStatusId,
                               })
                             "
-                            >{{ review.reviewTotalDisLike }}</v-btn
+                            >{{ formatTotalLike(review.reviewTotalDisLike) }}</v-btn
                           >
                         </div>
                       </div>
                       <div
-                        class="d-flex tw-space-x-1"
-                        v-if="roleToken == 'GUEST'"
+                        class="d-flex tw-space-x-1 web-text-sub-thin"
+                        v-if="roleToken != 'USER'"
                       >
-                        <v-btn
-                          prepend-icon="mdi mdi-thumb-up-outline"
-                          variant="text"
-                          v-show="review.likeStatus == null"
-                          >{{ review.reviewTotalLike }}</v-btn
-                        >
-                        <v-btn
-                          prepend-icon="mdi mdi-thumb-down-outline"
-                          variant="text"
-                          v-show="review.likeStatus == null"
-                          >{{ review.reviewTotalDisLike }}</v-btn
-                        >
+                      <span> {{ formatTotalLike(review.reviewTotalLike) }} likes</span>
+                      <span>{{ formatTotalLike(review.reviewTotalDisLike) }} dislikes</span>
                       </div>
                     </v-col>
-                    <v-col cols="3"></v-col>
+                    <v-col :cols="roleToken == 'USER' ? 3 : 0 "></v-col>
                     <v-col cols="5" align="right" class="py-2"
                       ><div class="web-text-sub tw-truncate">
                         <nuxt-link :to="`/user/${review.userDetail.userId}/`">

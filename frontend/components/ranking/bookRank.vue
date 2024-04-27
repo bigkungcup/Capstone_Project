@@ -112,7 +112,7 @@ function formatTotalview(totalview) {
           >
             <p>{{ book.bookName }}</p>
             <v-rating
-              :model-value="0.5 * Math.floor(2 * book.bookRating)"
+              :model-value="0.5 * Math.floor(2 * book.bookRating).toFixed(0)"
               color="#FFB703"
               density="compact"
               size="small"
@@ -134,7 +134,7 @@ function formatTotalview(totalview) {
           >
             <p>{{ book.bookName }}</p>
             <v-rating
-              :model-value="0.5 * Math.floor(2 * book.bookRating)"
+              :model-value="0.5 * Math.floor(2 * book.bookRating).toFixed(0)"
               color="#FFB703"
               density="compact"
               size="small"
@@ -156,7 +156,7 @@ function formatTotalview(totalview) {
           >
             <p>{{ book.bookName }}</p>
             <v-rating
-              :model-value="0.5 * Math.floor(2 * book.bookRating)"
+              :model-value="0.5 * Math.floor(2 * book.bookRating).toFixed(0)"
               color="#FFB703"
               density="compact"
               size="small"
@@ -200,20 +200,9 @@ function formatTotalview(totalview) {
               <div
                 class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6 tw-py-1"
               >
-                <!-- <v-rating
-                  :model-value="0.5 * Math.floor(2 * book.bookRating)"
-                  color="#FFB703"
-                  density="compact"
-                  size="large"
-                  half-increments
-                  readonly
-                ></v-rating> -->
-                <!-- <span class="web-text-sub"
-                  >({{ book.bookTotalReview }} reviews)</span
-                > -->
                 <div class="d-flex web-text-sub text-subtitle-2 tw-space-x-3 tw-justify-center">
             <p class="tw-text-[#FFC107]"><v-icon icon="mdi mdi-star" class="tw-mx-1" color="amber" />
-            {{ 0.5 * Math.floor(2 * book.bookRating) }}</p>
+            {{ 0.5 * Math.floor(2 * book.bookRating).toFixed(0) }}</p>
             <p><v-icon icon="mdi mdi-eye-outline" class="tw-mx-1" />
             {{ formatTotalview(book.bookTotalView) }}</p>
             <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />

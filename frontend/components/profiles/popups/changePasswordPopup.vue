@@ -43,7 +43,7 @@ function clearAll() {
 
 const rules = {
   required: (value) => !!value || "Field is required",
-  same: () => password.value === confirmPassword.value || 'Password did not match',
+  same: () => newPassword.value === confirmPassword.value || 'Password did not match',
   limited: (value) => value.length <= 16 && value.length >= 8 || "Password must be 8-16 characters",
 };
 
@@ -104,7 +104,7 @@ const rules = {
                                         density="compact"
                                         variant="solo"
                                         v-model="confirmPassword"
-                                        :rules="[rules.required,rules.limited]"
+                                        :rules="[rules.required,rules.limited,rules.same]"
                                         @input="handleCheckPassword()"
                                         @click:append-inner="confirmVisible = !confirmVisible"></v-text-field>
                                     </v-col>

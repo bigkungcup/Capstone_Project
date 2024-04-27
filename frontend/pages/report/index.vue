@@ -1,6 +1,7 @@
 <script setup>
 import CreateNoti from "~/components/notification/createNoti.vue";
 import CreateNotiSuccess from "~/components/notification/popups/createNotiSuccess.vue";
+import LoadingPage from "~/components/popups/loadingPage.vue";
 import LoadingPopup from "~/components/popups/loadingPopup.vue";
 import ReportConfirmDone from "~/components/reports/popups/reportConfirmDone.vue";
 import ReportDetail from "~/components/reports/reportDetail.vue";
@@ -29,6 +30,7 @@ function handleDoneCheck(reportId) {
 }
 
 onBeforeMount(async () => {
+  noti.loadPage = "not";
   if (roleToken.value == 'ADMIN') {
   await noti.getReportList();
 }else{
@@ -40,17 +42,21 @@ onBeforeMount(async () => {
 <template>
   <div>
     <p class="web-text-header tw-flex tw-justify-center tw-my-4">Report</p>
-    <div v-if="noti.reportList.data.content.length != 0">
-    <ReportList :reportList="noti.reportList.data.content" 
-    @get="handleGetReportDetail($event)"
-    @done="handleDoneCheck($event)"/>
-    </div>
-    <div v-show="noti.reportList.data.content.length != 0">
-    <v-pagination v-model="page" :length="noti.reportList.data.totalPages" :total-visible="7"
-        rounded="20" @update:model-value="noti.changeReportPage(page)">
-    </v-pagination></div>
-    <div v-if="noti.reportList.data.content.length == 0">
-    <ReportNotFound />
+    <LoadingPage v-show="noti.loadPage == 'load'" />
+    <div v-show="noti.loadPage == 'done'">
+      <div v-if="noti.reportList.data.content.length != 0">
+        <ReportList :reportList="noti.reportList.data.content" 
+        @get="handleGetReportDetail($event)"
+        @done="handleDoneCheck($event)"/>
+      </div>
+      <div v-show="noti.reportList.data.content.length != 0">
+        <v-pagination v-pagination v-model="page" :length="noti.reportList.data.totalPages" :total-visible="7"
+          rounded="20" @update:model-value="noti.changeReportPage(page)">
+        </v-pagination>
+      </div>
+      <div v-if="noti.reportList.data.content.length == 0">
+      <ReportNotFound />
+      </div>
     </div>
     <div class="tw-absolute tw-bottom-0 tw-right-0 tw-m-5">
       <v-btn icon="mdi-bullhorn-variant-outline" size="x-large" color="#3157BB" @click="notiCheck = true"></v-btn>

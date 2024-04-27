@@ -25,6 +25,7 @@ const followingPage = ref(user.followingPage+1);
 const followerPage = ref(user.followerPage+1);
 const result = ref(0);
 const idToken = ref(localStorage.getItem('id'));
+const roleToken = ref(localStorage.getItem("role"));
 
 function handleChangePassword() {
   changePassword.value = !changePassword.value;
@@ -85,8 +86,10 @@ async function selectSection(section) {
 
 onBeforeMount(async () => {
   await login.getProfile();
+  if(roleToken.value == 'USER'){
   await book.getBookmarkList(idToken.value);
   await selectSection(profileSection.value);
+}
 });
 </script>
 

@@ -9,10 +9,6 @@ defineProps({
     }
 })
 
-function bookCoverPath(filePath) {
-   return filePath = (`/ej2/_nuxt/@fs/${filePath}`)
-}
-
 </script>
  
 <template>
@@ -22,8 +18,6 @@ function bookCoverPath(filePath) {
                 <v-col cols="3" class="my-3" align="center">
                     <v-img class="tw-drop-shadow-lg " src="/image/cover_not_available.jpg" width="180" height="280" cover v-show="book.file == null"/>
                     <v-img class="tw-drop-shadow-lg" :src="book.file" width="180" height="280" cover v-show="book.file != null" />
-                    <!-- <v-img class="tw-drop-shadow-lg" :src="book.file" width="180" height="280" cover v-show="book.file != null" /> -->
-                    <!-- <v-img src="~\Files\Uploads\TEST1\foryou2.jpg" width="180" v-show="book.file !== null"/> -->
                 </v-col>
                 <v-col cols="5" class="web-text-detail tw-my-10 tw-mx-2 tw-space-y-0.5">
                     <div>
@@ -36,7 +30,7 @@ function bookCoverPath(filePath) {
                     <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6 tw-py-2">
                         <v-rating :model-value="0.5 * Math.floor(2 * book.bookRating)" color="#FFB703"
                             density="compact" size="meduim" half-increments readonly></v-rating>
-                        <p class="web-text-rate">{{0.5 * (2 * book.bookRating).toFixed(1)}}</p>
+                        <p class="web-text-rate">{{0.5 * (2 * book.bookRating).toFixed(0)}}</p>
                         <p v-show="book.bookTotalReview == null">(0 review)</p>
                         <p v-show="book.bookTotalReview != null">({{ book.bookTotalReview }} reviews)</p>
                     </div>
@@ -50,9 +44,7 @@ function bookCoverPath(filePath) {
                         </div>
                         <div class="tw-h-[10rem] tw-space-x-2 tw-space-y-2">
                             <span class="tw-font-bold">Tags : </span>
-                            <!-- <div class="tw-space-x-2 tw-space-y-2"> -->
                             <v-chip class="tw-min-w-[5rem]" variant="elevated" color="#1D419F" v-show="book.bookTagList[0] != ''" v-for="tag in book.bookTagList">{{ tag }}</v-chip>
-                            <!-- </div> -->
                         </div>
                 </div>
                 </v-col>

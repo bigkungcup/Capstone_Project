@@ -7,6 +7,7 @@ defineProps({
     }
 })
 const idToken = ref(localStorage.getItem('id'));
+const roleToken = ref(localStorage.getItem('role'));
 </script>
 
 <template>
@@ -48,7 +49,7 @@ const idToken = ref(localStorage.getItem('id'));
             </nuxt-link>
             </div>
             <div class="tw-h-[2.5rem]">
-              <div v-if="user.userFollowers.userId != idToken">
+              <div v-if="user.userFollowers.userId != idToken && roleToken == 'USER'">
             <v-btn color="#1D419F" variant="elevated" class="tw-m-2" v-if="user.followingStatus == 1"
             @click="user.followingStatus = 0, $emit('unfollow', user.userFollowers.userId)"
               >Following</v-btn

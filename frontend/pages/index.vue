@@ -7,13 +7,11 @@ import MostView from "~/components/home/mostView.vue";
 import NewBook from "~/components/home/newBook.vue";
 import NewReview from "~/components/home/newReview.vue";
 import Other from "~/components/home/other.vue";
-import BookNotFound from "~/components/books/bookNotFound.vue";
 
 const accessToken = ref(useCookie("accessToken"));
 const login = useLogin();
 const book = useBooks();
 const reviews = useReviews();
-const roleToken = ref(localStorage.getItem("role"));
 const idToken = ref(localStorage.getItem("id"));
 
 const  slides = [
@@ -25,11 +23,10 @@ const path = '/ej2'
 
 if(accessToken.value == undefined || accessToken.value == null){
   login.resetToken();
-  roleToken.value = localStorage.getItem("role");
+  login.roleToken = localStorage.getItem("role");
 }else{
   await login.getProfile();
-  roleToken.value = localStorage.getItem("role");
-  // console.log(roleToken.value);
+  login.roleToken = localStorage.getItem("role");
 }
 
 async function likeReviews(reviewId, likeStatus) {
@@ -56,7 +53,7 @@ async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
 onBeforeMount(async () => {
   await book.getMostviewBookList();
   await book.getNewBookList();
-  if(roleToken.value == "GUEST"){
+  if(login.roleToken == "GUEST"){
     await reviews.getNewReviewListByGuest();
   }else{
     await book.getRecommendBookList();
@@ -81,7 +78,7 @@ onBeforeMount(async () => {
   <div>
     
   <div class="ma-8">
-    <div v-if="roleToken == 'USER'">
+    <div v-if="login.roleToken == 'USER'">
       <Recommend :recommendBookList="book.recommendBookList.data"/>
     </div>
     <div>
@@ -92,7 +89,7 @@ onBeforeMount(async () => {
     </div>
     <div>
       <NewReview :newReviewList="reviews.newReviewList.data" 
-                @like="likeReviews($event.reviewId, $event.likeStatus)"                   
+                @like="likeReviews($event.reviewId, $event.likeStatus, $event.userId)"                   
                 @update="updatelikeReviews(
                       $event.reviewId,
                       $event.likeStatus,

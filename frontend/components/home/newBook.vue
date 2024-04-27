@@ -51,19 +51,18 @@ const roleToken = ref(localStorage.getItem("role"));
                     </p>
                     <div>
                       <v-rating
-                        :model-value="0.5 * Math.floor(2 * book.bookRating)"
+                        :model-value="0.5 * Math.floor(2 * book.bookRating).toFixed(0)"
                         color="#FFB703"
                         density="compact"
                         size="meduim"
                         half-increments
                         readonly
                       ></v-rating>
-                      <p>({{ book.bookTotalReview }} reviews)</p>
+                      <p class="web-text-sub-thin">({{ book.bookTotalReview }} reviews)</p>
                     </div>
                   </div>
                 </v-col>
               </v-row></nuxt-link>
-              <!-- <v-img src="/image/foryou3.jpg" width="100%" height="100%" cover></v-img> -->
             </div>
           </v-slide-group-item>
         </v-slide-group>

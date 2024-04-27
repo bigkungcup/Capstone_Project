@@ -1,7 +1,6 @@
 <script setup>
 import { useLogin } from "~/stores/login";
 import { ref } from "vue";
-// import bgimage from '~/image/login.png'
 
 const login = useLogin();
 const visible = ref(false);
@@ -20,13 +19,10 @@ onBeforeMount(() => {
   login.loginFailed = false;
   login.clearLoginAccount();
   login.resetToken();
-  login.logOut();
-  login.roleToken = 'GUEST';
 });
 </script>
 
 <template>
-  <!-- <div class="tw-max-h-[20rem]">  -->
   <v-row no-gutters>
     <v-col cols="6" class="tw-bg-[#3157BB] tw-max-h-screen">
       <v-img
