@@ -93,7 +93,27 @@ public class NotificationService extends CommonController {
                 }
             }
 
-            if(noti.getNotificationType().equals("Follow") || noti.getNotificationType().equals("Review")){
+            if (noti.getNotificationType().equals("Review")) {
+                String[] link = noti.getNotificationLink().split("/");
+                User userById = userRepository.getUserById(Integer.parseInt(link[3]));
+                if(userById != null){
+                    notificationDTO.setUser(modelMapper.map(userById, UserReportDTO.class));
+                    try {
+                        Path pathFile = fileStorageService.loadUserFile(userById.getUserId());
+                        if (pathFile != null) {
+                            notificationDTO.getUser().setFile(baseUrl + "/api/files/filesUser/" + userById.getUserId());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    notificationDTO.setNotificationLink("/book/" + link[2] + "/");
+                    notification.add(notificationDTO);
+                }else{
+                    repository.deleteNotificationById(noti.getNotificationId());
+                }
+            }
+
+            if(noti.getNotificationType().equals("Follow")){
                 String[] link = noti.getNotificationLink().split("/");
                 User userById = userRepository.getUserById(Integer.parseInt(link[2]));
                 if(userById != null){
