@@ -263,17 +263,17 @@ CREATE TABLE IF NOT EXISTS `bannarug`.`Report` (
   CONSTRAINT `fk_Report_Review1`
     FOREIGN KEY (`rr_reviewId`)
     REFERENCES `bannarug`.`Review` (`reviewId`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Report_Book1`
     FOREIGN KEY (`rb_bookId`)
     REFERENCES `bannarug`.`Book` (`bookId`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Report_User3`
     FOREIGN KEY (`ru_userId`)
     REFERENCES `bannarug`.`User` (`userId`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
