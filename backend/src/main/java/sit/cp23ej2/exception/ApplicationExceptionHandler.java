@@ -319,4 +319,18 @@ public class ApplicationExceptionHandler extends RuntimeException {
         response.setPath(request.getRequest().getRequestURI());
         return response;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = { ArrayIndexOutOfBoundsException.class })
+    public ExceptionResponse handleArrayIndexOutOfBoundsException(ArrayIndexOutOfBoundsException ex, ServletWebRequest request) {
+        Map<String, String> error = new HashMap<>();
+        error.put("Error:", ex.getMessage());
+        response.setResponse_code(HttpStatus.BAD_REQUEST.value());
+        response.setResponse_status(HttpStatus.BAD_REQUEST.name());
+        response.setResponse_message("ArrayIndexOutOfBounds");
+        response.setResponse_datetime(sdf3.format(new Timestamp(System.currentTimeMillis())));
+        response.setFiledErrors(error);
+        response.setPath(request.getRequest().getRequestURI());
+        return response;
+    }
 }
