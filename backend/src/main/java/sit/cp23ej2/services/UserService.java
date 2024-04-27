@@ -336,7 +336,7 @@ public class UserService extends CommonController {
         if (userById != null) {
             if (userById.getDisplayName().equals(updateUser.getDisplayName())
                     && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                            .anyMatch(a -> a.getAuthority().equals("ROLE_USER"))) {
+                            .anyMatch(a -> a.getAuthority().equals("ROLE_USER")) || SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))){
 
                 // Display name is not changed
                 repository.updateUserDetailBio(updateUser.getBio(), userId);
