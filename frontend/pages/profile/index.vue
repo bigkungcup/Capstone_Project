@@ -137,8 +137,9 @@ onBeforeMount(async () => {
             <div class="tw-space-y-2">
               <p class="web-text-header">{{ login.profile.displayName }}</p>
               <p class="web-text-sub">{{ login.profile.email }}</p>
-              <div class="tw-min-h-[4rem] tw-break-words">
-              <p class="web-text-sub">{{ login.profile.bio }}</p>
+              <div class="web-text-sub tw-min-h-[4rem] tw-break-words">   
+                <p v-if="login.profile.bio == null">{{ login.profile.bio }}</p>
+                <div v-if="login.profile.bio != null" v-html="login.profile.bio.replace(/\n/g, '<br><p>')"></div>
               </div>
             </div>
           </v-col>

@@ -59,7 +59,7 @@ const idToken = ref(localStorage.getItem('id'));
                         half-increments readonly></v-rating>
                     <p class="tw-font-bold tw-mr-8">{{ review.reviewTitle }}</p>
                     <div class="tw-min-h-[7rem] tw-mr-8" v-show="review.spoileFlag == 0">
-                        <p>{{ review.reviewDetail }}</p>
+                        <div v-html="review.reviewDetail.replace(/\n/g, '<br><p>')"></div>
                     </div>
                     <div class="tw-mr-8"  v-show="review.spoileFlag == 1">
                     <v-expansion-panels variant="inset">
@@ -69,7 +69,7 @@ const idToken = ref(localStorage.getItem('id'));
                                 Spoil
                             </v-expansion-panel-title>
                             <v-expansion-panel-text class="tw-indent-8 web-text-detail">
-                                {{ review.reviewDetail }}
+                                <div v-html="review.reviewDetail.replace(/\n/g, '<br><p>')"></div>
                             </v-expansion-panel-text>
                         </v-expansion-panel>
                     </v-expansion-panels></div>

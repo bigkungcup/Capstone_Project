@@ -43,7 +43,7 @@ const roleToken = ref(localStorage.getItem("role"));
                     class="web-text-sub tw-italic tw-min-h-[6rem] tw-max-h-[6rem] tw-py-2 tw-overflow-clip"
                     v-if="review.spoileFlag == 0"
                   >
-                    {{ review.reviewDetail }}
+                  <div v-html="review.reviewDetail.replace(/\n/g, '<br><p>')"></div>
                   </p>
                 </nuxt-link>
                 <div
@@ -63,7 +63,7 @@ const roleToken = ref(localStorage.getItem("role"));
                       <v-expansion-panel-text
                         class="tw-indent-4 web-text-detail tw-truncate"
                       >
-                        {{ review.reviewDetail }}
+                      <div v-html="review.reviewDetail.replace(/\n/g, '<br><p>')"></div>
                       </v-expansion-panel-text>
                     </v-expansion-panel>
                   </v-expansion-panels>

@@ -176,6 +176,7 @@ onBeforeMount(() => {
           multiple
           chips
           clearable
+          :readonly="book.newBook.bookTag != null ? book.newBook.bookTag.length >= 5: false"
         ></v-combobox>
               </div>
             </div>

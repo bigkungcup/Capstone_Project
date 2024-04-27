@@ -187,13 +187,6 @@ onBeforeMount(() => {
                 <span class="tw-font-bold tw-text-[#1D419F] tw-text-lg"
                   >Tags:</span
                 >
-                <!-- <v-text-field
-                  label="Genre"
-                  variant="solo"
-                  class="inline-field"
-                  v-model="book.editBook.bookGenre"
-                  :rules="[rules.required]"
-                ></v-text-field> -->
                 <v-combobox
           v-model="book.editBook.bookTag"
           label="Enter your tag"
@@ -201,6 +194,7 @@ onBeforeMount(() => {
           multiple
           chips
           clearable
+          :readonly="book.editBook.bookTag != null ? book.editBook.bookTag.length >= 5: false"
         ></v-combobox>
               </div>
             </div>
