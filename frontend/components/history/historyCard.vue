@@ -52,7 +52,7 @@ defineProps({
             </nuxt-link>
               <v-row no-gutters>
                 <v-col cols="10" @click="$router.push(`/book/${book.bookData.bookId}/`)">
-                  <p class=" tw-my-16 web-text-sub"> About {{ library.countUpdateTime(book.bookData.countDateTime) }}</p>
+                  <p class=" tw-my-16 web-text-sub"> About {{ library.countUpdateTime(book.countDateTime) }}</p>
                 </v-col>
                 <v-col cols="2">
                   <v-card-actions>

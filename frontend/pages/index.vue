@@ -31,7 +31,7 @@ if(accessToken.value == undefined || accessToken.value == null){
 
 async function likeReviews(reviewId, likeStatus) {
   let status = {
-    userId: idToken.value,
+    userId: login.getIdToken(),
     reviewId: reviewId,
     likeStatus: likeStatus,
   };
@@ -89,7 +89,7 @@ onBeforeMount(async () => {
     </div>
     <div>
       <NewReview :newReviewList="reviews.newReviewList.data" 
-                @like="likeReviews($event.reviewId, $event.likeStatus, $event.userId)"                   
+                @like="likeReviews($event.reviewId, $event.likeStatus)"                   
                 @update="updatelikeReviews(
                       $event.reviewId,
                       $event.likeStatus,

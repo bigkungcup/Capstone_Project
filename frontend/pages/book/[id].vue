@@ -17,6 +17,7 @@ import deleteBookConfirmPopup from "~/components/books/popups/deleteBookConfirmP
 import CreateReportPopup from "~/components/reports/createReportPopup.vue";
 import ReportSuccessPopup from "~/components/reports/popups/reportSuccessPopup.vue";
 import LoadingPopup from "~/components/popups/loadingPopup.vue";
+import LoadingSection from "~/components/popups/loadingSection.vue";
 
 const library = useBooks();
 const reviews = useReviews();
@@ -213,11 +214,15 @@ if (roleToken.value == "GUEST") {
                 </p>
                 <p><span>Author:</span> {{ library.bookDetail.data.author }}</p>
                 <p>
+                  Seen by:
+                  <span
+                    
+                    >{{ library.bookDetail.data.bookTotalView }}</span
+                  >
+                  people
+                </p>
+                <p>
                   Bookmarked by:
-                  <!-- <span
-                    v-show="library.bookDetail.data.bookTotalBookmarked == null"
-                    >0</span
-                  > -->
                   <span
                     
                     >{{ library.bookDetail.data.bookTotalBookmark }}</span
@@ -230,7 +235,7 @@ if (roleToken.value == "GUEST") {
                     library.bookDetail.data.booktype.booktypeName
                   }}</v-btn>
                 </p>
-                <div class="tw-space-x-2 tw-space-y-2 tw-h-[5rem]">
+                <div class="tw-space-x-2 tw-space-y-2 tw-h-[2rem]">
                   <span>Tags:</span>
                   <v-chip
                     variant="elevated"
@@ -405,13 +410,18 @@ if (roleToken.value == "GUEST") {
                 ></v-select>
               </v-col>
             </v-row>
+            <div
+              v-show="reviews.loadSection == 'load'"
+            >  
+            <LoadingSection/>
+            </div>
             <v-row
               no-gutters
-              v-show="reviews.reviewList.data.content.length == 0"
+              v-show="reviews.reviewList.data.content.length == 0 && reviews.loadSection == 'done'"
             >
             <ReviewNotFound />
             </v-row>
-            <v-row v-show="reviews.reviewList.data.content.length !== 0">
+            <v-row v-show="reviews.reviewList.data.content.length !== 0 && reviews.loadSection == 'done'">
               <v-virtual-scroll :items="['']" max-height="35rem">
                 <reviewCard
                   :reviewList="reviews.reviewList.data.content"

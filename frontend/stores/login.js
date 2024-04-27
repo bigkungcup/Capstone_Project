@@ -4,10 +4,6 @@ import { ref } from "vue";
 import { useNotifications } from "./notification";
 
 export const useLogin = defineStore("Login", () => {
-  const cookieOptions = {
-    maxAge: 60 * 60 * 24, // 1 day
-    path: "/",
-  };
   const router = useRouter();
   const noti = useNotifications();
   const loginAccount = ref({
@@ -15,8 +11,6 @@ export const useLogin = defineStore("Login", () => {
     password: "",
   });
 
-  // const accessToken = ref(useCookie("accessToken", cookieOptions));
-  // const refreshToken = ref(useCookie("refreshToken", cookieOptions));
   const accessToken = ref(useCookie("accessToken"));
   const refreshToken = ref(useCookie("refreshToken"));
   const idToken = ref(localStorage.getItem("id"));
@@ -118,8 +112,6 @@ export const useLogin = defineStore("Login", () => {
       }
     );
     if (status == 200) {
-      console.log(accessToken.value);
-      console.log(refreshToken.value);
       await getAccessToken(data.access_token);
       await getRefreshToken(data.refresh_token);
       router.push("/");
@@ -151,8 +143,6 @@ export const useLogin = defineStore("Login", () => {
       }
     );
     if (status == 200) {
-      // accessToken.value = null;
-      // accessToken.value = data.access_token;
       await getAccessToken(data.access_token);
     }
   }
@@ -330,14 +320,10 @@ export const useLogin = defineStore("Login", () => {
 
   //Log out
   async function logOut() {
-    // const myBroadcastChannel1 = new BroadcastChannel('accessToken');
-    // const myBroadcastChannel2 = new BroadcastChannel('refreshToken');
     await deleteAccessToken();
     await deleteRefreshToken();
     resetToken();
     clearInterval(setNoti.value);
-    // myBroadcastChannel1.close();
-    // myBroadcastChannel2.close();
     router.push("/login/");
   }
 

@@ -1,4 +1,5 @@
 <script setup>
+import { useBooks } from '~/stores/book'
 defineEmits(["rating"]);
 defineProps({
     newBookList: {
@@ -6,6 +7,7 @@ defineProps({
         require: true,
   }
 });
+const library = useBooks();
 const roleToken = ref(localStorage.getItem("role"));
 </script>
 
@@ -58,7 +60,7 @@ const roleToken = ref(localStorage.getItem("role"));
                         half-increments
                         readonly
                       ></v-rating>
-                      <p class="web-text-sub-thin">({{ book.bookTotalReview }} reviews)</p>
+                      <p class="web-text-sub-thin">({{ library.formatTotalNumber(book.bookTotalReview) }} reviews)</p>
                     </div>
                   </div>
                 </v-col>

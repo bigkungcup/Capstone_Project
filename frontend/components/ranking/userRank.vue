@@ -1,4 +1,5 @@
 <script setup>
+import { useBooks } from '~/stores/book'
 defineEmits(["follow","unfollow"]);
 defineProps({
   userList: {
@@ -11,6 +12,7 @@ defineProps({
     }
 })
 
+const library = useBooks();
 const roleToken = ref(localStorage.getItem('role'));
 const idToken = ref(localStorage.getItem('id'));
 
@@ -23,7 +25,7 @@ const idToken = ref(localStorage.getItem('id'));
       <v-row no-gutters>
       <v-col cols="4" align="right">
         <div class="tw-pt-28" v-for="(user, index) in userList.slice(1,2)">
-              <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
+            <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
             <v-img
               :src="user.file"
               v-if="user.file != null"
@@ -67,7 +69,7 @@ const idToken = ref(localStorage.getItem('id'));
       </v-col>
       <v-col cols="4" align="left">
         <div class="tw-pt-28" v-for="(user, index) in userList.slice(2,3)">
-              <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
+            <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
             <v-img
               :src="user.file"
               v-if="user.file != null"
@@ -101,23 +103,29 @@ const idToken = ref(localStorage.getItem('id'));
         <v-col cols="2"></v-col>
         <v-col cols="2" align="center">
           <div class="tw-pt-16 tw-overflow-clip" v-for="(user, index) in userList.slice(1,2)">
+            <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
             <p>{{ user.displayName }}</p>
-            <p class="web-text-sub" v-if="sort == 'followers'">({{ user.followers }} Followers)</p>
-            <p class="web-text-sub" v-if="sort == 'totalLike'">({{ user.totalLike }} Likes)</p>
+            <p class="web-text-sub" v-if="sort == 'followers'">({{ library.formatTotalNumber(user.followers) }} Followers)</p>
+            <p class="web-text-sub" v-if="sort == 'totalLike'">({{ library.formatTotalNumber(user.totalLike) }} Likes)</p>
+          </nuxt-link>
           </div>
         </v-col>
         <v-col cols="4" align="center">
           <div class="tw-pt-14 tw-mx-8 tw-overflow-clip" v-for="(user, index) in userList.slice(0,1)">
+            <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
             <p>{{ user.displayName }}</p>
-            <p class="web-text-sub" v-if="sort == 'followers'">({{ user.followers }} Followers)</p>
-            <p class="web-text-sub" v-if="sort == 'totalLike'">({{ user.totalLike }} Likes)</p>
+            <p class="web-text-sub" v-if="sort == 'followers'">({{ library.formatTotalNumber(user.followers) }} Followers)</p>
+            <p class="web-text-sub" v-if="sort == 'totalLike'">({{ library.formatTotalNumber(user.totalLike) }} Likes)</p>
+          </nuxt-link>
         </div>
         </v-col>
         <v-col cols="2" align="center">
           <div class="tw-pt-16 tw-overflow-clip" v-for="(user, index) in userList.slice(2,3)">
+            <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
             <p>{{ user.displayName }}</p>
-            <p class="web-text-sub" v-if="sort == 'followers'">({{ user.followers }} Followers)</p>
-            <p class="web-text-sub" v-if="sort == 'totalLike'">({{ user.totalLike }} Likes)</p>
+            <p class="web-text-sub" v-if="sort == 'followers'">({{ library.formatTotalNumber(user.followers) }} Followers)</p>
+            <p class="web-text-sub" v-if="sort == 'totalLike'">({{ library.formatTotalNumber(user.totalLike) }} Likes)</p>
+          </nuxt-link>
           </div>
         </v-col>
         <v-col cols="2"></v-col>
@@ -130,14 +138,18 @@ const idToken = ref(localStorage.getItem('id'));
         <hr class="tw-my-4" />
         <v-row no-gutters>
           <v-col cols="1" align="left" class="tw-my-8">
+            <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
             <p class="ranking-num-header">{{ index+1 }}</p>
+          </nuxt-link>
           </v-col>
           <v-col
             cols="8"
             class="tw-flex tw-flex-col tw-justify-center tw-space-y-2"
           >
             <div class="tw-space-x-3 tw-inline-flex tw-items-center">
+              <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
               <span class="web-text-header">{{ user.displayName }}</span>
+            </nuxt-link>
               <div v-if="user.userId != idToken && roleToken == 'USER'">    
                 <v-btn
                   height="auto"
@@ -158,15 +170,17 @@ const idToken = ref(localStorage.getItem('id'));
                 >Following</v-btn>
                 </div>
             </div>
+            <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
             <p class="web-text-sub web-text-pf-email">{{ user.email }}</p>
             <div
               class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6 tw-py-1"
             >
-              <span class="web-text-sub">{{ user.followers }} followers</span>
-              <!-- <span class="web-text-sub">121 followings</span> -->
+              <span class="web-text-sub" v-if="sort == 'followers'">{{ library.formatTotalNumber(user.followers) }} followers</span>
+              <span class="web-text-sub" v-if="sort == 'totalLike'">{{ library.formatTotalNumber(user.totalLike) }} Likes</span>
             </div>
+          </nuxt-link>
           </v-col>
-          <v-col cols="1"></v-col>
+          <v-col cols="1"><nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`"></nuxt-link></v-col>
           <v-col cols="2" align="right">
             <nuxt-link :to="user.userId == idToken ? `/profile/`: `/user/${user.userId}/`">
             <v-img

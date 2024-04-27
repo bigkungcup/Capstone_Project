@@ -1,13 +1,12 @@
 <script setup>
 import { useBooks } from '~/stores/book'
-
-const library = useBooks();
 defineProps({
     bookList: {
         type: Array,
         require: true,
     }
 })
+const library = useBooks();
 
 </script>
  
@@ -27,12 +26,20 @@ defineProps({
                     <div class="tw-min-h-[9rem] tw-max-h-[9rem] tw-py-2 tw-overflow-clip">
                         <p class="tw-indent-8">{{ book.bookDetail }}</p>
                     </div>
-                    <div class="tw-space-x-1 tw-inline-flex tw-items-center tw-w-4/6 tw-py-2">
+                    <div class="d-flex justify-space-between tw-inline-flex tw-items-center tw-py-2">
+                    <div class="tw-inline-flex tw-space-x-2">
                         <v-rating :model-value="0.5 * Math.floor(2 * book.bookRating)" color="#FFB703"
                             density="compact" size="meduim" half-increments readonly></v-rating>
                         <p class="web-text-rate">{{0.5 * (2 * book.bookRating).toFixed(0)}}</p>
                         <p v-show="book.bookTotalReview == null">(0 review)</p>
-                        <p v-show="book.bookTotalReview != null">({{ book.bookTotalReview }} reviews)</p>
+                        <p v-show="book.bookTotalReview != null">({{ library.formatTotalNumber(book.bookTotalReview) }} reviews)</p>
+                    </div>
+                    <div>
+                        <p>
+                            <v-icon icon="mdi mdi-eye-outline"/>
+                            {{ library.formatTotalNumber(book.bookTotalView) }}
+                        </p>
+                    </div>
                     </div>
                 </v-col>
                 <v-col class="tw-grid tw-grid-cols-8 tw-gap-2">

@@ -971,14 +971,14 @@ export const useBooks = defineStore("Books", () => {
     return (number = 0.5 * Math.floor(2 * number));
   }
 
-  //Format Total Views
-  function formatTotalview(totalview) {
-    if (totalview >= 1000 && totalview < 1000000) {
-      return (totalview / 1000).toFixed(1) + "K";
-    } else if (totalview >= 1000000) {
-      return (totalview / 1000000).toFixed(1) + "M";
+  //Format Total 
+  function formatTotalNumber(totalNumber) {
+    if (totalNumber >= 1000 && totalNumber < 1000000) {
+      return (totalNumber / 1000).toFixed(1) + "K";
+    } else if (totalNumber >= 1000000) {
+      return (totalNumber / 1000000).toFixed(1) + "M";
     } else {
-      return totalview.toString();
+      return totalNumber.toString();
     }
   }
 
@@ -1156,7 +1156,7 @@ export const useBooks = defineStore("Books", () => {
     deleteBookmarkByBookId,
     getBookType,
     countUpdateTime,
-    formatTotalview,
+    formatTotalNumber,
     clearNewBook,
     clearHistoryList,
     clearSimilarBookList,

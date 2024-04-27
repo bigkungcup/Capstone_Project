@@ -12,6 +12,7 @@ import { useBooks } from "~/stores/book";
 import { useReviews } from "~/stores/review";
 import { useUsers } from "~/stores/user";
 import { mergeProps } from "vue";
+import LoadingSection from "~/components/popups/loadingSection.vue";
 
 const login = useLogin();
 const book = useBooks();
@@ -63,7 +64,6 @@ async function selectSection(section) {
     profileSection.value = "review";
     review.clearMyReviewList();
     await review.getMyReview(idToken.value);
-    console.log(review.myReviewList.data.content.length);
     result.value = review.myReviewList.data.totalElements
       ? review.myReviewList.data.totalElements
       : 0;
@@ -143,17 +143,7 @@ onBeforeMount(async () => {
             </div>
           </v-col>
 
-          <!-- <v-col cols="5">
-            <div class="py-1">
-              <p class="web-text-sub tw-flex tw-place-content-end">
-                {{ login.profile.followings }} Following
-                {{ login.profile.followers }} Followers
-              </p>
-            </div>
-          </v-col> -->
-
           <v-col cols="5" class="tw-grid tw-content-between">
-            <!-- <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/update_${login.profile.userId}/`">Edit profile</v-btn> -->
             <div align="end">
             <span class="tw-px-4 text-center web-text-detail">
               <v-menu>
@@ -285,8 +275,11 @@ onBeforeMount(async () => {
         </div>
 
         <!-------- insert component here ---------->
+        <div v-if="book.loadSection == 'load' || review.loadSection == 'load' || user.loadSection == 'load'">
+      <LoadingSection/>
+    </div>
         <!-- Bookmark /> -->
-        <div v-if="profileSection == 'bookmark'">
+        <div v-if="profileSection == 'bookmark' && book.loadSection == 'done'">
           <div v-if="book.bookmarkList.data.content.length !== 0">
             <Bookmarks :bookmarkList="book.bookmarkList.data.content" />
             <div class="py-1">
@@ -306,7 +299,7 @@ onBeforeMount(async () => {
         </div>
         <!-- <Reviews /> -->
         <div v-if="profileSection == 'review'">
-          <div v-if="review.myReviewList.data.content.length !== 0">
+          <div v-if="review.myReviewList.data.content.length !== 0 && review.loadSection == 'done'">
           <MyReviews :reviewList="review.myReviewList.data.content" 
                       @like="likeReviews($event.reviewId, $event.likeStatus)"
                       @update="
@@ -333,7 +326,7 @@ onBeforeMount(async () => {
         </div>
         </div>
         <!-- <Followings /> -->
-        <div v-if="profileSection == 'following'">
+        <div v-if="profileSection == 'following' && user.loadSection == 'done'">
           <div v-if="user.followingList.data.content.length !== 0">
           <Followings 
             :followingList="user.followingList.data.content" 
@@ -354,7 +347,7 @@ onBeforeMount(async () => {
           </div>        
         </div>
         <!-- <Followers /> -->
-        <div v-if="profileSection == 'follower'">
+        <div v-if="profileSection == 'follower' && user.loadSection == 'done'">
           <div v-if="user.followerList.data.content.length !== 0">
           <Followers 
             :followerList="user.followerList.data.content" 

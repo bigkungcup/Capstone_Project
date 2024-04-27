@@ -1,4 +1,5 @@
 <script setup>
+import { useBooks } from '~/stores/book'
 defineProps({
     mostviewBookList: {
         type: Array,
@@ -6,17 +7,8 @@ defineProps({
   }
 });
 
+const library = useBooks();
 const roleToken = ref(localStorage.getItem("role"));
-
-function formatTotalview(totalview) {
-    if (totalview >= 1000 && totalview < 1000000) {
-          return (totalview / 1000).toFixed(1) + 'K';
-        } else if (totalview >= 1000000) {
-          return (totalview / 1000000).toFixed(1) + 'M';
-        } else {
-          return totalview.toString();
-        }
-}
 
 </script>
 
@@ -52,7 +44,7 @@ function formatTotalview(totalview) {
             >
             <div class="web-text-title d-flex justify-center">
               <v-icon icon="mdi mdi-eye-outline" class="tw-mx-2" />
-              <p>{{ formatTotalview(book.bookTotalView) }}</p>
+              <p>{{ library.formatTotalNumber(book.bookTotalView) }}</p>
             </div>
           </v-col>
           <v-col cols="1"
