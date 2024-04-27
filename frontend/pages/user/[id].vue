@@ -17,6 +17,7 @@ import deleteUserSuccessPopup from "~/components/users/popups/deleteUserSuccessP
 import CreateReportPopup from "~/components/reports/createReportPopup.vue";
 import ReportSuccessPopup from "~/components/reports/popups/reportSuccessPopup.vue";
 import LoadingPopup from "~/components/popups/loadingPopup.vue";
+import LoadingSection from "~/components/popups/loadingSection.vue";
 
 const user = useUsers();
 const book = useBooks();
@@ -58,14 +59,22 @@ async function handleGetUserDetail() {
 async function selectSection(section) {
   if (section == "bookmark") {
     profileSection.value = "bookmark";
-    await book.getBookmarkList(route.params.id);
+    if (roleToken.value == "GUEST") {
+      await book.getBookmarkListByGuest(route.params.id);
+    }else{
+      await book.getBookmarkList(route.params.id);
+    }
     result.value = book.bookmarkList.data.totalElements
       ? book.bookmarkList.data.totalElements
       : 0;
   } else if (section == "review") {
     profileSection.value = "review";
     review.clearMyReviewList();
-    await review.getMyReview(route.params.id);
+    if (roleToken.value == "GUEST") {
+      await review.getMyReviewByGuest(route.params.id);
+    }else{
+      await review.getMyReview(route.params.id);
+    }
     console.log(review.myReviewList.data.content.length);
     result.value = review.myReviewList.data.totalElements
       ? review.myReviewList.data.totalElements
@@ -73,14 +82,22 @@ async function selectSection(section) {
   } else if (section == "following") {
     profileSection.value = "following";
     user.clearFollowingList();
-    await user.getFollowingList(route.params.id);
+    if (roleToken.value == "GUEST") {
+      await user.getFollowingListByGuest(route.params.id);
+    }else{
+      await user.getFollowingList(route.params.id);
+    }
     result.value = user.followingList.data.totalElements
       ? user.followingList.data.totalElements
       : 0;
   } else if (section == "follower") {
     profileSection.value = "follower";
     user.clearFollowerList();
-    await user.getFollowerList(route.params.id);
+    if (roleToken.value == "GUEST") {
+      await user.getFollowerListByGuest(route.params.id);
+    }else{
+      await user.getFollowerList(route.params.id);
+    }
     result.value = user.followerList.data.totalElements
       ? user.followerList.data.totalElements
       : 0;
@@ -92,27 +109,14 @@ function closeUserSuccessfulPopup() {
   window.history.back();
 }
 
-function bookCoverPath(filePath) {
-  return (filePath = `../../_nuxt/@fs/${filePath}`);
-}
-
 onBeforeMount(async () => {
   if(route.params.id != idToken.value){
     await selectSection(profileSection.value);
     noti.clearReportProblem();
-    handleGetUserDetail()
-    if (roleToken.value == "GUEST") {
-      await book.getBookmarkListByGuest(route.params.id);
-    }else{
-      await book.getBookmarkList(route.params.id);
-    }}else{
+    handleGetUserDetail();
+  }else{
       router.push(`/Profile/`)
     }
-//   if (roleToken.value == 'ADMIN') {
-//   await user.getUserDetail(route.params.id);
-// }else{
-//   router.push(`/UnauthenPage/`)
-// }
 });
 </script>
 
@@ -127,8 +131,6 @@ onBeforeMount(async () => {
           :src="user.userDetail.data.file"
           cover
         ></v-img>
-        <!-- <v-img src="/image/cat.jpg" width="120" height="120"
-                    class="tw-rounded-full tw-border-white tw-border-8 tw-my-[-4rem] tw-mx-5" cover /> -->
       </div>
     </div>
 
@@ -166,15 +168,10 @@ onBeforeMount(async () => {
 
           <v-col cols="2">
             <div class="py-1">
-              <!-- <p class="web-text-sub tw-flex tw-place-content-end">
-                {{ user.userDetail.data.followings }} Following
-                {{ user.userDetail.data.followers }} Followers
-              </p> -->
             </div>
           </v-col>
 
           <v-col cols="3" class="tw-grid tw-content-between">
-            <!-- <v-btn color="#1D419F" variant="outlined" rounded="lg" elevation="2" :to="`/profile/update_${user.userDetail.data.userId}/`">Edit profile</v-btn> -->
             <div align="end">
             <span v-if="roleToken == 'USER'">
               <v-btn
@@ -334,8 +331,11 @@ onBeforeMount(async () => {
         </div>
 
         <!-------- insert component here ---------->
+    <div v-if="book.loadSection == 'load' || review.loadSection == 'load' || user.loadSection == 'load'">
+      <LoadingSection/>
+    </div>
      <!-- Bookmark /> -->
-     <div v-if="profileSection == 'bookmark'">
+     <div v-if="profileSection == 'bookmark' && book.loadSection == 'done'">
           <div v-if="book.bookmarkList.data.content.length !== 0">
             <Bookmarks :bookmarkList="book.bookmarkList.data.content" />
             <div class="py-1">
@@ -354,7 +354,7 @@ onBeforeMount(async () => {
           </div>
         </div>
         <!-- <Reviews /> -->
-        <div v-if="profileSection == 'review'">
+        <div v-if="profileSection == 'review' && review.loadSection == 'done'">
           <div v-if="review.myReviewList.data.content.length !== 0">
           <MyReviews :reviewList="review.myReviewList.data.content" 
                       @like="likeReviews($event.reviewId, $event.likeStatus)"
@@ -382,7 +382,7 @@ onBeforeMount(async () => {
         </div>
         </div>
         <!-- <Followings /> -->
-        <div v-if="profileSection == 'following'">
+        <div v-if="profileSection == 'following' && user.loadSection == 'done'">
           <div v-if="user.followingList.data.content.length !== 0">
           <Followings 
             :followingList="user.followingList.data.content" 
@@ -403,7 +403,7 @@ onBeforeMount(async () => {
           </div>        
         </div>
         <!-- <Followers /> -->
-        <div v-if="profileSection == 'follower'">
+        <div v-if="profileSection == 'follower' && user.loadSection == 'done'">
           <div v-if="user.followerList.data.content.length !== 0">
           <Followers 
             :followerList="user.followerList.data.content" 

@@ -33,7 +33,7 @@ defineProps({
                   half-increments
                   readonly
                 ></v-rating>
-                <p class="web-text-rate">{{ book.bookRating }}</p>
+                <p class="web-text-rate">{{ 0.5 * Math.floor(2 * book.bookRating).toFixed(0)}}</p>
               </div>
             </div>
           </v-card>

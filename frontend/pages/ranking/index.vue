@@ -8,7 +8,7 @@ import UserRank from "~/components/ranking/userRank.vue";
 const book = useBooks();
 const user = useUsers();
 const section = ref("book");
-const roleToken = ref(localStorage.getItem('role'));
+const roleToken = ref(localStorage.getItem("role"));
 
 const sortList = [
   {
@@ -35,25 +35,27 @@ const rankBookList = [
 ];
 
 async function handleFollow(userId) {
-  await user.createFollower(userId)
+  await user.createFollower(userId);
   await user.getRankingUserList();
 }
 
 async function handleUnfollow(userId) {
-  await user.deleteFollower(userId)
+  await user.deleteFollower(userId);
   await user.getRankingUserList();
 }
 
 async function handleGetRankingUser() {
-  if(roleToken.value == "GUEST"){
+  if (roleToken.value == "GUEST") {
     await user.getRankingUserListByGuest();
-  }else{
+  } else {
     user.clearRankingUserList();
     await user.getRankingUserList();
   }
 }
 
 onBeforeMount(async () => {
+  book.loadPage = "not";
+  user.loadPage = "not";
   await book.getBookType();
   book.bookType.push({ booktypeId: 0, booktypeName: "All" });
   await book.getRankingBookList();
@@ -68,13 +70,13 @@ onBeforeMount(async () => {
           <v-btn
             :variant="section == 'book' ? 'elevated' : 'outlined'"
             color="#1D419F"
-            @click="section = 'book',book.getRankingBookList()"
+            @click="(section = 'book'), book.getRankingBookList()"
             >BOOK</v-btn
           >
           <v-btn
             :variant="section == 'user' ? 'elevated' : 'outlined'"
             color="#1D419F"
-            @click="section = 'user',handleGetRankingUser()"
+            @click="(section = 'user'), handleGetRankingUser()"
             >USER</v-btn
           >
         </div>
@@ -85,52 +87,52 @@ onBeforeMount(async () => {
               <div class="d-flex tw-space-x-2" v-if="section == 'book'">
                 <p class="web-text-sub-thin py-3">Rank by:</p>
                 <v-select
-                label=""
-                class="tw-font-bold tw-text-white tw-text-xs tw-w-[5rem]"
-                v-model="book.rankingSort"
-                :items="rankBookList"
-                item-title="Name"
-                item-value="value"
-                variant="solo-filled"
-                bg-color="#082266"
-                rounded="lg"
-                width=""
-                @update:model-value="book.getRankingBookList()"
-              ></v-select>
+                  label=""
+                  class="tw-font-bold tw-text-white tw-text-xs tw-w-[5rem]"
+                  v-model="book.rankingSort"
+                  :items="rankBookList"
+                  item-title="Name"
+                  item-value="value"
+                  variant="solo-filled"
+                  bg-color="#082266"
+                  rounded="lg"
+                  width=""
+                  @update:model-value="book.getRankingBookList()"
+                ></v-select>
               </div>
 
               <div class="d-flex tw-space-x-2" v-if="section == 'user'">
-              <p class="web-text-sub-thin py-3">Sort by:</p>
-              <v-select
-                label=""
-                class="tw-font-bold tw-text-white tw-text-xs"
-                v-model="user.rankingSort"
-                :items="sortList"
-                item-title="Name"
-                item-value="value"
-                variant="solo-filled"
-                bg-color="#082266"
-                rounded="lg"
-                @update:model-value="handleGetRankingUser()"
-              ></v-select>
-            </div>
+                <p class="web-text-sub-thin py-3">Sort by:</p>
+                <v-select
+                  label=""
+                  class="tw-font-bold tw-text-white tw-text-xs"
+                  v-model="user.rankingSort"
+                  :items="sortList"
+                  item-title="Name"
+                  item-value="value"
+                  variant="solo-filled"
+                  bg-color="#082266"
+                  rounded="lg"
+                  @update:model-value="handleGetRankingUser()"
+                ></v-select>
+              </div>
             </v-col>
             <v-col cols="4" v-if="section == 'book'">
               <div class="d-flex tw-space-x-2">
-              <p class="web-text-sub-thin py-3">Book type:</p>
-              <v-select
-                label=""
-                class="tw-font-bold tw-text-white tw-text-xs tw-w-[15rem]"
-                v-model="book.rankingFilter"
-                :items="book.bookType"
-                item-title="booktypeName"
-                item-value="booktypeId"
-                variant="solo-filled"
-                bg-color="#082266"
-                rounded="lg"
-                @update:model-value="book.getRankingBookList()"
-              ></v-select>
-            </div> 
+                <p class="web-text-sub-thin py-3">Book type:</p>
+                <v-select
+                  label=""
+                  class="tw-font-bold tw-text-white tw-text-xs tw-w-[15rem]"
+                  v-model="book.rankingFilter"
+                  :items="book.bookType"
+                  item-title="booktypeName"
+                  item-value="booktypeId"
+                  variant="solo-filled"
+                  bg-color="#082266"
+                  rounded="lg"
+                  @update:model-value="book.getRankingBookList()"
+                ></v-select>
+              </div>
             </v-col>
           </v-row>
         </div>
@@ -173,11 +175,29 @@ onBeforeMount(async () => {
         <div class="tw-flex tw-justify-center ranking-text-header">
           Top 10 All time
         </div>
-        <div class="tw-mx-8" v-if="section == 'book'">
-          <BookRank :bookList="book.rankingBookList.data" />
+
+        <div class="tw-grid tw-h-[20rem]" v-show="book.loadPage == 'load' || user.loadPage == 'load'">
+          <div class="tw-place-self-center">
+            <v-progress-circular
+              :size="160"
+              :width="7"
+              color="grey-darken-2"
+              indeterminate
+            ></v-progress-circular>
+          </div>
         </div>
-        <div class="tw-mx-8" v-if="section == 'user'">
-          <UserRank :userList="user.rankingUserList.data" :sort="user.rankingSort" @follow="handleFollow($event)" @unfollow="handleUnfollow($event)"/>
+        <div v-show="book.loadPage == 'done' || user.loadPage == 'done'">
+          <div class="tw-mx-8" v-if="section == 'book'">
+            <BookRank :bookList="book.rankingBookList.data" />
+          </div>
+          <div class="tw-mx-8" v-if="section == 'user'">
+            <UserRank
+              :userList="user.rankingUserList.data"
+              :sort="user.rankingSort"
+              @follow="handleFollow($event)"
+              @unfollow="handleUnfollow($event)"
+            />
+          </div>
         </div>
       </div>
     </div>

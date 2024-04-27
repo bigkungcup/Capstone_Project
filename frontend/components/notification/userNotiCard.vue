@@ -27,8 +27,8 @@ const notification = useNotifications();
         <p class="web-text-sub-bold">{{ noti.notificationTitle }}</p>
         <p class="web-text-sub-thin">{{ noti.notificationDetail }}</p>
       </div>
-      <v-list-item-subtitle class="mb-4">
-        <p>{{ notification.countUpdateTime(noti.countDateTime) }}</p>
+      <v-list-item-subtitle class="mb-2 web-text-sub-thin">
+        <p class="py-1">{{ notification.countUpdateTime(noti.countDateTime) }}</p>
       </v-list-item-subtitle>
         </v-col>
       </v-row></v-card>

@@ -7,6 +7,7 @@ defineProps({
     }
 })
 const idToken = ref(localStorage.getItem('id'));
+const roleToken = ref(localStorage.getItem('role'));
 </script>
 
 <template>
@@ -48,16 +49,17 @@ const idToken = ref(localStorage.getItem('id'));
             </nuxt-link>
             </div>
             <div class="tw-h-[2.5rem]">
-              <div v-if="user.userFollowings.userId != idToken">
-            <v-btn color="#1D419F" variant="elevated" class="tw-m-2" v-if="user.followStatus == 1"
-            @click="user.followStatus = 0, $emit('unfollow', user.userFollowings.userId)"
-              >Following</v-btn
-            >
-            <v-btn color="#1D419F" variant="outlined"  class="tw-m-2" v-if="user.followStatus !== 1"
-            @click="user.followStatus = 1, $emit('follow', user.userFollowings.userId)"
-              >Follow</v-btn
-            >
-          </div></div></div>
+              <div v-if="user.userFollowings.userId != idToken && roleToken == 'USER'">
+                <v-btn color="#1D419F" variant="elevated" class="tw-m-2" v-if="user.followStatus == 1"
+                  @click="user.followStatus = 0, $emit('unfollow', user.userFollowings.userId)">
+                  Following
+                </v-btn>
+                <v-btn color="#1D419F" variant="outlined"  class="tw-m-2" v-if="user.followStatus !== 1"
+                  @click="user.followStatus = 1, $emit('follow', user.userFollowings.userId)">
+                  Follow
+                </v-btn>
+            </div>
+          </div></div>
           <div class="tw-my-[1rem] tw-mx-4">
             <p class="web-text-title tw-truncate">{{ user.userFollowings.displayName }}</p>
             <p class="web-text-pf-email tw-truncate">{{ user.userFollowings.email }}</p>

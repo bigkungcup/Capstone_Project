@@ -1,14 +1,10 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
-import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { useLogin } from "./login";
 
 export const useNotifications = defineStore("Notification", () => {
-  const router = useRouter();
-  const idToken = ref(localStorage.getItem("id"));
   const login = useLogin();
-  const roleToken = ref(localStorage.getItem("role"));
-  const successfulPopup = ref('hide');
+  const successfulPopup = ref("hide");
   const notificationList = ref({
     data: [],
   });
@@ -22,9 +18,9 @@ export const useNotifications = defineStore("Notification", () => {
     data: [],
   });
   const newNotification = ref({
-    title: '',
-    detail: '',
-    link: null
+    title: "",
+    detail: "",
+    link: null,
   });
   const reportList = ref({
     data: {
@@ -80,11 +76,11 @@ export const useNotifications = defineStore("Notification", () => {
     },
   ]);
   const reportPage = ref(0);
+  const loadPage = ref("not");
 
   // --------------- Notification Function ---------------
   //Get Notification List
   async function getNotificationList(notiLevel) {
-    let accessToken = useCookie("accessToken");
     let status = 0;
 
     const { data } = await useFetch(
@@ -94,7 +90,7 @@ export const useNotifications = defineStore("Notification", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
           options.params = {
             notificationLevel: notiLevel,
@@ -109,10 +105,10 @@ export const useNotifications = defineStore("Notification", () => {
       if (data.value) {
         notificationList.value = data.value;
       }
-      console.log("get notification list completed");
+      // console.log("get notification list completed");
     } else if (status == 404) {
       clearNotificationList();
-      console.log("get notification list uncompleted");
+      // console.log("get notification list uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
       await getNotificationList(notiLevel);
@@ -121,7 +117,6 @@ export const useNotifications = defineStore("Notification", () => {
 
   //Get all notification number
   async function getCountAllNotification() {
-    let accessToken = useCookie("accessToken");
     let status = 0;
 
     const { data } = await useFetch(
@@ -131,7 +126,7 @@ export const useNotifications = defineStore("Notification", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -143,10 +138,10 @@ export const useNotifications = defineStore("Notification", () => {
       if (data.value) {
         countAllNotification.value = data.value;
       }
-      console.log("get all notification number completed");
+      // console.log("get all notification number completed");
     } else if (status == 404) {
       clearCountAllNotification();
-      console.log("get all notification number uncompleted");
+      // console.log("get all notification number uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
       await getCountAllNotification();
@@ -155,7 +150,6 @@ export const useNotifications = defineStore("Notification", () => {
 
   //Get user notification number
   async function getCountUserNotification() {
-    let accessToken = useCookie("accessToken");
     let status = 0;
 
     const { data } = await useFetch(
@@ -165,7 +159,7 @@ export const useNotifications = defineStore("Notification", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -177,10 +171,10 @@ export const useNotifications = defineStore("Notification", () => {
       if (data.value) {
         countUserNotification.value = data.value;
       }
-      console.log("get user notification number completed");
+      // console.log("get user notification number completed");
     } else if (status == 404) {
       clearCountUserNotification();
-      console.log("get user notification number uncompleted");
+      // console.log("get user notification number uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
       await getCountUserNotification();
@@ -189,7 +183,6 @@ export const useNotifications = defineStore("Notification", () => {
 
   //Get system notification number
   async function getCountSystemNotification() {
-    let accessToken = useCookie("accessToken");
     let status = 0;
 
     const { data } = await useFetch(
@@ -199,7 +192,7 @@ export const useNotifications = defineStore("Notification", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -211,112 +204,109 @@ export const useNotifications = defineStore("Notification", () => {
       if (data.value) {
         countSystemNotification.value = data.value;
       }
-      console.log("get system notification number completed");
+      // console.log("get system notification number completed");
     } else if (status == 404) {
       clearCountSystemNotification();
-      console.log("get system notification number uncompleted");
+      // console.log("get system notification number uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
       await getCountSystemNotification();
     }
   }
 
-      //Create notification
-      async function createNotification() {
-        let accessToken = useCookie("accessToken");
-        let status = 0;
-        successfulPopup.value = 'load';
-  
-        await $fetch(`${import.meta.env.VITE_BASE_URL}/notification`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken.value}`,
-          },
-          body: {
-            notificationTitle: newNotification.value.title,
-            notificationDetail: newNotification.value.detail,
-            notificationType: "ADMIN",
-            // notificationLink: newNotification.value.link 
-          },
-          onResponse({ request, response, options }) {
-            status = response._data.response_code;
-            if (status == 400) {
-              successfulPopup.value = 'hide';
-              console.log("create notification uncompleted");
-            } else if (status == 401) {
-              successfulPopup.value = 'hide';
-              login.handleRefresh();
-              createNotification();
-            }
-          },
-        });
-        if (status == 201) {
-          successfulPopup.value = 'show';
-          clearNewNotification();
-          console.log("create notification completed");
-        } 
-      }
+  //Create notification
+  async function createNotification() {
+    let status = 0;
+    successfulPopup.value = "load";
 
-      //Update notification status by Id (read by id)
-  async function clearNotificationById(notiId,notiLevel) {
-    let accessToken = useCookie("accessToken");
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/notification`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${login.accessToken}`,
+      },
+      body: {
+        notificationTitle: newNotification.value.title,
+        notificationDetail: newNotification.value.detail,
+        notificationType: "ADMIN",
+        // notificationLink: newNotification.value.link
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          successfulPopup.value = "hide";
+          // console.log("create notification uncompleted");
+        } else if (status == 401) {
+          successfulPopup.value = "hide";
+          login.handleRefresh();
+          createNotification();
+        }
+      },
+    });
+    if (status == 201) {
+      successfulPopup.value = "show";
+      clearNewNotification();
+      // console.log("create notification completed");
+    }
+  }
+
+  //Update notification status by Id (read by id)
+  async function clearNotificationById(notiId, notiLevel) {
     let status = 0;
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/notification/${notiId}`, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${accessToken.value}`,
+        Authorization: `Bearer ${login.accessToken}`,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
-          console.log("read this notification uncompleted");
+          // console.log("read this notification uncompleted");
         } else if (status == 401) {
           login.handleRefresh();
-          clearNotificationById(notiId,notiLevel);
+          clearNotificationById(notiId, notiLevel);
         }
       },
     });
     if (status == 200) {
       getNotificationList(notiLevel);
       getCountAllNotification();
-      if(notiLevel == 1){
+      if (notiLevel == 1) {
         getCountSystemNotification();
       } else {
         getCountUserNotification();
       }
-      console.log("read this notification completed");
+      // console.log("read this notification completed");
     }
   }
 
-        //Update all notification status (read all)
-        async function clearAllNotification(notiLevel) {
-          let accessToken = useCookie("accessToken");
-          let status = 0;
-      
-          await $fetch(`${import.meta.env.VITE_BASE_URL}/notification/updateAll`, {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${accessToken.value}`,
-            },
-            onResponse({ request, response, options }) {
-              status = response._data.response_code;
-              if (status == 400) {
-                console.log("read all notification uncompleted");
-              } else if (status == 401) {
-                login.handleRefresh();
-                clearAllNotification(notiLevel);
-              }
-            },
-          });
-          if (status == 200) {
-            getNotificationList(notiLevel);
-            getCountAllNotification();
-            getCountSystemNotification();
-            getCountUserNotification();
-            console.log("read all notification completed");
-          }
+  //Update all notification status (read all)
+  async function clearAllNotification(notiLevel) {
+    let status = 0;
+
+    await $fetch(`${import.meta.env.VITE_BASE_URL}/notification/updateAll`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${login.accessToken}`,
+      },
+      onResponse({ request, response, options }) {
+        status = response._data.response_code;
+        if (status == 400) {
+          // console.log("read all notification uncompleted");
+        } else if (status == 401) {
+          login.handleRefresh();
+          clearAllNotification(notiLevel);
         }
+      },
+    });
+    if (status == 200) {
+      getNotificationList(notiLevel);
+      getCountAllNotification();
+      getCountSystemNotification();
+      getCountUserNotification();
+      // console.log("read all notification completed");
+    }
+  }
 
   //Clear notification list
   function clearNotificationList() {
@@ -346,19 +336,19 @@ export const useNotifications = defineStore("Notification", () => {
     };
   }
 
-    //Clear new notification 
-    function clearNewNotification() {
-      newNotification.value = {
-        title: '',
-        detail: '',
-        link: null
-      };
-    }
+  //Clear new notification
+  function clearNewNotification() {
+    newNotification.value = {
+      title: "",
+      detail: "",
+      link: null,
+    };
+  }
 
   // --------------- Report Function ---------------
   //Get Report List
   async function getReportList() {
-    let accessToken = useCookie("accessToken");
+    loadPage.value = "load";
     let status = 0;
 
     const { data } = await useFetch(
@@ -368,7 +358,7 @@ export const useNotifications = defineStore("Notification", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
           options.params = {
             page: reportPage.value,
@@ -382,13 +372,16 @@ export const useNotifications = defineStore("Notification", () => {
     );
     if (status == 200) {
       if (data.value) {
+        loadPage.value = "done";
         reportList.value = data.value;
       }
-      console.log("get report list completed");
+      // console.log("get report list completed");
     } else if (status == 404) {
+      loadPage.value = "done";
       clearReportList();
-      console.log("get report list uncompleted");
+      // console.log("get report list uncompleted");
     } else if (status == 401) {
+      loadPage.value = "not";
       await login.handleRefresh();
       await getReportList();
     }
@@ -396,7 +389,6 @@ export const useNotifications = defineStore("Notification", () => {
 
   //Get Report History List
   async function getReportHistoryList() {
-    let accessToken = useCookie("accessToken");
     let status = 0;
     clearReportList();
 
@@ -407,7 +399,7 @@ export const useNotifications = defineStore("Notification", () => {
           options.method = "GET";
           options.headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
+            Authorization: `Bearer ${login.accessToken}`,
           };
         },
         onResponse({ request, response, options }) {
@@ -419,10 +411,10 @@ export const useNotifications = defineStore("Notification", () => {
       if (data.value) {
         reportHistoryList.value = data.value;
       }
-      console.log("get report history list completed");
+      // console.log("get report history list completed");
     } else if (status == 404) {
       clearReportList();
-      console.log("get report history list uncompleted");
+      // console.log("get report history list uncompleted");
     } else if (status == 401) {
       await login.handleRefresh();
       await getReportHistoryList();
@@ -431,14 +423,13 @@ export const useNotifications = defineStore("Notification", () => {
 
   //Create Report Book
   async function createReport() {
-    let accessToken = useCookie("accessToken");
     let status = 0;
-    successfulPopup.value = 'load';
+    successfulPopup.value = "load";
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/report`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${accessToken.value}`,
+        Authorization: `Bearer ${login.accessToken}`,
       },
       body: {
         reportTitle: reportProblem.value.reportTitle,
@@ -449,10 +440,10 @@ export const useNotifications = defineStore("Notification", () => {
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
-          successfulPopup.value = 'hide';
-          console.log("report uncompleted");
+          successfulPopup.value = "hide";
+          // console.log("report uncompleted");
         } else if (status == 401) {
-          successfulPopup.value = 'hide';
+          successfulPopup.value = "hide";
           login.handleRefresh();
           createReport();
         }
@@ -460,26 +451,25 @@ export const useNotifications = defineStore("Notification", () => {
     });
     if (status == 201) {
       reportStatus.value = false;
-      successfulPopup.value = 'show';
+      successfulPopup.value = "show";
       clearReportProblem();
-      console.log("report completed");
+      // console.log("report completed");
     }
   }
 
   //Update report status (report done)
   async function updateReportDone(reportId) {
-    let accessToken = useCookie("accessToken");
     let status = 0;
 
     await $fetch(`${import.meta.env.VITE_BASE_URL}/report/${reportId}`, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${accessToken.value}`,
+        Authorization: `Bearer ${login.accessToken}`,
       },
       onResponse({ request, response, options }) {
         status = response._data.response_code;
         if (status == 400) {
-          console.log("this revport uncompleted");
+          // console.log("this revport uncompleted");
         } else if (status == 401) {
           login.handleRefresh();
           updateReportDone(reportId);
@@ -488,25 +478,25 @@ export const useNotifications = defineStore("Notification", () => {
     });
     if (status == 200) {
       getReportList();
-      console.log("this report completed");
+      // console.log("this report completed");
     }
   }
 
   function handleReportReview(reviewId) {
     reportStatus.value = true;
-    reportProblem.value.reportType = 'review';
+    reportProblem.value.reportType = "review";
     reportProblem.value.problemId = reviewId;
   }
-  
+
   function handleReportBook(bookId) {
     reportStatus.value = true;
-    reportProblem.value.reportType = 'book';
+    reportProblem.value.reportType = "book";
     reportProblem.value.problemId = bookId;
   }
 
   function handleReportUser(userId) {
     reportStatus.value = true;
-    reportProblem.value.reportType = 'user';
+    reportProblem.value.reportType = "user";
     reportProblem.value.problemId = userId;
   }
 
@@ -592,6 +582,7 @@ export const useNotifications = defineStore("Notification", () => {
     reportUserList,
     successfulPopup,
     reportPage,
+    loadPage,
     getNotificationList,
     getCountAllNotification,
     getCountUserNotification,

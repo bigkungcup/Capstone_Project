@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import BookCard from '~/components/books/bookCard.vue';
 import BookNotFound from "~/components/books/bookNotFound.vue";
+import LoadingPage from "~/components/popups/loadingPage.vue";
 import { useBooks } from '~/stores/book'
 
 const library = useBooks();
@@ -49,6 +50,7 @@ function handleSelectionChange() {
 }
 
 onBeforeMount( async () => {
+  library.loadPage = 'not';
   if (roleToken.value == 'GUEST') {
     await library.getLibraryByGuest();
     library.getBookType();
@@ -68,7 +70,7 @@ onBeforeMount( async () => {
       <v-row no-gutters>
         <v-col cols="9">
           <v-text-field
-          placeholder="Search your book or auther name"
+          placeholder="Search by book name or author"
           prepend-inner-icon="mdi-magnify"
           v-model="library.searchBook"
           clearable
@@ -101,9 +103,6 @@ onBeforeMount( async () => {
           
         </v-col>
         <v-col cols="3"> 
-          <!-- <v-btn size="auto" class="pa-5 ml-12" color="#082266" rounded="lg"> Sort By: Result - {{ result }}
-            <v-icon end icon="mdi mdi-menu-down"></v-icon>
-          </v-btn> -->
           <v-select
           label="SORT BY: "
           class="tw-font-bold tw-text-white tw-text-xs " 
@@ -155,9 +154,13 @@ onBeforeMount( async () => {
     </v-row>
   </v-dialog>
   
+    
+    <LoadingPage v-show="library.loadPage == 'load'" />
+    <div v-show="library.loadPage == 'done'">
     <BookNotFound v-show="library.bookList.data.content.length == 0" />
     <div v-show="library.bookList.data.content.length !== 0" >
       <BookCard :bookList="library.bookList.data.content"/>
+    </div>
     </div>
 
     </div>

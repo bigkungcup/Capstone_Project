@@ -18,6 +18,7 @@ const validEmail =
 const roleToken = ref(localStorage.getItem('role'));
 const popupStatus = ref('');
 const userConfirmPopup = ref(false);
+const visible = ref(false);
 
 function showValidateSize() {
   validateSize.value = true;
@@ -202,8 +203,12 @@ onBeforeRouteLeave(() => {
                 <div>
                   <p>Password</p>
                   <v-text-field
+                    :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                    :type="visible ? 'text' : 'password'"
+                    density="compact"
                     label="Password"
                     variant="solo"
+                    @click:append-inner="visible = !visible"
                     :rules="[rules.limitedPass]"
                     @input="handleCheckPassword()"
                     v-model="user.editUser.password"
