@@ -372,7 +372,7 @@ public class ReviewService extends CommonController {
                 System.out.println("Insert Notification Success");
                 notificationRepository.insertNotification(follower.getUser().getUserId(),
                         follower.getUserfollow().getDisplayName() + " (Following)",
-                        "has created a review in " + bookDTO.getBookName(), 0, 0, "/user/" + follower.getUser().getUserId() + "/" + bookDTO.getBookId() + "/",
+                        "has created a review in " + bookDTO.getBookName(), 0, 0, "/user/" + follower.getUserfollow().getUserId() + "/" + bookDTO.getBookId() + "/",
                         "Review");
                         // System.out.println("Insert Notification");
             // }

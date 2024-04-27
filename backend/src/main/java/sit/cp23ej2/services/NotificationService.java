@@ -95,7 +95,7 @@ public class NotificationService extends CommonController {
 
             if (noti.getNotificationType().equals("Review")) {
                 String[] link = noti.getNotificationLink().split("/");
-                User userById = userRepository.getUserById(Integer.parseInt(link[3]));
+                User userById = userRepository.getUserById(Integer.parseInt(link[2]));
                 if(userById != null){
                     notificationDTO.setUser(modelMapper.map(userById, UserReportDTO.class));
                     try {
@@ -106,7 +106,7 @@ public class NotificationService extends CommonController {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    notificationDTO.setNotificationLink("/book/" + link[2] + "/");
+                    notificationDTO.setNotificationLink("/book/" + link[3] + "/");
                     notification.add(notificationDTO);
                 }else{
                     repository.deleteNotificationById(noti.getNotificationId());
