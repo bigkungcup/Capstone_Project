@@ -52,7 +52,8 @@ export const useLogin = defineStore("Login", () => {
   };
 
   const profile = ref({
-    data: {},
+    data: {
+    },
   });
 
   const editProfile = ref();

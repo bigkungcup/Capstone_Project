@@ -33,7 +33,7 @@ const roleToken = ref(localStorage.getItem("role"));
                 </div>
                 <p class="tw-flex tw-justify-start web-text-title">{{ review.reviewTitle }}</p>
                 <p class="tw-flex tw-justify-start web-text-sub tw-min-h-[6rem]" v-if="review.spoileFlag == 0">
-                   {{ review.reviewDetail }}
+                  <div v-html="review.reviewDetail.replace(/\n/g, '<br><p>')"></div>
                 </p>
                 <div class="web-text-sub tw-min-h-[6rem]" v-if="review.spoileFlag == 1">
                     <v-expansion-panels variant="inset">
@@ -43,7 +43,7 @@ const roleToken = ref(localStorage.getItem("role"));
                                 Spoil
                             </v-expansion-panel-title>
                             <v-expansion-panel-text class="tw-indent-8 web-text-detail">
-                                {{ review.reviewDetail }}
+                              <div v-html="review.reviewDetail.replace(/\n/g, '<br><p>')"></div>
                             </v-expansion-panel-text>
                         </v-expansion-panel>
                     </v-expansion-panels>

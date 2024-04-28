@@ -344,8 +344,8 @@ if (roleToken.value == "GUEST") {
         <v-card color="rgb(217, 217, 217, 0.6)" width="80%">
           <div
             class="web-text-detail tw-indent-8 tw-m-4 tw-p-10 tw-bg-white tw-rounded-md tw-min-h-[30rem]"
-          >
-            {{ library.bookDetail.data.bookDetail }}
+            >
+            <div v-html="library.bookDetail.data.bookDetail.replace(/\n/g, '<br><p>')"></div>
           </div>
         </v-card>
       </div>
@@ -361,11 +361,6 @@ if (roleToken.value == "GUEST") {
       <div class="web-grey-color tw-w-10/12 tw-rounded-lg tw-drop-shadow-lg">
         <div class="tw-px-6 tw-py-8">
           <p class="web-text-header tw-inline-block tw-align-middle">
-            <!-- Review ({{
-              reviews.reviewList.data.totalElements
-                ? reviews.reviewList.data.totalElements
-                : 0
-            }}):  -->
             Reviews :
           </p>
         </div>

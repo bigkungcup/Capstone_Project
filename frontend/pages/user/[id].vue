@@ -135,7 +135,7 @@ onBeforeMount(async () => {
     </div>
 
     <div class="tw-flex tw-place-content-center">
-      <div class="tw-bg-white tw-w-[70rem] tw-h-[9rem]">
+      <div class="tw-bg-white tw-w-[70rem]">
         <v-row class="tw-py-2">
           <v-col cols="2">
             <v-img
@@ -160,8 +160,8 @@ onBeforeMount(async () => {
             <div class="tw-space-y-2">
               <p class="web-text-header">{{ user.userDetail.data.displayName }}</p>
               <p class="web-text-sub">{{ user.userDetail.data.email }}</p>
-              <div class="tw-min-h-[4rem] tw-break-words">
-              <p class="web-text-sub">{{ user.userDetail.data.bio }}</p>
+              <div class="web-text-sub tw-min-h-[4rem] tw-break-words">
+                <div v-html="user.userDetail.data.bio.replace(/\n/g, '<br><p>')"></div>
               </div>
             </div>
           </v-col>
