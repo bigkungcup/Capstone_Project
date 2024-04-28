@@ -244,7 +244,7 @@ public class ReviewService extends CommonController {
                 review.setCountDateTime(Math.abs(duration.toSeconds()));
             });
 
-            if (user != null && userIdView == user.getUserId()) {
+            if (user != null && userIdView == userId) {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(userId);
                 reviews.getContent().forEach(review -> {
                     likeStatus.forEach(like -> {
