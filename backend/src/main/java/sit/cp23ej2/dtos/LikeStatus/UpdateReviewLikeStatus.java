@@ -12,8 +12,8 @@ import lombok.ToString;
 @ToString
 public class UpdateReviewLikeStatus {
 
-    // @NotNull(message = "userId shouldn't be null")
-    // private Integer userId;
+    @NotNull(message = "userId shouldn't be null")
+    private Integer userId;
 
     @NotNull(message = "reviewId shouldn't be null")
     private Integer reviewId;
