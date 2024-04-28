@@ -201,7 +201,7 @@ public class ReviewService extends CommonController {
         }
     }
 
-    public DataResponse getReviewByUserId(Integer userId, int page, int size) throws HandleExceptionNotFound {
+    public DataResponse getReviewByUserId(Integer userId, Integer userIdView, int page, int size) throws HandleExceptionNotFound {
         // DataResponse response = new DataResponse();
 
         Pageable pageable = PageRequest.of(page, size);
@@ -244,8 +244,17 @@ public class ReviewService extends CommonController {
                 review.setCountDateTime(Math.abs(duration.toSeconds()));
             });
 
-            if (user != null) {
+            if (user != null && userIdView == userId) {
                 List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(userId);
+                reviews.getContent().forEach(review -> {
+                    likeStatus.forEach(like -> {
+                        if (review.getReviewId() == like.getLsr_reviewId()) {
+                            review.setLikeStatus(like);
+                        }
+                    });
+                });
+            }else{
+                List<LikeStatus> likeStatus = likeStatusRepository.getLikeStatus(userIdView);
                 reviews.getContent().forEach(review -> {
                     likeStatus.forEach(like -> {
                         if (review.getReviewId() == like.getLsr_reviewId()) {

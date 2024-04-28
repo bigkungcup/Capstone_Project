@@ -38,6 +38,27 @@ function toggleUserConfirmPopup() {
   user.confirmPopup = !user.confirmPopup;
 }
 
+async function likeReviews(reviewId, likeStatus) {
+  let status = {
+    userId: idToken.value,
+    reviewId: reviewId,
+    likeStatus: likeStatus,
+  };
+  await review.createLike(status);
+  await review.getMyReview(route.params.id,idToken.value,'notLoad');
+}
+
+async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
+  let status = {
+    userId: idToken.value,
+    reviewId: reviewId,
+    likeStatusId: likeStatusId,
+    likeStatus: likeStatus,
+  };
+  await review.updateLike(status);
+  await review.getMyReview(route.params.id,idToken.value,'notLoad');
+}
+
 async function handleFollow(userId) {
   await user.createFollower(userId)
   await user.getUserDetail(route.params.id);
@@ -73,7 +94,7 @@ async function selectSection(section) {
     if (roleToken.value == "GUEST") {
       await review.getMyReviewByGuest(route.params.id);
     }else{
-      await review.getMyReview(route.params.id);
+      await review.getMyReview(route.params.id,idToken.value);
     }
     console.log(review.myReviewList.data.content.length);
     result.value = review.myReviewList.data.totalElements
@@ -257,7 +278,7 @@ onBeforeMount(async () => {
           <v-row class="">
             <v-col cols="3" class="tw-grid tw-content-center">
               <div
-                class="tw-flex tw-justify-center web-text-sub-pf"
+                class="tw-flex tw-justify-center web-text-sub-pf tw-cursor-pointer"
                 v-if="profileSection != 'bookmark'"
                 @click="
                   (profileSection = 'bookmark'), selectSection(profileSection)
@@ -275,7 +296,7 @@ onBeforeMount(async () => {
             </v-col>
             <v-col cols="3" class="tw-grid tw-content-center">
               <div
-                class="tw-flex tw-justify-center web-text-sub-pf"
+                class="tw-flex tw-justify-center web-text-sub-pf tw-cursor-pointer"
                 v-if="profileSection != 'review'"
                 @click="
                   (profileSection = 'review'), selectSection(profileSection)
@@ -293,7 +314,7 @@ onBeforeMount(async () => {
             </v-col>
             <v-col cols="3" class="tw-grid tw-content-center">
               <div
-                class="tw-flex tw-justify-center web-text-sub-pf"
+                class="tw-flex tw-justify-center web-text-sub-pf tw-cursor-pointer"
                 v-if="profileSection != 'following'"
                 @click="
                   (profileSection = 'following'), selectSection(profileSection)
@@ -311,7 +332,7 @@ onBeforeMount(async () => {
             </v-col>
             <v-col cols="3" class="tw-grid tw-content-center">
               <div
-                class="tw-flex tw-justify-center web-text-sub-pf"
+                class="tw-flex tw-justify-center web-text-sub-pf tw-cursor-pointer"
                 v-if="profileSection != 'follower'"
                 @click="
                   (profileSection = 'follower'), selectSection(profileSection)
