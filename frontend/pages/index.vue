@@ -17,7 +17,7 @@ const idToken = ref(localStorage.getItem("id"));
 const  slides = [
         '/image/bookbanner1.jpg',
         '/image/bookbanner2.png',
-        '/image/bookbanner3.png',
+        '/image/bookbanner3.jpg',
       ]
 const path = '/ej2'
 

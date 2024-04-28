@@ -61,11 +61,13 @@ export const useReviews = defineStore("Reviews", () => {
   // const likeStatus = ref(0); //0 = clear, 1 = like, 2 = dislike
 
   //Get reviews
-  async function getReview(bookId) {
+  async function getReview(bookId,loadStatus='load') {
     let status = 0;
     let sortByReview = "";
     let sortTypeReview = "";
-    loadSection.value = 'load';
+    if(loadStatus == 'load'){
+      loadSection.value = 'load';
+    }
     if (sortReview.value == "desc" || sortReview.value == "asc") {
       sortByReview = sortReview.value;
     } else {
@@ -174,9 +176,11 @@ export const useReviews = defineStore("Reviews", () => {
   }
 
   //Get my reviews
-  async function getMyReview(userId) {
+  async function getMyReview(userId,userIdView,loadStatus='load') {
     let status = 0;
-    loadSection.value = "load";
+    if(loadStatus == 'load'){
+      loadSection.value = "load";
+    }
 
     const { data } = await useFetch(
       `${import.meta.env.VITE_BASE_URL}/review/me`,
@@ -189,6 +193,7 @@ export const useReviews = defineStore("Reviews", () => {
           };
           options.params = {
             userId: userId,
+            userIdView: userIdView,
             page: myReviewPage.value,
             size: 10,
           };
@@ -556,7 +561,7 @@ export const useReviews = defineStore("Reviews", () => {
             // console.log("like this review uncompleted");
           } else if (status == 401) {
             login.handleRefresh();
-            updateLike();
+            updateLike(statusDetail);
           }
         },
       }

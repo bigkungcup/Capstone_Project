@@ -103,6 +103,7 @@ const library = useBooks();
             class="tw-pt-16 tw-overflow-clip"
             v-for="(book, index) in bookList.slice(1, 2)"
           >
+          <nuxt-link :to="`/book/${book.bookId}/`">
             <p>{{ book.bookName }}</p>
             <v-rating
               :model-value="0.5 * Math.floor(2 * book.bookRating).toFixed(0)"
@@ -118,6 +119,7 @@ const library = useBooks();
             <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
             {{ library.formatTotalNumber(book.bookTotalReview) }}</p>
             </div>
+          </nuxt-link> 
           </div>
         </v-col>
         <v-col cols="4" align="center">
@@ -125,6 +127,7 @@ const library = useBooks();
             class="tw-pt-14 tw-mx-8 tw-overflow-clip"
             v-for="(book, index) in bookList.slice(0, 1)"
           >
+          <nuxt-link :to="`/book/${book.bookId}/`">
             <p>{{ book.bookName }}</p>
             <v-rating
               :model-value="0.5 * Math.floor(2 * book.bookRating).toFixed(0)"
@@ -140,6 +143,7 @@ const library = useBooks();
             <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
             {{ library.formatTotalNumber(book.bookTotalReview) }}</p>
             </div>
+            </nuxt-link>
           </div>
         </v-col>
         <v-col cols="2" align="center">
@@ -147,6 +151,7 @@ const library = useBooks();
             class="tw-pt-16 tw-overflow-clip"
             v-for="(book, index) in bookList.slice(2, 3)"
           >
+          <nuxt-link :to="`/book/${book.bookId}/`">
             <p>{{ book.bookName }}</p>
             <v-rating
               :model-value="0.5 * Math.floor(2 * book.bookRating).toFixed(0)"
@@ -162,6 +167,7 @@ const library = useBooks();
             <p><v-icon icon="mdi mdi-comment-processing-outline" class="tw-mx-1" />
             {{ library.formatTotalNumber(book.bookTotalReview) }}</p>
             </div>
+          </nuxt-link>
           </div>
         </v-col>
         <v-col cols="2"></v-col>

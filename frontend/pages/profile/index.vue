@@ -39,7 +39,7 @@ async function likeReviews(reviewId, likeStatus) {
     likeStatus: likeStatus,
   };
   await review.createLike(status);
-  await review.getMyReview(idToken.value);
+  await review.getMyReview(idToken.value,idToken.value,'notLoad');
 }
 
 async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
@@ -50,7 +50,7 @@ async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
     likeStatus: likeStatus,
   };
   await review.updateLike(status);
-  await review.getMyReview(idToken.value);
+  await review.getMyReview(idToken.value,idToken.value,'notLoad');
 }
 
 async function selectSection(section) {
@@ -63,7 +63,7 @@ async function selectSection(section) {
   } else if (section == "review") {
     profileSection.value = "review";
     review.clearMyReviewList();
-    await review.getMyReview(idToken.value);
+    await review.getMyReview(idToken.value,idToken.value);
     result.value = review.myReviewList.data.totalElements
       ? review.myReviewList.data.totalElements
       : 0;

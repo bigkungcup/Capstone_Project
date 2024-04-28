@@ -11,6 +11,7 @@ const loginStatus = ref(false);
 const login = useLogin();
 const noti = useNotifications();
 const notiSection = ref('user');
+const selection = ref('home');
 
 loginStatus.value = accessToken.value == undefined ? false : true;
 
@@ -23,6 +24,10 @@ function handleGetNotification(section) {
     noti.getCountSystemNotification();
     noti.getNotificationList(1)
   }
+}
+
+function log() {
+  console.log('aaa');
 }
 
 </script>
@@ -38,14 +43,13 @@ function handleGetNotification(section) {
     <div
       class="nav-text-before-click tw-flex tw-space-x-6 tw-place-self-center tw-text-xl"
     >
-      <NuxtLink to="/">Home</NuxtLink>
-      <NuxtLink to="/ranking/">Ranking</NuxtLink>
-      <NuxtLink to="/library/">Library</NuxtLink>
-      <NuxtLink to="/history/" v-show="login.roleToken == 'USER'"
-        >History</NuxtLink
-      >
-      <NuxtLink to="/user/" v-show="login.roleToken == 'ADMIN'">User</NuxtLink>
-      <NuxtLink to="/report/" v-show="login.roleToken == 'ADMIN'">Report</NuxtLink>
+      <NuxtLink to="/" @click="selection = 'home'"><p :class="selection == 'home' ? 'nav-text-after-click' : 'nav-text-before-click'">Home</p></NuxtLink>
+      <NuxtLink to="/ranking/" @click="selection = 'ranking'"><p :class="selection == 'ranking' ? 'nav-text-after-click' : 'nav-text-before-click'">Ranking</p></NuxtLink>
+      <NuxtLink to="/library/" @click="selection = 'library'"><p :class="selection == 'library' ? 'nav-text-after-click' : 'nav-text-before-click'">Library</p></NuxtLink>
+      <NuxtLink to="/history/" @click="selection = 'history'" v-show="login.roleToken == 'USER'">
+        <p :class="selection == 'history' ? 'nav-text-after-click' : 'nav-text-before-click'">History</p></NuxtLink>
+      <NuxtLink to="/user/" @click="selection = 'user'" v-show="login.roleToken == 'ADMIN'"><p :class="selection == 'user' ? 'nav-text-after-click' : 'nav-text-before-click'">User</p></NuxtLink>
+      <NuxtLink to="/report/" @click="selection = 'report'" v-show="login.roleToken == 'ADMIN'"><p :class="selection == 'report' ? 'nav-text-after-click' : 'nav-text-before-click'">Report</p></NuxtLink>
     </div>
     <div class="nav-icon-color tw-flex tw-space-x-6 tw-place-self-end tw-pr-16">
       <span

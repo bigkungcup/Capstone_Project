@@ -84,10 +84,6 @@ function toggleReviewConfirmPopup() {
   reviewConfirmPopup.value = !reviewConfirmPopup.value;
 }
 
-function bookCoverPath(filePath) {
-  return (filePath = `../../_nuxt/@fs/${filePath}`);
-}
-
 async function likeReviews(reviewId, likeStatus) {
   let status = {
     userId: idToken.value,
@@ -95,7 +91,7 @@ async function likeReviews(reviewId, likeStatus) {
     likeStatus: likeStatus,
   };
   await reviews.createLike(status);
-  await reviews.getReview(route.params.id);
+  await reviews.getReview(route.params.id,'notLoad');
 }
 
 async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
@@ -106,7 +102,7 @@ async function updatelikeReviews(reviewId, likeStatus, likeStatusId) {
     likeStatus: likeStatus,
   };
   await reviews.updateLike(status);
-  await reviews.getReview(route.params.id);
+  await reviews.getReview(route.params.id,'notLoad');
 }
 
 function handleSelectionChange() {
@@ -133,12 +129,12 @@ function handleStarRate(value) {
 
 async function handleFollow(userId) {
   await user.createFollower(userId)
-  reviews.getReview(route.params.id)
+  reviews.getReview(route.params.id,'notLoad')
 }
 
 async function handleUnfollow(userId) {
   await user.deleteFollower(userId)
-  reviews.getReview(route.params.id)
+  reviews.getReview(route.params.id,'notLoad')
 }
 
 
@@ -231,7 +227,7 @@ if (roleToken.value == "GUEST") {
                 </p>
                 <p>
                   Booktype:
-                  <v-btn color="#1D419F">{{
+                  <v-btn color="#1D419F" @click="library.filterBook = library.bookDetail.data.booktype.booktypeId" to="/library/">{{
                     library.bookDetail.data.booktype.booktypeName
                   }}</v-btn>
                 </p>
