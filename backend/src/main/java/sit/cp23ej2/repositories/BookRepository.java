@@ -71,7 +71,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
                         // " AND (:bookTotalReview ) " +
                         // " ORDER By b.bookRating DESC, b.bookTotalReview DESC, b.bookName ASC LIMIT 10"
                         " ORDER BY CASE WHEN :sort_param = 'totalReview' THEN b.bookTotalReview END DESC, " +
-                        " CASE WHEN :sort_param = 'totalView' THEN b.bookTotalView END DESC "
+                        " CASE WHEN :sort_param = 'totalView' THEN b.bookTotalView END DESC LIMIT 10"
                         , nativeQuery = true)
         List<Book> getBookRanking(@Param("booktypeId") Integer booktypeId, @Param("sort_param") String sort_param);
 
