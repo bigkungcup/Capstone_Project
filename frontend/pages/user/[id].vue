@@ -182,6 +182,7 @@ onBeforeMount(async () => {
               <p class="web-text-header">{{ user.userDetail.data.displayName }}</p>
               <p class="web-text-sub">{{ user.userDetail.data.email }}</p>
               <div class="web-text-sub tw-min-h-[4rem] tw-break-words">
+                <p v-if="user.userDetail.data.bio == null">{{ user.userDetail.data.bio }}</p>
                 <div v-html="user.userDetail.data.bio.replace(/\n/g, '<br><p>')"></div>
               </div>
             </div>
