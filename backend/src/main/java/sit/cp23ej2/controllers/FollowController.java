@@ -52,7 +52,7 @@ public class FollowController {
         return followerService.insertFollowing(userFollowingId);
     }
 
-    @DeleteMapping("{userFollowingId}")
+    @DeleteMapping("/{userFollowingId}")
     public DataResponse deleteFollower(@PathVariable Integer userFollowingId) {
         return followerService.deleteFollowing(userFollowingId);
     }
